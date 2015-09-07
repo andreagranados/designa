@@ -218,6 +218,7 @@ class dt_designacion extends toba_datos_tabla
 		$sql = "SELECT distinct 
 			t_d.id_designacion,
 			t_d1.apellido||', '||t_d1.nombre as docente_nombre,
+                        t_d1.legajo,
 			t_d.nro_cargo,
 			t_d.anio_acad,
 			t_d.desde,
@@ -243,6 +244,7 @@ class dt_designacion extends toba_datos_tabla
 			t_d.nro_gestion,
 			t_d.observaciones,
                         m_p.nombre as programa,
+                        t_t.porc,
                         case when t_d.desde<='".$pdia."' then ( case when t_d.hasta is null then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)*m_c.costo_diario) else (((t_d.hasta-'".$pdia."')+1)*m_c.costo_diario) end )
 else (case when t_d.hasta>='".$udia."' then ((('".$udia."')-t_d.desde+1)*m_c.costo_diario) else ((t_d.hasta-t_d.desde+1)*m_c.costo_diario) end ) end as costo 
 		FROM
