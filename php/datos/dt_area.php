@@ -1,0 +1,35 @@
+<?php
+class dt_area extends toba_datos_tabla
+{
+	function get_descripciones($id_nro_dpto=null)
+	{
+            $where="";
+            if(isset($id_nro_dpto)){
+                $where=" where iddepto=$id_nro_dpto";
+            }
+            $sql = "SELECT idarea, descripcion FROM area $where ORDER BY descripcion";
+            $ar = toba::db('designa')->consultar($sql);
+            for ($i = 0; $i <= count($ar) - 1; $i++) {
+                    $ar[$i]['descripcion'] = utf8_decode($ar[$i]['descripcion']);
+                }
+            return $ar;
+	}
+
+	function get_listado()
+	{
+		$sql = "SELECT
+			t_a.idarea,
+			t_d.descripcion as iddepto_nombre,
+			t_a.descripcion
+		FROM
+			area as t_a,
+			departamento as t_d
+		WHERE
+				t_a.iddepto = t_d.iddepto
+		ORDER BY descripcion";
+		return toba::db('designa')->consultar($sql);
+	}
+
+
+}
+?>
