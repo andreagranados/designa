@@ -124,11 +124,15 @@ class ci_docente extends toba_ci
             //si estoy en la pantalla cargo_seleccion y presiono agregar entonces
             if($this->s__pantalla=='pant_cargo_seleccion'){
                  $this->set_pantalla('pant_cargo');
-            }
-            
-                
+            }   
 	}
-        
+        function evt__agregar_reserva()
+	{
+	   //
+            $this->set_pantalla('pant_reserva');
+            
+            
+	}
        
 
 	
@@ -168,13 +172,13 @@ class ci_docente extends toba_ci
 
 	function conf__cuadro_cargos(designa_ei_cuadro $cuadro)
 	{
+            //muestra todos los cargos que estan dentro del periodo vigente
             if  (isset($this->s__datos_filtro_cargo)) {
                 $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_vigentes($this->s__agente['id_docente'],$this->s__datos_filtro_cargo));                             
             }else{   
                 $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_vigentes($this->s__agente['id_docente']));
             }
-                
-            
+   
 	}
 	function evt__cuadro_cargos__seleccion($datos)
 	{
@@ -195,7 +199,7 @@ class ci_docente extends toba_ci
                 $this->dep('datos')->tabla('norma')->cargar($mostrar);
             }
             
-            $this->s__designacion=$this->dep('datos')->tabla('designacion')->get();//guardo la designacion seleccionada
+            $this->s__designacion=$this->dep('datos')->tabla('designacion')->get();//guardo la designacion seleccionada en una variable
             $this->set_pantalla('pant_cargo');
                
 	}

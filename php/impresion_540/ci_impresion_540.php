@@ -31,11 +31,7 @@ class ci_impresion_540 extends toba_ci
 		}
 	}
 
-	//la variable $this->s__seleccionadas no tenia valor en la funcion vision excel por eso agregue este boton
-        function evt__filtro__imprimir($datos)
-	{
-		$this->set_pantalla('pant_impresion');
-	}
+	
         function evt__filtro__seleccionar($datos)
 	{
             $this->s__seleccionar_todos=1;	
@@ -65,14 +61,18 @@ class ci_impresion_540 extends toba_ci
             //y que no tengan el check de presupuesto
                 
                if (isset($this->s__datos_filtro)) {
+                   print_r($this->s__datos_filtro);
+                   $x=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro);
+                   print_r($x);
                         $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro));
                         $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro);
                       
-		} else {
-                        $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_540());
-                        $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540();
-  
-		}
+		} 
+//                else {
+//                        $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_540());
+//                        $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540();
+//  
+//		}
                
                 
 	}
@@ -96,7 +96,7 @@ class ci_impresion_540 extends toba_ci
         //funcion que se ejecuta cuando se presiona el boton imprimir 
         function vista_excel(toba_vista_excel $salida){
             // la variable $this->s__seleccionadas no tiene valor hasta que no presiona el boton filtrar
-           // if(isset($this->s__seleccionadas)){print_r('si');exit();}else{print_r('no');exit();}
+            if(isset($this->s__seleccionadas)){print_r('si');exit();}else{print_r('no');exit();}
             //ya tiene valor, filtrar y solo mostrar la que estan seleccionadas
            // print_r($this->s__listado);exit();
             if (isset($this->s__seleccionadas)){//si selecciono para imprimir
@@ -147,7 +147,7 @@ class ci_impresion_540 extends toba_ci
                     
                 }
                
-            }else{print_r('no');}
+            }
 
  }
 
@@ -160,6 +160,7 @@ class ci_impresion_540 extends toba_ci
 	 */
 	function evt__cuadro__multiple_con_etiq($datos)
 	{
+            print_r($datos);
             $this->s__seleccionadas=$datos;
 
 	}
@@ -189,11 +190,13 @@ class ci_impresion_540 extends toba_ci
            
             if ($this->s__seleccionar_todos==1){//si presiono el boton seleccionar todos
                 $evento->set_check_activo(true);
+                $this->s__seleccionar_todos=0;
                }
           
             if ($this->s__deseleccionar_todos==1){
                 $evento->set_check_activo(false);
-            }
+                $this->s__deseleccionar_todos=0;
+               }
             
 
 	}
@@ -202,5 +205,15 @@ class ci_impresion_540 extends toba_ci
 
 
 	
+	//-----------------------------------------------------------------------------------
+	//---- cuadro -----------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function evt__cuadro__seleccion($datos)
+	{
+            print_r($datos);
+            $this->set_pantalla('pant_impresion');
+	}
+
 }
 ?>
