@@ -6,20 +6,7 @@ class cargo_solapas extends toba_ci
     protected $s__pantalla;
     public $s__nombre_archivo;
         
-        function ultimo_dia_periodo() { 
-
-            $sql="select fecha_fin from mocovi_periodo_presupuestario where actual=true";
-            $resul=toba::db('designa')->consultar($sql);
-            return $resul[0]['fecha_fin'];
-        }
- 
-        /** Ultimo dia del periodo**/
-        function primer_dia_periodo() {
-
-            $sql="select fecha_inicio from mocovi_periodo_presupuestario where actual=true";
-            $resul=toba::db('designa')->consultar($sql);
-            return $resul[0]['fecha_inicio'];
-           }
+           
         function get_programas_ua(){
             
             $designacion=$this->controlador()->desig_seleccionada();
@@ -74,170 +61,33 @@ class cargo_solapas extends toba_ci
                 $this->pantalla()->tab("pant_gestion")->desactivar();
 		}
         } 
-        function get_categoria_popup($id){
-            if($id>='0' && $id<='2000'){//si es un numero 
-                
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion,
-                        t_c.catest,
-                        t_c.id_ded
-		FROM
-			categ_siu as t_cs LEFT OUTER JOIN macheo_categ t_c ON (t_cs.codigo_siu=t_c.catsiu)
-                        where escalafon='D'
-		ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                
-                return ($resul[$id]['codigo_siu']);
-                
-            }           
-        }
+
          
         //este metodo permite mostrar en el popup el codigo de la categoria
         //recibe como argumento el id 
         function get_descripcion_categoria($id){
-         
-            //print_r($id);
-            if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion
-		FROM
-			categ_siu as t_cs
-                        where escalafon='D'
-		ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                return utf8_decode($resul[$id]['descripcion']);
-            }
-            
+            $cat=$this->controlador()->get_descripcion_categoria($id);
+            return $cat;
+  
         }
         function get_dedicacion_categoria($id){
-            if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion
-		FROM
-			categ_siu as t_cs
-                         where escalafon='D'
-		ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                $long=  strlen(trim($resul[$id]['codigo_siu']));
-                
-                $dedic=  substr($resul[$id]['codigo_siu'], $long-1, $long);
-                
-                switch ($dedic) {
-                    case '1': $dedicacion=3;   break;
-                    case 'S': $dedicacion=2;   break;
-                    case 'E': $dedicacion=1;   break;
-                    default:
-                        break;
-                }
-                return($dedicacion);
-            }
+            $dedi=$this->controlador()->get_dedicacion_categoria($id);
+            return $dedi;
+
         }
         function get_categ_estatuto($id){
-            if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion
-		FROM
-			categ_siu as t_cs
-                         where escalafon='D'
-		ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                
-                $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
-                $resul2=toba::db('designa')->consultar($sql2);
-                //print_r($resul2[0]);
-                return($resul2[0]['catest']);
-            }
+            $est=$this->controlador()->get_categ_estatuto($id);
+            return $est;
         }
-        function dias_trascurridos($fecha_i,$fecha_f){
-            $dias=(strtotime($fecha_i)-strtotime($fecha_f))/86400;//Esta función espera que se proporcione una cadena que contenga un formato de fecha en Inglés US e intentará convertir ese formato a una fecha Unix
-            $dias=abs($dias);
-            $dias=floor($dias);
-            return $dias;
-        }
-        function alcanza_credito($desde,$hasta,$cat){
-        //obtengo inicio y fin del periodo
-            $udia=$this->ultimo_dia_periodo();
-            $pdia=$this->primer_dia_periodo();    
-        //--COSTO DE ESTA DESIGNACION
-            $sql="select * from mocovi_costo_categoria where codigo_siu='".trim($cat)."'";
-            $valor_categoria=toba::db('designa')->consultar($sql);
-            $dias=0;
-            
-            if($desde<=$pdia){
-                //$hasta-$pdia
-                if($hasta ==null){
-                    $dias=$this->dias_trascurridos($pdia,$udia)+1;
-                }else{
-                    $dias=$this->dias_trascurridos($pdia,$hasta)+1;
-                }
-             
-            }else{if($hasta>=$udia){
-                //$udia-$desde
-                          $dias=$this->dias_transcurridos($desde,udia)+1;
-                        }else{
-                            //$hasta-$desde
-                            $dias=$this->dias_transcurridos($desde,$hasta)+1;
-                        }
-                  }
-            
-            //print_r('desde:'.$desde);print_r('hasta:'.$hasta);print_r($dias);exit();      
-            $cuesta=$dias*$valor_categoria[0]['costo_diario'];
-            
-        //recupero usuario
-            $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
-            $where = array();
-            if ($usuario='faif'){
-                $where[] = "uni_acad=upper('".$usuario."')" ;
-            }
-            
-            //-----------CALCULO LO QUE GASTE 
-            //busco las designaciones dentro del periodo que son de la UA
-            $sql="select * from designacion where desde <='".$pdia."'  and (hasta >='".$udia."' or hasta is null)";
-            if (count($where)>0) {
-		$sql = sql_concatenar_where($sql, $where);
-		}
-            $resul=toba::db('designa')->consultar($sql);    
-            //cuanto gaste?
-         
-
-            $usuario = toba::usuario()->get_id();
-            $sql="select 
-                sum(case when d.desde<='".$pdia."' then 
-                case when d.hasta is null then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)*m_c.costo_diario) else (((d.hasta-'".$pdia."')+1)*m_c.costo_diario) end
-                else (case when d.hasta>='".$udia."' then ((('".$udia."')-d.desde+1)*m_c.costo_diario) else ((d.hasta-d.desde+1)*m_c.costo_diario) end  ) end )as costo
-                from designacion d LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (d.cat_mapuche = m_c.codigo_siu) 
-                where d.desde <='".$pdia."'  and (d.hasta >='".$udia."' or d.hasta is null)
-                and d.uni_acad=upper('".$usuario."')";
-            $res=toba::db('designa')->consultar($sql);  
-            $gaste=$res[0]['costo'];
-              //sumo los credito de todos los programas asociados a la UA
-            if ($usuario <>'toba'){ 
-                $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b where a.id_unidad=upper('".$usuario."') and a.id_programa=b.id_programa" ;
-                $resul=toba::db('designa')->consultar($sql);
-                if(count($resul)>0){
-                    $tengo=$resul[0]['cred'];
-                }
-                //print_r('tengo:'.$tengo);exit();
-                if($gaste+$cuesta>$tengo){
-                     return false;
-                }else{
-                     return true;
-                }
-            }
-             
-        }
+        
         
         //agrega una nueva designacion con la imputacion por defecto
         //previo a agregar una nueva designacion tiene que ver si tiene credito
 	function evt__form_cargo__alta($datos)
 	{
-                $cat=$this->get_categoria_popup($datos['cat_mapuche']);
+                $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
                 //le mando la categoria, la fecha desde y la fecha hasta
-                $band=$this->alcanza_credito($datos['desde'],$datos['hasta'],$cat);
+                $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat);
                 
                 if ($band){//si hay credito
                                        
@@ -247,6 +97,9 @@ class cargo_solapas extends toba_ci
                     $datos['uni_acad']= strtoupper($usuario);
                     $datos['nro_cargo']=0;
                     $datos['check_presup']=0;
+                    $datos['check_academica']=0;
+                    $datos['tipo_desig']=1;
+                    $datos['id_reserva']=0;
                     $datos['concursado']=0;
                     
                     if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero 
