@@ -8,11 +8,8 @@ class dt_area extends toba_datos_tabla
                 $where=" where iddepto=$id_nro_dpto";
             }
             $sql = "SELECT idarea, descripcion FROM area $where ORDER BY descripcion";
-            $ar = toba::db('designa')->consultar($sql);
-            for ($i = 0; $i <= count($ar) - 1; $i++) {
-                    $ar[$i]['descripcion'] = utf8_decode($ar[$i]['descripcion']);
-                }
-            return $ar;
+            return toba::db('designa')->consultar($sql);
+           
 	}
 
 	function get_listado()

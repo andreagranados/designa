@@ -13,12 +13,8 @@ class dt_titulos_docente extends toba_datos_tabla
 		FROM
 			titulos_docente as t_td LEFT OUTER JOIN titulo as t_t ON (t_td.codc_titul=t_t.codc_titul) LEFT OUTER JOIN tipo as t_i ON (t_td.nro_tab3=t_i.nro_tabla and t_td.codc_nivel=t_i.desc_abrev";
 		
-                $ar = toba::db('designa')->consultar($sql);
-                for ($i = 0; $i <= count($ar) - 1; $i++) {
-                    $ar[$i]['descripcion'] = utf8_decode($ar[$i]['descripcion']);    /* trasnforma de UTF8 a ISO para que salga bien en pantalla */
-                }
-
-                return $ar;
+                return toba::db('designa')->consultar($sql);
+               
 	}
 
 }

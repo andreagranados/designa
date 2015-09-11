@@ -58,15 +58,8 @@ class dt_entidad_otorgante extends toba_datos_tabla
 		if (count($where)>0) {
 			$sql = sql_concatenar_where($sql, $where);
 		}
-		$ar = toba::db('designa')->consultar($sql);
-                 for ($i = 0; $i <= count($ar) - 1; $i++) {
-                    $ar[$i]['nombre'] = utf8_decode($ar[$i]['nombre']); 
-                    $ar[$i]['ciudad'] = utf8_decode($ar[$i]['ciudad']); 
-                    $ar[$i]['provincia'] = utf8_decode($ar[$i]['provincia']); 
-                    $ar[$i]['pais'] = utf8_decode($ar[$i]['pais']); 
-                }
-
-                return $ar;
+		return toba::db('designa')->consultar($sql);
+                 
                 }
 
 }

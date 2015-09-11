@@ -27,12 +27,9 @@ class dt_docente extends toba_datos_tabla
 			docente as t_d	LEFT OUTER JOIN provincia as t_p ON (t_d.pcia_nacim = t_p.codigo_pcia)
 			LEFT OUTER JOIN pais as t_p1 ON (t_d.pais_nacim = t_p1.codigo_pais)
 		ORDER BY nombre";
-		$ar = toba::db('designa')->consultar($sql);
-                 for ($i = 0; $i <= count($ar) - 1; $i++) {
-                    $ar[$i]['nombre'] = utf8_decode($ar[$i]['nombre']);    /* trasnforma de UTF8 a ISO para que salga bien en pantalla */
-                    $ar[$i]['apellido'] = utf8_decode($ar[$i]['apellido']); 
-                }
-                return $ar;  
+                $sql = toba::perfil_de_datos()->filtrar($sql);
+		return toba::db('designa')->consultar($sql);
+                
 	}
 
 
