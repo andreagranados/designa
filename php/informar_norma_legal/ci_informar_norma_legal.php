@@ -6,32 +6,10 @@ class ci_informar_norma_legal extends toba_ci
         protected $s__datos;
 
         function get_ua(){
-             $usuario = toba::usuario()->get_id();
-             
-             if ($usuario == 'toba'){
-                $sql="select * from unidad_acad";
-             }else{
-                $sql="select * from unidad_acad where sigla=upper('".$usuario."')";
-             }
-             
-             $resul=toba::db('designa')->consultar($sql);
-             
-             for ($i = 0; $i <= count($resul) - 1; $i++) {
-                    $resul[$i]['descripcion'] = utf8_decode($resul[$i]['descripcion']);
-                                   
-                }
-             return $resul;
+             return $this->dep('datos')->tabla('unidad_acad')->get_ua();
         }
         function credito ($ua){
-             $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b where a.id_unidad=upper('".$ua."') and a.id_programa=b.id_programa" ;
-             $resul=toba::db('designa')->consultar($sql);
-             
-             if($resul[0]['cred'] <>null){
-                    $tengo=$resul[0]['cred'];
-             }else{$tengo=0;
-                      
-                }
-             return $tengo;
+             return $this->dep('datos')->tabla('unidad_acad')->credito($ua);;
             
         }
 	//---- Filtro -----------------------------------------------------------------------

@@ -16,7 +16,7 @@ class dt_designacion extends toba_datos_tabla
             $resul=toba::db('designa')->consultar($sql);
             return $resul[0]['fecha_inicio'];
            }
-           
+        
 	function get_listado($filtro=array())
 	{
 		$where = array();

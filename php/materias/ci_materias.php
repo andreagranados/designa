@@ -1,18 +1,12 @@
 <?php
-class ci_informe_estado_actual extends toba_ci
+class ci_materias extends toba_ci
 {
 	protected $s__datos_filtro;
 
-//en el combo solo aparece la facultad correspondiente al usuario logueado
-        function get_ua(){
-           return $this->dep('datos')->tabla('unidad_acad')->get_ua();
-        }
-        function credito ($ua){
-            return $this->dep('datos')->tabla('unidad_acad')->credito($ua);
-        }
+
 	//---- Filtro -----------------------------------------------------------------------
 
-	function conf__filtro(toba_ei_formulario $filtro)
+	function conf__filtro(toba_ei_filtro $filtro)
 	{
 		if (isset($this->s__datos_filtro)) {
 			$filtro->set_datos($this->s__datos_filtro);
@@ -34,8 +28,10 @@ class ci_informe_estado_actual extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_estactual($this->s__datos_filtro));
-		} 
+			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado($this->s__datos_filtro));
+		} else {
+			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado());
+		}
 	}
 
 	function evt__cuadro__seleccion($datos)
@@ -48,20 +44,20 @@ class ci_informe_estado_actual extends toba_ci
 	function conf__formulario(toba_ei_formulario $form)
 	{
 		if ($this->dep('datos')->esta_cargada()) {
-			$form->set_datos($this->dep('datos')->tabla('designacion')->get());
+			$form->set_datos($this->dep('datos')->tabla('materia')->get());
 		}
 	}
 
 	function evt__formulario__alta($datos)
 	{
-		$this->dep('datos')->tabla('designacion')->set($datos);
+		$this->dep('datos')->tabla('materia')->set($datos);
 		$this->dep('datos')->sincronizar();
 		$this->resetear();
 	}
 
 	function evt__formulario__modificacion($datos)
 	{
-		$this->dep('datos')->tabla('designacion')->set($datos);
+		$this->dep('datos')->tabla('materia')->set($datos);
 		$this->dep('datos')->sincronizar();
 		$this->resetear();
 	}

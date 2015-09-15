@@ -5,6 +5,7 @@ class cargo_solapas extends toba_ci
     protected $s__alta_mate;
     protected $s__pantalla;
     public $s__nombre_archivo;
+    protected $s__alta_nov;
         
            
         function get_programas_ua(){
@@ -25,18 +26,7 @@ class cargo_solapas extends toba_ci
         }
         
         function get_departamentos(){
-            
-            $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
-            $where = "";
-            if ($usuario='faif'){
-                $where = "idunidad_academica=upper('".$usuario."')" ;
-            }
-            $sql="select * from departamento where $where";
-            $ar = toba::db('designa')->consultar($sql);
-            for ($i = 0; $i <= count($ar) - 1; $i++) {
-                    $ar[$i]['descripcion'] = utf8_decode($ar[$i]['descripcion']);    /* trasnforma de UTF8 a ISO para que salga bien en pantalla */
-                }
-            return $ar;  
+           return $this->controlador()->dep('datos')->tabla('departamento')->get_departamentos();
         } 
         //-----------------------------------------------------------------------------------
 	//---- form_cargo -------------------------------------------------------------------
@@ -59,17 +49,24 @@ class cargo_solapas extends toba_ci
                 $this->pantalla()->tab("pant_imputacion")->desactivar();
                 $this->pantalla()->tab("pant_materias")->desactivar();
                 $this->pantalla()->tab("pant_gestion")->desactivar();
+                
 		}
         } 
 
          
-        //este metodo permite mostrar en el popup el codigo de la categoria
-        //recibe como argumento el id 
+       
         function get_descripcion_categoria($id){
             $cat=$this->controlador()->get_descripcion_categoria($id);
             return $cat;
   
         }
+         //este metodo permite mostrar en el popup el codigo de la categoria
+        //recibe como argumento el id 
+        function get_categoria($id){
+            
+             return $this->controlador()->get_categoria($id);
+        }
+        
         function get_dedicacion_categoria($id){
             $dedi=$this->controlador()->get_dedicacion_categoria($id);
             return $dedi;
@@ -141,8 +138,7 @@ class cargo_solapas extends toba_ci
                     $this->controlador()->dep('datos')->tabla('imputacion')->set($impu);
                     $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
                     $this->controlador()->resetear();
-                    
-                    
+
                 }
                 else{
                     $mensaje='NO SE DISPONE DE CRÉDITO PARA INGRESAR LA DESIGNACIÓN';
@@ -153,16 +149,15 @@ class cargo_solapas extends toba_ci
 
 	function evt__form_cargo__baja()
 	{
-                $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
-		$this->controlador()->resetear();
+               //ver liberacion de credito 
+//                $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
+//		$this->controlador()->resetear();
 	}
 
 	function evt__form_cargo__modificacion($datos)
 	{
             //print_r($datos);// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
-            
             $desig=$this->controlador()->desig_seleccionada();
-            print_r( $desig);//Array ( [id_designacion] => 37 [id_docente] => 40 [nro_cargo] => 0 [anio_acad] => 2015 [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cat_estat] => PAS [dedic] => 1 [carac] => R [uni_acad] => FAIF [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [id_norma] => [id_expediente] => [tipo_incentivo] => [dedi_incen] => [cic_con] => [cargo_gestion] => [ord_gestion] => [emite_cargo_gestion] => [nro_gestion] => [observaciones] => [check_presup] => [nro_540] => [x_dbr_clave] => 0 ) 
             $datos['id_designacion']=$desig['id_designacion'];
              
             //cuando presiona el boton modificar puede que modifique  la categ mapuche
@@ -181,7 +176,7 @@ class cargo_solapas extends toba_ci
 		ORDER BY descripcion";
                 $resul=toba::db('designa')->consultar($sql);
                 
-                $datos['cat_mapuche']=$resul[$id]['codigo_siu'];
+                $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
                 $datos['cat_estat']=$resul[$id]['catest'];
                 $datos['dedic']=$resul[$id]['id_ded'];
             }
@@ -190,50 +185,69 @@ class cargo_solapas extends toba_ci
             // verifico si la designacion que se quiere modificar tiene numero de 540
             $sql="select nro_540 from designacion where id_designacion=".$desig['id_designacion'];
             $resul=toba::db('designa')->consultar($sql);
-            
+            //--recupero la designacion que se desea modificar
+            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             if($resul[0]['nro_540'] == null){//no tiene nro de 540
+                print_r(' no tiene numero');
+                 //debe verificar si hay credito antes de hacer la modificacion
+                
+                if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
+                {//si modifica algo que afecte el credito
+                    //verifico que tenga credito
+                    $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
+                     if ($band){//si hay credito
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                     }else{
+                        $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
+                        toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                     }
             
-                $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-                $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                $this->controlador()->resetear();
+                 }else{//no modifica nada de credito
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                     }
                 }
             else{//tiene numero de 540
-                //if ($resul[0]['id_norma']<>null){//tiene la norma
-                    //if($resul[0]['check_presup']==0){//no tiene el check de presupuesto
-                      //  toba::notificacion()->agregar('NO PUEDE MODIFICAR LA DESIGNACION HASTA QUE NO PASE CHEQUEO DE PRESUPUESTO ', "info");
-                    //}else{//tiene el check de presupuesto
-                        //vuelca al de historico
-                        //saca el check de presup
-                        //saca el nro de 540
-                        
-                        $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                        $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro
-                        $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
-                        
-                        $datos['nro_540']=null;
-                        $datos['check_presup']=null;
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);//modifico la designacion
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                        $this->controlador()->resetear();
-                        
-                    //}
-//                }else{//tiene nro_540 pero no tiene norma
-//                    //entonces podria modificar todo menos categoria, desde, hasta
-//                      if($desig['desde']==$datos['desde'] && $desig['hasta']==$datos['hasta'] && $desig['cat_mapuche']==$datos['cat_mapuche']){//no modifico categoria, ni desde, ni hasta
-//                            $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-//                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-//                             $this->controlador()->resetear();
-//                      }else{//modifico fechas o categoria
-//                            $mensaje='NO PUEDE MODIFICAR LA DESIGNACIÓN HASTA QUE NO PASE CHEQUEO DE PRESUPUESTO ';
-//                            toba::notificacion()->agregar(utf8_decode($mensaje), "error");
-//                        }
-//                }
-              
+                print_r('tiene numero');
+                $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número de 540. De hacer esto, se perderá el número. ¿Desea continuar?");                       
+                toba::notificacion()->agregar($mensaje,'info');
+                if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
+                {//si modifica algo que afecte el credito
+                    //verifico que tenga credito
+                    $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
+                     if ($band){//si hay credito
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                     }else{
+                        $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
+                        toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                     }
+                }else{//no modifica nada de credito
+                    
+                    $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                    $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
+                    $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+                    $datos['nro_540']=null;
+                    $datos['check_presup']=0;
+                    $datos['check_academica']=0;
+                    $this->controlador()->dep('datos')->tabla('designacion')->set($datos);//modifico la designacion
+                    $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                
+                    }
+                
                 }
 	}
 
 	function evt__form_cargo__cancelar()
 	{
+            $this->controlador()->dep('datos')->tabla('designacion')->resetear();//limpia para volver a seleccionar otra designacion
+            $this->controlador()->set_pantalla( 'pant_cargo_seleccion');
 	}
        
         //--Pantallas
@@ -249,22 +263,37 @@ class cargo_solapas extends toba_ci
         {
             $this->s__pantalla = "pant_materias";
         }
+         function conf__pant_novedad()
+        {
+            $this->s__pantalla = "pant_novedad";
+        }
         //-----------------------------------------------------------------------------------
 	//---- cuadro_imputacion ------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
 	function conf__cuadro_imputacion(toba_ei_cuadro $cuadro)
 	{
-            $designacion=$this->controlador()->desig_seleccionada();
-            $sql="select t_i.*,t_p.nombre as programa_nombre from imputacion t_i, mocovi_programa t_p where t_i.id_programa=t_p.id_programa and t_i.id_designacion=".$designacion['id_designacion'];
-            $resul=toba::db('designa')->consultar($sql);
-            $cuadro->set_datos($resul);
+                    
+            if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()) { 
+                $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                $sql="select t_i.id_designacion,t_i.porc,t_i.id_programa,t_p.nombre as nombre_programa from imputacion t_i, mocovi_programa t_p where t_i.id_programa=t_p.id_programa and t_i.id_designacion=".$designacion['id_designacion'];
+                $resul=toba::db('designa')->consultar($sql);
+                $cuadro->set_datos($resul);
+                
+                $sql="select case when sum(porc) is null then 0 else sum(porc) end as total from imputacion where id_designacion=".$designacion['id_designacion'];
+                $resul=toba::db('designa')->consultar($sql);
+                $total=$resul[0]['total'];
+                if($total<100){
+                    $this->pantalla('pant_imputacion')->agregar_notificacion('El porcentaje total debe sumar 100','error');    
+                }
+            }
+            
 	}
 
 	function evt__cuadro_imputacion__editar($datos)
 	{
             $this->s__alta_impu=1;
-            $this->dep('datos')->tabla('imputacion')->cargar($datos);
+            $this->controlador()->dep('datos')->tabla('imputacion')->cargar($datos);
 	}
         
        
@@ -274,43 +303,53 @@ class cargo_solapas extends toba_ci
 	//---- form_imputacion --------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	function conf__form_imputacion(designa_ei_formulario $form)
+	function conf__form_imputacion(toba_ei_formulario $form)
 	{
             if($this->s__alta_impu==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
                 $this->dep('form_imputacion')->descolapsar();
             }
-            else{$this->dep('form_imputacion')->colapsar();
+            else{
+                $this->dep('form_imputacion')->colapsar();
               }
-            if ($this->dep('datos')->tabla('imputacion')->esta_cargada()) {//entonces solo quiero modificar
-                    $datos=$this->dep('datos')->tabla('imputacion')->get();
-                    $sql="select nombre from mocovi_programa where id_programa=".$datos['id_programa'];
-                    $nombre_programa=toba::db('designa')->consultar($sql);
-                    
-                    $datos['programa']=$nombre_programa[0]['nombre'];
-		    $form->set_datos($datos);
+            if ($this->controlador()->dep('datos')->tabla('imputacion')->esta_cargada()) {//entonces solo quiero modificar
+                    $form->ef('porc')->set_obligatorio(true);
+                    $form->ef('id_programa')->set_obligatorio(true);
+                    $datos=$this->controlador()->dep('datos')->tabla('imputacion')->get();
+                    $form->set_datos($datos);
                     $form->eliminar_evento('guardar');
 		}
             else{
                 $form->eliminar_evento('modificacion');
-            }    
+            }     
+	}
+        
+        
+	function evt__form_imputacion__modificacion($datos)//aparece despues del cargar, por lo tanto modifica
+	{
+            $impu=$this->controlador()->dep('datos')->tabla('imputacion')->get();
+            //debe verificar que no se exceda del 100%
+            $sql="select case when sum(porc) is null then 0 else sum(porc) end as total from imputacion where id_designacion=".$impu['id_designacion'];
+            $resul=toba::db('designa')->consultar($sql);
+            $total=$resul[0]['total']+$datos['porc'];
+            if($total<=100){
+                $this->controlador()->dep('datos')->tabla('imputacion')->set($datos);
+                $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
+                $this->controlador()->dep('datos')->tabla('imputacion')->resetear();
+            }else{
+                //$this->pantalla('pant_imputacion')->agregar_notificacion('DEBE SUMAR 100','error');
+                toba::notificacion()->agregar('La suma de los porcentajes debe sumar 100%', 'error');
+            }
+            $this->s__alta_impu=0;//desacopla el formulario
             
 	}
         function resetear()
 	{
-		$this->dep('datos')->resetear();
+		//$this->controlador()->dep('datos')->tabla('imputacion')->resetear();
 	}
 	
-	function evt__form_imputacion__modificacion($datos)
-	{
-            $this->dep('datos')->tabla('imputacion')->set($datos);
-            $this->dep('datos')->sincronizar();
-            $this->resetear();
-            $this->s__alta_impu=0;
-	}
-       
         function evt__form_imputacion__cancelar($datos)
 	{
-            $this->resetear();
+            $this->controlador()->dep('datos')->tabla('imputacion')->resetear();
             $this->s__alta_impu=0;
 	}
         
@@ -339,76 +378,144 @@ class cargo_solapas extends toba_ci
 
 	function evt__alta()
 	{
+            
             $this->resetear();
-            if ($this->s__pantalla=='pant_imputacion'){//si estoy en la pantalla pant_imputacion
-                $this->s__alta_impu = 1; // y presiona el boton agregar
-                //$this->dep('form_seccion')->evento('modificacion')->ocultar();    
-            }else{ if ($this->s__pantalla=='pant_materias'){//si estoy en la pantalla pant_materias y presiono el boton alta
-                        $this->s__alta_mate = 1;}
-                
+            switch ($this->s__pantalla) {
+                //si estoy en la pantalla pant_imputacion
+                case 'pant_imputacion':$this->controlador()->dep('datos')->tabla('imputacion')->resetear();//para deseleccionar la imputacion que esta cargada
+                                       $this->s__alta_impu = 1; // y presiona el boton agregar
+
+
+                    break;
+                //si estoy en la pantalla pant_materias y presiono el boton alta
+                case 'pant_materias':$this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();//para deseleccionar la asignacion_materia que esta cargada
+                                     $this->s__alta_mate = 1;
+                               break;
+                case 'pant_novedad':$this->s__alta_nov = 1;
+                               break;
+                default:
+                    break;
             }
-	}
+           }
+         //este metodo permite mostrar en el popup el nombre de la materia seleccionada
+        //recibe como argumento el id 
+        function get_materia($id){
+            $mat=$this->controlador()->get_materia($id);
+            return $mat;
+        }
         
-	//-----------------------------------------------------------------------------------
-	//---- form_materias ----------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function conf__form_materias(designa_ei_formulario $form)
-	{
-             if($this->s__alta_mate==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
-                $this->dep('form_materias')->descolapsar();
-            }
-            else{$this->dep('form_materias')->colapsar();
-              }
-	}
-
-	function evt__form_materias__guardar($datos)
-	{
-	}
-
-	//-----------------------------------------------------------------------------------
-	//---- JAVASCRIPT -------------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function extender_objeto_js()
-	{
-		echo "
-		//---- Eventos ---------------------------------------------
-		
-		{$this->objeto_js}.evt__alta = function()
-		{
-		}
-		//---- Eventos ---------------------------------------------
-		
-		{$this->objeto_js}.evt__guardar = function()
-		{
-		}
-		";
-	}
-
-
-	
-        
-
-	
-
-	//-----------------------------------------------------------------------------------
+        //-----------------------------------------------------------------------------------
 	//---- cuadro_materias --------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
 	function conf__cuadro_materias(toba_ei_cuadro $cuadro)
 	{
-            $designacion=$this->controlador()->desig_seleccionada();
-            $sql="select * from asignacion_materia where id_designacion=".$designacion['id_designacion'];
-            $resul=toba::db('designa')->consultar($sql);
-         
-            $cuadro->set_datos($resul);
+            //trae la designacion que fue cargada
+            if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();     
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('asignacion_materia')->get_listado_desig($desig['id_designacion']));
+            }
             
 	}
 
 	function evt__cuadro_materias__seleccion($datos)
 	{
+            $this->s__alta_mate=1;
+            $this->controlador()->dep('datos')->tabla('asignacion_materia')->cargar($datos);
 	}
+       
+
+	//-----------------------------------------------------------------------------------
+	//---- form_materias ----------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form_materias(toba_ei_formulario $form)
+	{
+            if($this->s__alta_mate==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
+                $this->dep('form_materias')->descolapsar();
+                $form->ef('id_materia')->set_obligatorio('true');
+                $form->ef('rol')->set_obligatorio('true');
+                $form->ef('modulo')->set_obligatorio('true');
+                $form->ef('anio')->set_obligatorio('true');
+                $form->ef('id_periodo')->set_obligatorio('true');
+            }
+            else{$this->dep('form_materias')->colapsar();
+              }
+            if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()) {
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                if($this->controlador()->dep('datos')->tabla('asignacion_materia')->esta_cargada()){//si presiono el boton editar
+                    $x=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get();
+                    $sql="select * from materia where id_materia=".$x['id_materia'];
+                    $resul=toba::db('designa')->consultar($sql);
+                    $x['id_materia']=$resul[0]['desc_materia'];
+                    $form->set_datos($x);
+                 }
+		}
+	}
+//agrega una nueva asignacion materia
+	function evt__form_materias__alta($datos)
+	{
+            $datos['id_materia']=$this->controlador()->get_materia($datos['id_materia']);
+            $datos['nro_tab8']=8;
+                              
+            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $datos['id_designacion']=$desig['id_designacion'];
+            $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
+            $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
+            $this->s__alta_mate=0;//descolapsa el formulario de alta
+                 
+	}
+        function evt__form_materias__baja($datos)
+        {
+            $this->controlador()->dep('datos')->tabla('asignacion_materia')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();
+            $this->s__alta_mate=0;//descolapsa el formulario 
+            
+        }
+        function evt__form_materias__modificacion($datos)
+        {
+       
+            $a=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get();
+            
+            if($datos['id_materia']>='0' && $datos['id_materia']<='20000000'){//selecciono algo del popup
+                $mat=$this->controlador()->get_materia($datos['id_materia']);
+                $datos['id_materia']=$mat;
+            }else{//es string
+                $datos['id_materia']=$a['id_materia'];
+            }
+            
+             $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
+             $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
+             toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+             $this->s__alta_mate=0;//descolapsa el formulario de alta
+             $this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();
+            
+            
+            
+        }
+        function evt__form_materias__cancelar($datos)
+        {
+             $this->s__alta_mate=0;//descolapsa el formulario 
+             $this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();
+        }
+
+	//-----------------------------------------------------------------------------------
+	//---- JAVASCRIPT -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+//	function extender_objeto_js()
+//	{
+//            echo "{$this->objeto_js}.evt__validar_datos() 
+//            {
+//                var confirma = true;
+//                if (parametro_venenoso) {
+//                       confirma = confirm('Tas seguro que queres ejecutarme en Güindous Messenyer?');
+//                }
+//                return confirma;
+//             }
+//             ";
+//	}
+
 
 	//-----------------------------------------------------------------------------------
 	//---- form_cargo_gestion -----------------------------------------------------------
@@ -416,13 +523,12 @@ class cargo_solapas extends toba_ci
 
 	function conf__form_cargo_gestion(toba_ei_formulario $form)
 	{
-            $designacion=$this->controlador()->desig_seleccionada();
-            $sql="select cargo_gestion,ord_gestion,emite_cargo_gestion,nro_gestion from designacion where id_designacion=".$designacion['id_designacion'];
-            $resul=toba::db('designa')->consultar($sql);
-            
-           //muestra en el formulario los datos del cargo de gestion de la designacion
-	    $form->set_datos($resul[0]);
-		
+            if($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
+                $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                //muestra en el formulario los datos del cargo de gestion de la designacion
+                $form->set_datos($designacion);
+            }
+           	
 	}
 
 	
@@ -432,6 +538,8 @@ class cargo_solapas extends toba_ci
             $designacion=$this->controlador()->desig_seleccionada();
             $sql="update designacion set cargo_gestion='".$datos['cargo_gestion']."',ord_gestion='".$datos['ord_gestion']."',emite_cargo_gestion='".$datos['emite_cargo_gestion']."',nro_gestion='".$datos['nro_gestion']."' where id_designacion=".$designacion['id_designacion'];
             $resul=toba::db('designa')->consultar($sql);
+            //$this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+            //$this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
 	}
 
         
@@ -529,6 +637,86 @@ class cargo_solapas extends toba_ci
             $this->controlador()->set_pantalla('pant_seleccion');
             
 	}
+         //-----------------------------------------------------------------------------------
+	//---- cuadro_licencia -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+        function conf__cuadro_licencia(designa_ei_cuadro $cuadro)
+	{
+            if($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('novedad')->get_novedades_desig($desig['id_designacion']));
+            }
+            
+	}
+        function evt__cuadro_licencia__seleccion($datos)
+	{
+            $this->controlador()->dep('datos')->tabla('novedad')->cargar($datos);
+            $this->s__alta_nov=1;//aparece el formulario de alta
+	}
+        function conf__form_licencia(toba_ei_formulario $form)
+	{
+            if($this->s__alta_nov==1){// si presiono el boton alta entonces muestra el formulario  para dar de alta una nueva novedad
+                $this->dep('form_licencia')->descolapsar();
+                $form->ef('tipo_nov')->set_obligatorio('true');
+                $form->ef('desde')->set_obligatorio('true');
+                $form->ef('hasta')->set_obligatorio('true');
+                $form->ef('tipo_norma')->set_obligatorio('true');
+                $form->ef('tipo_emite')->set_obligatorio('true');
+                $form->ef('norma_legal')->set_obligatorio('true');
+            }
+            else{
+                $this->dep('form_licencia')->colapsar();
+              }
+            if ($this->controlador()->dep('datos')->tabla('novedad')->esta_cargada()) {
+			$form->set_datos($this->controlador()->dep('datos')->tabla('novedad')->get());
+		} 
+	}
+        function evt__form_licencia__alta($datos)
+	{
+            //recupero la designacion a la cual corresponde la novedad
+            $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            if($datos['desde']>$datos['hasta']){
+                toba::notificacion()->agregar('La fecha hasta debe ser mayor que la fecha desde','error');
+            }else{
+                if($datos['desde'] <= $des['hasta'] and ($datos['hasta'] >= $des['desde'] or $des['hasta'] == null)){
+                    $datos['id_designacion']=$des['id_designacion'];
+                    $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
+                    $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
+                    toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                    $this->s__alta_nov=0;//descolapsa el formulario de alta
+                    //$this->controlador()->dep('datos')->tabla('novedad')->resetear();   
+                }
+                
+                
+            }
+	}
+
+	/**
+	 * Atrapa la interacci�n del usuario con el bot�n asociado
+	 */
+	function evt__form_licencia__baja()
+	{
+            $this->controlador()->dep('datos')->tabla('novedad')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('novedad')->resetear();
+            $this->s__alta_nov=0;
+	}
+
+	/**
+	 * Atrapa la interacci�n del usuario con el bot�n asociado
+	 * @param array $datos Estado del componente al momento de ejecutar el evento. El formato es el mismo que en la carga de la configuraci�n
+	 */
+	function evt__form_licencia__modificacion($datos)
+	{
+            $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
+            toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+            
+	}
+        function evt__form_licencia__cancelar($datos)
+        {
+            $this->controlador()->dep('datos')->tabla('novedad')->resetear();
+            $this->s__alta_nov=0;
+        }
 
 }
 ?>

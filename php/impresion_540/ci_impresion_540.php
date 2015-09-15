@@ -7,20 +7,9 @@ class ci_impresion_540 extends toba_ci
         protected $s__seleccionar_todos;
         protected $s__deseleccionar_todos;
         
-        
-        
-       
-
-        //en el combo solo aparece la facultad correspondiente al usuario logueado
+            //en el combo solo aparece la facultad correspondiente al usuario logueado
         function get_ua(){
-             $usuario = toba::usuario()->get_id();
-             $sql="select * from unidad_acad where sigla=upper('".$usuario."')";
-             $resul=toba::db('designa')->consultar($sql);
-             for ($i = 0; $i <= count($resul) - 1; $i++) {
-                    $resul[$i]['descripcion'] = utf8_decode($resul[$i]['descripcion']);
-                                   
-                }
-             return $resul;
+            return $this->dep('datos')->tabla('unidad_acad')->get_ua();
         }
 	//---- Filtro -----------------------------------------------------------------------
 
@@ -55,24 +44,16 @@ class ci_impresion_540 extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-            //busca todas las designaciones de esa facultad:
+            //busca todas las designaciones/reservas de esa facultad:
             //// que esten vigentes,
             /// que no tengan nro de 540 asignado, es decir que no se imprimieron para llevar al CD
             //y que no tengan el check de presupuesto
                 
                if (isset($this->s__datos_filtro)) {
-                   print_r($this->s__datos_filtro);
-                   $x=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro);
-                   print_r($x);
-                        $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro));
-                        $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro);
+                    $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro));
+                    $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro);
                       
-		} 
-//                else {
-//                        $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_540());
-//                        $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540();
-//  
-//		}
+		} //hasta que no presiona filtrar no aparece nada
                
                 
 	}

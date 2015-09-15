@@ -45,7 +45,6 @@ class docente_solapas extends toba_ci
         //debe hacer aparecer el formulario con los datos del titulo
         $this->s__mostrar_fcurri=1;
         $this->s__curric_seleccionado=$datos;
-         //print_r($datos);// Array ( [id_docente] => 40 [codc_titul] => ABOG ) 
         $this->controlador()->dep('datos')->tabla('titulos_docente')->cargar($datos);
         
 	}
@@ -350,18 +349,12 @@ class docente_solapas extends toba_ci
             $this->controlador()->set_pantalla('pant_cargo_seleccion');
 	}
 
-	function evt__form_botones__licencias($datos)
-	{
-            
-	}
+	
 
 	function conf__form_botones(toba_ei_formulario $form)
 	{
             if (!$this->controlador()->dep('datos')->tabla('docente')->esta_cargada()){//porque se selecciono previamente un agente
 			$form->eliminar_evento('desig');
-                        $form->eliminar_evento('licencias');
-                        //$form->desactivar_efs('licencias');
-                        
 		} 
             
 	}

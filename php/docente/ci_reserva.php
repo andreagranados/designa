@@ -41,6 +41,7 @@ class ci_reserva extends designa_ci
                 $this->dep('form_reserva')->ef('desde')->set_obligatorio(true);
                 $this->dep('form_reserva')->ef('descripcion')->set_obligatorio(true);
                 $this->dep('form_reserva')->ef('cat_mapuche')->set_obligatorio(true);  
+                $this->dep('form_reserva')->ef('carac')->set_obligatorio(true);  
             }
             else{
                 $this->dep('form_reserva')->colapsar();
@@ -96,6 +97,12 @@ class ci_reserva extends designa_ci
                 }
             return $ar;  
         } 
+          //este metodo permite mostrar en el popup el codigo de la categoria
+        //recibe como argumento el id 
+        function get_categoria($id){
+            $cat=$this->controlador()->get_categoria($id);
+            return $cat;
+        }
         
         function get_dedicacion_categoria($id){
             
@@ -150,27 +157,35 @@ class ci_reserva extends designa_ci
 
 	function evt__form_reserva__modificacion($datos)
 	{
-            //print_r($datos);exit();// Array ( [descripcion] => se reserva un AY11 [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => AY11 [desc_categ] => Ayudante de Primera Simple [cat_estat] => AYP [dedic] => 3 [carac] => I [id_departamento] => 1 [id_area] => 12 [id_orientacion] => [observaciones] => [concursado] => 0 ) 
-            
+                        
             //debe verificar si hay credito antes de hacer la modificacion
             //--recupero la designacion que se desea modificar
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $this->controlador()->dep('datos')->tabla('reserva')->set($datos);
+            $this->controlador()->dep('datos')->tabla('reserva')->sincronizar();
+            $this->controlador()->dep('datos')->tabla('reserva')->resetear();
             if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
                 //verifico que tenga credito
                $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-               $band=$this->controlador()->alcanza_credito_modificacion($datos['desde'],$datos['hasta'],$cat);
+               $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
                 
                 if ($band){//si hay credito
-                    
+                    $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                    $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                    $this->controlador()->dep('datos')->tabla('designacion')->resetear();
+                    toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+                }else{
+                    $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
+                    toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                 }
                                        
             }else{//no toca nada que afecte el credito
                 $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                $this->controlador()->dep('datos')->tabla('designacion')->resetear();
+                toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
             }
-            $this->controlador()->dep('datos')->tabla('reserva')->sincronizar();
-            //$this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-            toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+            
             $this->s__mostrar=0;
             
 	}

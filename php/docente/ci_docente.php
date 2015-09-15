@@ -7,11 +7,19 @@ class ci_docente extends toba_ci
         protected $s__designacion;
         protected $s__pantalla;
         
+        function get_categoria($id){
+            return $this->dep('datos')->tabla('categ_siu')->get_categoria($id); 
+        }
+        function get_materia($id){
+           return $this->dep('datos')->tabla('materia')->get_materia($id);
+         }
+        function get_materia_popup($id){
+            return $this->dep('datos')->tabla('materia')->get_materia_popup($id);
+        } 
         //este metodo permite mostrar en el popup el codigo de la categoria
         //recibe como argumento el id 
         function get_descripcion_categoria($id){
-            
-            //print_r($id);
+ 
             if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
                 $sql="SELECT
 			t_cs.codigo_siu,
@@ -21,7 +29,7 @@ class ci_docente extends toba_ci
                         where escalafon='D'
 		ORDER BY descripcion";
                 $resul=toba::db('designa')->consultar($sql);
-                return utf8_decode($resul[$id]['descripcion']);
+                return $resul[$id]['descripcion'];
             }else{//sino es un numero
                 $sql="SELECT
 			t_cs.codigo_siu,
@@ -32,7 +40,7 @@ class ci_docente extends toba_ci
                         and t_cs.codigo_siu='".$id."'";
 		
                 $resul=toba::db('designa')->consultar($sql);
-                return utf8_decode($resul[0]['descripcion']);
+                return $resul[0]['descripcion'];
             }
             
         }
@@ -74,7 +82,6 @@ class ci_docente extends toba_ci
                 
                 $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
                 $resul2=toba::db('designa')->consultar($sql2);
-                //print_r($resul2[0]);
                 return($resul2[0]['catest']);
             }
         }
@@ -107,7 +114,8 @@ class ci_docente extends toba_ci
                 $resul=toba::db('designa')->consultar($sql);
                 
                 return ($resul[$id]['codigo_siu']);
-                
+            }else{
+                return $id;
             }           
         } 
         function dias_transcurridos($fecha_i,$fecha_f){
@@ -121,7 +129,8 @@ class ci_docente extends toba_ci
             //obtengo inicio y fin del periodo
             $udia=$this->ultimo_dia_periodo();
             $pdia=$this->primer_dia_periodo();    
-        //--COSTO DE ESTA DESIGNACION
+        
+        //--COSTO DE LA NUEVA DESIGNACION
             $sql="select * from mocovi_costo_categoria where codigo_siu='".trim($cat)."'";
             $valor_categoria=toba::db('designa')->consultar($sql);
             $dias=0;
@@ -151,7 +160,7 @@ class ci_docente extends toba_ci
                 $where[] = "uni_acad=upper('".$usuario."')" ;
             }
             
-            //-----------CALCULO LO QUE GASTE 
+            //-----------CALCULO LO QUE GASTE sin considerar la designacion vieja
             //busco las designaciones y reservas dentro del periodo que son de la UA
 
             $sql="select  sum(case when d.desde<='".$pdia."' then 
@@ -164,7 +173,8 @@ class ci_docente extends toba_ci
                 LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (d.cat_mapuche = m_c.codigo_siu) 
                 LEFT OUTER JOIN imputacion as t_i ON (d.id_designacion = t_i.id_designacion) 
                 where d.desde <='".$udia."'  and (d.hasta >='".$pdia."' or d.hasta is null)
-                and d.uni_acad=upper('".$usuario."')";
+                and d.uni_acad=upper('".$usuario."')".
+                    " and d.id_designacion<>".$id_vieja;
 
             $res=toba::db('designa')->consultar($sql);
             
@@ -450,7 +460,8 @@ class ci_docente extends toba_ci
                 $mostrar['fecha']=$resul[0]['fecha']    ;
                 $this->dep('datos')->tabla('norma')->cargar($mostrar);
             }
-            
+                     
+
             $this->s__designacion=$this->dep('datos')->tabla('designacion')->get();//guardo la designacion seleccionada en una variable
             $this->set_pantalla('pant_cargo');
                
