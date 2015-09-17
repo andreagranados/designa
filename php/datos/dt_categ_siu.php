@@ -27,12 +27,8 @@ class dt_categ_siu extends toba_datos_tabla
 		if (count($where)>0) {
 			$sql = sql_concatenar_where($sql, $where);
 		}
-		$ar = toba::db('designa')->consultar($sql);
-                for ($i = 0; $i <= count($ar) - 1; $i++) {
-                    $ar[$i]['descripcion'] = utf8_decode($ar[$i]['descripcion']);    /* trasnforma de UTF8 a ISO para que salga bien en pantalla */
-                }
-
-                return $ar;
+		return toba::db('designa')->consultar($sql);
+               
 	}
         //trae las categorias de escalafon superior
         function get_descripciones_superior(){
@@ -44,11 +40,8 @@ class dt_categ_siu extends toba_datos_tabla
                         where escalafon='S'
 		ORDER BY descripcion";
 		
-		$ar = toba::db('designa')->consultar($sql);
-                for ($i = 0; $i <= count($ar) - 1; $i++) {
-                    $ar[$i]['descripcion'] = utf8_decode($ar[$i]['descripcion']);    /* trasnforma de UTF8 a ISO para que salga bien en pantalla */
-                }
-                return $ar;
+		return toba::db('designa')->consultar($sql);
+                
         }
         function get_descripciones_categ($id_categ=null){
             //id_categ que ingresa es el numero retornado por el popup

@@ -163,25 +163,27 @@ class dt_designacion extends toba_datos_tabla
 			LEFT OUTER JOIN dedicacion_incentivo as t_di ON (t_d.dedi_incen = t_di.id_di)
 			LEFT OUTER JOIN cic_conicef as t_cc ON (t_d.cic_con = t_cc.id)
 			LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
+                        LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto)
                         LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea)
-                        LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient),
+                        LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea),
 			docente as t_d1,
 			dedicacion as t_d2,
 			caracter as t_c,
-			unidad_acad as t_ua,
-			departamento as t_d3
+			unidad_acad as t_ua
                         
 		WHERE
 				t_d.id_docente = t_d1.id_docente
 			AND  t_d.dedic = t_d2.id_ded
 			AND  t_d.carac = t_c.id_car
-			AND  t_d.uni_acad = t_ua.sigla
-			AND  t_d.id_departamento = t_d3.iddepto".
+			AND  t_d.uni_acad = t_ua.sigla".
                   " AND t_d.id_docente=".$agente.      
 		" ORDER BY ord_gestion";
+                $sql = toba::perfil_de_datos()->filtrar($sql);
+                
 		if (count($where)>0) {
 			$sql = sql_concatenar_where($sql, $where);
 		}
+                
 		return toba::db('designa')->consultar($sql);
                
 	}
