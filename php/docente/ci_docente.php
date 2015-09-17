@@ -125,13 +125,13 @@ class ci_docente extends toba_ci
             return $dias;
         }
         function alcanza_credito_modif($id_vieja,$desde,$hasta,$cat){
-          if ($usuario <>'toba'){   
-            //obtengo inicio y fin del periodo
+           
+            //obtengo inicio y fin del periodo vigente
             $udia=$this->ultimo_dia_periodo();
             $pdia=$this->primer_dia_periodo();    
         
         //--COSTO DE LA NUEVA DESIGNACION
-            $sql="select * from mocovi_costo_categoria where codigo_siu='".trim($cat)."'";
+            $sql="select * from mocovi_costo_categoria m_c,mocovi_periodo_presupuestario m_e where m_c.id_periodo=m_e.id_periodo and m_e.actual and m_c.codigo_siu='".trim($cat)."'";
             $valor_categoria=toba::db('designa')->consultar($sql);
             $dias=0;
             
@@ -156,9 +156,9 @@ class ci_docente extends toba_ci
                      //recupero usuario
             $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
             $where = array();
-            if ($usuario='faif'){
-                $where[] = "uni_acad=upper('".$usuario."')" ;
-            }
+//            if ($usuario='faif'){
+//                $where[] = "uni_acad=upper('".$usuario."')" ;
+//            }
             
             //-----------CALCULO LO QUE GASTE sin considerar la designacion vieja
             //busco las designaciones y reservas dentro del periodo que son de la UA
@@ -167,22 +167,24 @@ class ci_docente extends toba_ci
                 case when d.hasta is null then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)*m_c.costo_diario*t_i.porc) else (((d.hasta-'".$pdia."')+1)*m_c.costo_diario*t_i.porc) end
                 else (case when (d.hasta>='".$udia."' or d.hasta=null) then ((('".$udia."')-d.desde+1)*m_c.costo_diario*t_i.porc) else ((d.hasta-d.desde+1)*m_c.costo_diario*t_i.porc) end  ) end )as costo 
                 from 
-                ((select * from designacion )
+                ((select * from designacion t_e where not exists(select * from novedad t_no where t_no.id_designacion=t_e.id_designacion and (t_no.tipo_nov=1 or t_no.tipo_nov=2)) )
                 UNION
                 (select t_d.* from designacion t_d, reserva t_r where t_d.id_reserva=t_r.id_reserva ))d 
                 LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (d.cat_mapuche = m_c.codigo_siu) 
                 LEFT OUTER JOIN imputacion as t_i ON (d.id_designacion = t_i.id_designacion) 
-                where d.desde <='".$udia."'  and (d.hasta >='".$pdia."' or d.hasta is null)
-                and d.uni_acad=upper('".$usuario."')".
+                LEFT OUTER JOIN unidad_acad as t_u ON (d.uni_acad = t_u.sigla) 
+                where d.desde <='".$udia."'  and (d.hasta >='".$pdia."' or d.hasta is null)".
                     " and d.id_designacion<>".$id_vieja;
-
+            $sql = toba::perfil_de_datos()->filtrar($sql);
             $res=toba::db('designa')->consultar($sql);
-            
+            print_r($sql);
             $gaste=$res[0]['costo'];
+            print_r('gaste:'.$gaste);exit();
              //sumo los credito de todos los programas asociados a la UA
            
-            $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b "
-                    . "where a.id_unidad=upper('".$usuario."') and a.id_programa=b.id_programa" ;
+            $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b ,unidad_acad c"
+                    . " where a.id_programa=b.id_programa and a.id_unidad=c.sigla " ;
+            $sql = toba::perfil_de_datos()->filtrar($sql);
             $resul=toba::db('designa')->consultar($sql);
             $tengo=0;
             if(count($resul)>0){
@@ -194,7 +196,7 @@ class ci_docente extends toba_ci
             }else{
                 return true;
                 }
-          }
+          
 
         }
         function alcanza_credito($desde,$hasta,$cat){
@@ -203,7 +205,7 @@ class ci_docente extends toba_ci
             $udia=$this->ultimo_dia_periodo();
             $pdia=$this->primer_dia_periodo();    
         //--COSTO DE ESTA DESIGNACION
-            $sql="select * from mocovi_costo_categoria where codigo_siu='".trim($cat)."'";
+            $sql="select * from mocovi_costo_categoria m_c,mocovi_periodo_presupuestario m_e where m_c.id_periodo=m_e.id_periodo and m_e.actual and m_c.codigo_siu='".trim($cat)."'";
             $valor_categoria=toba::db('designa')->consultar($sql);
             //--dias trabajados
             $dias=0;
@@ -229,46 +231,69 @@ class ci_docente extends toba_ci
             $cuesta=$dias*$valor_categoria[0]['costo_diario'];
             
         //recupero usuario
-            $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
+           // $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
             $where = array();
-            if ($usuario='faif'){
-                $where[] = "uni_acad=upper('".$usuario."')" ;
-            }
+//            if ($usuario='faif'){
+//                $where[] = "uni_acad=upper('".$usuario."')" ;
+//            }
             
             //-----------CALCULO LO QUE GASTE 
             //busco las designaciones y reservas dentro del periodo que son de la UA
-
-            $sql="select  sum(case when d.desde<='".$pdia."' then 
-                case when d.hasta is null then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)*m_c.costo_diario*t_i.porc) else (((d.hasta-'".$pdia."')+1)*m_c.costo_diario*t_i.porc) end
-                else (case when (d.hasta>='".$udia."' or d.hasta=null) then ((('".$udia."')-d.desde+1)*m_c.costo_diario*t_i.porc) else ((d.hasta-d.desde+1)*m_c.costo_diario*t_i.porc) end  ) end )as costo 
-                from 
-                ((select * from designacion )
-                UNION
-                (select t_d.* from designacion t_d, reserva t_r where t_d.id_reserva=t_r.id_reserva ))d 
-                LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (d.cat_mapuche = m_c.codigo_siu) 
-                LEFT OUTER JOIN imputacion as t_i ON (d.id_designacion = t_i.id_designacion) 
-                where d.desde <='".$udia."'  and (d.hasta >='".$pdia."' or d.hasta is null)
-                and d.uni_acad=upper('".$usuario."')";
-
-            $res=toba::db('designa')->consultar($sql);
-            
+            //select sum(costo) from(select sum(1) as costo from unidad_acad UNION select sum(1) as costo from tipo_novedad)b
+            $sql="select  sum"
+             . "(case when d.desde<='".$pdia."' then (case when d.hasta is null then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)*m_c.costo_diario*t_i.porc/100) else (((d.hasta-'".$pdia."')+1)*m_c.costo_diario*t_i.porc/100) end  ) else (case when (d.hasta>='".$udia."' or d.hasta is null) then ((('".$udia."')-d.desde+1)*m_c.costo_diario*t_i.porc/100) else ((d.hasta-d.desde+1)*m_c.costo_diario*t_i.porc/100) end  ) end )as costo 
+                into temp auxi1             
+                from (
+                    (select * from designacion t_e 
+                    where not exists(select * from novedad t_no where t_no.id_designacion=t_e.id_designacion and (t_no.tipo_nov=1 or t_no.tipo_nov=2))
+                    )
+                    UNION
+                    (select t_d.* from designacion t_d, reserva t_r where t_d.id_reserva=t_r.id_reserva )
+                    )d 
+                    LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (d.cat_mapuche = m_c.codigo_siu)
+                    LEFT OUTER JOIN mocovi_periodo_presupuestario as m_p ON (m_c.id_periodo=m_p.id_periodo)
+                    LEFT OUTER JOIN imputacion as t_i ON (d.id_designacion = t_i.id_designacion) 
+                    LEFT OUTER JOIN unidad_acad as t_u ON (d.uni_acad = t_u.sigla) 
+                    where d.desde <='".$udia."'  and (d.hasta >='".$pdia."' or d.hasta is null)"
+                    . " and m_p.actual";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            //en otra consulta calculo el costo de las designaciones que tienen licencia sin goce (el calculo es distinto)
+            $sql2="select (case when t_d.desde<='2015-02-01' then (case when t_d.hasta is null then 
+                                            (((cast('2016-01-31' as date)-cast('2015-02-01' as date))+1-(t_no.hasta-t_no.desde+1))*m_c.costo_diario*t_t.porc/100) 
+                                            else (((t_d.hasta-'2015-02-01')+1-(t_no.hasta-t_no.desde+1))*m_c.costo_diario*t_t.porc/100) end )
+             else (case when (t_d.hasta>='2016-01-31' or t_d.hasta is null) then ((('2016-01-31')-t_d.desde+1-(t_no.hasta-t_no.desde+1))*m_c.costo_diario*t_t.porc/100) else ((t_d.hasta-t_d.desde+1-(t_no.hasta-t_no.desde+1))*m_c.costo_diario*t_t.porc/100) end ) end )as costo 
+            into temp auxi2
+            from designacion t_d, novedad t_no, unidad_acad t_u , mocovi_costo_categoria as m_c ,mocovi_periodo_presupuestario m_p, imputacion t_t
+            where t_d.uni_acad=t_u.sigla 
+            and t_d.id_designacion=t_no.id_designacion 
+            and t_no.tipo_nov=2 
+            and t_d.cat_mapuche = m_c.codigo_siu 
+            and m_p.id_periodo=m_c.id_periodo
+            and m_p.actual
+            and t_d.id_designacion=t_t.id_designacion";
+            $sql2 = toba::perfil_de_datos()->filtrar($sql2);
+            toba::db('designa')->consultar($sql);
+            toba::db('designa')->consultar($sql2);
+            $sql3="select sum(costo) as costo from (select * from auxi1 UNION select * from auxi2)d";
+            $res=toba::db('designa')->consultar($sql3);
             $gaste=$res[0]['costo'];
+            print_r('gaste'.$gaste);exit();
               //sumo los credito de todos los programas asociados a la UA
-            if ($usuario <>'toba'){ 
-                $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b where a.id_unidad=upper('".$usuario."') and a.id_programa=b.id_programa" ;
-                $resul=toba::db('designa')->consultar($sql);
-                $tengo=0;
-                if(count($resul)>0){
-                    $tengo=$resul[0]['cred'];
-                }
-                //print_r('tengo:'.$tengo);exit();
-                if($gaste+$cuesta>$tengo){
-                     return false;
-                }else{
-                     return true;
-                }
-            }
-             
+            
+            $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b,unidad_acad c "
+                    . "where a.id_unidad=c.sigla and a.id_programa=b.id_programa" ;
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $resul=toba::db('designa')->consultar($sql);
+            $tengo=0;
+            if(count($resul)>0){
+                $tengo=$resul[0]['cred'];
+             }
+            //print_r('tengo:'.$tengo);exit();
+            if($gaste+$cuesta>$tengo){
+                return false;
+            }else{
+                return true;
+             }   
         }
         
         function agente_seleccionado(){
@@ -395,19 +420,26 @@ class ci_docente extends toba_ci
             $this->set_pantalla('pant_reserva');
   
 	}
-       
-
-	
-
-	//-----------------------------------------------------------------------------------
+      	//-----------------------------------------------------------------------------------
 	//---- form_encabezado --------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	function conf__form_encabezado(designa_ei_formulario $form)
+	function conf__form_encabezado(toba_ei_formulario $form)
 	{
              if ($this->dep('datos')->tabla('docente')->esta_cargada()) {
                 $agente=$this->dep('datos')->tabla('docente')->get();
                 $texto='Legajo: '.$agente['legajo']." Docente: ".$agente['apellido'].", ".$agente['nombre'];
+                $form->set_titulo($texto);
+            }
+	}
+        function conf__form_encabezado2(toba_ei_formulario $form)
+	{
+             if ($this->dep('datos')->tabla('designacion')->esta_cargada()) {
+                $designacion=$this->dep('datos')->tabla('designacion')->get();
+                
+                $desde=date_format(date_create($designacion['desde']),'d-m-Y');
+                $hasta=date_format(date_create($designacion['hasta']),'d-m-Y');
+                $texto=utf8_decode('Categoría: ').$designacion['cat_mapuche']." Desde: ". $desde." Hasta: ".$hasta;
                 $form->set_titulo($texto);
             }
 	}

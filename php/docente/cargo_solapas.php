@@ -49,6 +49,7 @@ class cargo_solapas extends toba_ci
                 $this->pantalla()->tab("pant_imputacion")->desactivar();
                 $this->pantalla()->tab("pant_materias")->desactivar();
                 $this->pantalla()->tab("pant_gestion")->desactivar();
+                $this->pantalla()->tab("pant_novedad")->desactivar();
                 
 		}
         } 
@@ -149,7 +150,7 @@ class cargo_solapas extends toba_ci
 
 	function evt__form_cargo__baja()
 	{
-               //ver liberacion de credito 
+               //ver liberacion de credito, directamente al eliminar la designacion. No hace falta hacer nada aqui
 //                $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
 //		$this->controlador()->resetear();
 	}
@@ -379,7 +380,7 @@ class cargo_solapas extends toba_ci
 	function evt__alta()
 	{
             
-            $this->resetear();
+            
             switch ($this->s__pantalla) {
                 //si estoy en la pantalla pant_imputacion
                 case 'pant_imputacion':$this->controlador()->dep('datos')->tabla('imputacion')->resetear();//para deseleccionar la imputacion que esta cargada
@@ -391,7 +392,8 @@ class cargo_solapas extends toba_ci
                 case 'pant_materias':$this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();//para deseleccionar la asignacion_materia que esta cargada
                                      $this->s__alta_mate = 1;
                                break;
-                case 'pant_novedad':$this->s__alta_nov = 1;
+                case 'pant_novedad':$this->controlador()->dep('datos')->tabla('novedad')->resetear();//para deseleccionar la novedad que esta cargada
+                                    $this->s__alta_nov = 1;
                                break;
                 default:
                     break;
@@ -527,19 +529,13 @@ class cargo_solapas extends toba_ci
                 $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 //muestra en el formulario los datos del cargo de gestion de la designacion
                 $form->set_datos($designacion);
-            }
-           	
+            }    	
 	}
-
-	
-
-	function evt__form_cargo_gestion__guardar($datos)
+        
+        function evt__form_cargo_gestion__guardar($datos)
 	{
-            $designacion=$this->controlador()->desig_seleccionada();
-            $sql="update designacion set cargo_gestion='".$datos['cargo_gestion']."',ord_gestion='".$datos['ord_gestion']."',emite_cargo_gestion='".$datos['emite_cargo_gestion']."',nro_gestion='".$datos['nro_gestion']."' where id_designacion=".$designacion['id_designacion'];
-            $resul=toba::db('designa')->consultar($sql);
-            //$this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-            //$this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+            $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
 	}
 
         
@@ -678,17 +674,35 @@ class cargo_solapas extends toba_ci
             $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
             if($datos['desde']>$datos['hasta']){
                 toba::notificacion()->agregar('La fecha hasta debe ser mayor que la fecha desde','error');
-            }else{
-                if($datos['desde'] <= $des['hasta'] and ($datos['hasta'] >= $des['desde'] or $des['hasta'] == null)){
-                    $datos['id_designacion']=$des['id_designacion'];
-                    $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
-                    $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
-                    toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
-                    $this->s__alta_nov=0;//descolapsa el formulario de alta
-                    //$this->controlador()->dep('datos')->tabla('novedad')->resetear();   
+            }else{//chequeo que este dentro del periodo de la designacion
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                if($desig['hasta']!= null){
+                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$desig['hasta']){
+                        $datos['id_designacion']=$des['id_designacion'];
+                        $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                        $this->s__alta_nov=0;//descolapsa el formulario de alta
+                        //$this->controlador()->dep('datos')->tabla('novedad')->resetear();  
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+                    }else{
+                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                    }
+                }else{
+                    $udia=$this->controlador()->ultimo_dia_periodo();
+                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
+                        $datos['id_designacion']=$des['id_designacion'];
+                        $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                        $this->s__alta_nov=0;//descolapsa el formulario de alta
+                        //$this->controlador()->dep('datos')->tabla('novedad')->resetear();  
+                    }else{
+                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                    }
+                    
                 }
-                
-                
+   
             }
 	}
 
@@ -708,8 +722,31 @@ class cargo_solapas extends toba_ci
 	 */
 	function evt__form_licencia__modificacion($datos)
 	{
-            $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
-            toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+            if ($datos['hasta']<$datos['desde']){
+                toba::notificacion()->agregar('La fecha hasta debe ser mayor a la fecha desde','error');
+            }else{//chequeo que este dentro del periodo de la designacion
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                if($desig['hasta']!= null){
+                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$desig['hasta']){
+                        $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+                    }else{
+                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                    }
+                }else{
+                    $udia=$this->controlador()->ultimo_dia_periodo();
+                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
+                        $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+                    }else{
+                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                    }
+                    
+                }
+                
+            }
             
 	}
         function evt__form_licencia__cancelar($datos)
