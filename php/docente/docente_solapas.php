@@ -200,7 +200,11 @@ class docente_solapas extends toba_ci
                       
             //if (isset($agente)) {//porque selecciono previamente a alguien
             if ($this->controlador()->dep('datos')->tabla('docente')->esta_cargada()){//porque se selecciono previamente un agente
-			$form->set_datos($this->controlador()->dep('datos')->tabla('docente')->get());
+		$datos=$this->controlador()->dep('datos')->tabla('docente')->get();
+                
+                $datos['cuil']=$datos['nro_cuil1'].$datos['nro_cuil'].$datos['nro_cuil2'];
+                
+                $form->set_datos($datos);
 		} else {//sino es para cargar uno nuevo, por lo tanto elimino el evento borrar (del formulario)
 			$form->eliminar_evento('borrar');
 		}

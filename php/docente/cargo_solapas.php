@@ -34,7 +34,7 @@ class cargo_solapas extends toba_ci
 
 	function conf__form_cargo(designa_ei_formulario $form)
 	{
-            //$designacion=$this->controlador()->desig_seleccionada();
+           
             if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()) {
                     $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
                     $sql="select t_c.descripcion as cat from designacion t_d LEFT JOIN categ_siu t_c ON (t_d.cat_mapuche=t_c.codigo_siu) where t_d.cat_mapuche='".$designacion['cat_mapuche']."'";
@@ -46,6 +46,7 @@ class cargo_solapas extends toba_ci
                 //debo deshabilitar las pantallas de norma, imputacion, materias, cargo de gestion
                 //dado que la designacion aun no ha sido dada de alta
                 $this->pantalla()->tab("pant_norma")->desactivar();
+                $this->pantalla()->tab("pant_tutorias")->desactivar();
                 $this->pantalla()->tab("pant_imputacion")->desactivar();
                 $this->pantalla()->tab("pant_materias")->desactivar();
                 $this->pantalla()->tab("pant_gestion")->desactivar();
@@ -81,6 +82,7 @@ class cargo_solapas extends toba_ci
         
         //agrega una nueva designacion con la imputacion por defecto
         //previo a agregar una nueva designacion tiene que ver si tiene credito
+        //la inserta en estado A (alta)
 	function evt__form_cargo__alta($datos)
 	{
                 $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
@@ -98,7 +100,8 @@ class cargo_solapas extends toba_ci
                     $datos['check_academica']=0;
                     $datos['tipo_desig']=1;
                     $datos['id_reserva']=0;
-                    $datos['concursado']=0;
+                    $datos['estado']='A';
+                                      
                     
                     if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero 
                         $id=$datos['cat_mapuche'];
@@ -123,14 +126,12 @@ class cargo_solapas extends toba_ci
                   
                      //trae el programa por defecto de la UA correspondiente
                     
-                    $where = "";
-                    if ($usuario='faif'){
-                        $where = " and m_p.id_unidad=upper('".$usuario."')" ;
-                    }
-                    $sql="select m_p.id_programa from mocovi_programa m_p ,mocovi_tipo_programa m_t where m_p.id_tipo_programa=m_t.id_tipo_programa and m_t.id_tipo_programa=1 $where";
+                    $sql="select m_p.id_programa from mocovi_programa m_p ,mocovi_tipo_programa m_t, unidad_acad t_u where m_p.id_tipo_programa=m_t.id_tipo_programa and m_t.id_tipo_programa=1 and m_p.id_unidad=t_u.sigla";
+                    $sql = toba::perfil_de_datos()->filtrar($sql);
                     $resul=toba::db('designa')->consultar($sql);
+                   
                     //obtengo la designacion recien cargada
-                    if($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){print_r('hola'); }
+                   
                     $des=$this->controlador()->dep('datos')->tabla('designacion')->get();//trae el que acaba de insertar
                     $impu['id_programa']=$resul[0]['id_programa'];
                     $impu['porc']=100;
@@ -151,10 +152,11 @@ class cargo_solapas extends toba_ci
 	function evt__form_cargo__baja()
 	{
                //ver liberacion de credito, directamente al eliminar la designacion. No hace falta hacer nada aqui
-//                $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
-//		$this->controlador()->resetear();
+                $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
+		$this->controlador()->resetear();
 	}
-
+        //modifica la designacion
+        //si ya tenia numero de tkd cambia su estado a R (rectificada)
 	function evt__form_cargo__modificacion($datos)
 	{
             //print_r($datos);// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
@@ -189,7 +191,7 @@ class cargo_solapas extends toba_ci
             //--recupero la designacion que se desea modificar
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             if($resul[0]['nro_540'] == null){//no tiene nro de 540
-                print_r(' no tiene numero');
+                
                  //debe verificar si hay credito antes de hacer la modificacion
                 
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
@@ -213,15 +215,25 @@ class cargo_solapas extends toba_ci
                      }
                 }
             else{//tiene numero de 540
-                print_r('tiene numero');
-                $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número de 540. De hacer esto, se perderá el número. ¿Desea continuar?");                       
+                $datos['nro_540']=null;
+                $datos['estado']='R';
+                $datos['check_presup']=0;
+                $datos['check_academica']=0;
+                $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número tkd. De hacer esto, se perderá el número. ¿Desea continuar?");                       
                 toba::notificacion()->agregar($mensaje,'info');
+                //si modifica algo que afecte el credito
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
-                {//si modifica algo que afecte el credito
+                {
                     //verifico que tenga credito
+                    
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
                      if ($band){//si hay credito
+                         
+                        $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                        $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
+                        $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+                        
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
                         toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
@@ -234,9 +246,7 @@ class cargo_solapas extends toba_ci
                     $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                     $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
                     $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
-                    $datos['nro_540']=null;
-                    $datos['check_presup']=0;
-                    $datos['check_academica']=0;
+                   
                     $this->controlador()->dep('datos')->tabla('designacion')->set($datos);//modifico la designacion
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                 
@@ -329,9 +339,10 @@ class cargo_solapas extends toba_ci
 	{
             $impu=$this->controlador()->dep('datos')->tabla('imputacion')->get();
             //debe verificar que no se exceda del 100%
-            $sql="select case when sum(porc) is null then 0 else sum(porc) end as total from imputacion where id_designacion=".$impu['id_designacion'];
+            $sql="select case when sum(porc) is null then 0 else sum(porc) end as total from imputacion where id_designacion=".$impu['id_designacion']." and id_programa<>".$datos['id_programa'];
             $resul=toba::db('designa')->consultar($sql);
             $total=$resul[0]['total']+$datos['porc'];
+            
             if($total<=100){
                 $this->controlador()->dep('datos')->tabla('imputacion')->set($datos);
                 $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
@@ -657,9 +668,9 @@ class cargo_solapas extends toba_ci
                 $form->ef('tipo_nov')->set_obligatorio('true');
                 $form->ef('desde')->set_obligatorio('true');
                 $form->ef('hasta')->set_obligatorio('true');
-                $form->ef('tipo_norma')->set_obligatorio('true');
-                $form->ef('tipo_emite')->set_obligatorio('true');
-                $form->ef('norma_legal')->set_obligatorio('true');
+                //$form->ef('tipo_norma')->set_obligatorio('true');
+                //$form->ef('tipo_emite')->set_obligatorio('true');
+                //$form->ef('norma_legal')->set_obligatorio('true');
             }
             else{
                 $this->dep('form_licencia')->colapsar();
@@ -670,15 +681,28 @@ class cargo_solapas extends toba_ci
 	}
         function evt__form_licencia__alta($datos)
 	{
+            
             //recupero la designacion a la cual corresponde la novedad
-            $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            switch ($datos['tipo_nov']){ 
+                case 1:$desig['estado']='B'; break;
+                case 2:$desig['estado']='L'; break;
+                
+            }
+            
             if($datos['desde']>$datos['hasta']){
                 toba::notificacion()->agregar('La fecha hasta debe ser mayor que la fecha desde','error');
             }else{//chequeo que este dentro del periodo de la designacion
-                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                
+                
+                
                 if($desig['hasta']!= null){
                     if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$desig['hasta']){
-                        $datos['id_designacion']=$des['id_designacion'];
+                    
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        
+                        $datos['id_designacion']=$desig['id_designacion'];
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
                         toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
@@ -691,7 +715,10 @@ class cargo_solapas extends toba_ci
                 }else{
                     $udia=$this->controlador()->ultimo_dia_periodo();
                     if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
-                        $datos['id_designacion']=$des['id_designacion'];
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        
+                        $datos['id_designacion']=$desig['id_designacion'];
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
                         toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
@@ -711,6 +738,8 @@ class cargo_solapas extends toba_ci
 	 */
 	function evt__form_licencia__baja()
 	{
+            //cuando elimina la licencia tambien debe cambiar el estado de la designacion !!!!!!!
+            //completar aqui
             $this->controlador()->dep('datos')->tabla('novedad')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('novedad')->resetear();
             $this->s__alta_nov=0;

@@ -11,6 +11,11 @@ class dt_norma extends toba_datos_tabla
 
 
 
+
+
+
+
+
 	function get_listado($filtro=array())
 	{
 		$where = array();

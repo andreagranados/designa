@@ -3,10 +3,8 @@ class ci_informe_estado_actual extends toba_ci
 {
 	protected $s__datos_filtro;
 
-//en el combo solo aparece la facultad correspondiente al usuario logueado
-        function get_ua(){
-           return $this->dep('datos')->tabla('unidad_acad')->get_ua();
-        }
+
+       
         function credito ($ua){
             return $this->dep('datos')->tabla('unidad_acad')->credito($ua);
         }

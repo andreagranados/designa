@@ -5,9 +5,7 @@ class ci_informar_norma_legal extends toba_ci
         protected $s__listado;
         protected $s__datos;
 
-        function get_ua(){
-             return $this->dep('datos')->tabla('unidad_acad')->get_ua();
-        }
+       
         function credito ($ua){
              return $this->dep('datos')->tabla('unidad_acad')->credito($ua);;
             
@@ -38,10 +36,7 @@ class ci_informar_norma_legal extends toba_ci
 		if (isset($this->s__datos_filtro)) {//muestra las designaciones de esa ua, dentro del periodo y que 
 			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_norma($this->s__datos_filtro));
                         $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_norma($this->s__datos_filtro);
-		} else {
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_norma());
-                        $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_norma();
-		}
+		} 
 	}
 
 	

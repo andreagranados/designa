@@ -54,7 +54,7 @@ class ci_reserva extends designa_ci
                 if($datos['id_orientacion']<>null){//si tiene orientacion
                     $sql=" select t_d.descripcion as id_departamento,t_a.descripcion as id_area,t_o.descripcion as id_orientacion from departamento t_d 
                     LEFT OUTER JOIN area t_a ON (t_a.iddepto=t_d.iddepto) 
-                    LEFT OUTER JOIN orientacion t_o ON (t_o.idarea=t_a.idarea)
+                    LEFT OUTER JOIN orientacion t_o ON (t_o.idarea=t_a.idarea )
                     where t_o.idorient=".$datos['id_orientacion'];
                     $resul=toba::db('designa')->consultar($sql);
                     $datosd['id_departamento']=utf8_decode($resul[0]['id_departamento']);
@@ -86,16 +86,11 @@ class ci_reserva extends designa_ci
         function get_departamentos(){
            
             $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
-            $where = "";
-            if ($usuario='faif'){
-                $where = "idunidad_academica=upper('".$usuario."')" ;
-            }
-            $sql="select * from departamento where $where";
-            $ar = toba::db('designa')->consultar($sql);
-            for ($i = 0; $i <= count($ar) - 1; $i++) {
-                    $ar[$i]['descripcion'] = utf8_decode($ar[$i]['descripcion']);    /* trasnforma de UTF8 a ISO para que salga bien en pantalla */
-                }
-            return $ar;  
+            
+            $sql="select distinct t_d.* from departamento t_d, unidad_acad t_u where t_u.sigla=t_d.idunidad_academica";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            return toba::db('designa')->consultar($sql);
+            
         } 
           //este metodo permite mostrar en el popup el codigo de la categoria
         //recibe como argumento el id 
@@ -111,11 +106,13 @@ class ci_reserva extends designa_ci
           
         }
 	
-//ingresa una nueva reserva con una nueva designacion
+        //ingresa una nueva reserva con una nueva designacion
+        //la ingresa en estado A (alta)
 	function evt__form_reserva__alta($datos)
 	{
             //revisar que haya credito antes de cargar
             $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+            //print_r($cat);exit();
             $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat);
             if ($band){//si hay credito para ingresar la reserva
                 //--inserta la reserva
@@ -131,15 +128,15 @@ class ci_reserva extends designa_ci
                 $datos['check_academica']=0;
                 $datos['tipo_desig']=2;
                 $datos['concursado']=0;
+                $datos['estado']='A';
+                $datos['cat_mapuche']=$cat;
                 $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                 $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                 //---inserta la imputacion por defecto
-                $where = "";
-                if ($usuario='faif'){
-                    $where = " and m_p.id_unidad=upper('".$usuario."')" ;
-                    }
+                
                 $des=$this->controlador()->dep('datos')->tabla('designacion')->get();//trae el que acaba de insertar
-                $sql="select m_p.id_programa from mocovi_programa m_p ,mocovi_tipo_programa m_t where m_p.id_tipo_programa=m_t.id_tipo_programa and m_t.id_tipo_programa=1 $where";
+                $sql="select m_p.id_programa from mocovi_programa m_p ,mocovi_tipo_programa m_t,unidad_acad t_u where m_p.id_tipo_programa=m_t.id_tipo_programa and m_t.id_tipo_programa=1 and t_u.sigla=m_p.id_unidad";
+                $sql = toba::perfil_de_datos()->filtrar($sql);
                 $resul=toba::db('designa')->consultar($sql);
                 $impu['id_programa']=$resul[0]['id_programa'];
                 $impu['porc']=100;
@@ -154,7 +151,8 @@ class ci_reserva extends designa_ci
             
             
 	}
-
+//modifico la reserva
+        //modifica el estado a R (rectificada)
 	function evt__form_reserva__modificacion($datos)
 	{
                         
@@ -164,22 +162,33 @@ class ci_reserva extends designa_ci
             $this->controlador()->dep('datos')->tabla('reserva')->set($datos);
             $this->controlador()->dep('datos')->tabla('reserva')->sincronizar();
             $this->controlador()->dep('datos')->tabla('reserva')->resetear();
+            if($desig['nro_540'] != null){//si tiene nro de 540
+                $datos['nro_540']=null;
+                $datos['estado']='R';
+                $datos['check_presup']=0;
+                $datos['check_academica']=0;
+                ///PASAR AL HISTORICO SI SE MODIFICA TENIENDO NUMERO DE TKD
+             }
             if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
                 //verifico que tenga credito
                $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
                $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
                 
                 if ($band){//si hay credito
+                    $datos['nro_540']=null;
+                    $datos['estado']='R';
                     $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                     $this->controlador()->dep('datos')->tabla('designacion')->resetear();
                     toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
                 }else{
-                    $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
+                    $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA RESERVA';
                     toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                 }
                                        
             }else{//no toca nada que afecte el credito
+                $datos['nro_540']=null;
+                $datos['estado']='R';
                 $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                 $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                 $this->controlador()->dep('datos')->tabla('designacion')->resetear();
@@ -192,6 +201,8 @@ class ci_reserva extends designa_ci
 
 	function evt__form_reserva__baja()
 	{
+            $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('designacion')->resetear();
             toba::notificacion()->agregar('Se ha eliminado la reserva', 'info');
             $this->s__mostrar=0;
 	}
@@ -256,7 +267,7 @@ class ci_reserva extends designa_ci
 	//boton asignar la designacion al docente
         function evt__cuadro_docente__seleccion($datos)
 	{
-            print_r($datos);
+            
             $datos['tipo_desig']=1;
             $datos['id_reserva']=null;
             //borro la reserva??

@@ -7,10 +7,7 @@ class ci_impresion_540 extends toba_ci
         protected $s__seleccionar_todos;
         protected $s__deseleccionar_todos;
         
-            //en el combo solo aparece la facultad correspondiente al usuario logueado
-        function get_ua(){
-            return $this->dep('datos')->tabla('unidad_acad')->get_ua();
-        }
+          
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtro(toba_ei_formulario $filtro)
@@ -58,9 +55,7 @@ class ci_impresion_540 extends toba_ci
                 
 	}
 
-	
 
-	
 	function resetear()
 	{
 		$this->dep('datos')->resetear();
@@ -70,16 +65,13 @@ class ci_impresion_540 extends toba_ci
 	//---- JAVASCRIPT -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	
-
-	
-       
-        //funcion que se ejecuta cuando se presiona el boton imprimir 
-        function vista_excel(toba_vista_excel $salida){
+	//funcion que se ejecuta cuando se presiona el boton imprimir 
+        function vista_pdf(toba_vista_pdf $salida)
+        {
             // la variable $this->s__seleccionadas no tiene valor hasta que no presiona el boton filtrar
-            if(isset($this->s__seleccionadas)){print_r('si');exit();}else{print_r('no');exit();}
+            //if(isset($this->s__seleccionadas)){print_r('si');exit();}else{print_r('no');exit();}
             //ya tiene valor, filtrar y solo mostrar la que estan seleccionadas
-           // print_r($this->s__listado);exit();
+            //print_r($this->s__listado);
             if (isset($this->s__seleccionadas)){//si selecciono para imprimir
                 //genero un nuevo numero de 540
                 $sql="insert into impresion_540(id,fecha_impresion) values (nextval('impresion_540_id_seq'),current_date)";
@@ -93,44 +85,153 @@ class ci_impresion_540 extends toba_ci
                 foreach ($this->s__seleccionadas as $key => $value) {
                     $sele[]=$value['id_designacion']; 
                 }
-                $salida->set_nombre_archivo("Impresion_540.xls");
-                $excel=$salida->get_excel();//recuperamos el objeto
-                $salida->titulo("Impresion 540");
-                $salida->set_hoja_nombre("Hoja 1");
-                $titulo='Formulario 540 - Número: '.$numero;
-                $excel->setActiveSheetIndex(0)->setCellValue('A1', $titulo);
-                $excel->setActiveSheetIndex(0)->setCellValue('A2', 'UA');
-                $excel->setActiveSheetIndex(0)->setCellValue('B2', 'Programa');
-                $excel->setActiveSheetIndex(0)->setCellValue('C2', 'Apellido y Nombre');
-                $excel->setActiveSheetIndex(0)->setCellValue('D2', 'Categ Mapuche');
-                $excel->setActiveSheetIndex(0)->setCellValue('E2', 'Categ Estatuto');
-                $excel->setActiveSheetIndex(0)->setCellValue('F2', 'Dedicación');
-                $excel->setActiveSheetIndex(0)->setCellValue('G2', 'Desde');
-                $excel->setActiveSheetIndex(0)->setCellValue('H2', 'Hasta');
-                $excel->setActiveSheetIndex(0)->setCellValue('I2', 'Costo');
-                $fila=3;
+                //configuramos el nombre que tendrá el archivo pdf
+                $salida->set_nombre_archivo("Informe_TKD.pdf");
+                //recuperamos el objteo ezPDF para agregar la cabecera y el pie de página 
+                
+                $pdf = $salida->get_pdf();
+                
+                //modificamos los márgenes de la hoja top, bottom, left, right
+                $pdf->ezSetMargins(80, 50, 5, 5);
+                //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
+                //Primero definimos la plantilla para el número de página.
+                $formato = 'Página {PAGENUM} de {TOTALPAGENUM}';
+                //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
+                $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+                //Luego definimos la ubicación de la fecha en el pie de página.
+                $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
+                //Configuración de Título.
+                $salida->titulo(utf8_d_seguro("Informe TKD #".$numero));
+                
+                //$titulo=utf8_decode("Informe de Ticket Número: ".$numero);
+                $titulo="";
+                //-- Cuadro con datos
+                $opciones = array(
+                    'splitRows'=>0,
+                    'rowGap' => 1,
+                    'showHeadings' => true,
+                    'titleFontSize' => 9,
+                    'fontSize' => 5,
+                    'shadeCol' => array(0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
+                    'outerLineThickness' => 0.7,
+                    'innerLineThickness' => 0.7,
+                    'xOrientation' => 'center',
+                    'width' => 500
+                    );
+//                $opciones = array(
+//                'cols' => array(
+//                'catalogo_codigo' => array('justification'=>'left', 'width'=>4) ,
+//                'numero_patrimonial' => array('justification'=>'left', 'width'=>4) ,
+//                'cant'=> array('justification' =>'left', 'width'=>4) ,
+//                'catalogo_descripcion' => array('justification'=>'left', 'width'=>2) ,
+//                'fecha_incorporacion' => array('justification'=>'left', 'width'=>4) ,
+//                'valor_bien' => array('justification'=>'left', 'width'=>5) ,
+//                'documento_numero' => array('justification'=>'left', 'width'=>5) ,
+//                'responsable' => array('justification'=>'left', 'width'=>2) ,
+//    
+//                ));
+//                $datos=array();
+                $i=0;
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
-                        $sql="update designacion set nro_540=".$numero." where id_designacion=".$des['id_designacion'];
-                        toba::db('designa')->consultar($sql);
+                        //$sql="update designacion set nro_540=".$numero." where id_designacion=".$des['id_designacion'];
+                        //toba::db('designa')->consultar($sql);
                         $ayn=$des['docente_nombre'];
-                        $excel->setActiveSheetIndex(0)->setCellValue('A'.$fila, $des['uni_acad']);  
-                        $excel->setActiveSheetIndex(0)->setCellValue('B'.$fila, $des['programa']);  
-                        $excel->setActiveSheetIndex(0)->setCellValue('C'.$fila, $ayn);   
-                        $excel->setActiveSheetIndex(0)->setCellValue('D'.$fila, $des['cat_mapuche']);   
-                        $excel->setActiveSheetIndex(0)->setCellValue('E'.$fila, $des['cat_estat']); 
-                        $excel->setActiveSheetIndex(0)->setCellValue('F'.$fila, $des['dedic']); 
-                        $excel->setActiveSheetIndex(0)->setCellValue('G'.$fila, $des['desde']);   
-                        $excel->setActiveSheetIndex(0)->setCellValue('H'.$fila, $des['hasta']); 
-                         $excel->setActiveSheetIndex(0)->setCellValue('I'.$fila, $des['costo']); 
-                        $fila=$fila+1;
+                        $datos[$i]=array('col1' => $des['uni_acad'], 'col2' => $des['programa'],'col3' => $des['porc'].'%','col4' => $ayn,'col5' => $des['legajo'],'col6' => $des['cat_mapuche'],'col7' => $des['cat_estat'],'col8' => $des['dedic'],'col9' => $des['carac'],'col10' => $des['desde'],'col11' => $des['hasta'],'col12' => $des['id_departamento'],'col13' => $des['id_area'],'col14' => $des['id_orientacion'],'col15' => $des['costo']);
+                        $i++;
+                        //$datos = array(array('col1' => $des['uni_acad'], 'col2' => $des['programa'],'col3' => $des['porc'].'%','col4' => $ayn,'col5' => 5,'col6' => $des['cat_mapuche'],'col7' => $des['cat_estat'],'col8' => $des['dedic'],'col9' => $des['carac'],'col10' => $des['desde'],'col11' => $des['hasta'],'col12' => $des['id_departamento'],'col13' => $des['id_area'],'col14' => $des['id_orientacion'],'col15' => $des['costo']),);
                     }
                     
                 }
-               
-            }
+            //              ‘showHeadings’=> permite mostrar los nombres de las columnas (encabezados) 1 muestra, 0 oculta.
+            //‘shadeCol’=> color de celdas, se ingresa el color en formato RGB.
+            //‘xOrientation’=> orientación del texto dentro de las celdas de la tabla.
+            //‘width’=> asigna el ancho de la tabla.
+               //genera la tabla de datos
+                $car=utf8_decode("Carácter");
+                $area=utf8_decode("Área");
+                $orient=utf8_decode("Orientación");
+                $pdf->ezTable($datos, array('col1'=>'UA', 'col2' => 'Programa','col3' => 'Porc','col4' => 'Ap y Nombre','col5' => 'Legajo','col6' => 'Cat Mapuche','col7' => 'Cat Estatuto','col8' => 'Dedic','col9' => $car,'col10' => 'Desde','col11' => 'Hasta','col12' => 'Departamento','col13' => $area,'col14' => $orient,'col15' => 'Costo'), $titulo, $opciones);
 
- }
+                //agrega texto al pdf. Los primeros 2 parametros son las coordenadas (x,y) el tercero es el tamaño de la letra, y el cuarto el string a agregar
+                //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
+                //Encabezado: Logo Organización - Nombre 
+                //Recorremos cada una de las hojas del documento para agregar el encabezado
+//                 foreach ($pdf->ezPages as $pageNum=>$id){ 
+//                     
+//                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+//                    
+//                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+//                    
+//                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_sti.jpg', 70, 760, 70, 66); 
+//                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 380, 760, 160, 66);
+//                    
+//                    $pdf->closeObject(); 
+//                 
+//                }
+        }
+            
+    
+        }
+	
+       
+        //funcion que se ejecuta cuando se presiona el boton imprimir 
+//        function vista_excel(toba_vista_excel $salida){
+//            // la variable $this->s__seleccionadas no tiene valor hasta que no presiona el boton filtrar
+//            if(isset($this->s__seleccionadas)){print_r('si');exit();}else{print_r('no');exit();}
+//            //ya tiene valor, filtrar y solo mostrar la que estan seleccionadas
+//           // print_r($this->s__listado);exit();
+//            if (isset($this->s__seleccionadas)){//si selecciono para imprimir
+//                //genero un nuevo numero de 540
+//                $sql="insert into impresion_540(id,fecha_impresion) values (nextval('impresion_540_id_seq'),current_date)";
+//                toba::db('designa')->consultar($sql);
+//                
+//                $sql="select currval('impresion_540_id_seq') as numero";//para recuperar el ultimo valor insertado, lo trae de la misma sesion por lo tanto no hay problema si hay otros usuarios ingresando al mismo tiempo
+//                $resul=toba::db('designa')->consultar($sql);
+//                $numero=$resul[0]['numero'];
+//                
+//                $sele=array();
+//                foreach ($this->s__seleccionadas as $key => $value) {
+//                    $sele[]=$value['id_designacion']; 
+//                }
+//                $salida->set_nombre_archivo("Impresion_540.xls");
+//                $excel=$salida->get_excel();//recuperamos el objeto
+//                $salida->titulo("Impresion 540");
+//                $salida->set_hoja_nombre("Hoja 1");
+//                $titulo='Formulario 540 - Número: '.$numero;
+//                $excel->setActiveSheetIndex(0)->setCellValue('A1', $titulo);
+//                $excel->setActiveSheetIndex(0)->setCellValue('A2', 'UA');
+//                $excel->setActiveSheetIndex(0)->setCellValue('B2', 'Programa');
+//                $excel->setActiveSheetIndex(0)->setCellValue('C2', 'Apellido y Nombre');
+//                $excel->setActiveSheetIndex(0)->setCellValue('D2', 'Categ Mapuche');
+//                $excel->setActiveSheetIndex(0)->setCellValue('E2', 'Categ Estatuto');
+//                $excel->setActiveSheetIndex(0)->setCellValue('F2', 'Dedicación');
+//                $excel->setActiveSheetIndex(0)->setCellValue('G2', 'Desde');
+//                $excel->setActiveSheetIndex(0)->setCellValue('H2', 'Hasta');
+//                $excel->setActiveSheetIndex(0)->setCellValue('I2', 'Costo');
+//                $fila=3;
+//                foreach ($this->s__listado as $des) {//recorro cada designacion del listado
+//                    if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
+//                        $sql="update designacion set nro_540=".$numero." where id_designacion=".$des['id_designacion'];
+//                        toba::db('designa')->consultar($sql);
+//                        $ayn=$des['docente_nombre'];
+//                        $excel->setActiveSheetIndex(0)->setCellValue('A'.$fila, $des['uni_acad']);  
+//                        $excel->setActiveSheetIndex(0)->setCellValue('B'.$fila, $des['programa']);  
+//                        $excel->setActiveSheetIndex(0)->setCellValue('C'.$fila, $ayn);   
+//                        $excel->setActiveSheetIndex(0)->setCellValue('D'.$fila, $des['cat_mapuche']);   
+//                        $excel->setActiveSheetIndex(0)->setCellValue('E'.$fila, $des['cat_estat']); 
+//                        $excel->setActiveSheetIndex(0)->setCellValue('F'.$fila, $des['dedic']); 
+//                        $excel->setActiveSheetIndex(0)->setCellValue('G'.$fila, $des['desde']);   
+//                        $excel->setActiveSheetIndex(0)->setCellValue('H'.$fila, $des['hasta']); 
+//                         $excel->setActiveSheetIndex(0)->setCellValue('I'.$fila, $des['costo']); 
+//                        $fila=$fila+1;
+//                    }
+//                    
+//                }
+//               
+//            }
+
+// }
 
 	
 
@@ -192,8 +293,12 @@ class ci_impresion_540 extends toba_ci
 
 	function evt__cuadro__seleccion($datos)
 	{
-            print_r($datos);
-            $this->set_pantalla('pant_impresion');
+            if (isset($this->s__seleccionadas))
+                {$this->set_pantalla('pant_impresion');}
+            else{
+                $mensaje=utf8_decode('No hay designaciones seleccionadas para emitir número de ticket');
+                toba::notificacion()->agregar($mensaje,'info');}
+            
 	}
 
 }

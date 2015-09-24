@@ -58,11 +58,11 @@ class dt_docente extends toba_datos_tabla
 			t_d.tipo_docum,
 			t_d.nro_docum,
 			t_d.fec_nacim,
-			t_d.nro_cuil1,
+			cast (cast(t_d.nro_cuil1 as text)||cast(t_d.nro_cuil as text)||cast(  t_d.nro_cuil2 as text) as numeric) as cuil,
 			t_d.nro_cuil,
 			t_d.nro_cuil2,
 			t_d.tipo_sexo,
-			t_d.anioingreso,
+			t_d.fec_ingreso,
 			t_p.descripcion_pcia as pcia_nacim_nombre,
 			t_p1.nombre as pais_nacim_nombre,
 			t_d.porcdedicdocente,
@@ -80,6 +80,7 @@ class dt_docente extends toba_datos_tabla
                         t_e.uni_acad=t_u.sigla	
                         
 		ORDER BY nombre";
+            
                 $sql = toba::perfil_de_datos()->filtrar($sql);
                  if (count($where)>0) {
 			$sql = sql_concatenar_where($sql, $where);
@@ -90,11 +91,19 @@ class dt_docente extends toba_datos_tabla
 	}
 
 
-	function get_descripciones()
-	{
-		$sql = "SELECT id_docente, nombre FROM docente ORDER BY nombre";
-		return toba::db('designa')->consultar($sql);
-	}
+		function get_descripciones()
+		{
+			$sql = "SELECT id_docente, nombre FROM docente ORDER BY nombre";
+			return toba::db('designa')->consultar($sql);
+		}
+
+
+
+
+
+
+
+
 
 
 

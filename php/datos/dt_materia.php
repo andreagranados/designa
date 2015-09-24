@@ -41,7 +41,7 @@ class dt_materia extends toba_datos_tabla
 		
 		$sql = "SELECT
 			t_m.id_materia,
-			t_pe.cod_plan as id_plan_nombre,
+			t_pe.id_plan as id_plan_nombre,
 			t_m.cod_siu,
 			t_m.desc_materia,
 			t_m.orden_materia,

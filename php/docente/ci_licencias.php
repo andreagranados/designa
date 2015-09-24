@@ -52,11 +52,12 @@ class ci_licencias extends designa_ci
 	function evt__form_licencia__alta($datos)
 	{
             $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            print_r($des);exit();
             $datos['id_designacion']=$des['id_designacion'];
-            print_r($datos);exit();
-            //$this->controlador()->dep('datos')->tabla('novedad')->set($datos);
+           
+            $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
             $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
-	    //$this->controlador()->dep('datos')->tabla('novedad')->resetear();
+	    $this->controlador()->dep('datos')->tabla('novedad')->resetear();
 	}
 
 	/**
