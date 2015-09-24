@@ -42,7 +42,7 @@ class cargo_solapas extends toba_ci
                     $designacion['cate_siu_nombre']=$resul[0]['cat'];
                     $form->set_datos($designacion);
             } else {
-			//$this->pantalla()->eliminar_evento('eliminar');
+			
                 //debo deshabilitar las pantallas de norma, imputacion, materias, cargo de gestion
                 //dado que la designacion aun no ha sido dada de alta
                 $this->pantalla()->tab("pant_norma")->desactivar();
@@ -85,11 +85,14 @@ class cargo_solapas extends toba_ci
         //la inserta en estado A (alta)
 	function evt__form_cargo__alta($datos)
 	{
+            $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
+            if ($vale){// si esta dentro del periodo
                 $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
                 //le mando la categoria, la fecha desde y la fecha hasta
-                $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat);
+                $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,1);
+                $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,2);
                 
-                if ($band){//si hay credito
+                if ($band && $bandp){//si hay credito 
                                        
                     $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
                     $docente=$this->controlador()->agente_seleccionado();
@@ -145,7 +148,12 @@ class cargo_solapas extends toba_ci
                 else{
                     $mensaje='NO SE DISPONE DE CRÉDITO PARA INGRESAR LA DESIGNACIÓN';
                     toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                    
                 }
+            }else{//esta intentando ingresar una designacion que no pertenece al periodo actual ni al periodo presup
+                 $mensaje='LA DESIGNACION DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
+                 toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+            }
         }
 	
 
@@ -159,10 +167,10 @@ class cargo_solapas extends toba_ci
         //si ya tenia numero de tkd cambia su estado a R (rectificada)
 	function evt__form_cargo__modificacion($datos)
 	{
-            //print_r($datos);// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
-            $desig=$this->controlador()->desig_seleccionada();
-            $datos['id_designacion']=$desig['id_designacion'];
-             
+            //print_r($datos);exit();// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
+             //--recupero la designacion que se desea modificar
+            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            
             //cuando presiona el boton modificar puede que modifique  la categ mapuche
             //o puede modificar algun otro dato
             //por lo tanto $datos['cat_mapuche'] puede ser numero o no
@@ -186,11 +194,8 @@ class cargo_solapas extends toba_ci
             
             
             // verifico si la designacion que se quiere modificar tiene numero de 540
-            $sql="select nro_540 from designacion where id_designacion=".$desig['id_designacion'];
-            $resul=toba::db('designa')->consultar($sql);
-            //--recupero la designacion que se desea modificar
-            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            if($resul[0]['nro_540'] == null){//no tiene nro de 540
+                
+            if($desig['nro_540'] == null){//no tiene nro de 540
                 
                  //debe verificar si hay credito antes de hacer la modificacion
                 
@@ -221,19 +226,18 @@ class cargo_solapas extends toba_ci
                 $datos['check_academica']=0;
                 $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número tkd. De hacer esto, se perderá el número. ¿Desea continuar?");                       
                 toba::notificacion()->agregar($mensaje,'info');
+                
                 //si modifica algo que afecte el credito
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
                 {
                     //verifico que tenga credito
-                    
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
                      if ($band){//si hay credito
-                         
+                        //pasa a historico
                         $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                         $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
                         $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
-                        
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
                         toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
@@ -242,14 +246,13 @@ class cargo_solapas extends toba_ci
                         toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                      }
                 }else{//no modifica nada de credito
-                    
+                    //pasa a historico
                     $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                     $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
                     $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
-                   
                     $this->controlador()->dep('datos')->tabla('designacion')->set($datos);//modifico la designacion
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                
+                    toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
                     }
                 
                 }
@@ -783,6 +786,39 @@ class cargo_solapas extends toba_ci
             $this->controlador()->dep('datos')->tabla('novedad')->resetear();
             $this->s__alta_nov=0;
         }
+
+	//-----------------------------------------------------------------------------------
+	//---- form_tutorias ----------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form_tutorias(designa_ei_formulario $form)
+	{
+             if($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
+               // $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                //$cuadro->set_datos($this->controlador()->dep('datos')->tabla('designacion')->get_tutorias_desig($desig['id_designacion']));
+            }
+	}
+
+	function evt__form_tutorias__alta($datos)
+	{
+            
+            $this->dep('datos')->tabla('asignacion_tutoria')->set($datos);
+	    $this->dep('datos')->tabla('asignacion_tutoria')->sincronizar();
+            
+	    //$this->resetear();
+	}
+
+	function evt__form_tutorias__baja()
+	{
+	}
+
+	function evt__form_tutorias__modificacion($datos)
+	{
+	}
+
+	function evt__form_tutorias__cancelar()
+	{
+	}
 
 }
 ?>

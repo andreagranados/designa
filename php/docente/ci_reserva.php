@@ -151,8 +151,8 @@ class ci_reserva extends designa_ci
             
             
 	}
-//modifico la reserva
-        //modifica el estado a R (rectificada)
+        //modifico la reserva
+        //modifica el estado a R (rectificada) cuando tenia nro de 540 
 	function evt__form_reserva__modificacion($datos)
 	{
                         
@@ -167,34 +167,56 @@ class ci_reserva extends designa_ci
                 $datos['estado']='R';
                 $datos['check_presup']=0;
                 $datos['check_academica']=0;
-                ///PASAR AL HISTORICO SI SE MODIFICA TENIENDO NUMERO DE TKD
-             }
-            if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
-                //verifico que tenga credito
-               $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-               $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
+                $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número tkd. De hacer esto, se perderá el número. ¿Desea continuar?");                       
+                toba::notificacion()->agregar($mensaje,'info');
+                if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
+                    //verifico que tenga credito
+                    $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
+                        if ($band){//si hay credito
+                            ///PASAR AL HISTORICO SI SE MODIFICA TENIENDO NUMERO DE TKD
+                            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                            $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
+                            $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+                            //guarda designacion
+                            $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                            toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+                        }else{
+                            $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA RESERVA';
+                            toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                        }                   
+                }else{//no toca nada que afecte el credito
+                    ///PASAR AL HISTORICO SI SE MODIFICA TENIENDO NUMERO DE TKD
+                        $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                        $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
+                        $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+                        //guarda designacion
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+                    }
                 
-                if ($band){//si hay credito
-                    $datos['nro_540']=null;
-                    $datos['estado']='R';
-                    $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-                    $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                    $this->controlador()->dep('datos')->tabla('designacion')->resetear();
-                    toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
-                }else{
-                    $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA RESERVA';
-                    toba::notificacion()->agregar(utf8_decode($mensaje), "error");
-                }
-                                       
-            }else{//no toca nada que afecte el credito
-                $datos['nro_540']=null;
-                $datos['estado']='R';
-                $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-                $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                $this->controlador()->dep('datos')->tabla('designacion')->resetear();
-                toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
-            }
-            
+                
+             }else{//no tiene nro de 540
+                   if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
+                    //verifico que tenga credito
+                    $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
+                        if ($band){//si hay credito
+                            $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                            toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+                        }else{
+                            $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA RESERVA';
+                            toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                        }                   
+                    }else{//no toca nada que afecte el credito
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+                    }
+             }
             $this->s__mostrar=0;
             
 	}
