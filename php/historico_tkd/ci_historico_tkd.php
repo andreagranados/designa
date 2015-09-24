@@ -28,10 +28,8 @@ class ci_historico_tkd extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado($this->s__datos_filtro));
-		} else {
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado());
-		}
+			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_tkd_historico($this->s__datos_filtro));
+		} 
 	}
 
 	function evt__cuadro__seleccion($datos)
@@ -39,45 +37,7 @@ class ci_historico_tkd extends toba_ci
 		$this->dep('datos')->cargar($datos);
 	}
 
-	//---- Formulario -------------------------------------------------------------------
-
-	function conf__formulario(toba_ei_formulario $form)
-	{
-		if ($this->dep('datos')->esta_cargada()) {
-			$form->set_datos($this->dep('datos')->tabla('designacion')->get());
-		}
-	}
-
-	function evt__formulario__alta($datos)
-	{
-		$this->dep('datos')->tabla('designacion')->set($datos);
-		$this->dep('datos')->sincronizar();
-		$this->resetear();
-	}
-
-	function evt__formulario__modificacion($datos)
-	{
-		$this->dep('datos')->tabla('designacion')->set($datos);
-		$this->dep('datos')->sincronizar();
-		$this->resetear();
-	}
-
-	function evt__formulario__baja()
-	{
-		$this->dep('datos')->eliminar_todo();
-		$this->resetear();
-	}
-
-	function evt__formulario__cancelar()
-	{
-		$this->resetear();
-	}
-
-	function resetear()
-	{
-		$this->dep('datos')->resetear();
-	}
-
+	
 }
 
 ?>

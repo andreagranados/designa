@@ -10,8 +10,7 @@ class ci_control_presupuesto extends toba_ci
              
              if($resul[0]['cred'] <>null){
                     $tengo=$resul[0]['cred'];
-             }else{$tengo=0;
-                      
+             }else{$tengo=0;    
                 }
              return $tengo;
             

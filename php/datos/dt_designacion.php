@@ -1098,11 +1098,39 @@ class dt_designacion extends toba_datos_tabla
                                  AND t_d.tipo_desig=2 
                                 ) 
                             ";
-            print_r($sql);
+           
             //$con="select * from (".$sql.")a".$where;
             $con="select id_programa,nombre as programa,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from (".$sql.")a".$where." group by id_programa,nombre";
          
             return toba::db('designa')->consultar($con);
+        }
+        
+        function get_tkd_historico($filtro=array()){
+           
+            if (isset($filtro['uni_acad'])) {
+			$where= " WHERE uni_acad = ".quote($filtro['uni_acad']);
+		}
+            if (isset($filtro['nro_tkd'])) {
+			$where.= " AND nro_540 = ".$filtro['nro_tkd'];
+		} 
+            $sql="(select * from designacionh".$where.
+                            ") UNION"
+                 ."(select * from designacion".$where .")" ;  
+            $sql="select distinct a.id_designacion,uni_acad,nro_540,desde,hasta,cat_mapuche,cat_estat,dedic,carac,t_d1.apellido||', '||t_d1.nombre as docente_nombre,t_d1.legajo,t_d3.descripcion as id_departamento,t_a.descripcion as id_area,t_o.descripcion as id_orientacion,t_p.nombre as programa,t_i.porc "
+                    . "from (".$sql.")a "
+                ." LEFT OUTER JOIN departamento as t_d3 ON (a.id_departamento = t_d3.iddepto)" 
+                ." LEFT OUTER JOIN area as t_a ON (a.id_area = t_a.idarea) "
+                ." LEFT OUTER JOIN orientacion as t_o ON (a.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea) "
+                ." LEFT OUTER JOIN imputacion t_i ON (t_i.id_designacion=t_i.id_designacion)"
+                ." LEFT OUTER JOIN mocovi_programa t_p ON (t_i.id_programa=t_p.id_programa),docente t_d1 where a.id_docente=t_d1.id_docente"
+                    ;
+            
+            return toba::db('designa')->consultar($sql);
+        }
+        function get_tutorias_desig($desig){
+            $sql="select t_a.* "
+                    . " from asignacion_tutoria t_a, designacion t_d where t_a.id_designacion=t_d.id_designacion and t_d.id_designacion=".$desig;
+            return toba::db('designa')->consultar($sql);
         }
 }
 ?>

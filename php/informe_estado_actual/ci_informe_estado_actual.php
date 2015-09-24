@@ -4,7 +4,6 @@ class ci_informe_estado_actual extends toba_ci
 	protected $s__datos_filtro;
 
 
-       
         function credito ($ua){
             return $this->dep('datos')->tabla('unidad_acad')->credito($ua);
         }
@@ -39,7 +38,8 @@ class ci_informe_estado_actual extends toba_ci
 		} 
 	}
 
-	function evt__cuadro__seleccion($datos)
+	
+        function evt__cuadro__seleccion($datos)
 	{
             //ver como hacer que vaya a la designacion correspondiente
             $link = toba::vinculador()->get_url(null, 2);//Genera una url que apunta a una operaci�n de un proyecto
@@ -86,6 +86,30 @@ class ci_informe_estado_actual extends toba_ci
 		$this->dep('datos')->resetear();
 	}
 
-}
+	//-----------------------------------------------------------------------------------
+	//---- Configuraciones --------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
 
+	function conf__pant_edicion(toba_ei_pantalla $pantalla)
+	{
+            echo "<tr height='20'>".
+		"<td align='left' valign='botton' colspan='3'>".
+				"<table>".
+				"<tr>".
+					"<td></td>".
+					"<td lign='right'>";
+						$link = toba::vinculador()->get_url(null, 3655);//Genera una url que apunta a una operaci�n de un proyecto
+                                                
+                                                //get_url('proyecto','nro_operacion',array('chek'=>json_encode($this->s__chek)),$opciones);
+        					//echo "<a href=' $link' title='Ir al inicio'>".toba_recurso::imagen_proyecto('volver_inicio.png', true)."</a>";
+						
+				echo "</td>".
+					"<td style='font-size:20px;'>Presionando el &iacute;cono Descargar se obtendr&aacute el Manual con informaci&oacute;n sobre la utilizaci&oacute;n del sistema. </td>".
+				"</tr>".
+			"</table>".
+		"</td>".
+	"</tr>";
+	}
+
+}
 ?>
