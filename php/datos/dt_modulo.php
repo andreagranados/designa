@@ -11,5 +11,6 @@ class dt_modulo extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
 
+
 }
 ?>

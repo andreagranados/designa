@@ -110,11 +110,14 @@ class ci_reserva extends designa_ci
         //la ingresa en estado A (alta)
 	function evt__form_reserva__alta($datos)
 	{
+          $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
+          if ($vale){
             //revisar que haya credito antes de cargar
             $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
             //print_r($cat);exit();
-            $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat);
-            if ($band){//si hay credito para ingresar la reserva
+            $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,1);
+            $band2=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,2);
+            if ($band && $band2){//si hay credito para ingresar la reserva
                 //--inserta la reserva
                 $this->controlador()->dep('datos')->tabla('reserva')->set($datos);
                 $this->controlador()->dep('datos')->tabla('reserva')->sincronizar();
@@ -147,7 +150,10 @@ class ci_reserva extends designa_ci
                     $mensaje='NO SE DISPONE DE CRÉDITO PARA INGRESAR LA RESERVA';
                     toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                  }
-             
+          }else{
+              $mensaje='LA RESERVA DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
+              toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+          } 
             
             
 	}
@@ -164,7 +170,7 @@ class ci_reserva extends designa_ci
             $this->controlador()->dep('datos')->tabla('reserva')->resetear();
             if($desig['nro_540'] != null){//si tiene nro de 540
                 $datos['nro_540']=null;
-                $datos['estado']='R';
+                $datos['estado']='R';//siempre pasa a estado R porque las reservas no tienen licencia
                 $datos['check_presup']=0;
                 $datos['check_academica']=0;
                 $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número tkd. De hacer esto, se perderá el número. ¿Desea continuar?");                       
@@ -172,8 +178,9 @@ class ci_reserva extends designa_ci
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
                     //verifico que tenga credito
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
-                        if ($band){//si hay credito
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
+                    $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
+                        if ($band && $band2){//si hay credito
                             ///PASAR AL HISTORICO SI SE MODIFICA TENIENDO NUMERO DE TKD
                             $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                             $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
@@ -202,8 +209,9 @@ class ci_reserva extends designa_ci
                    if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
                     //verifico que tenga credito
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
-                        if ($band){//si hay credito
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
+                    $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
+                        if ($band && $band2){//si hay credito
                             $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                             $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                             toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
@@ -224,6 +232,7 @@ class ci_reserva extends designa_ci
 	function evt__form_reserva__baja()
 	{
             $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('reserva')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('designacion')->resetear();
             toba::notificacion()->agregar('Se ha eliminado la reserva', 'info');
             $this->s__mostrar=0;

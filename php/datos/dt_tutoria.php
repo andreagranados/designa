@@ -5,7 +5,7 @@ class dt_tutoria extends toba_datos_tabla
 	{
 		$where = array();
 		if (isset($filtro['descripcion'])) {
-			$where[] = "descripcion ILIKE ".quote("%{$filtro['descripcion']}%");
+			$where[] = "t_t.descripcion ILIKE ".quote("%{$filtro['descripcion']}%");
 		}
 		if (isset($filtro['uni_acad'])) {
 			$where[] = "uni_acad = ".quote($filtro['uni_acad']);
@@ -23,6 +23,12 @@ class dt_tutoria extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
 
+
+	function get_descripciones()
+	{
+		$sql = "SELECT id_tutoria, descripcion FROM tutoria ORDER BY descripcion";
+		return toba::db('designa')->consultar($sql);
+	}
 
 }
 ?>

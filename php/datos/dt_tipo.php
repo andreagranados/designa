@@ -31,5 +31,11 @@ class dt_tipo extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
                 
 	}
+        function get_descripciones_rol_tut()
+	{
+		$sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=9 ORDER BY desc_item";
+		return toba::db('designa')->consultar($sql);
+                
+	}
 }
 ?>

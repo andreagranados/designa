@@ -6,8 +6,8 @@ class dt_mocovi_costo_categoria extends toba_datos_tabla
             if($per<>null){
                 if($per<>null){
                     switch ($per) {
-                        case 1:   $where=" actual=true";      break;
-                        case 2:   $where=" presupuestando=true";      break;  
+                        case 1:   $where="and  actual=true";      break;
+                        case 2:   $where="and  presupuestando=true";      break;  
                     }
                 }else{
                     $where=" actual=true";  
@@ -19,6 +19,7 @@ class dt_mocovi_costo_categoria extends toba_datos_tabla
                     . "where m_c.id_periodo=m_e.id_periodo "
                     . "and m_c.codigo_siu='".trim($cat)."'"
                     .$where;
+           
             $costo=toba::db('designa')->consultar($sql);
             return $costo[0]['costo_diario'];
 

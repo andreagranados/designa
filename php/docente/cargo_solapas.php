@@ -85,6 +85,7 @@ class cargo_solapas extends toba_ci
         //la inserta en estado A (alta)
 	function evt__form_cargo__alta($datos)
 	{
+            //si pertenece al periodo actual o al periodo presupuestando
             $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
             if ($vale){// si esta dentro del periodo
                 $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
@@ -96,6 +97,8 @@ class cargo_solapas extends toba_ci
                                        
                     $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
                     $docente=$this->controlador()->agente_seleccionado();
+                    $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
+                    $datos['uni_acad']= strtoupper($usuario);
                     $datos['id_docente']=$docente['id_docente'];
                     $datos['uni_acad']= strtoupper($usuario);
                     $datos['nro_cargo']=0;
@@ -159,7 +162,8 @@ class cargo_solapas extends toba_ci
 
 	function evt__form_cargo__baja()
 	{
-               //ver liberacion de credito, directamente al eliminar la designacion. No hace falta hacer nada aqui
+               //ver que quede eliminado todo lo que tiene que ver con la designacion que se esta eliminando
+                //ver liberacion de credito, directamente al eliminar la designacion. No hace falta hacer nada aqui
                 $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
 		$this->controlador()->resetear();
 	}
@@ -167,7 +171,9 @@ class cargo_solapas extends toba_ci
         //si ya tenia numero de tkd cambia su estado a R (rectificada)
 	function evt__form_cargo__modificacion($datos)
 	{
-            //print_r($datos);exit();// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
+         //print_r($datos);exit();// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
+          $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
+          if ($vale){
              //--recupero la designacion que se desea modificar
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             
@@ -196,15 +202,15 @@ class cargo_solapas extends toba_ci
             // verifico si la designacion que se quiere modificar tiene numero de 540
                 
             if($desig['nro_540'] == null){//no tiene nro de 540
-                
                  //debe verificar si hay credito antes de hacer la modificacion
                 
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
                 {//si modifica algo que afecte el credito
                     //verifico que tenga credito
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
-                     if ($band){//si hay credito
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
+                    $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
+                     if ($band && $band2){//si hay credito
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
                         toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
@@ -221,7 +227,7 @@ class cargo_solapas extends toba_ci
                 }
             else{//tiene numero de 540
                 $datos['nro_540']=null;
-                $datos['estado']='R';
+                if ($desig['estado']<>'L' && $desig['estado']<>'B'){$datos['estado']='R';};
                 $datos['check_presup']=0;
                 $datos['check_academica']=0;
                 $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número tkd. De hacer esto, se perderá el número. ¿Desea continuar?");                       
@@ -232,7 +238,7 @@ class cargo_solapas extends toba_ci
                 {
                     //verifico que tenga credito
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat);
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
                      if ($band){//si hay credito
                         //pasa a historico
                         $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
@@ -254,8 +260,11 @@ class cargo_solapas extends toba_ci
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                     toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
                     }
-                
                 }
+          }else{//la designacion no esta dentro del periodo contra el que se chequea
+              $mensaje='LA DESIGNACION DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
+              toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+          }
 	}
 
 	function evt__form_cargo__cancelar()
@@ -787,37 +796,20 @@ class cargo_solapas extends toba_ci
             $this->s__alta_nov=0;
         }
 
+
+
 	//-----------------------------------------------------------------------------------
-	//---- form_tutorias ----------------------------------------------------------------
+	//---- cuadro_tutorias --------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	function conf__form_tutorias(designa_ei_formulario $form)
+	function conf__cuadro_tutorias(designa_ei_cuadro $cuadro)
 	{
-             if($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
-               // $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                //$cuadro->set_datos($this->controlador()->dep('datos')->tabla('designacion')->get_tutorias_desig($desig['id_designacion']));
+            //trae la designacion que fue cargada
+            if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();     
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('asignacion_tutoria')->get_listado_desig($desig['id_designacion']));
             }
-	}
-
-	function evt__form_tutorias__alta($datos)
-	{
             
-            $this->dep('datos')->tabla('asignacion_tutoria')->set($datos);
-	    $this->dep('datos')->tabla('asignacion_tutoria')->sincronizar();
-            
-	    //$this->resetear();
-	}
-
-	function evt__form_tutorias__baja()
-	{
-	}
-
-	function evt__form_tutorias__modificacion($datos)
-	{
-	}
-
-	function evt__form_tutorias__cancelar()
-	{
 	}
 
 }

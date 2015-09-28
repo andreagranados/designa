@@ -103,8 +103,8 @@ class ci_impresion_540 extends toba_ci
                 //Configuración de Título.
                 $salida->titulo(utf8_d_seguro("Informe TKD #".$numero));
                 
-                //$titulo=utf8_decode("Informe de Ticket Número: ".$numero);
-                $titulo="";
+               
+                $titulo=" ";
                 //-- Cuadro con datos
                 $opciones = array(
                     'splitRows'=>0,
@@ -137,7 +137,7 @@ class ci_impresion_540 extends toba_ci
                         //$sql="update designacion set nro_540=".$numero." where id_designacion=".$des['id_designacion'];
                         //toba::db('designa')->consultar($sql);
                         $ayn=$des['docente_nombre'];
-                        $datos[$i]=array('col1' => $des['uni_acad'], 'col2' => $des['programa'],'col3' => $des['porc'].'%','col4' => $ayn,'col5' => $des['legajo'],'col6' => $des['cat_mapuche'],'col7' => $des['cat_estat'],'col8' => $des['dedic'],'col9' => $des['carac'],'col10' => $des['desde'],'col11' => $des['hasta'],'col12' => $des['id_departamento'],'col13' => $des['id_area'],'col14' => $des['id_orientacion'],'col15' => $des['costo']);
+                        $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => $des['programa'],'col4' => $des['porc'].'%','col5' => $ayn,'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'],'col9' => $des['dedic'],'col10' => $des['carac'],'col11' => $des['desde'],'col12' => $des['hasta'],'col13' => $des['id_departamento'],'col14' => $des['id_area'],'col15' => $des['id_orientacion'],'col16' => $des['dias_lic'],'col17' => $des['estado'],'col18' => round($des['costo'],2));
                         $i++;
                         //$datos = array(array('col1' => $des['uni_acad'], 'col2' => $des['programa'],'col3' => $des['porc'].'%','col4' => $ayn,'col5' => 5,'col6' => $des['cat_mapuche'],'col7' => $des['cat_estat'],'col8' => $des['dedic'],'col9' => $des['carac'],'col10' => $des['desde'],'col11' => $des['hasta'],'col12' => $des['id_departamento'],'col13' => $des['id_area'],'col14' => $des['id_orientacion'],'col15' => $des['costo']),);
                     }
@@ -151,24 +151,22 @@ class ci_impresion_540 extends toba_ci
                 $car=utf8_decode("Carácter");
                 $area=utf8_decode("Área");
                 $orient=utf8_decode("Orientación");
-                $pdf->ezTable($datos, array('col1'=>'UA', 'col2' => 'Programa','col3' => 'Porc','col4' => 'Ap y Nombre','col5' => 'Legajo','col6' => 'Cat Mapuche','col7' => 'Cat Estatuto','col8' => 'Dedic','col9' => $car,'col10' => 'Desde','col11' => 'Hasta','col12' => 'Departamento','col13' => $area,'col14' => $orient,'col15' => 'Costo'), $titulo, $opciones);
+                $pdf->ezTable($datos, array('col1'=>'UA', 'col2'=>'Id','col3' => 'Programa','col4' => 'Porc','col5' => 'Ap y Nombre','col6' => 'Legajo','col7' => 'Cat Mapuche','col8' => 'Cat Estatuto','col9' => 'Dedic','col10' => $car,'col11' => 'Desde','col12' => 'Hasta','col13' => 'Departamento','col14' => $area,'col15' => $orient,'col16' => 'LSGH','col17' => 'Estado','col18' => 'Costo'), $titulo, $opciones);
 
                 //agrega texto al pdf. Los primeros 2 parametros son las coordenadas (x,y) el tercero es el tamaño de la letra, y el cuarto el string a agregar
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
                 //Encabezado: Logo Organización - Nombre 
                 //Recorremos cada una de las hojas del documento para agregar el encabezado
-//                 foreach ($pdf->ezPages as $pageNum=>$id){ 
-//                     
-//                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
-//                    
-//                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
-//                    
-//                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_sti.jpg', 70, 760, 70, 66); 
-//                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 380, 760, 160, 66);
-//                    
-//                    $pdf->closeObject(); 
-//                 
-//                }
+                 foreach ($pdf->ezPages as $pageNum=>$id){ 
+                     
+                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_sti.jpg', 70, 760, 70, 66); 
+                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 380, 760, 130, 40);
+                    
+                    $pdf->closeObject(); 
+                 
+                }
         }
             
     
@@ -242,7 +240,6 @@ class ci_impresion_540 extends toba_ci
 	 */
 	function evt__cuadro__multiple_con_etiq($datos)
 	{
-            print_r($datos);
             $this->s__seleccionadas=$datos;
 
 	}

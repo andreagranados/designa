@@ -3,7 +3,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
 {
 	function get_descripciones()
 	{
-		$sql = "SELECT id_periodo,  FROM mocovi_periodo_presupuestario ORDER BY ";
+		$sql = "SELECT id_periodo,anio  FROM mocovi_periodo_presupuestario ORDER BY anio";
 		return toba::db('designa')->consultar($sql);
 	}
         function get_anios()
@@ -11,6 +11,16 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
 		$sql = "SELECT distinct anio  FROM mocovi_periodo_presupuestario ORDER BY anio";
 		return toba::db('designa')->consultar($sql);
 	}
+        function primer_dia_periodo_anio($anio) {
+            $sql="select fecha_inicio from mocovi_periodo_presupuestario where anio=".$anio;
+            $resul=toba::db('designa')->consultar($sql);
+            return $resul[0]['fecha_inicio'];
+          }
+        function ultimo_dia_periodo_anio($anio) {
+            $sql="select fecha_fin from mocovi_periodo_presupuestario where anio=".$anio;
+            $resul=toba::db('designa')->consultar($sql);
+            return $resul[0]['fecha_fin'];
+          }
         /** Primer dia del periodo **/
         function primer_dia_periodo($per=null) {
           
@@ -23,7 +33,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             }else{
                 $where=" actual=true";  
             }
-            $sql="select fecha_inicio from mocovi_periodo_presupuestario ".$where;
+            $sql="select fecha_inicio from mocovi_periodo_presupuestario where ".$where;
             $resul=toba::db('designa')->consultar($sql);
             return $resul[0]['fecha_inicio'];
            }
@@ -38,7 +48,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             }else{
                 $where=" actual=true";  
             }
-            $sql="select fecha_fin from mocovi_periodo_presupuestario".$where;
+            $sql="select fecha_fin from mocovi_periodo_presupuestario where".$where;
             $resul=toba::db('designa')->consultar($sql);
             return $resul[0]['fecha_fin'];
         }

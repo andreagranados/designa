@@ -1132,5 +1132,12 @@ class dt_designacion extends toba_datos_tabla
                     . " from asignacion_tutoria t_a, designacion t_d where t_a.id_designacion=t_d.id_designacion and t_d.id_designacion=".$desig;
             return toba::db('designa')->consultar($sql);
         }
+	function get_descripciones()
+	{
+		$sql = "SELECT id_designacion, cat_mapuche FROM designacion ORDER BY cat_mapuche";
+		return toba::db('designa')->consultar($sql);
+	}
+
+
 }
 ?>
