@@ -51,13 +51,13 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'2396', --evento_id
 	'3357', --objeto
 	'imprimir', --identificador
-	'Imprimir 540', --etiqueta
+	'Imprimir TKD', --etiqueta
 	'0', --maneja_datos
 	NULL, --sobre_fila
 	NULL, --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
-	'exp_xls.gif', --imagen
+	'exp_pdf.gif', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'1', --orden
@@ -66,7 +66,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'0', --defecto
 	NULL, --display_datos_cargados
 	NULL, --grupo
-	'X', --accion
+	'F', --accion
 	'0', --accion_imphtml_debug
 	NULL, --accion_vinculo_carpeta
 	NULL, --accion_vinculo_item
@@ -181,7 +181,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_impresion', --identificador
 	'2', --orden
 	'Pantalla2', --etiqueta
-	NULL, --descripcion
+	'Presione el botón para generar un número tkd para este bloque de datos', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen

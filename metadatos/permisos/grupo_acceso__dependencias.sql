@@ -88,4 +88,70 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	NULL, --item_id
 	'3658'  --item
 );
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3659'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3660'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3662'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3663'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3664'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3667'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3668'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3669'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3670'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3672'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3674'  --item
+);
 --- FIN Grupo de desarrollo 0

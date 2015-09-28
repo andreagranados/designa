@@ -21,7 +21,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Docente - CI - cargos_solapas - form_norma', --nombre
-	NULL, --titulo
+	'Norma del Consejo Directivo', --titulo
 	'0', --colapsable
 	NULL, --descripcion
 	'designa', --fuente_datos_proyecto

@@ -680,6 +680,7 @@ class cargo_solapas extends toba_ci
                 $form->ef('tipo_nov')->set_obligatorio('true');
                 $form->ef('desde')->set_obligatorio('true');
                 $form->ef('hasta')->set_obligatorio('true');
+                //no pudo obligatorios los campos de la norma cuando se ingresa la licencia
                 //$form->ef('tipo_norma')->set_obligatorio('true');
                 //$form->ef('tipo_emite')->set_obligatorio('true');
                 //$form->ef('norma_legal')->set_obligatorio('true');
@@ -750,11 +751,22 @@ class cargo_solapas extends toba_ci
 	 */
 	function evt__form_licencia__baja()
 	{
-            //cuando elimina la licencia tambien debe cambiar el estado de la designacion !!!!!!!
-            //completar aqui
             $this->controlador()->dep('datos')->tabla('novedad')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('novedad')->resetear();
             $this->s__alta_nov=0;
+            //cuando elimina la licencia tambien debe cambiar el estado de la designacion !!!!!!!
+             //recupero la designacion a la cual corresponde la novedad
+            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $sql="select * from novedad where id_designacion=".$desig['id_designacion'];
+            
+            $res=toba::db('designa')->consultar($sql);
+           
+            if (!isset($res['id_novedad'])){//Si no trae resultados,la designacion ya no tiene licencia, entonces la paso a estado R
+                $desig['estado']='R';
+                $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+            }
+            
 	}
 
 	/**

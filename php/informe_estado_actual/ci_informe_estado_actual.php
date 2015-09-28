@@ -42,8 +42,10 @@ class ci_informe_estado_actual extends toba_ci
         function evt__cuadro__seleccion($datos)
 	{
             //ver como hacer que vaya a la designacion correspondiente
-            $link = toba::vinculador()->get_url(null, 2);//Genera una url que apunta a una operaci�n de un proyecto
-            echo "<a href=' $link' title='Ir al inicio'>"."</a>";	
+            //$link = toba::vinculador()->get_url(null, 2);//Genera una url que apunta a una operaci�n de un proyecto
+            //echo "<a href=' $link' title='Ir al inicio'>"."</a>";	
+            
+            toba::vinculador()->navegar_a('designa',3265,$datos);
             //$this->dep('datos')->cargar($datos);
 	}
 
