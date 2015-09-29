@@ -65,5 +65,56 @@ class ci_renovacion_interinos extends toba_ci
 	
 	
 
+	//-----------------------------------------------------------------------------------
+	//---- cuadro -----------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function evt__cuadro__multiple_con_etiq($datos)
+	{
+	}
+
+	function evt__cuadro__renovar($datos)
+	{
+            $this->set_pantalla('pant_renovar_des');
+            $this->dep('datos')->tabla('designacion')->cargar($datos);
+            $des=$this->dep('datos')->tabla('designacion')->get();
+            if($des['id_norma']<>null){
+                $this->dep('datos')->tabla('norma')->cargar($des['id_norma']);
+            }
+	}
+
+	//-----------------------------------------------------------------------------------
+	//---- form_desig -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form_desig(toba_ei_formulario $form)
+	{
+            if ($this->dep('datos')->tabla('designacion')->esta_cargada()) {
+                $datos=$this->dep('datos')->tabla('designacion')->get();
+                $form->set_datos($datos);
+                if($datos['id_norma']<>null){
+                    $datosn=$this->dep('datos')->tabla('norma')->get();
+                    $form->set_datos($datosn);
+                }
+                
+		}
+	}
+
+	function evt__form_desig__modificacion($datos)
+	{
+	}
+
+	//-----------------------------------------------------------------------------------
+	//---- form_desig_nueva -------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form_desig_nueva(toba_ei_formulario $form)
+	{
+	}
+
+	function evt__form_desig_nueva__modificacion($datos)
+	{
+	}
+
 }
 ?>

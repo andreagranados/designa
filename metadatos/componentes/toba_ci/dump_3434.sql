@@ -148,6 +148,30 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	NULL, --inicializar
 	NULL  --orden
 );
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
+	'2276', --dep_id
+	'3434', --objeto_consumidor
+	'3472', --objeto_proveedor
+	'form_desig', --identificador
+	NULL, --parametros_a
+	NULL, --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	NULL  --orden
+);
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
+	'2277', --dep_id
+	'3434', --objeto_consumidor
+	'3473', --objeto_proveedor
+	'form_desig_nueva', --identificador
+	NULL, --parametros_a
+	NULL, --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	NULL  --orden
+);
 --- FIN Grupo de desarrollo 0
 
 ------------------------------------------------------------
@@ -193,6 +217,35 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	NULL, --template_impresion
 	'23'  --punto_montaje
 );
+INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, identificador, orden, etiqueta, descripcion, tip, imagen_recurso_origen, imagen, objetos, eventos, subclase, subclase_archivo, template, template_impresion, punto_montaje) VALUES (
+	'designa', --objeto_ci_proyecto
+	'3434', --objeto_ci
+	'1510', --pantalla
+	'pant_renovar_des', --identificador
+	'3', --orden
+	'Pantalla 2', --etiqueta
+	NULL, --descripcion
+	NULL, --tip
+	'apex', --imagen_recurso_origen
+	NULL, --imagen
+	NULL, --objetos
+	NULL, --eventos
+	NULL, --subclase
+	NULL, --subclase_archivo
+	'<table>
+	<tbody>
+		<tr>
+			<td>
+				<p><strong>Cargo Origen</strong></p><p>[dep id=form_desig]</p></td>
+			<td>
+				<p><strong>Cargo Nuevo</strong></p><p>[dep id=form_desig_nueva]</p></td>
+		</tr>
+	</tbody>
+</table>
+<p>&nbsp;</p>', --template
+	NULL, --template_impresion
+	'23'  --punto_montaje
+);
 --- FIN Grupo de desarrollo 0
 
 ------------------------------------------------------------
@@ -211,6 +264,20 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'3434', --objeto_ci
 	'0', --orden
 	'2227'  --dep_id
+);
+INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
+	'designa', --proyecto
+	'1510', --pantalla
+	'3434', --objeto_ci
+	'0', --orden
+	'2276'  --dep_id
+);
+INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
+	'designa', --proyecto
+	'1510', --pantalla
+	'3434', --objeto_ci
+	'1', --orden
+	'2277'  --dep_id
 );
 
 ------------------------------------------------------------

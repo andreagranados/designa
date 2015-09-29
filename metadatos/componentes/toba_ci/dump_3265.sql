@@ -29,7 +29,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --solicitud_registrar
 	NULL, --solicitud_obj_obs_tipo
 	NULL, --solicitud_obj_observacion
-	NULL, --parametro_a
+	'id_designacion', --parametro_a
 	NULL, --parametro_b
 	NULL, --parametro_c
 	NULL, --parametro_d
