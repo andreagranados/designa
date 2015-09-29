@@ -6,16 +6,25 @@ class dt_norma extends toba_datos_tabla
 		$sql = "SELECT id_norma, tipo_norma FROM norma ORDER BY tipo_norma";
 		return toba::db('designa')->consultar($sql);
 	}
+        
 
-
-
-
-
-
-
-
-
-
+        
+        function get_norma($id_norma)
+        {
+            $sql = "SELECT
+			t_n.id_norma,
+			t_n.nro_norma,
+                        t_n.tipo_norma,
+			t_n.emite_norma,
+			t_n.fecha,
+			t_n.pdf
+		FROM
+			norma as t_n 
+                where id_norma=".$id_norma;
+            return toba::db('designa')->consultar($sql);
+    
+        }
+        
 	function get_listado($filtro=array())
 	{
 		$where = array();

@@ -7,6 +7,7 @@ class ci_docente extends toba_ci
         protected $s__designacion;
         protected $s__pantalla;
         
+        
         function get_categoria($id){
             return $this->dep('datos')->tabla('categ_siu')->get_categoria($id); 
         }
@@ -613,22 +614,17 @@ class ci_docente extends toba_ci
 	{
             
             $this->dep('datos')->tabla('designacion')->cargar($datos);
+            $desig = $this->dep('datos')->tabla('designacion')->get();//obtengo la designacion recien cargada
             
-            //busco si la designacion seleccionada tiene norma asociada
-            $sql="select a.* from norma a,designacion b where a.id_norma=b.id_norma and b.id_designacion=".$datos['id_designacion'];
-            $resul=toba::db('designa')->consultar($sql);
-            
-            if (count($resul)>0){//si tiene la norma 
-                  
-                $mostrar['id_norma']=$resul[0]['id_norma']    ;
-                $mostrar['nro_norma']=$resul[0]['nro_norma']    ;
-                $mostrar['tipo_norma']=$resul[0]['tipo_norma']    ;
-                $mostrar['emite_norma']=$resul[0]['emite_norma']    ;
-                $mostrar['fecha']=$resul[0]['fecha']    ;
+            if ($desig['id_norma'] <> null){//si tiene la norma del cd 
+                $mostrar['id_norma']=$desig['id_norma']    ;
                 $this->dep('datos')->tabla('norma')->cargar($mostrar);
-            }
-                     
-
+             }
+            if ($desig['id_norma_cs'] <> null){//si tiene la norma del cs
+                $mostrarcs['id_norma']=$desig['id_norma_cs']    ;
+                $this->dep('datos')->tabla('normacs')->cargar($mostrarcs);
+             } 
+            
             $this->s__designacion=$this->dep('datos')->tabla('designacion')->get();//guardo la designacion seleccionada en una variable
             $this->set_pantalla('pant_cargo');
                

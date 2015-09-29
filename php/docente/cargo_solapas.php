@@ -573,6 +573,7 @@ class cargo_solapas extends toba_ci
             if ($this->controlador()->dep('datos')->tabla('norma')->esta_cargada()) {
 			//$form->set_datos($this->controlador()->dep('datos')->tabla('norma')->get());//no hace falta por el return de abajo
                         $datos = $this->controlador()->dep('datos')->tabla('norma')->get();
+                        
                         //Retorna un 'file pointer' apuntando al campo binario o blob de la tabla.
                         $pdf = $this->controlador()->dep('datos')->tabla('norma')->get_blob('pdf',$datos['x_dbr_clave']);
                         if (isset($pdf)) {
@@ -632,23 +633,40 @@ class cargo_solapas extends toba_ci
               
              //ver si entra
               if(!$this->controlador()->dep('datos')->tabla('norma')->esta_cargada()){//si no esta cargada entonces hay que asociarla a la designacion
-                  $norma=$this->controlador()->dep('datos')->tabla('norma')->get();
-                    $designacion=$this->controlador()->desig_seleccionada();
-                    $sql="update designacion set id_norma=".$norma['id_norma']." where id_designacion=".$designacion['id_designacion'];
-                    toba::db('designa')->consultar($sql);
-                    $datos2['nro_norma']=$datos['nro_norma'];
-                    $datos2['tipo_norma']=$datos['tipo_norma'];
-                    $datos2['emite_norma']=$datos['emite_norma'];
-                    $datos2['fecha']=$datos['fecha'];
-                    $this->controlador()->dep('datos')->tabla('norma')->cargar($datos2);
+                    $norma=$this->controlador()->dep('datos')->tabla('norma')->get();
+                    $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                    $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$norma['id_norma'],1);
+                    $this->controlador()->dep('datos')->tabla('norma')->cargar($datos);
               }
               //si no borro el archivo temporal?
-              $this->disparar_limpieza_memoria();//Para borrar el archivo temporal creado
+              //$this->disparar_limpieza_memoria();//Para borrar el archivo temporal creado
               //vuelvo a cargar para actualizar los datos en memoria
              
          
 	}
-        
+        function conf__form_normacs(toba_ei_formulario $form)
+        {
+
+            if ($this->controlador()->dep('datos')->tabla('normacs')->esta_cargada()) {
+                $datos = $this->controlador()->dep('datos')->tabla('normacs')->get();
+                $form->set_datos($datos);
+            }
+            
+        }
+       
+        function evt__form_normacs__modificacion($datos)
+        {
+             $this->controlador()->dep('datos')->tabla('normacs')->set($datos);  //si ya estaba cargada entonces la modifica, sino la agrega 
+             $this->controlador()->dep('datos')->tabla('normacs')->sincronizar(); 
+            if(!$this->controlador()->dep('datos')->tabla('normacs')->esta_cargada()){//si no esta cargada entonces hay que asociarla a la designacion
+            
+                 $normacs=$this->controlador()->dep('datos')->tabla('normacs')->get();
+                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                 $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$normacs['id_norma'],2);
+                 $this->controlador()->dep('datos')->tabla('normacs')->cargar($datos);//cargo para que se vean
+             }
+              
+        }
 
 	function evt__volver()
 	{
