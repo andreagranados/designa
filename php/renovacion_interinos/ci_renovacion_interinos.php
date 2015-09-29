@@ -79,7 +79,8 @@ class ci_renovacion_interinos extends toba_ci
             $this->dep('datos')->tabla('designacion')->cargar($datos);
             $des=$this->dep('datos')->tabla('designacion')->get();
             if($des['id_norma']<>null){
-                $this->dep('datos')->tabla('norma')->cargar($des['id_norma']);
+                $norma['id_norma']=$des['id_norma'];
+                $this->dep('datos')->tabla('norma')->cargar($norma);
             }
 	}
 
