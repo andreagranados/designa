@@ -27,14 +27,14 @@ class dt_materia extends toba_datos_tabla
                     }
 			
 		}
-                if (isset($filtro['desc_carrera'])) {
-                    switch ($filtro['desc_carrera']['condicion']) {
-                        case 'contiene':$where[] = "TRIM(desc_carrera) ILIKE ".quote("%{$filtro['desc_carrera']['valor']}%");break;
-                        case 'no_contiene':$where[] = "TRIM(desc_carrera) NOT ILIKE ".quote("%{$filtro['desc_carrera']['valor']}%");break;
-                        case 'comienza_con':$where[] = "TRIM(desc_carrera) ILIKE ".quote("{$filtro['desc_carrera']['valor']}%");break;
-                        case 'termina_con':$where[] = "TRIM(desc_carrera) ILIKE ".quote("%{$filtro['desc_carrera']['valor']}");break;
-                        case 'es_igual_a':$where[] = "TRIM(desc_carrera) = ".quote("{$filtro['desc_carrera']['valor']}");break;
-                        case 'es_distinto_de':$where[] = "TRIM(desc_carrera) <> ".quote("{$filtro['desc_carrera']['valor']}");break;
+                if (isset($filtro['desc_materia'])) {
+                    switch ($filtro['desc_materia']['condicion']) {
+                        case 'contiene':$where[] = "TRIM(desc_materia) ILIKE ".quote("%{$filtro['desc_materia']['valor']}%");break;
+                        case 'no_contiene':$where[] = "TRIM(desc_materia) NOT ILIKE ".quote("%{$filtro['desc_materia']['valor']}%");break;
+                        case 'comienza_con':$where[] = "TRIM(desc_materia) ILIKE ".quote("{$filtro['desc_materia']['valor']}%");break;
+                        case 'termina_con':$where[] = "TRIM(desc_materia) ILIKE ".quote("%{$filtro['desc_materia']['valor']}");break;
+                        case 'es_igual_a':$where[] = "TRIM(desc_materia) = ".quote("{$filtro['desc_materia']['valor']}");break;
+                        case 'es_distinto_de':$where[] = "TRIM(desc_materia) <> ".quote("{$filtro['desc_materia']['valor']}");break;
                     }
 			
 		}

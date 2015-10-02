@@ -97,7 +97,6 @@ class cargo_solapas extends toba_ci
                                        
                     $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
                     $docente=$this->controlador()->agente_seleccionado();
-                    $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
                     $datos['uni_acad']= strtoupper($usuario);
                     $datos['id_docente']=$docente['id_docente'];
                     $datos['uni_acad']= strtoupper($usuario);
@@ -128,18 +127,14 @@ class cargo_solapas extends toba_ci
                     }
                     $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                 
-                  
-                     //trae el programa por defecto de la UA correspondiente
-                    
-                    $sql="select m_p.id_programa from mocovi_programa m_p ,mocovi_tipo_programa m_t, unidad_acad t_u where m_p.id_tipo_programa=m_t.id_tipo_programa and m_t.id_tipo_programa=1 and m_p.id_unidad=t_u.sigla";
-                    $sql = toba::perfil_de_datos()->filtrar($sql);
-                    $resul=toba::db('designa')->consultar($sql);
+                   //trae el programa por defecto de la UA correspondiente
+                                  
+                    $prog=$this->controlador()->dep('datos')->tabla('mocovi_programa')->programa_defecto();
                    
                     //obtengo la designacion recien cargada
                    
                     $des=$this->controlador()->dep('datos')->tabla('designacion')->get();//trae el que acaba de insertar
-                    $impu['id_programa']=$resul[0]['id_programa'];
+                    $impu['id_programa']=$prog;
                     $impu['porc']=100;
                     $impu['id_designacion']=$des['id_designacion'];
                     
@@ -299,8 +294,7 @@ class cargo_solapas extends toba_ci
                     
             if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()) { 
                 $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                $sql="select t_i.id_designacion,t_i.porc,t_i.id_programa,t_p.nombre as nombre_programa from imputacion t_i, mocovi_programa t_p where t_i.id_programa=t_p.id_programa and t_i.id_designacion=".$designacion['id_designacion'];
-                $resul=toba::db('designa')->consultar($sql);
+                $resul=$this->controlador()->dep('datos')->tabla('imputacion')->imputaciones($designacion['id_designacion']);             
                 $cuadro->set_datos($resul);
                 
                 $sql="select case when sum(porc) is null then 0 else sum(porc) end as total from imputacion where id_designacion=".$designacion['id_designacion'];

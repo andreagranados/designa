@@ -197,12 +197,20 @@ class docente_solapas extends toba_ci
 	 */
 	function conf__form_docente(designa_ei_formulario $form)
 	{
-                      
+            
+            $form->ef('legajo')->set_obligatorio('true');
+            $form->ef('apellido')->set_obligatorio('true');
+            $form->ef('nombre')->set_obligatorio('true');
+            $form->ef('tipo_docum')->set_obligatorio('true');
+            $form->ef('nro_docum')->set_obligatorio('true');
+            $form->ef('tipo_sexo')->set_obligatorio('true');
+            
             //if (isset($agente)) {//porque selecciono previamente a alguien
             if ($this->controlador()->dep('datos')->tabla('docente')->esta_cargada()){//porque se selecciono previamente un agente
 		$datos=$this->controlador()->dep('datos')->tabla('docente')->get();
                 
-                $datos['cuil']=$datos['nro_cuil1'].$datos['nro_cuil'].$datos['nro_cuil2'];
+                //$datos['cuil']=$datos['nro_cuil1'].$datos['nro_cuil'].$datos['nro_cuil2'];
+                $datos['cuil']=$datos['nro_cuil1'].str_pad($datos['nro_cuil'], 8, '0', STR_PAD_LEFT).$datos['nro_cuil2'];
                 
                 $form->set_datos($datos);
 		} else {//sino es para cargar uno nuevo, por lo tanto elimino el evento borrar (del formulario)
@@ -220,15 +228,16 @@ class docente_solapas extends toba_ci
         
         function evt__form_docente__guardar($datos)
 	{
-            $this->dep('datos')->tabla('docente')->set($datos);    
-            $this->dep('datos')->tabla('docente')->sincronizar();
-	    $this->resetear();
+            $this->controlador()->dep('datos')->tabla('docente')->set($datos);    
+            $this->controlador()->dep('datos')->tabla('docente')->sincronizar();
+	    
 	}
 
-	function evt__form_docente__borrar($datos)
+	//saque el boton por el momento
+        function evt__form_docente__borrar($datos)
 	{
-            $this->dep('datos')->tabla('docente')->eliminar_todo();
-	    $this->resetear();
+            $this->controlador()->dep('datos')->tabla('docente')->eliminar_todo();
+	    
 	}
         
 	

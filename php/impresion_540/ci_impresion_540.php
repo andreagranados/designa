@@ -292,7 +292,8 @@ class ci_impresion_540 extends toba_ci
                 {$this->set_pantalla('pant_impresion');}
             else{
                 $mensaje=utf8_decode('No hay designaciones seleccionadas para emitir número de ticket');
-                toba::notificacion()->agregar($mensaje,'info');}
+                toba::notificacion()->agregar($mensaje,'info');
+                }
             
 	}
 

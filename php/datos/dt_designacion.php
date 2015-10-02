@@ -849,7 +849,7 @@ class dt_designacion extends toba_datos_tabla
                            	AND t_d.id_reserva = t_r.id_reserva                            	
                              )";
 		//print_r($where);
-                $sql="select *,((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a". $where." order by licencia";
+                $sql="select *,((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a". $where." order by docente_nombre,id_designacion";
                	
                 return toba::db('designa')->consultar($sql);
     
@@ -1015,7 +1015,7 @@ class dt_designacion extends toba_datos_tabla
                                             where t_v.vinc=t_d.id_designacion)"
                    ;
 		//print_r($where);
-                $sql=$sql.$where;
+                $sql=$sql.$where. " order by docente_nombre";
                	
                 return toba::db('designa')->consultar($sql);
     

@@ -154,7 +154,7 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3328', --objeto_proveedor
 	'imputacion', --identificador
 	'1', --parametros_a
-	'1', --parametros_b
+	'4', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
 	'5'  --orden
@@ -206,6 +206,18 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	NULL, --parametros_c
 	NULL, --inicializar
 	'13'  --orden
+);
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
+	'2288', --dep_id
+	'3366', --objeto_consumidor
+	'3364', --objeto_proveedor
+	'mocovi_programa', --identificador
+	'1', --parametros_a
+	'1', --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	'18'  --orden
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
