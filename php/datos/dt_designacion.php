@@ -44,8 +44,8 @@ class dt_designacion extends toba_datos_tabla
 	function get_listado($filtro=array())
 	{
 		$where = array();
-		if (isset($filtro['id_docente'])) {
-			$where[] = "id_docente = ".quote($filtro['id_docente']);
+		if (isset($filtro['uni_acad'])) {
+			$where[] = "uni_acad = ".quote($filtro['uni_acad']);
 		}
 		$sql = "SELECT
 			t_d.id_designacion,
@@ -78,11 +78,13 @@ class dt_designacion extends toba_datos_tabla
 			t_d.check_academica,
 			t_td.descripcion as tipo_desig_nombre,
 			t_r.descripcion as id_reserva_nombre,
-			t_d.estado
+			t_d.estado,
+			t_n5.tipo_norma as id_norma_cs_nombre
 		FROM
 			designacion as t_d	LEFT OUTER JOIN docente as t_d1 ON (t_d.id_docente = t_d1.id_docente)
 			LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu)
 			LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est)
+			LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto)
 			LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma)
 			LEFT OUTER JOIN expediente as t_e ON (t_d.id_expediente = t_e.id_exp)
 			LEFT OUTER JOIN incentivo as t_i ON (t_d.tipo_incentivo = t_i.id_inc)
@@ -92,22 +94,22 @@ class dt_designacion extends toba_datos_tabla
 			LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
 			LEFT OUTER JOIN impresion_540 as t_i5 ON (t_d.nro_540 = t_i5.id)
 			LEFT OUTER JOIN tipo_designacion as t_td ON (t_d.tipo_desig = t_td.id)
-			LEFT OUTER JOIN reserva as t_r ON (t_d.id_reserva = t_r.id_reserva),
+			LEFT OUTER JOIN reserva as t_r ON (t_d.id_reserva = t_r.id_reserva)
+			LEFT OUTER JOIN norma as t_n5 ON (t_d.id_norma_cs = t_n5.id_norma),
 			dedicacion as t_d2,
 			caracter as t_c,
-			unidad_acad as t_ua,
-			departamento as t_d3
+			unidad_acad as t_ua
 		WHERE
 				t_d.dedic = t_d2.id_ded
 			AND  t_d.carac = t_c.id_car
 			AND  t_d.uni_acad = t_ua.sigla
-			AND  t_d.id_departamento = t_d3.iddepto
 		ORDER BY ord_gestion";
 		if (count($where)>0) {
 			$sql = sql_concatenar_where($sql, $where);
 		}
 		return toba::db('designa')->consultar($sql);
 	}
+
 
 
 
@@ -1042,14 +1044,13 @@ class dt_designacion extends toba_datos_tabla
 		
             $sql = "(SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,"
                     . "m_c.costo_diario,"
-                    . "t_t.porc,t_t.id_programa,m_p.nombre,m_cr.credito,"
+                    . "t_t.porc,t_t.id_programa,m_p.nombre,"
                     . "0 as dias_lic,"
                     . " case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
                             FROM 
                             designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
                             LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
                             LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-                            LEFT OUTER JOIN mocovi_credito m_cr ON (m_cr.id_programa=m_p.id_programa )
                             LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu)
                             LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_c.id_periodo=m_e.id_periodo AND  m_e.actual=true)
                                              
@@ -1062,7 +1063,7 @@ class dt_designacion extends toba_datos_tabla
                         ."UNION 
                         (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
                         m_c.costo_diario,
-                        t_t.porc,t_t.id_programa,m_p.nombre,m_cr.credito,
+                        t_t.porc,t_t.id_programa,m_p.nombre,
                         0 as dias_lic,
                         case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
                         
@@ -1070,7 +1071,6 @@ class dt_designacion extends toba_datos_tabla
                            
                             LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
                             LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-                            LEFT OUTER JOIN mocovi_credito m_cr ON (m_cr.id_programa=m_p.id_programa )
                             LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu)
                             LEFT OUTER JOIN  mocovi_periodo_presupuestario m_e ON (m_c.id_periodo=m_e.id_periodo AND  m_e.actual=true),
                             
@@ -1085,14 +1085,13 @@ class dt_designacion extends toba_datos_tabla
                         (SELECT distinct 
                         t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
                         m_c.costo_diario, 
-                        t_t.porc,t_t.id_programa,m_p.nombre,m_cr.credito,"
+                        t_t.porc,t_t.id_programa,m_p.nombre,"
                     . " (case when t_no.desde<='".$pdia."' then ( case when t_no.hasta >='".$udia."' then ((cast('".$udia."' as date)-cast('".$pdia."' as date))+1) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta>='".$udia."') then ('".$udia."'-t_no.desde+1) else (t_no.hasta-t_no.desde+1) end )end ) as dias_lic,"
                     . "case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
                         FROM designacion as t_d 
                             
                             LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion)
                             LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa)
-                            LEFT OUTER JOIN mocovi_credito m_cr ON (m_cr.id_programa=m_p.id_programa )
                             LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu)
                             LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_c.id_periodo=m_e.id_periodo AND m_e.actual=true) ,
                        	    novedad t_no
@@ -1103,12 +1102,11 @@ class dt_designacion extends toba_datos_tabla
                                 AND t_no.tipo_emite is not null
                                 AND t_no.norma_legal is not null)".
                     "UNION
-                        (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta, t_d.uni_acad,m_c.costo_diario, t_t.porc,t_t.id_programa,m_p.nombre,m_cr.credito,0 as dias_lic,
+                        (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta, t_d.uni_acad,m_c.costo_diario, t_t.porc,t_t.id_programa,m_p.nombre,0 as dias_lic,
                         case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
                         FROM designacion as t_d 
                             LEFT OUTER JOIN imputacion t_i ON (t_d.id_designacion=t_i.id_designacion)
                             LEFT OUTER JOIN mocovi_programa m_p ON (t_i.id_programa=m_p.id_programa) 
-                            LEFT OUTER JOIN mocovi_credito m_cr ON (m_cr.id_programa=m_p.id_programa )
                             LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu)
                             LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
                             LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_c.id_periodo=m_e.id_periodo AND  m_e.actual=true),
@@ -1119,10 +1117,24 @@ class dt_designacion extends toba_datos_tabla
                             ";
               
             //$con="select * from (".$sql.")a".$where;
-            $con="select uni_acad,id_programa,nombre as programa,credito,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto into temp auxi from (".$sql.")a".$where." group by uni_acad,id_programa,nombre,credito";
-            
+            $con="select uni_acad,id_programa,nombre as programa,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto into temp auxi from (".$sql.")a".$where." group by uni_acad,id_programa,nombre";
             toba::db('designa')->consultar($con);
-            $con="select uni_acad,id_programa,programa,credito,monto,(credito-monto) as saldo from auxi a, unidad_acad b where a.uni_acad=b.sigla";
+            
+            $cp="select a.id_unidad,a.id_programa,sum(a.credito) as credito into temp auxi2 from mocovi_credito a, mocovi_periodo_presupuestario b, unidad_acad c where "
+                    . " a.id_periodo=b.id_periodo and "
+                    . " b.anio=".$filtro['anio']." and "
+                    . " a.id_escalafon='D' and"
+                    . " a.id_unidad=c.sigla"
+                    . " group by a.id_unidad,a.id_programa";
+            
+            $cp = toba::perfil_de_datos()->filtrar($cp);
+            toba::db('designa')->consultar($cp);
+            
+            $con="select a.uni_acad,a.id_programa,a.programa,b.credito,a.monto,(b.credito-a.monto) as saldo "
+                    . "from auxi a, auxi2 b, unidad_acad c "
+                    . " where a.uni_acad=c.sigla"
+                    . " and a.uni_acad=b.id_unidad"
+                    . " and a.id_programa=b.id_programa";
             $con = toba::perfil_de_datos()->filtrar($con);
             return toba::db('designa')->consultar($con);
         }
@@ -1159,6 +1171,42 @@ class dt_designacion extends toba_datos_tabla
 		$sql = "SELECT id_designacion, cat_mapuche FROM designacion ORDER BY cat_mapuche";
 		return toba::db('designa')->consultar($sql);
 	}
+        function get_equipos_cat($filtro=array()){
+             $where = "";
+            
+            if (isset($filtro['anio'])) {
+		$udia=$this->ultimo_dia_periodo_anio($filtro['anio']);
+                $pdia=$this->primer_dia_periodo_anio($filtro['anio']);
+		}  
+                
+            $where.=" AND t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or hasta is null)";    
+            
+            if (isset($filtro['uni_acad'])) {
+			$where.= " AND t_d.uni_acad = ".quote($filtro['uni_acad']);
+		}
+            $sql="select distinct t_d.id_designacion, t_doc.apellido||', '||t_doc.nombre as docente_nombre,t_doc.legajo,t_d.cat_mapuche,t_d.cat_estat||t_d.dedic as cat_est,t_d.carac,t_d.uni_acad,t_d.desde,t_d.hasta,t_d3.descripcion as id_departamento,t_ma.descripcion as id_area,t_o.descripcion as id_orientacion ,t_m.desc_materia||' # '||t_plan.uni_acad||' - '||t_plan.cod_carrera||' ('||cod_siu||')' as desc_materia, t_p.descripcion as periodo,t_mo.descripcion as modulo,ti.desc_item as rol "
+                 . " from designacion t_d"
+                    ." LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto)" 
+                    ." LEFT OUTER JOIN area as t_ma ON (t_d.id_area = t_ma.idarea) "
+                    ." LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_ma.idarea) "
+                    . ",  docente t_doc,asignacion_materia t_a,materia t_m, periodo t_p, modulo t_mo,tipo as ti, plan_estudio t_plan, unidad_acad t_u"
+                
+                ." where  t_d.id_designacion=t_a.id_designacion
+                    and t_d.id_docente=t_doc.id_docente
+                    and t_a.id_materia=t_m.id_materia
+                    and t_a.id_periodo=t_p.id_periodo
+                    and t_a.modulo=t_mo.id_modulo
+                    and t_a.nro_tab8=ti.nro_tabla
+                    and t_a.rol=ti.desc_abrev
+                    and t_m.id_plan=t_plan.id_plan
+                    and t_d.uni_acad=t_u.sigla
+            
+              ";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $sql=$sql.$where. " order by desc_materia,docente_nombre";
+            
+            return toba::db('designa')->consultar($sql);
+        }
 
 
 }

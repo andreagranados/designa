@@ -195,7 +195,7 @@ class docente_solapas extends toba_ci
 	 * Permite cambiar la configuraci�n del formulario previo a la generaci�n de la salida
 	 * El formato del carga debe ser array(<campo> => <valor>, ...)
 	 */
-	function conf__form_docente(designa_ei_formulario $form)
+	function conf__form_docente(toba_ei_formulario $form)
 	{
             
             $form->ef('legajo')->set_obligatorio('true');
@@ -204,12 +204,11 @@ class docente_solapas extends toba_ci
             $form->ef('tipo_docum')->set_obligatorio('true');
             $form->ef('nro_docum')->set_obligatorio('true');
             $form->ef('tipo_sexo')->set_obligatorio('true');
+            $form->ef('cuil')->set_obligatorio('true');
             
-            //if (isset($agente)) {//porque selecciono previamente a alguien
             if ($this->controlador()->dep('datos')->tabla('docente')->esta_cargada()){//porque se selecciono previamente un agente
 		$datos=$this->controlador()->dep('datos')->tabla('docente')->get();
-                
-                //$datos['cuil']=$datos['nro_cuil1'].$datos['nro_cuil'].$datos['nro_cuil2'];
+                //autocompleto el documento con ceros adelante hasta 8
                 $datos['cuil']=$datos['nro_cuil1'].str_pad($datos['nro_cuil'], 8, '0', STR_PAD_LEFT).$datos['nro_cuil2'];
                 
                 $form->set_datos($datos);
@@ -226,10 +225,20 @@ class docente_solapas extends toba_ci
 	{
 	}
         
+        //da de alta un nuevo docente
         function evt__form_docente__guardar($datos)
 	{
+            //print_r($datos);exit();// 27283999969
+            $datos['nro_tabla']=1;
+            $datos['nro_cuil1']=substr($datos['cuil'], 0, 2);
+            $datos['nro_cuil']=substr($datos['cuil'], 2, 8);
+            $datos['nro_cuil2']=substr($datos['cuil'], 10, 1);
             $this->controlador()->dep('datos')->tabla('docente')->set($datos);    
             $this->controlador()->dep('datos')->tabla('docente')->sincronizar();
+            $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
+            $datosc['id_docente']=$doc['id_docente'];  
+                      
+            $this->controlador()->dep('datos')->tabla('docente')->cargar($datosc);
 	    
 	}
 
@@ -344,11 +353,9 @@ class docente_solapas extends toba_ci
 
 	function evt__volver()
 	{
-            
             $this->controlador()->resetear();
             $this->controlador()->set_pantalla('pant_seleccion');
-            
-                      
+                     
 	}
 
 	

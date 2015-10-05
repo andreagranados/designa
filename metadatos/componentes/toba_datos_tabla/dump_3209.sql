@@ -76,10 +76,10 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	'id_docente', --columna
 	'E', --tipo
 	'1', --pk
-	NULL, --secuencia
+	'docente_id_docente_seq', --secuencia
 	NULL, --largo
 	NULL, --no_nulo
-	'0', --no_nulo_db
+	'1', --no_nulo_db
 	'0', --externa
 	NULL  --tabla
 );

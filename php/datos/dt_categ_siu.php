@@ -28,6 +28,10 @@ class dt_categ_siu extends toba_datos_tabla
 
 
 
+
+
+
+
 //trae listado de categorias docentes
 	function get_listado($filtro=array())
 	{

@@ -1,15 +1,9 @@
 <?php
-class ci_informe_estado_actual extends toba_ci
+class ci_equipos_de_catedra extends toba_ci
 {
 	protected $s__datos_filtro;
 
 
-        function credito ($ua){
-            return $this->dep('datos')->tabla('unidad_acad')->credito($ua);
-        }
-        function credito_x_anio($ua,$anio){
-            return $this->dep('datos')->tabla('unidad_acad')->credito_x_anio($ua,$anio);
-        }
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtro(toba_ei_formulario $filtro)
@@ -34,16 +28,13 @@ class ci_informe_estado_actual extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_estactual($this->s__datos_filtro));
-		} 
+			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_equipos_cat($this->s__datos_filtro));
+		}
 	}
 
-	
-        function evt__cuadro__seleccion($datos)
+	function evt__cuadro__seleccion($datos)
 	{
-                      
-            toba::vinculador()->navegar_a('designa',3216,$datos);
-            
+		$this->dep('datos')->cargar($datos);
 	}
 
 	//---- Formulario -------------------------------------------------------------------
@@ -85,6 +76,6 @@ class ci_informe_estado_actual extends toba_ci
 		$this->dep('datos')->resetear();
 	}
 
-	
 }
+
 ?>

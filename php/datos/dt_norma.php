@@ -1,11 +1,15 @@
 <?php
 class dt_norma extends toba_datos_tabla
 {
-	function get_descripciones()
-	{
-		$sql = "SELECT id_norma, tipo_norma FROM norma ORDER BY tipo_norma";
-		return toba::db('designa')->consultar($sql);
-	}
+		function get_descripciones()
+		{
+			$sql = "SELECT id_norma, tipo_norma FROM norma ORDER BY tipo_norma";
+			return toba::db('designa')->consultar($sql);
+		}
+
+
+
+
         
 
         

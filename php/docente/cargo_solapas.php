@@ -309,6 +309,7 @@ class cargo_solapas extends toba_ci
 
 	function evt__cuadro_imputacion__editar($datos)
 	{
+            print_r($datos);
             $this->s__alta_impu=1;
             $this->controlador()->dep('datos')->tabla('imputacion')->cargar($datos);
 	}
@@ -664,8 +665,8 @@ class cargo_solapas extends toba_ci
 
 	function evt__volver()
 	{
-            $this->controlador()->resetear();
-            $this->controlador()->set_pantalla('pant_seleccion');
+            $this->controlador()->dep('datos')->resetear();
+            $this->controlador()->set_pantalla('pant_cargo_seleccion');
             
 	}
          //-----------------------------------------------------------------------------------

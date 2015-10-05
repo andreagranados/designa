@@ -1,11 +1,15 @@
 <?php
 class dt_unidad_acad extends toba_datos_tabla
 {
-	function get_descripciones()
-	{
-		$sql = "SELECT sigla, descripcion FROM unidad_acad ORDER BY descripcion";
-		return toba::db('designa')->consultar($sql);
-	}
+		function get_descripciones()
+		{
+			$sql = "SELECT sigla, descripcion FROM unidad_acad ORDER BY descripcion";
+			return toba::db('designa')->consultar($sql);
+		}
+
+
+
+
 
 
         function get_ua(){
@@ -15,12 +19,15 @@ class dt_unidad_acad extends toba_datos_tabla
              $resul=toba::db('designa')->consultar($sql);
              return $resul;
         }
+        //credito docente del periodo actual para una UA
         function credito ($ua){
-             $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b, mocovi_periodo_presupuestario c"
-                     . " where a.id_programa=b.id_programa "
-                     . " and b.id_periodo=c.id_periodo"
-                     . " and c.actual"
-                     . " and a.id_unidad =trim(upper('".$ua."'))" ;
+             $sql="select sum(b.credito) as cred "
+                     . " from mocovi_credito b, mocovi_periodo_presupuestario c"
+                     . " where  "
+                     . " b.id_periodo=c.id_periodo"
+                     . " and b.id_escalafon='D'"
+                     . " and c.actual "
+                     . " and b.id_unidad =trim(upper('".$ua."'))" ;
             
              $resul=toba::db('designa')->consultar($sql);
              
@@ -32,11 +39,13 @@ class dt_unidad_acad extends toba_datos_tabla
              return $tengo;
             
         }
+        //credito docente x año y UA
     function credito_x_anio ($ua,$anio){
              $sql="select sum(b.credito) as cred "
-                     . "from mocovi_programa a, mocovi_credito b, mocovi_periodo_presupuestario c"
-                     . " where a.id_programa=b.id_programa "
-                     . " and b.id_periodo=c.id_periodo"
+                     . "from  mocovi_credito b, mocovi_periodo_presupuestario c"
+                     . " where "
+                     . " b.id_periodo=c.id_periodo"
+                     . " and b.id_escalafon='D'"
                      . " and c.anio=".$anio
                      . " and a.id_unidad =trim(upper('".$ua."'))" ;
             

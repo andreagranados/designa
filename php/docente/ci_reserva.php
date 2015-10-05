@@ -313,5 +313,10 @@ class ci_reserva extends designa_ci
             $cuadro->set_datos($this->controlador()->dep('datos')->tabla('docente')->get_listado());
 	}
 
+	function evt__volver()
+	{
+            $this->controlador()->resetear();
+        }
+
 }
 ?>
