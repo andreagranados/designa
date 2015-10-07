@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3362]--  DT - mocovi_tipo_credito 
+--[3492]--  Conjuntos - DR 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -9,18 +9,18 @@
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, clase_proyecto, clase, punto_montaje, subclase, subclase_archivo, objeto_categoria_proyecto, objeto_categoria, nombre, titulo, colapsable, descripcion, fuente_datos_proyecto, fuente_datos, solicitud_registrar, solicitud_obj_obs_tipo, solicitud_obj_observacion, parametro_a, parametro_b, parametro_c, parametro_d, parametro_e, parametro_f, usuario, creacion, posicion_botonera) VALUES (
 	'designa', --proyecto
-	'3362', --objeto
+	'3492', --objeto
 	NULL, --anterior
 	NULL, --identificador
 	NULL, --reflexivo
 	'toba', --clase_proyecto
-	'toba_datos_tabla', --clase
+	'toba_datos_relacion', --clase
 	'23', --punto_montaje
-	'dt_mocovi_tipo_credito', --subclase
-	'datos/dt_mocovi_tipo_credito.php', --subclase_archivo
+	NULL, --subclase
+	NULL, --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
-	'DT - mocovi_tipo_credito', --nombre
+	'Conjuntos - DR', --nombre
 	NULL, --titulo
 	NULL, --colapsable
 	NULL, --descripcion
@@ -36,65 +36,55 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --parametro_e
 	NULL, --parametro_f
 	NULL, --usuario
-	'2015-08-26 09:36:47', --creacion
+	'2015-10-05 20:07:37', --creacion
 	NULL  --posicion_botonera
 );
 --- FIN Grupo de desarrollo 0
 
 ------------------------------------------------------------
--- apex_objeto_db_registros
+-- apex_objeto_datos_rel
 ------------------------------------------------------------
-INSERT INTO apex_objeto_db_registros (objeto_proyecto, objeto, max_registros, min_registros, punto_montaje, ap, ap_clase, ap_archivo, tabla, tabla_ext, alias, modificar_claves, fuente_datos_proyecto, fuente_datos, permite_actualizacion_automatica, esquema, esquema_ext) VALUES (
-	'designa', --objeto_proyecto
-	'3362', --objeto
-	NULL, --max_registros
-	NULL, --min_registros
+INSERT INTO apex_objeto_datos_rel (proyecto, objeto, debug, clave, ap, punto_montaje, ap_clase, ap_archivo, sinc_susp_constraints, sinc_orden_automatico, sinc_lock_optimista) VALUES (
+	'designa', --proyecto
+	'3492', --objeto
+	'0', --debug
+	NULL, --clave
+	'2', --ap
 	'23', --punto_montaje
-	'1', --ap
 	NULL, --ap_clase
 	NULL, --ap_archivo
-	'mocovi_tipo_credito', --tabla
-	NULL, --tabla_ext
-	NULL, --alias
-	'0', --modificar_claves
-	'designa', --fuente_datos_proyecto
-	'designa', --fuente_datos
-	'1', --permite_actualizacion_automatica
-	NULL, --esquema
-	'public'  --esquema_ext
+	'0', --sinc_susp_constraints
+	'1', --sinc_orden_automatico
+	'1'  --sinc_lock_optimista
 );
 
 ------------------------------------------------------------
--- apex_objeto_db_registros_col
+-- apex_objeto_dependencias
 ------------------------------------------------------------
 
 --- INICIO Grupo de desarrollo 0
-INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
-	'designa', --objeto_proyecto
-	'3362', --objeto
-	'1271', --col_id
-	'id_tipo_credito', --columna
-	'E', --tipo
-	'1', --pk
-	'mocovi_tipo_credito_id_tipo_credito_seq', --secuencia
-	NULL, --largo
-	NULL, --no_nulo
-	'1', --no_nulo_db
-	NULL, --externa
-	'mocovi_tipo_credito'  --tabla
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
+	'2308', --dep_id
+	'3492', --objeto_consumidor
+	'3498', --objeto_proveedor
+	'conjunto', --identificador
+	'1', --parametros_a
+	'1', --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	'2'  --orden
 );
-INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
-	'designa', --objeto_proyecto
-	'3362', --objeto
-	'1272', --col_id
-	'tipo', --columna
-	'C', --tipo
-	'0', --pk
-	'', --secuencia
-	'1', --largo
-	NULL, --no_nulo
-	'0', --no_nulo_db
-	NULL, --externa
-	'mocovi_tipo_credito'  --tabla
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
+	'2302', --dep_id
+	'3492', --objeto_consumidor
+	'3491', --objeto_proveedor
+	'en_conjunto', --identificador
+	'1', --parametros_a
+	'1', --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	'1'  --orden
 );
 --- FIN Grupo de desarrollo 0

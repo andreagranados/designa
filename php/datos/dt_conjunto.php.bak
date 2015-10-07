@@ -1,0 +1,7 @@
+<?php
+class dt_conjunto extends toba_datos_tabla
+{
+
+}
+
+?>

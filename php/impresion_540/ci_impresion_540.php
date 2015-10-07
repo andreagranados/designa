@@ -1,4 +1,5 @@
 <?php
+ require_once(toba_dir() . '/php/3ros/ezpdf/class.ezpdf.php');
 class ci_impresion_540 extends toba_ci
 {
 	protected $s__datos_filtro;
@@ -6,7 +7,7 @@ class ci_impresion_540 extends toba_ci
         protected $s__seleccionadas;
         protected $s__seleccionar_todos;
         protected $s__deseleccionar_todos;
-        
+       
           
 	//---- Filtro -----------------------------------------------------------------------
 
@@ -89,8 +90,11 @@ class ci_impresion_540 extends toba_ci
                 $salida->set_nombre_archivo("Informe_TKD.pdf");
                 //recuperamos el objteo ezPDF para agregar la cabecera y el pie de página 
                 
-                $pdf = $salida->get_pdf();
                 
+                $salida->set_papel_orientacion('landscape');
+                $salida->inicializar();
+                $pdf = $salida->get_pdf();
+           
                 //modificamos los márgenes de la hoja top, bottom, left, right
                 $pdf->ezSetMargins(80, 50, 5, 5);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
@@ -111,26 +115,14 @@ class ci_impresion_540 extends toba_ci
                     'rowGap' => 1,
                     'showHeadings' => true,
                     'titleFontSize' => 9,
-                    'fontSize' => 5,
+                    'fontSize' => 6,
                     'shadeCol' => array(0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
                     'outerLineThickness' => 0.7,
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
-                    'width' => 500
+                    'width' => 800
                     );
-//                $opciones = array(
-//                'cols' => array(
-//                'catalogo_codigo' => array('justification'=>'left', 'width'=>4) ,
-//                'numero_patrimonial' => array('justification'=>'left', 'width'=>4) ,
-//                'cant'=> array('justification' =>'left', 'width'=>4) ,
-//                'catalogo_descripcion' => array('justification'=>'left', 'width'=>2) ,
-//                'fecha_incorporacion' => array('justification'=>'left', 'width'=>4) ,
-//                'valor_bien' => array('justification'=>'left', 'width'=>5) ,
-//                'documento_numero' => array('justification'=>'left', 'width'=>5) ,
-//                'responsable' => array('justification'=>'left', 'width'=>2) ,
-//    
-//                ));
-//                $datos=array();
+
                 $i=0;
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
@@ -143,7 +135,7 @@ class ci_impresion_540 extends toba_ci
                     }
                     
                 }
-            //              ‘showHeadings’=> permite mostrar los nombres de las columnas (encabezados) 1 muestra, 0 oculta.
+            //  ‘showHeadings’=> permite mostrar los nombres de las columnas (encabezados) 1 muestra, 0 oculta.
             //‘shadeCol’=> color de celdas, se ingresa el color en formato RGB.
             //‘xOrientation’=> orientación del texto dentro de las celdas de la tabla.
             //‘width’=> asigna el ancho de la tabla.
@@ -160,8 +152,8 @@ class ci_impresion_540 extends toba_ci
                  foreach ($pdf->ezPages as $pageNum=>$id){ 
                     $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
                     //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
-                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_sti.jpg', 70, 760, 70, 66); 
-                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 380, 760, 130, 40);
+                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_sti.jpg', 10, 525, 70, 66); 
+                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 680, 535, 130, 40);
                     $pdf->closeObject(); 
                  
                 }
