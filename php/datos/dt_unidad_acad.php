@@ -1,25 +1,11 @@
 <?php
 class dt_unidad_acad extends toba_datos_tabla
 {
-		function get_descripciones()
-		{
-			$sql = "SELECT sigla, descripcion FROM unidad_acad ORDER BY descripcion";
-			return toba::db('designa')->consultar($sql);
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	function get_descripciones()
+	{
+		$sql = "SELECT sigla, descripcion FROM unidad_acad ORDER BY descripcion";
+		return toba::db('designa')->consultar($sql);
+	}
         function get_ua(){
             
              $sql="select sigla,descripcion from unidad_acad ";
@@ -48,7 +34,7 @@ class dt_unidad_acad extends toba_datos_tabla
             
         }
         //credito docente x año y UA
-    function credito_x_anio ($ua,$anio){
+        function credito_x_anio ($ua,$anio){
              $sql="select sum(b.credito) as cred "
                      . "from  mocovi_credito b, mocovi_periodo_presupuestario c"
                      . " where "

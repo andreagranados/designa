@@ -84,9 +84,6 @@ class ci_reserva extends designa_ci
             
         }
         function get_departamentos(){
-           
-            $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
-            
             $sql="select distinct t_d.* from departamento t_d, unidad_acad t_u where t_u.sigla=t_d.idunidad_academica";
             $sql = toba::perfil_de_datos()->filtrar($sql);
             return toba::db('designa')->consultar($sql);

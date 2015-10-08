@@ -27,6 +27,15 @@ class dt_en_conjunto extends toba_datos_tabla
 		}
 		return toba::db('designa')->consultar($sql);
 	}
+        
+        function materias ($conj){
+            $sql="select * from en_conjunto where id_conjunto=".$conj;
+            return toba::db('designa')->consultar($sql);
+        }
+        function borrar_materias ($conj){
+            $sql="delete from en_conjunto where id_conjunto=".$conj;
+            return toba::db('designa')->consultar($sql);
+        }
 
 }
 

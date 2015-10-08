@@ -275,7 +275,7 @@ class dt_designacion extends toba_datos_tabla
                             AND t_d.tipo_desig=1 
                             AND not exists(SELECT * from novedad t_no
                                             where t_no.id_designacion=t_d.id_designacion
-                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2)))
+                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)))
                         UNION
                         (SELECT distinct t_d.id_designacion, t_d1.apellido||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_d.carac, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
                             0 as dias_lsgh,
@@ -308,7 +308,7 @@ class dt_designacion extends toba_datos_tabla
                             AND t_d.uni_acad = t_ua.sigla 
                             AND t_d.tipo_desig=1 
                             AND t_no.id_designacion=t_d.id_designacion
-                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2)
+                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)
                             AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null)
                              )
                         UNION
@@ -343,7 +343,7 @@ class dt_designacion extends toba_datos_tabla
                             	AND t_d.uni_acad = t_ua.sigla 
                            	AND t_d.tipo_desig=1 
                            	AND t_no.id_designacion=t_d.id_designacion 
-                           	AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 ) 
+                           	AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 ) 
                            	AND t_no.tipo_norma is not null 
                            	AND t_no.tipo_emite is not null 
                            	AND t_no.norma_legal is not null
@@ -593,7 +593,7 @@ class dt_designacion extends toba_datos_tabla
                             AND t_d.tipo_desig=1 
                             AND not exists(SELECT * from novedad t_no
                                             where t_no.id_designacion=t_d.id_designacion
-                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2)))
+                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)))
                         UNION
                         (SELECT distinct t_d.id_designacion, t_d1.apellido||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
                             0 as dias_lic, case when t_d.desde<='2015-02-01' then ( case when (t_d.hasta>='2016-01-31' or t_d.hasta is null ) then (((cast('2016-01-31' as date)-cast('2015-02-01' as date))+1)) else ((t_d.hasta-'2015-02-01')+1) end ) else (case when (t_d.hasta>='2016-01-31' or t_d.hasta is null) then ((('2016-01-31')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
@@ -624,7 +624,7 @@ class dt_designacion extends toba_datos_tabla
                             AND t_d.uni_acad = t_ua.sigla 
                             AND t_d.tipo_desig=1 
                             AND t_no.id_designacion=t_d.id_designacion
-                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2)
+                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)
                             AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null)
                              )
                         UNION
@@ -657,7 +657,7 @@ class dt_designacion extends toba_datos_tabla
                             	AND t_d.uni_acad = t_ua.sigla 
                            	AND t_d.tipo_desig=1 
                            	AND t_no.id_designacion=t_d.id_designacion 
-                           	AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 ) 
+                           	AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4) 
                            	AND t_no.tipo_norma is not null 
                            	AND t_no.tipo_emite is not null 
                            	AND t_no.norma_legal is not null
@@ -749,7 +749,7 @@ class dt_designacion extends toba_datos_tabla
                             AND t_d.tipo_desig=1 
                             AND not exists(SELECT * from novedad t_no
                                             where t_no.id_designacion=t_d.id_designacion
-                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2)))
+                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)))
                         UNION
                         (SELECT distinct t_d.id_designacion, t_d1.apellido||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
                             0 as dias_lic, case when t_d.desde<='2015-02-01' then ( case when (t_d.hasta>='2016-01-31' or t_d.hasta is null ) then (((cast('2016-01-31' as date)-cast('2015-02-01' as date))+1)) else ((t_d.hasta-'2015-02-01')+1) end ) else (case when (t_d.hasta>='2016-01-31' or t_d.hasta is null) then ((('2016-01-31')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
@@ -780,7 +780,7 @@ class dt_designacion extends toba_datos_tabla
                             AND t_d.uni_acad = t_ua.sigla 
                             AND t_d.tipo_desig=1 
                             AND t_no.id_designacion=t_d.id_designacion
-                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2)
+                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)
                             AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null)
                              )
                         UNION
@@ -813,7 +813,7 @@ class dt_designacion extends toba_datos_tabla
                             	AND t_d.uni_acad = t_ua.sigla 
                            	AND t_d.tipo_desig=1 
                            	AND t_no.id_designacion=t_d.id_designacion 
-                           	AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 ) 
+                           	AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4) 
                            	AND t_no.tipo_norma is not null 
                            	AND t_no.tipo_emite is not null 
                            	AND t_no.norma_legal is not null
@@ -1078,7 +1078,7 @@ class dt_designacion extends toba_datos_tabla
                            
                         WHERE  t_d.tipo_desig=1 
                             AND t_no.id_designacion=t_d.id_designacion
-                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2)
+                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)
                             AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null)
                             )"
                         ."UNION
@@ -1097,7 +1097,7 @@ class dt_designacion extends toba_datos_tabla
                        	    novedad t_no
                         WHERE t_d.tipo_desig=1 
                                 AND t_no.id_designacion=t_d.id_designacion
-                                AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 )
+                                AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 )
                                 AND t_no.tipo_norma is not null
                                 AND t_no.tipo_emite is not null
                                 AND t_no.norma_legal is not null)".
@@ -1171,6 +1171,7 @@ class dt_designacion extends toba_datos_tabla
 		$sql = "SELECT id_designacion, cat_mapuche FROM designacion ORDER BY cat_mapuche";
 		return toba::db('designa')->consultar($sql);
 	}
+        
         function get_equipos_cat($filtro=array()){
              $where = "";
             
@@ -1184,7 +1185,10 @@ class dt_designacion extends toba_datos_tabla
             if (isset($filtro['uni_acad'])) {
 			$where.= " AND t_d.uni_acad = ".quote($filtro['uni_acad']);
 		}
-            $sql="select distinct t_d.id_designacion, t_doc.apellido||', '||t_doc.nombre as docente_nombre,t_doc.legajo,t_d.cat_mapuche,t_d.cat_estat||t_d.dedic as cat_est,t_d.carac,t_d.uni_acad,t_d.desde,t_d.hasta,t_d3.descripcion as id_departamento,t_ma.descripcion as id_area,t_o.descripcion as id_orientacion ,t_m.desc_materia||' # '||t_plan.uni_acad||' - '||t_plan.cod_carrera||' ('||cod_siu||')' as desc_materia, t_p.descripcion as periodo,t_mo.descripcion as modulo,ti.desc_item as rol "
+            if (isset($filtro['id_departamento'])) {
+			$where.= " AND t_d.id_departamento = ".$filtro['id_departamento'];
+            }
+            $sql="select distinct t_d.id_designacion, t_doc.apellido||', '||t_doc.nombre as docente_nombre,t_doc.legajo,t_d.cat_mapuche,t_d.cat_estat||t_d.dedic as cat_est,t_d.carac,t_d.uni_acad,t_d.desde,t_d.hasta,t_d3.descripcion as id_departamento,t_ma.descripcion as id_area,t_o.descripcion as id_orientacion ,t_m.desc_materia||' # '||t_plan.uni_acad||' - '||t_plan.cod_carrera||' ('||cod_siu||')' as desc_materia, t_p.descripcion as periodo,t_mo.descripcion as modulo,ti.desc_item as rol ,t_a.carga_horaria"
                  . " from designacion t_d"
                     ." LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto)" 
                     ." LEFT OUTER JOIN area as t_ma ON (t_d.id_area = t_ma.idarea) "

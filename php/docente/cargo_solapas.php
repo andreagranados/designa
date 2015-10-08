@@ -170,6 +170,7 @@ class cargo_solapas extends toba_ci
           $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
           if ($vale){
              //--recupero la designacion que se desea modificar
+              
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             
             //cuando presiona el boton modificar puede que modifique  la categ mapuche
@@ -195,7 +196,7 @@ class cargo_solapas extends toba_ci
             
             
             // verifico si la designacion que se quiere modificar tiene numero de 540
-                
+           
             if($desig['nro_540'] == null){//no tiene nro de 540
                  //debe verificar si hay credito antes de hacer la modificacion
                 
@@ -309,7 +310,6 @@ class cargo_solapas extends toba_ci
 
 	function evt__cuadro_imputacion__editar($datos)
 	{
-            print_r($datos);
             $this->s__alta_impu=1;
             $this->controlador()->dep('datos')->tabla('imputacion')->cargar($datos);
 	}
