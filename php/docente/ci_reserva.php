@@ -70,8 +70,8 @@ class ci_reserva extends designa_ci
 		} 
 	}
 
-	 function get_categ_estatuto($id){
-             $cat=$this->controlador()->get_categ_estatuto($id);
+	 function get_categ_estatuto($id,$ec){
+             $cat=$this->controlador()->get_categ_estatuto($id,$ec);
              return $cat;
             
         }

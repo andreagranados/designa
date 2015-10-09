@@ -6,7 +6,12 @@ class dt_mocovi_programa extends toba_datos_tabla
 		$sql = "SELECT id_programa, nombre FROM mocovi_programa ORDER BY nombre";
 		return toba::db('designa')->consultar($sql);
 	}
-
+        function programas_ua()
+        {  
+            $sql="select distinct t_p.id_programa,t_p.nombre as programa_nombre from mocovi_programa t_p, unidad_acad t_u where t_p.id_unidad=t_u.sigla";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            return toba::db('designa')->consultar($sql);
+        }
         //trae el programa por defecto de la UA correspondiente
         function programa_defecto()
         {                 

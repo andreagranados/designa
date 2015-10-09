@@ -30,7 +30,7 @@ class ci_materias extends toba_ci
 	{
 		if (isset($this->s__datos_filtro)) {
 			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado($this->s__datos_filtro));
-		} 
+                } 
 	}
 
 	function evt__cuadro__seleccion($datos)

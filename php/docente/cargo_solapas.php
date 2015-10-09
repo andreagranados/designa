@@ -7,14 +7,11 @@ class cargo_solapas extends toba_ci
     public $s__nombre_archivo;
     protected $s__alta_nov;
         
-           
+           //trae los programas asociados a una UA
         function get_programas_ua(){
             
-            $designacion=$this->controlador()->desig_seleccionada();
-            //recupero los programas correspondientes a la UA de la designacion seleccionada
-            $sql="select id_programa,nombre as programa_nombre from mocovi_programa where id_unidad='".$designacion['uni_acad']."'";
-            $resul=toba::db('designa')->consultar($sql);
-            return $resul;
+            return $this->controlador()->get_programas_ua();
+           
         }
 
         function get_designaciones_agente(){
@@ -74,8 +71,8 @@ class cargo_solapas extends toba_ci
             return $dedi;
 
         }
-        function get_categ_estatuto($id){
-            $est=$this->controlador()->get_categ_estatuto($id);
+        function get_categ_estatuto($id,$ec){
+            $est=$this->controlador()->get_categ_estatuto($id,$ec);
             return $est;
         }
         
@@ -375,6 +372,7 @@ class cargo_solapas extends toba_ci
         //para agregar una imputacion a la designacion
         function evt__form_imputacion__guardar($datos)
 	{
+            
             $designacion=$this->controlador()->desig_seleccionada();
             $sql="select case when sum(porc) is null then 0 else sum(porc) end as total from imputacion where id_designacion=".$designacion['id_designacion'];
             $resul=toba::db('designa')->consultar($sql);
@@ -384,7 +382,7 @@ class cargo_solapas extends toba_ci
             if($total>100){
                 toba::notificacion()->agregar('La suma de los porcentajes debe sumar 100%', 'error');
             }else{//lo inserta solo si no supera el 100
-                $sql="insert into imputacion (id_designacion, id_programa, porc) values (".$designacion['id_designacion'].",'".$datos['programa']."',".$datos['porc'].")";
+                $sql="insert into imputacion (id_designacion, id_programa, porc) values (".$designacion['id_designacion'].",'".$datos['id_programa']."',".$datos['porc'].")";
                 toba::db('designa')->consultar($sql);
             }
             
@@ -711,16 +709,14 @@ class cargo_solapas extends toba_ci
             //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             switch ($datos['tipo_nov']){ 
-                case 1:$desig['estado']='B'; break;
-                case 2:$desig['estado']='L'; break;
-                
+                case 1:$desig['estado']='B'; break;//1 baja
+                case 2:$desig['estado']='L'; break;//2 lsgh
+                case 4:$desig['estado']='B'; break;//4 renuncia   
             }
             
             if($datos['desde']>$datos['hasta']){
                 toba::notificacion()->agregar('La fecha hasta debe ser mayor que la fecha desde','error');
             }else{//chequeo que este dentro del periodo de la designacion
-                
-                
                 
                 if($desig['hasta']!= null){
                     if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$desig['hasta']){
@@ -738,8 +734,9 @@ class cargo_solapas extends toba_ci
                     }else{
                         toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
                     }
-                }else{
-                    $udia=$this->controlador()->ultimo_dia_periodo();
+                }else{//la fecha hasta de la designacion es nula (cargo regular)
+                    $udia=$this->controlador()->ultimo_dia_periodo(1);
+                  
                     if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
                         $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
@@ -752,7 +749,7 @@ class cargo_solapas extends toba_ci
                         //$this->controlador()->dep('datos')->tabla('novedad')->resetear();  
                     }else{
                         toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
-                    }
+                      }
                     
                 }
    
@@ -771,12 +768,20 @@ class cargo_solapas extends toba_ci
              //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $sql="select * from novedad where id_designacion=".$desig['id_designacion'];
-            
             $res=toba::db('designa')->consultar($sql);
-           
-            if (!isset($res['id_novedad'])){//Si no trae resultados,la designacion ya no tiene licencia, entonces la paso a estado R
-                $desig['estado']='R';
-                $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+         
+            if (!isset($res['id_novedad'])){//Si no trae resultados,la designacion ya no tiene licencia
+                //veo si la paso a estado A o R
+                $sql="select * from designacionh where id_designacion=".$desig['id_designacion'];
+                $res=toba::db('designa')->consultar($sql);
+               
+                if(count($res)>0){//vuelve a estado rectificada porque ha sido modificada 
+                    $desig['estado']='R';
+                }else{
+                    $desig['estado']='A';
+                };
+                
+                $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
                 $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
             }
             
@@ -801,7 +806,7 @@ class cargo_solapas extends toba_ci
                         toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
                     }
                 }else{
-                    $udia=$this->controlador()->ultimo_dia_periodo();
+                    $udia=$this->controlador()->ultimo_dia_periodo(1);
                     if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();

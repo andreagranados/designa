@@ -55,10 +55,8 @@ class ci_asignacion_materias extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado($this->s__datos_filtro));
-		} else {
-			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado());
-		}
+			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado_completo($this->s__datos_filtro));
+		} 
 	}
 //selecciona una materia
 	function evt__cuadro__seleccion($datos)
@@ -74,7 +72,6 @@ class ci_asignacion_materias extends toba_ci
             $plan=array();
             $plan['id_plan']=$dat['id_plan'];
             $this->dep('datos')->tabla('plan_estudio')->cargar($plan);
-           
             $this->set_pantalla('pant_asignacion');
 	}
 	//---- Formulario -------------------------------------------------------------------
@@ -146,8 +143,7 @@ class ci_asignacion_materias extends toba_ci
             $sql="select * from asignacion_materia t_m,designacion t_d,unidad_acad t_u where t_m.id_designacion=t_d.id_designacion and t_d.uni_acad=t_u.sigla and t_m.id_materia=".$mat['id_materia'].$where;
             $sql = toba::perfil_de_datos()->filtrar($sql);
             $res=toba::db('designa')->consultar($sql);
-            //$res=$this->dep('datos')->tabla('asignacion_materia')->get_filas();
-
+            
             $form->set_datos($res);//al inicio la cargo por lo tanto tiene datos
    
 	}
@@ -174,14 +170,13 @@ class ci_asignacion_materias extends toba_ci
             if ($this->dep('datos')->tabla('materia')->esta_cargada()) {
                	$form->set_datos($this->dep('datos')->tabla('materia')->get());
                 $plan=$this->dep('datos')->tabla('plan_estudio')->get();
-                
                 $plan['anio']=$this->s__anio;
                 $form->set_datos($plan);
 		}
                 if($this->s__mostrar_ml==1){$form->eliminar_evento('modificacion');}
            
 	}
-//evento implicito
+//evento implicito, boton mostrar
 	function evt__form_materia__modificacion($datos)
 	{
           

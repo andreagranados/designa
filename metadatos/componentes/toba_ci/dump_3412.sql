@@ -16,8 +16,8 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba', --clase_proyecto
 	'toba_ci', --clase
 	'23', --punto_montaje
-	'ci_materias', --subclase
-	'materias/ci_materias.php', --subclase_archivo
+	'ci_materias_conf', --subclase
+	'materias/ci_materias_conf.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Materias - CI', --nombre
@@ -98,9 +98,9 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2204', --dep_id
+	'2326', --dep_id
 	'3412', --objeto_consumidor
-	'3413', --objeto_proveedor
+	'3520', --objeto_proveedor
 	'filtro', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
@@ -151,5 +151,5 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'1494', --pantalla
 	'3412', --objeto_ci
 	'0', --orden
-	'2204'  --dep_id
+	'2326'  --dep_id
 );

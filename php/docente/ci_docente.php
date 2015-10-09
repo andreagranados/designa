@@ -7,7 +7,11 @@ class ci_docente extends toba_ci
         protected $s__designacion;
         protected $s__pantalla;
         
-        
+//trae los programas asociados a la UA correspondiente al usuario que se loguea
+        function get_programas_ua(){
+            return $this->dep('datos')->tabla('mocovi_programa')->programas_ua();
+
+        }
         function get_categoria($id){
             return $this->dep('datos')->tabla('categ_siu')->get_categoria($id); 
         }
@@ -70,7 +74,8 @@ class ci_docente extends toba_ci
                 return($dedicacion);
             }
         }
-	function get_categ_estatuto($id){
+	function get_categ_estatuto($id,$ec){
+            
             if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
                 $sql="SELECT
 			t_cs.codigo_siu,
@@ -80,10 +85,14 @@ class ci_docente extends toba_ci
                          where escalafon='D'
 		ORDER BY descripcion";
                 $resul=toba::db('designa')->consultar($sql);
-                
-                $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
-                $resul2=toba::db('designa')->consultar($sql2);
-                return($resul2[0]['catest']);
+                if($ec==1 && (($resul[$id]['codigo_siu']=='ADJE')||($resul[$id]['codigo_siu']=='ADJS')||($resul[$id]['codigo_siu']=='ADJ1'))){
+                    return('ASDEnc');
+                }else{//esta otra devuelve PAD
+                    $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
+                    $resul2=toba::db('designa')->consultar($sql2);
+                    return($resul2[0]['catest']);
+                    
+                }
             }
         }
         /** Ultimo dia del periodo actual**/
@@ -280,7 +289,13 @@ class ci_docente extends toba_ci
                 $designacion=$this->dep('datos')->tabla('designacion')->get();
                 
                 $desde=date_format(date_create($designacion['desde']),'d-m-Y');
-                $hasta=date_format(date_create($designacion['hasta']),'d-m-Y');
+                if ($designacion['hasta']==null){
+                    $hasta="-";
+                }else{
+                    $hasta=date_format(date_create($designacion['hasta']),'d-m-Y');
+                    
+                }
+                
                 $texto=utf8_decode('Categoría: ').$designacion['cat_mapuche']." Desde: ". $desde." Hasta: ".$hasta;
                 $form->set_titulo($texto);
             }
