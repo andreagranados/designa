@@ -66,10 +66,10 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --defecto
 	NULL, --display_datos_cargados
 	NULL, --grupo
-	'V', --accion
+	NULL, --accion
 	NULL, --accion_imphtml_debug
-	'3635', --accion_vinculo_carpeta
-	'3636', --accion_vinculo_item
+	NULL, --accion_vinculo_carpeta
+	NULL, --accion_vinculo_item
 	NULL, --accion_vinculo_objeto
 	'0', --accion_vinculo_popup
 	NULL, --accion_vinculo_popup_param

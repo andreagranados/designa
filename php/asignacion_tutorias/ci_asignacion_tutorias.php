@@ -24,7 +24,7 @@ class ci_asignacion_tutorias extends toba_ci
                     . " from designacion t_d, docente t_d1, unidad_acad t_u"
                     . " where t_d.id_docente=t_d1.id_docente "
                     . " and t_d.uni_acad=t_u.sigla "
-                    . "and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta=null)"
+                    . "and t_d.desde<='".$udia."' and (t_d.hasta>='".$pdia."' or t_d.hasta=null)"
                         . " order by descripcion";
                 $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
                 return toba::db('designa')->consultar($sql);
@@ -167,7 +167,7 @@ class ci_asignacion_tutorias extends toba_ci
         //evento implicito
         function evt__form_tutoria__modificacion($datos)
 	{
-            print_r($datos);
+            
             $this->s__anio=$datos['anio'];
             $this->s__mostrar_ml=1;
             
@@ -184,7 +184,6 @@ class ci_asignacion_tutorias extends toba_ci
                
                 $this->dep('form_asigna')->descolapsar();
                 $form->ef('id_designacion')->set_obligatorio(true);
-                $form->ef('carga_horaria')->set_obligatorio(true);
                 $form->ef('periodo')->set_obligatorio(true);
                 $form->ef('rol')->set_obligatorio(true);
             }else{
@@ -202,7 +201,7 @@ class ci_asignacion_tutorias extends toba_ci
             
             $sql="select * from asignacion_tutoria where id_tutoria=".$tut['id_tutoria'].$where;
             $res=toba::db('designa')->consultar($sql);
-            print_r($res);
+            
             //$res['id_designacion']='184';
             $form->set_datos($res);//al inicio la cargo por lo tanto tiene datos
    

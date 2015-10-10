@@ -21,11 +21,13 @@ class ci_impresion_540 extends toba_ci
 	
         function evt__filtro__seleccionar($datos)
 	{
-            $this->s__seleccionar_todos=1;	
+            $this->s__seleccionar_todos=1;
+            $this->s__deseleccionar_todos=0;	
 	}
         function evt__filtro__deseleccionar($datos)
 	{
             $this->s__deseleccionar_todos=1;	
+            $this->s__seleccionar_todos=0;
 	}
         function evt__filtro__filtrar($datos)
 	{
@@ -238,35 +240,33 @@ class ci_impresion_540 extends toba_ci
         function conf_evt__cuadro__multiple_con_etiq(toba_evento_usuario $evento, $fila)
 	{
             
-            //print_r($this->s__seleccionar_todos);
-             //[0] => Array ( [id_designacion] => 1 ) [1] => Array ( [id_designacion] => 3 
-            $sele=array();
-            if (isset($this->s__seleccionadas)) {//si hay seleccionados
-                foreach ($this->s__seleccionadas as $key=>$value) {
-                    $sele[]=$value['id_designacion'];  
-                }        
-            }   
-            
-            if (isset($this->s__seleccionadas)) {//si hay seleccionados
-               
-                if(in_array($this->s__listado[$fila]['id_designacion'],$sele)){
-                    $evento->set_check_activo(true);
-                }else{
-                    $evento->set_check_activo(false);
-                    
-                }
-            }
-           
             if ($this->s__seleccionar_todos==1){//si presiono el boton seleccionar todos
                 $evento->set_check_activo(true);
-                $this->s__seleccionar_todos=0;
-               }
+                
+            }else{
           
-            if ($this->s__deseleccionar_todos==1){
-                $evento->set_check_activo(false);
-                $this->s__deseleccionar_todos=0;
-               }
+                if ($this->s__deseleccionar_todos==1){
+                    $evento->set_check_activo(false);
+                }  else{        
+              
+                    $sele=array();
+                    if (isset($this->s__seleccionadas)) {//si hay seleccionados
+                        foreach ($this->s__seleccionadas as $key=>$value) {
+                            $sele[]=$value['id_designacion'];  
+                        }        
+                    }   
             
+                    if (isset($this->s__seleccionadas)) {//si hay seleccionados
+               
+                        if(in_array($this->s__listado[$fila]['id_designacion'],$sele)){
+                            $evento->set_check_activo(true);
+                        }else{
+                            $evento->set_check_activo(false);   
+                        }
+                    }
+                }
+          
+               }
 
 	}
 	

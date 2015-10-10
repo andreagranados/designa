@@ -355,5 +355,38 @@ class ci_docente extends toba_ci
         
 
 
+	function conf()
+	{
+            $id = toba::memoria()->get_parametro('id_designacion');
+            print_r($id);
+            if(isset($id)){
+                $sql="select * from designacion where id_designacion=".$id;
+                $res=toba::db('designa')->consultar($sql);
+                
+                $datos['id_docente']=$res[0]['id_docente'];
+                $this->dep('datos')->tabla('docente')->cargar($datos);
+                $dd['id_designacion']=$res[0]['id_designacion'];
+                $this->dep('datos')->tabla('designacion')->cargar($dd);
+                
+                $this->dep('datos')->tabla('designacion')->cargar($datos);
+            
+                $desig = $this->dep('datos')->tabla('designacion')->get();//obtengo la designacion recien cargada
+            
+                if ($desig['id_norma'] <> null){//si tiene la norma del cd 
+                    $mostrar['id_norma']=$desig['id_norma']    ;
+                    $this->dep('datos')->tabla('norma')->cargar($mostrar);
+                }
+                if ($desig['id_norma_cs'] <> null){//si tiene la norma del cs
+                    $mostrarcs['id_norma']=$desig['id_norma_cs']    ;
+                    $this->dep('datos')->tabla('normacs')->cargar($mostrarcs);
+                } 
+            
+                $this->s__designacion=$this->dep('datos')->tabla('designacion')->get();//guardo la designacion seleccionada en una variable
+                $this->set_pantalla('pant_cargo');
+                
+                
+            }
+	}
+
 }
 ?>
