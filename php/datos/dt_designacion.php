@@ -216,6 +216,7 @@ class dt_designacion extends toba_datos_tabla
 			AND  t_d.uni_acad = t_ua.sigla".
                   " AND t_d.id_docente=".$agente.      
 		" ORDER BY ord_gestion";
+                
                 $sql = toba::perfil_de_datos()->filtrar($sql);
                 
 		if (count($where)>0) {
