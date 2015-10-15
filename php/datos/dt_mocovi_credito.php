@@ -6,6 +6,21 @@ class dt_mocovi_credito extends toba_datos_tabla
             $sql="select * from mocovi_credito ";
             return toba::db('designa')->consultar($sql);
 	}
+       function get_descripciones_credito()
+	{    
+            $sql="select c.tipo||a.id_credito||':'||b.nombre||' Desc:'||a.descripcion||'('||'RECIBIDO' ||')' as descripcion
+            from mocovi_credito a, mocovi_programa b,mocovi_tipo_credito c, unidad_acad d, mocovi_periodo_presupuestario e
+            where a.id_periodo=e.id_periodo
+            and e.actual
+            and a.id_unidad=d.sigla   
+            and a.id_programa=b.id_programa
+            and a.id_tipo_credito=c.id_tipo_credito
+            and a.id_escalafon='D'
+            and a.credito>0
+            ";
+            $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
+            return toba::db('designa')->consultar($sql);
+	}
         function get_credito($ua,$anio)
         {
              $sql="select sum(b.credito) as cred "

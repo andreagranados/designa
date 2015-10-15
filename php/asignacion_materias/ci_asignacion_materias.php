@@ -23,9 +23,10 @@ class ci_asignacion_materias extends toba_ci
                     . " from designacion t_d, docente t_d1, unidad_acad t_u"
                     . " where t_d.id_docente=t_d1.id_docente "
                     . " and t_d.uni_acad=t_u.sigla "
-                    . "and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta=null)"
+                    . "and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta is null)"
                         . " order by descripcion";
                 $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
+                
                 return toba::db('designa')->consultar($sql);
             }
             
@@ -124,7 +125,7 @@ class ci_asignacion_materias extends toba_ci
             if($this->s__mostrar_ml==1){
                 $this->dep('form_asigna')->descolapsar();
                 $form->ef('id_designacion')->set_obligatorio(true);
-                $form->ef('carga_horaria')->set_obligatorio(true);
+                //$form->ef('carga_horaria')->set_obligatorio(true);
                 $form->ef('id_periodo')->set_obligatorio(true);
                 $form->ef('rol')->set_obligatorio(true);
                 $form->ef('modulo')->set_obligatorio(true);

@@ -6,6 +6,7 @@ class cargo_solapas extends toba_ci
     protected $s__pantalla;
     public $s__nombre_archivo;
     protected $s__alta_nov;
+    protected $s__alta_novb;
         
            //trae los programas asociados a una UA
         function get_programas_ua(){
@@ -13,7 +14,7 @@ class cargo_solapas extends toba_ci
             return $this->controlador()->get_programas_ua();
            
         }
-
+      
         function get_designaciones_agente(){
             $agente=$this->controlador()->agente_seleccionado();
             
@@ -279,9 +280,13 @@ class cargo_solapas extends toba_ci
         {
             $this->s__pantalla = "pant_materias";
         }
-         function conf__pant_novedad()
+        function conf__pant_novedad()
         {
             $this->s__pantalla = "pant_novedad";
+        }
+        function conf__pant_novedad_b()
+        {
+            $this->s__pantalla = "pant_novedad_b";
         }
         //-----------------------------------------------------------------------------------
 	//---- cuadro_imputacion ------------------------------------------------------------
@@ -411,6 +416,9 @@ class cargo_solapas extends toba_ci
                 case 'pant_novedad':$this->controlador()->dep('datos')->tabla('novedad')->resetear();//para deseleccionar la novedad que esta cargada
                                     $this->s__alta_nov = 1;
                                break;
+                case 'pant_novedad_b':$this->controlador()->dep('datos')->tabla('novedad_baja')->resetear();//para deseleccionar la novedad que esta cargada
+                                    $this->s__alta_novb = 1;
+                               break;           
                 default:
                     break;
             }
@@ -705,14 +713,10 @@ class cargo_solapas extends toba_ci
 	}
         function evt__form_licencia__alta($datos)
 	{
-            
+            //solo puede seleccionar tipo_nov 2 o 3 que son las licencias
             //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            switch ($datos['tipo_nov']){ 
-                case 1:$desig['estado']='B'; break;//1 baja
-                case 2:$desig['estado']='L'; break;//2 lsgh
-                case 4:$desig['estado']='B'; break;//4 renuncia   
-            }
+            $desig['estado']='L';
             
             if($datos['desde']>$datos['hasta']){
                 toba::notificacion()->agregar('La fecha hasta debe ser mayor que la fecha desde','error');
@@ -727,7 +731,6 @@ class cargo_solapas extends toba_ci
                         $datos['id_designacion']=$desig['id_designacion'];
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
-                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
                         $this->s__alta_nov=0;//descolapsa el formulario de alta
                         //$this->controlador()->dep('datos')->tabla('novedad')->resetear();  
                         toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
@@ -825,9 +828,144 @@ class cargo_solapas extends toba_ci
             $this->controlador()->dep('datos')->tabla('novedad')->resetear();
             $this->s__alta_nov=0;
         }
+        //-----------------------------------------------------------------------------------
+	//---- cuadro_baja -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
 
-
-
+        function conf__cuadro_baja(toba_ei_cuadro $cuadro)
+	{
+            if($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('novedad')->get_novedades_desig_baja($desig['id_designacion']));
+            }
+            
+	}
+         function evt__cuadro_baja__seleccion($datos)
+	{
+            $this->controlador()->dep('datos')->tabla('novedad_baja')->cargar($datos);
+            $this->s__alta_novb=1;//aparece el formulario de alta
+	}
+        //-----------------------------------------------------------------------------------
+	//---- form_baja --------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+        function conf__form_baja(toba_ei_formulario $form)
+        {
+            if($this->s__alta_novb==1){// si presiono el boton alta entonces muestra el formulario  para dar de alta una nueva novedad
+                $this->dep('form_baja')->descolapsar();
+                $form->ef('tipo_nov')->set_obligatorio('true');
+                $form->ef('desde')->set_obligatorio('true');
+                   
+            }
+            else{
+                $this->dep('form_baja')->colapsar();
+              }
+            if ($this->controlador()->dep('datos')->tabla('novedad_baja')->esta_cargada()) {
+			$form->set_datos($this->controlador()->dep('datos')->tabla('novedad_baja')->get());
+		} 
+    
+        }
+        function evt__form_baja__alta($datos)
+        {
+            //solo puede seleccionar tipo_nov 1 o 4 que son la baja o la renuncia
+            //recupero la designacion a la cual corresponde la novedad
+            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $desig['estado']='B';
+            
+            if($desig['hasta']!= null){
+                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] ){
+                    
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        
+                        $datos['id_designacion']=$desig['id_designacion'];
+                        $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
+                        $this->s__alta_novb=0;//descolapsa el formulario de alta
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+                        
+                       
+                    }else{
+                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                    }
+                }else{//la fecha hasta de la designacion es nula (cargo regular)
+                    $udia=$this->controlador()->ultimo_dia_periodo(1);
+                  
+                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia ){
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        
+                        $datos['id_designacion']=$desig['id_designacion'];
+                        $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
+                        $this->s__alta_novb=0;//descolapsa el formulario de alta
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                        
+                    }else{
+                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                      }
+                    
+                
+   
+            }
+            
+        }
+        function evt__form_baja__baja()
+        {
+            $this->controlador()->dep('datos')->tabla('novedad_baja')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('novedad_baja')->resetear();
+            $this->s__alta_novb=0;
+            //cuando elimina la licencia tambien debe cambiar el estado de la designacion !!!!!!!
+             //recupero la designacion a la cual corresponde la novedad
+            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $sql="select * from novedad where id_designacion=".$desig['id_designacion'];
+            $res=toba::db('designa')->consultar($sql);
+         
+            if (!isset($res['id_novedad'])){//Si no trae resultados,la designacion ya no tiene licencia
+                //veo si la paso a estado A o R
+                $sql="select * from designacionh where id_designacion=".$desig['id_designacion'];
+                $res=toba::db('designa')->consultar($sql);
+               
+                if(count($res)>0){//vuelve a estado rectificada porque ha sido modificada 
+                    $desig['estado']='R';
+                }else{
+                    $desig['estado']='A';
+                };
+                
+                $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+            }
+            
+        }
+        function evt__form_baja__modificacion($datos)
+        {
+               //chequeo que este dentro del periodo de la designacion
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                if($desig['hasta']!= null){
+                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] ){
+                        $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+                    }else{
+                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                    }
+                }else{
+                    $udia=$this->controlador()->ultimo_dia_periodo(1);
+                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia ){
+                        $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+                    }else{
+                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                    }
+                    
+                }
+           
+        }
+         function evt__form_baja__cancelar($datos)
+        {
+            $this->controlador()->dep('datos')->tabla('novedad_baja')->resetear();
+            $this->s__alta_novb=0;
+        }
 	//-----------------------------------------------------------------------------------
 	//---- cuadro_tutorias --------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
