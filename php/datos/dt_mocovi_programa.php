@@ -1,10 +1,15 @@
 <?php
 class dt_mocovi_programa extends toba_datos_tabla
 {
-	function get_descripciones()
+	function get_descripciones($ua=null)
 	{
-		$sql = "SELECT id_programa, nombre FROM mocovi_programa ORDER BY nombre";
-		return toba::db('designa')->consultar($sql);
+            $where="";
+            if(isset($ua)){
+                $where=" where id_unidad='".$ua."'";
+            }	
+            $sql = "SELECT distinct id_programa, nombre FROM mocovi_programa $where ORDER BY nombre";
+            
+            return toba::db('designa')->consultar($sql);
 	}
         function programas_ua()
         {  
