@@ -199,7 +199,7 @@ class ci_asignacion_tutorias extends toba_ci
             }
             $tut=$this->dep('datos')->tabla('tutoria')->get();
             
-            $sql="select * from asignacion_tutoria where id_tutoria=".$tut['id_tutoria'].$where;
+            $sql="select * from asignacion_tutoria where id_tutoria=".$tut['id_tutoria'].$where."order by id_designacion";
             $res=toba::db('designa')->consultar($sql);
             //print_r($res);// Array ( [0] => Array ( [id_designacion] => 184 [id_tutoria] => 1 [anio] => 2015 [carga_horaria] => 12 [nro_tab9] => 9 [rol] => COOR [periodo] => 1 ) ) 
             if(count($res)>0){
@@ -212,41 +212,33 @@ class ci_asignacion_tutorias extends toba_ci
         
 	function evt__form_asigna__modificacion($datos)
 	{
-            //print_r($datos);
-            $tut=$this->dep('datos')->tabla('tutoria')->get();
-            foreach ($datos as $key=>$value) {
-               $datos[$key]['id_tutoria']=$tut['id_tutoria'];
-               $datos[$key]['anio']=$this->s__anio;
-               $datos[$key]['nro_tab9']=9;
-            }
-           print_r($datos);
            $this->s__datos=$datos;
-            //$this->dep('datos')->tabla('asignacion_tutoria')->procesar_filas($datos);
+            
 	}
 
 
         //boton de la pantalla
         function evt__guardar()
 	{	
-               foreach ($this->s__datos as $key=>$value) {
-                $dato['id_designacion']=$value['id_designacion'];
-                $dato['id_materia']=$value['id_materia'];
-                $dato['modulo']=$value['modulo'];
-                print_r($dato);
-                $n=array();   
-                $n[]=$value;
-                print_r($n);
+            //print_r($this->s__datos);
+            $tut=$this->dep('datos')->tabla('tutoria')->get();
+            
+            foreach ($this->s__datos as $key=>$value) {
+                $value['id_tutoria']=$tut['id_tutoria'];
+                $value['anio']=$this->s__anio;
+                $value['nro_tab9']=9;
+                $value['elemento']=$key;
+                switch ($value['apex_ei_analisis_fila']) {
+                    case 'M':  $this->dep('datos')->tabla('asignacion_tutoria')->modificar($value); break;
+                    case 'B':  $this->dep('datos')->tabla('asignacion_tutoria')->eliminar($value); break;
+                    case 'A':  $this->dep('datos')->tabla('asignacion_tutoria')->agregar($value); break;
+                }
                 
-                $this->dep('datos')->tabla('asignacion_tutoria')->resetear();//limpia
-                $this->dep('datos')->tabla('asignacion_tutoria')->cargar($dato);//carga
-                $this->dep('datos')->tabla('asignacion_tutoria')->procesar_filas($n);
-                //$this->dep('datos')->tabla('asignacion_materia')->sincronizar();
-                //$this->dep('datos')->tabla('asignacion_materia')->resetear();
             }
           
-            $this->dep('datos')->tabla('asignacion_tutoria')->sincronizar();
-	    $this->dep('datos')->tabla('asignacion_tutoria')->resetear();
-            $this->dep('datos')->tabla('asignacion_tutoria')->cargar();//despues de guarda actualiza
+//            $this->dep('datos')->tabla('asignacion_tutoria')->sincronizar();
+//	    $this->dep('datos')->tabla('asignacion_tutoria')->resetear();
+//            $this->dep('datos')->tabla('asignacion_tutoria')->cargar();//despues de guarda actualiza
 	}
 
 
