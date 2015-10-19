@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3672]--  Asignación Tutorias 
+--[3672]--  Asignación Tutorías 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -23,7 +23,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --actividad_buffer
 	NULL, --actividad_patron_proyecto
 	NULL, --actividad_patron
-	'Asignación Tutorias', --nombre
+	'Asignación Tutorías', --nombre
 	NULL, --descripcion
 	'23', --punto_montaje
 	NULL, --actividad_accion

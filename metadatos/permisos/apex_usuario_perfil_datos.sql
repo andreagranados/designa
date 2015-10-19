@@ -8,14 +8,35 @@ INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, d
 	'designa', --proyecto
 	'7', --usuario_perfil_datos
 	'FAIF', --nombre
-	NULL, --descripcion
+	'Facultad de Informática', --descripcion
 	NULL  --listar
 );
 INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
 	'designa', --proyecto
 	'8', --usuario_perfil_datos
 	'FATU', --nombre
-	NULL, --descripcion
+	'Facultad de Turismo', --descripcion
+	NULL  --listar
+);
+INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
+	'designa', --proyecto
+	'9', --usuario_perfil_datos
+	'FACE', --nombre
+	'Facultad de Ciencias de la Educación', --descripcion
+	NULL  --listar
+);
+INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
+	'designa', --proyecto
+	'10', --usuario_perfil_datos
+	'FAEA', --nombre
+	'Facultad de Economía', --descripcion
+	NULL  --listar
+);
+INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
+	'designa', --proyecto
+	'11', --usuario_perfil_datos
+	'ASMA', --nombre
+	'Asentamiento Universitario San Martin de los Andes', --descripcion
 	NULL  --listar
 );
 --- FIN Grupo de desarrollo 0

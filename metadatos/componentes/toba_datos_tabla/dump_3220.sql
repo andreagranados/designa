@@ -520,12 +520,12 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
 	'designa', --objeto_proyecto
 	'3220', --objeto
-	'1417', --col_id
-	'credito', --columna
-	'C', --tipo
+	'1418', --col_id
+	'por_permuta', --columna
+	'E', --tipo
 	'0', --pk
 	'', --secuencia
-	'1', --largo
+	NULL, --largo
 	NULL, --no_nulo
 	'0', --no_nulo_db
 	'0', --externa

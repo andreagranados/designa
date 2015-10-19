@@ -1125,7 +1125,7 @@ class dt_designacion extends toba_datos_tabla
             //$con="select * from (".$sql.")a".$where;
             $con="select uni_acad,id_programa,nombre as programa,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto into temp auxi from (".$sql.")a".$where." group by uni_acad,id_programa,nombre";
             toba::db('designa')->consultar($con);
-            
+            //obtengo el credito de cada programa para cada facultad
             $cp="select a.id_unidad,a.id_programa,sum(a.credito) as credito into temp auxi2 from mocovi_credito a, mocovi_periodo_presupuestario b, unidad_acad c where "
                     . " a.id_periodo=b.id_periodo and "
                     . " b.anio=".$filtro['anio']." and "
@@ -1135,9 +1135,9 @@ class dt_designacion extends toba_datos_tabla
             
             $cp = toba::perfil_de_datos()->filtrar($cp);
             toba::db('designa')->consultar($cp);
-            
+            //al hacer RIGHT JOIN  todos los registros de la tabla derecha tengan o no correspondencia con la de la izquierda
             $con="select a.uni_acad,a.id_programa,a.programa,b.credito,a.monto,(b.credito-a.monto) as saldo "
-                    . "from auxi a LEFT JOIN auxi2 b ON (a.uni_acad=b.id_unidad and a.id_programa=b.id_programa), unidad_acad c "
+                    . "from auxi a RIGHT JOIN auxi2 b ON (a.uni_acad=b.id_unidad and a.id_programa=b.id_programa), unidad_acad c "
                     . " where a.uni_acad=c.sigla";
             $con = toba::perfil_de_datos()->filtrar($con);
             return toba::db('designa')->consultar($con);
@@ -1175,6 +1175,7 @@ class dt_designacion extends toba_datos_tabla
 		$sql = "SELECT id_designacion, cat_mapuche FROM designacion ORDER BY cat_mapuche";
 		return toba::db('designa')->consultar($sql);
 	}
+
         
         function get_equipos_cat($filtro=array()){
              $where = "";

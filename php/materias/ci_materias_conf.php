@@ -2,7 +2,7 @@
 class ci_materias_conf extends toba_ci
 {
 	protected $s__datos_filtro;
-        protected $s__mostrar;
+        protected $parametros;
 
 
 	//---- Filtro -----------------------------------------------------------------------
@@ -28,13 +28,31 @@ class ci_materias_conf extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado($this->s__datos_filtro));
-                } else{
-                    $cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado());
+            
+           
+            if (isset($this->s__datos_filtro)) {
+                $datos=$this->dep('datos')->tabla('materia')->get_listado($this->s__datos_filtro);
+                $cuadro->set_datos($datos);
+                             
+                $this->parametros = array('arreglo' => $datos);
+                
+                
+            } else{
+                $datos=$this->dep('datos')->tabla('materia')->get_listado();
+                $cuadro->set_datos($datos);
                 }
 	}
 
-}
+	
 
+	
+
+	
+	function evt__cuadro__seleccion($seleccion)
+	{
+            print_r($seleccion);
+                      
+	}
+
+}
 ?>

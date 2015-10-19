@@ -10,14 +10,12 @@ class cargo_solapas extends toba_ci
         
            //trae los programas asociados a una UA
         function get_programas_ua(){
-            
             return $this->controlador()->get_programas_ua();
            
         }
       
         function get_designaciones_agente(){
             $agente=$this->controlador()->agente_seleccionado();
-            
             $sql="select id_designacion||' CATEG: '||cat_mapuche||' DESDE:'||desde||' HASTA:'||hasta as id_designacion from designacion where id_docente=".$agente['id_docente'];
             $result=toba::db('designa')->consultar($sql);
             return($result);
@@ -26,6 +24,13 @@ class cargo_solapas extends toba_ci
         function get_departamentos(){
            return $this->controlador()->dep('datos')->tabla('departamento')->get_departamentos();
         } 
+        //este metodo permite mostrar en el popup el nombre de la materia seleccionada
+        //recibe como argumento el id 
+        function get_materia($id){
+            $mat=$this->controlador()->get_materia($id);
+            return $mat;
+        }
+      
         //-----------------------------------------------------------------------------------
 	//---- form_cargo -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -423,12 +428,7 @@ class cargo_solapas extends toba_ci
                     break;
             }
            }
-         //este metodo permite mostrar en el popup el nombre de la materia seleccionada
-        //recibe como argumento el id 
-        function get_materia($id){
-            $mat=$this->controlador()->get_materia($id);
-            return $mat;
-        }
+        
         
         //-----------------------------------------------------------------------------------
 	//---- cuadro_materias --------------------------------------------------------------
@@ -457,7 +457,8 @@ class cargo_solapas extends toba_ci
 
 	function conf__form_materias(toba_ei_formulario $form)
 	{
-            if($this->s__alta_mate==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
+                     
+            if($this->s__alta_mate==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('form_materias')->descolapsar();
                 $form->ef('id_materia')->set_obligatorio('true');
                 $form->ef('rol')->set_obligatorio('true');
@@ -471,19 +472,36 @@ class cargo_solapas extends toba_ci
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 if($this->controlador()->dep('datos')->tabla('asignacion_materia')->esta_cargada()){//si presiono el boton editar
                     $x=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get();
-                    $sql="select * from materia where id_materia=".$x['id_materia'];
-                    $resul=toba::db('designa')->consultar($sql);
-                    $x['id_materia']=$resul[0]['desc_materia'];
+                   
+                    //obtengo la unidad academica
+                    $ua=$this->controlador()->get_uni_acad($x['id_materia']);
+                    $x['uni_acad']=$ua;
+                    //obtengo la carrera
+                    $car=$this->controlador()->get_carrera($x['id_materia']);
+                   
+                    $maes=$form->ef('cod_carrera')->get_maestros();  
+                    $form->ef('cod_carrera')-> quitar_maestro($maes[0]);
+                    $maes=$form->ef('cod_carrera')->get_maestros(); 
+                    
+                    //$x['cod_carrera']='ACOM(0776/97)';
+                    $maes=$form->ef('id_materia')->get_maestros();  
+                    $form->ef('id_materia')-> quitar_maestro($maes[0]);
+                                        
+                    $es_ext=$this->controlador()->es_externa($x['id_materia']);
+                    if($es_ext){$x['externa']=1;}
+                    else{$x['externa']=0;}
+                                       
                     $form->set_datos($x);
+                    
                  }
 		}
 	}
-//agrega una nueva asignacion materia
+       
+       //agrega una nueva asignacion materia
 	function evt__form_materias__alta($datos)
 	{
-            $datos['id_materia']=$this->controlador()->get_materia($datos['id_materia']);
-            $datos['nro_tab8']=8;
-                              
+            
+            $datos['nro_tab8']=8;      
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $datos['id_designacion']=$desig['id_designacion'];
             $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
@@ -501,23 +519,12 @@ class cargo_solapas extends toba_ci
         function evt__form_materias__modificacion($datos)
         {
        
-            $a=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get();
-            
-            if($datos['id_materia']>='0' && $datos['id_materia']<='20000000'){//selecciono algo del popup
-                $mat=$this->controlador()->get_materia($datos['id_materia']);
-                $datos['id_materia']=$mat;
-            }else{//es string
-                $datos['id_materia']=$a['id_materia'];
-            }
-            
              $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
              $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
              toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
              $this->s__alta_mate=0;//descolapsa el formulario de alta
              $this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();
-            
-            
-            
+          
         }
         function evt__form_materias__cancelar($datos)
         {
@@ -529,18 +536,22 @@ class cargo_solapas extends toba_ci
 	//---- JAVASCRIPT -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-//	function extender_objeto_js()
-//	{
-//            echo "{$this->objeto_js}.evt__validar_datos() 
-//            {
-//                var confirma = true;
-//                if (parametro_venenoso) {
-//                       confirma = confirm('Tas seguro que queres ejecutarme en Güindous Messenyer?');
-//                }
-//                return confirma;
-//             }
-//             ";
-//	}
+	function extender_objeto_js()
+	{
+		//	
+		//            echo "{$this->objeto_js}.evt__validar_datos() 
+		//            {
+		//                var confirma = true;
+		//                if (parametro_venenoso) {
+		//                       confirma = confirm('Tas seguro que queres ejecutarme en Güindous Messenyer?');
+		//                }
+		//                return confirma;
+		//             }
+		//             //---- Eventos ---------------------------------------------
+		
+		
+	}
+
 
 
 	//-----------------------------------------------------------------------------------
@@ -671,7 +682,8 @@ class cargo_solapas extends toba_ci
 
 	function evt__volver()
 	{
-            $this->controlador()->dep('datos')->resetear();
+            //no hago el resetear porque pierdo los datos del docente cuando comienza a volver para atras
+            //$this->controlador()->dep('datos')->resetear();
             $this->controlador()->set_pantalla('pant_cargo_seleccion');
             
 	}
@@ -980,5 +992,6 @@ class cargo_solapas extends toba_ci
             
 	}
 
+	
 }
 ?>

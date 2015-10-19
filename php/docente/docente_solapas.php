@@ -4,7 +4,7 @@ class docente_solapas extends toba_ci
     protected $s__agente;
     protected $s__pantalla;
     protected $s__mostrar_fcurri;
-    protected $s__curric_seleccionado;
+   
     
     function ini()
 	{
@@ -44,7 +44,6 @@ class docente_solapas extends toba_ci
 	{
         //debe hacer aparecer el formulario con los datos del titulo
         $this->s__mostrar_fcurri=1;
-        $this->s__curric_seleccionado=$datos;
         $this->controlador()->dep('datos')->tabla('titulos_docente')->cargar($datos);
         
 	}
@@ -63,35 +62,45 @@ class docente_solapas extends toba_ci
 	 */
     function conf__form_curric(toba_ei_formulario $form)
 	{
-           //muestra datos solo si selecciono previamente
+            if($this->s__mostrar_fcurri==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
+                $this->dep('form_curric')->descolapsar();
+                $form->ef('codc_titul')->set_obligatorio('true');
+                $form->ef('fec_emisi')->set_obligatorio('true');
+                $form->ef('codc_entot')->set_obligatorio('true');
+                
+            }else{
+                $this->dep('form_curric')->colapsar();
+              }
+            //muestra datos solo si selecciono previamente
             if ($this->controlador()->dep('datos')->tabla('titulos_docente')->esta_cargada()) {
                         $datos=$this->controlador()->dep('datos')->tabla('titulos_docente')->get();
+                        
                         //recupero pais y ciudad para mostrar en el formulario
                         $sql="select t_l.localidad as ciudad,t_a.nombre as pais from entidad_otorgante t_e LEFT OUTER JOIN localidad t_l ON (t_l.id=t_e.cod_ciudad) LEFT OUTER JOIN provincia t_p ON (t_p.codigo_pcia=t_l.id_provincia) LEFT OUTER JOIN pais t_a ON (t_a.codigo_pais=t_p.cod_pais) where cod_entidad='".$datos['codc_entot']."'";
                         $resul=toba::db('designa')->consultar($sql);
                         $datos['ciudad']=$resul[0]['ciudad'];
                         $datos['pais']=$resul[0]['pais'];
-			$form->set_datos($datos);
+                        $datos['codc_entot']=trim($datos['codc_entot']);//le saco los blancos porque sino no lo muestra 
+                        $form->set_datos($datos);
                         $form->eliminar_evento('guardar');
 		}   
             else{
                 $form->eliminar_evento('modificacion');
+                $form->eliminar_evento('eliminar');
+                $form->eliminar_evento('cancelar');
             }    
             
-            if($this->s__mostrar_fcurri==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
-                $this->dep('form_curric')->descolapsar();
-            }
-            else{
-                $this->dep('form_curric')->colapsar();
-              }
               
-            //$form->set_detectar_cambios();//Detecta los cambios producidos en los distintos campos en el cliente, cambia los estilos de los mismos y habilita-deshabilita el bot�n por defecto en caso de que se hallan producido cambios
-           
+                       
 	}
 
-	
-        
-        
+	function evt__form_curric__eliminar()
+        {
+            $this->controlador()->dep('datos')->tabla('titulos_docente')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('titulos_docente')->resetear();
+            $this->s__mostrar_fcurri=0;//descolapsa el formulario 
+             
+        }
         function evt__form_curric__cancelar($datos)
         {
             $this->controlador()->dep('datos')->tabla('titulos_docente')->resetear();
@@ -101,17 +110,9 @@ class docente_solapas extends toba_ci
         //se modifica un titulo 
         function evt__form_curric__modificacion($datos)
 	{
-              //pos si selecciona del popup que devuelve el id
-            $i=$datos['codc_entot'];
-            if ($i>='0' && $i<='2000'){//es numero entonces lo selecciono del popup
-                $sql="select * from entidad_otorgante ORDER BY nombre";
-                $resul=toba::db('designa')->consultar($sql);
-                $datos['codc_entot']=$resul[$i]['cod_entidad'];
-            }
             
             $this->controlador()->dep('datos')->tabla('titulos_docente')->set($datos);
             $this->controlador()->dep('datos')->tabla('titulos_docente')->sincronizar();
-           
             $this->s__mostrar_fcurri=0;
         }
         
@@ -119,24 +120,10 @@ class docente_solapas extends toba_ci
         function evt__form_curric__guardar($datos)
 	{
             
-            $i=$datos['codc_titul'];
-            //obtener id_titulo dado el id del popup
-            if ($i>='0' && $i<='2000'){//es numero entonces lo selecciono del popup
-                $sql="select * from titulo order by codc_nivel";
-                $resul=toba::db('designa')->consultar($sql);
-                $datos['codc_titul']=$resul[$i]['codc_titul'];
-            }
-            $i=$datos['codc_entot'];
-            if ($i>='0' && $i<='2000'){//es numero entonces lo selecciono del popup
-                $sql="select * from entidad_otorgante ORDER BY nombre";
-                $resul=toba::db('designa')->consultar($sql);
-                $datos['codc_entot']=$resul[$i]['cod_entidad'];
-            }
             $datos['id_docente']=$this->s__agente['id_docente'];
             $this->controlador()->dep('datos')->tabla('titulos_docente')->set($datos);
             $this->controlador()->dep('datos')->tabla('titulos_docente')->sincronizar();
-	    $this->controlador()->resetear();
-            $this->s__mostrar_fcurri=0;
+	    $this->s__mostrar_fcurri=0;
             
 	}
         //metodo definido para cargar el campo codc_entot de form_curric
@@ -348,6 +335,7 @@ class docente_solapas extends toba_ci
 	{
             //solo aparece en la solapa de curriculum
             $this->s__mostrar_fcurri=1;
+            $this->controlador()->dep('datos')->tabla('titulos_docente')->resetear();
 	}
 
 

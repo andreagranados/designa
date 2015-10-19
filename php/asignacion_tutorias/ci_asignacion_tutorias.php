@@ -5,6 +5,7 @@ class ci_asignacion_tutorias extends toba_ci
         protected $s__mostrar;
         protected $s__mostrar_ml;
         protected $s__anio;
+        protected $s__datos;
 
         function ini__operacion()
 	{
@@ -24,7 +25,7 @@ class ci_asignacion_tutorias extends toba_ci
                     . " from designacion t_d, docente t_d1, unidad_acad t_u"
                     . " where t_d.id_docente=t_d1.id_docente "
                     . " and t_d.uni_acad=t_u.sigla "
-                    . "and t_d.desde<='".$udia."' and (t_d.hasta>='".$pdia."' or t_d.hasta=null)"
+                    . "and t_d.desde<='".$udia."' and (t_d.hasta>='".$pdia."' or t_d.hasta is null)"
                         . " order by descripcion";
                 $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
                 return toba::db('designa')->consultar($sql);
@@ -98,8 +99,9 @@ class ci_asignacion_tutorias extends toba_ci
 	function evt__formulario__modificacion($datos)
 	{
 		$this->dep('datos')->tabla('tutoria')->set($datos);
-		$this->dep('datos')->sincronizar();
-		$this->resetear();
+		$this->dep('datos')->tabla('tutoria')->sincronizar();
+		$this->dep('datos')->tabla('tutoria')->resetear();
+                $this->s__mostrar=0;
 	}
 
 	function evt__formulario__baja()
@@ -108,7 +110,7 @@ class ci_asignacion_tutorias extends toba_ci
 		
                 $this->dep('datos')->tabla('asignacion_tutoria')->eliminar_todo();
                 $this->dep('datos')->tabla('tutoria')->eliminar_todo();
-		$this->resetear();
+		$this->dep('datos')->tabla('tutoria')->resetear();
 	}
 
 	function evt__formulario__cancelar()
@@ -164,14 +166,13 @@ class ci_asignacion_tutorias extends toba_ci
             $form->set_datos($x);
              if($this->s__mostrar_ml==1){$form->eliminar_evento('modificacion');}
 	}
-        //evento implicito
+        
+        //evento implicito, boton mostrar
         function evt__form_tutoria__modificacion($datos)
 	{
-            
             $this->s__anio=$datos['anio'];
             $this->s__mostrar_ml=1;
-            
-            
+                      
 	}
         
 	//-----------------------------------------------------------------------------------
@@ -181,7 +182,6 @@ class ci_asignacion_tutorias extends toba_ci
         function conf__form_asigna(toba_ei_formulario_ml $form)
 	{ 
             if($this->s__mostrar_ml==1){
-               
                 $this->dep('form_asigna')->descolapsar();
                 $form->ef('id_designacion')->set_obligatorio(true);
                 $form->ef('periodo')->set_obligatorio(true);
@@ -201,9 +201,12 @@ class ci_asignacion_tutorias extends toba_ci
             
             $sql="select * from asignacion_tutoria where id_tutoria=".$tut['id_tutoria'].$where;
             $res=toba::db('designa')->consultar($sql);
-            
+            //print_r($res);// Array ( [0] => Array ( [id_designacion] => 184 [id_tutoria] => 1 [anio] => 2015 [carga_horaria] => 12 [nro_tab9] => 9 [rol] => COOR [periodo] => 1 ) ) 
+            if(count($res)>0){
+                $form->set_datos($res);
+                }
             //$res['id_designacion']='184';
-            $form->set_datos($res);//al inicio la cargo por lo tanto tiene datos
+          
    
 	}
         
@@ -216,14 +219,31 @@ class ci_asignacion_tutorias extends toba_ci
                $datos[$key]['anio']=$this->s__anio;
                $datos[$key]['nro_tab9']=9;
             }
-            //print_r($datos);
-            $this->dep('datos')->tabla('asignacion_tutoria')->procesar_filas($datos);
+           print_r($datos);
+           $this->s__datos=$datos;
+            //$this->dep('datos')->tabla('asignacion_tutoria')->procesar_filas($datos);
 	}
 
 
         //boton de la pantalla
         function evt__guardar()
 	{	
+               foreach ($this->s__datos as $key=>$value) {
+                $dato['id_designacion']=$value['id_designacion'];
+                $dato['id_materia']=$value['id_materia'];
+                $dato['modulo']=$value['modulo'];
+                print_r($dato);
+                $n=array();   
+                $n[]=$value;
+                print_r($n);
+                
+                $this->dep('datos')->tabla('asignacion_tutoria')->resetear();//limpia
+                $this->dep('datos')->tabla('asignacion_tutoria')->cargar($dato);//carga
+                $this->dep('datos')->tabla('asignacion_tutoria')->procesar_filas($n);
+                //$this->dep('datos')->tabla('asignacion_materia')->sincronizar();
+                //$this->dep('datos')->tabla('asignacion_materia')->resetear();
+            }
+          
             $this->dep('datos')->tabla('asignacion_tutoria')->sincronizar();
 	    $this->dep('datos')->tabla('asignacion_tutoria')->resetear();
             $this->dep('datos')->tabla('asignacion_tutoria')->cargar();//despues de guarda actualiza

@@ -7,6 +7,17 @@ class ci_docente extends toba_ci
         protected $s__designacion;
         protected $s__pantalla;
         
+        function get_carrera($id_mat){
+            return $this->dep('datos')->tabla('materia')->get_carrera($id_mat);
+        }
+        function get_uni_acad($id_mat){
+            return $this->dep('datos')->tabla('materia')->get_uni_acad($id_mat);
+        }
+        
+        function es_externa($id_mat){
+             return $this->dep('datos')->tabla('materia')->es_externa($id_mat);
+            
+        }
 //trae los programas asociados a la UA correspondiente al usuario que se loguea
         function get_programas_ua(){
             return $this->dep('datos')->tabla('mocovi_programa')->programas_ua();
@@ -21,6 +32,7 @@ class ci_docente extends toba_ci
         function get_materia_popup($id){
             return $this->dep('datos')->tabla('materia')->get_materia_popup($id);
         } 
+        
         //este metodo permite mostrar en el popup el codigo de la categoria
         //recibe como argumento el id 
         function get_descripcion_categoria($id){
@@ -265,6 +277,13 @@ class ci_docente extends toba_ci
                  $this->set_pantalla('pant_cargo');
             }   
 	}
+        function evt__volver()
+        {
+            //no hago resetear porque pierdo los datos
+            //cuando seleccione otro agente desde la ventana inicial se vuelven a cargar los datos del docente
+            $this->controlador()->set_pantalla('pant_edicion');
+            
+        }
         function evt__agregar_reserva()
 	{
 	   
@@ -358,7 +377,7 @@ class ci_docente extends toba_ci
 	function conf()
 	{
             $id = toba::memoria()->get_parametro('id_designacion');
-            print_r($id);
+           
             if(isset($id)){
                 $sql="select * from designacion where id_designacion=".$id;
                 $res=toba::db('designa')->consultar($sql);
