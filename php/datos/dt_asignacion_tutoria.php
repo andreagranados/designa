@@ -4,10 +4,15 @@ class dt_asignacion_tutoria extends toba_datos_tabla
         function modificar($datos){//recibe los valores nuevos
             //recupero todas las asignaciones de esa tutoria y ese año // idem conf 
             //print_r($datos);
+            if(!isset($datos['carga_horaria'])){
+                $con="null";
+            }else{
+                $con=$datos['carga_horaria'];
+            }
             $sql="select * from asignacion_tutoria where id_tutoria=".$datos['id_tutoria']." and anio=".$datos['anio']." order by id_designacion";
             $res=toba::db('designa')->consultar($sql);
-            $sql="update asignacion_tutoria set id_designacion=".$datos['id_designacion'].",carga_horaria=".$datos['carga_horaria'].",rol='".$datos['rol']."',periodo=".$datos['periodo']." where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_tutoria=".$datos['id_tutoria'];
-            return toba::db('designa')->consultar($sql);
+            $sql="update asignacion_tutoria set id_designacion=".$datos['id_designacion'].",carga_horaria=".$con.",rol='".$datos['rol']."',periodo=".$datos['periodo']." where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_tutoria=".$datos['id_tutoria'];
+            toba::db('designa')->consultar($sql);
         }
         
         function eliminar($datos){
@@ -20,7 +25,11 @@ class dt_asignacion_tutoria extends toba_datos_tabla
         }
         
         function agregar($datos){
-            
+            if(!isset($datos['carga_horaria'])){
+                $con="null";
+            }else{
+                $con=$datos['carga_horaria'];
+            }
             $sql="insert into asignacion_tutoria (id_designacion, id_tutoria, anio, carga_horaria, nro_tab9, rol,periodo) values(".$datos['id_designacion'].",".$datos['id_tutoria'].",".$datos['anio'].",".$datos['carga_horaria'].",".$datos['nro_tab9'].",'".$datos['rol']."',".$datos['periodo']. ")";
             toba::db('designa')->consultar($sql);
         }

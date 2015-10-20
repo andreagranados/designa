@@ -39,4 +39,11 @@ INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, d
 	'Asentamiento Universitario San Martin de los Andes', --descripcion
 	NULL  --listar
 );
+INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
+	'designa', --proyecto
+	'12', --usuario_perfil_datos
+	'FAHU', --nombre
+	'Facultad de Humanidades', --descripcion
+	NULL  --listar
+);
 --- FIN Grupo de desarrollo 0

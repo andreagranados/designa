@@ -1041,12 +1041,15 @@ class dt_designacion extends toba_datos_tabla
 		}  
                 
             $where.=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)";    
-            
+            $where2="";
+            $where3="";
             if (isset($filtro['uni_acad'])) {
 			$where.= "AND uni_acad = ".quote($filtro['uni_acad']);
+                        $where2=" AND a.id_unidad = ".quote($filtro['uni_acad']);
 		}
             if (isset($filtro['programa'])) {
 			$where.= "AND id_programa = ".$filtro['programa'];
+                        $where3= "AND id_programa = ".$filtro['programa'];
 		}
             //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
 		
@@ -1122,24 +1125,34 @@ class dt_designacion extends toba_datos_tabla
                                 ) 
                             ";
               
-            //$con="select * from (".$sql.")a".$where;
+                        
             $con="select uni_acad,id_programa,nombre as programa,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto into temp auxi from (".$sql.")a".$where." group by uni_acad,id_programa,nombre";
             toba::db('designa')->consultar($con);
             //obtengo el credito de cada programa para cada facultad
-            $cp="select a.id_unidad,a.id_programa,sum(a.credito) as credito into temp auxi2 from mocovi_credito a, mocovi_periodo_presupuestario b, unidad_acad c where "
+            $cp="select a.id_unidad,a.id_programa,d.nombre as programa,sum(a.credito) as credito into temp auxi2 from mocovi_credito a, mocovi_periodo_presupuestario b,  mocovi_programa d where "
                     . " a.id_periodo=b.id_periodo and "
                     . " b.anio=".$filtro['anio']." and "
                     . " a.id_escalafon='D' and"
-                    . " a.id_unidad=c.sigla"
-                    . " group by a.id_unidad,a.id_programa";
+                    . " a.id_programa=d.id_programa ".$where2
+                    . " group by a.id_unidad,a.id_programa,d.nombre";
             
-            $cp = toba::perfil_de_datos()->filtrar($cp);
+            
             toba::db('designa')->consultar($cp);
+            
             //al hacer RIGHT JOIN  todos los registros de la tabla derecha tengan o no correspondencia con la de la izquierda
-            $con="select a.uni_acad,a.id_programa,a.programa,b.credito,a.monto,(b.credito-a.monto) as saldo "
-                    . "from auxi a RIGHT JOIN auxi2 b ON (a.uni_acad=b.id_unidad and a.id_programa=b.id_programa), unidad_acad c "
-                    . " where a.uni_acad=c.sigla";
-            $con = toba::perfil_de_datos()->filtrar($con);
+            $con="select a.uni_acad,a.id_programa,a.programa,b.credito,a.monto,(b.credito-a.monto) as saldo into temp auxi3"
+                    . " from auxi a LEFT JOIN auxi2 b ON (a.uni_acad=b.id_unidad and a.id_programa=b.id_programa)";
+            toba::db('designa')->consultar($con);
+                       
+            
+            $con="insert into auxi3 select a.id_unidad,a.id_programa,a.programa,a.credito,0,credito "
+                        . " from auxi2 a where not exists (select * from auxi b"
+                        . " where a.id_unidad=b.uni_acad and a.id_programa=b.id_programa)"
+                        . $where3;
+                toba::db('designa')->consultar($con);
+                         
+            
+            $con="select * from auxi3";
             return toba::db('designa')->consultar($con);
         }
         

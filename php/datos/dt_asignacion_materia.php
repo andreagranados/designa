@@ -1,7 +1,47 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
-	function get_listado($filtro=array())
+	function modificar($datos){//recibe los valores nuevos
+            
+            if(!isset($datos['carga_horaria'])){
+                $con="null";
+            }else{
+                $con=$datos['carga_horaria'];
+            }
+            $sql="select * from asignacion_materia where id_materia=".$datos['id_materia']." and anio=".$datos['anio']." order by id_designacion";
+            $res=toba::db('designa')->consultar($sql);
+            $sql="update asignacion_materia set id_designacion=".$datos['id_designacion'].",id_materia=".$datos['id_materia'].",modulo=".$datos['modulo'].",carga_horaria=".$con.",rol='".$datos['rol']."',id_periodo=".$datos['id_periodo']." where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$res[$datos['elemento']]['modulo'];
+            
+            toba::db('designa')->consultar($sql);
+        }
+        function eliminar($datos){
+           
+            $sql="select * from asignacion_materia where id_materia=".$datos['id_materia']." and anio=".$datos['anio']." order by id_designacion";
+            $res=toba::db('designa')->consultar($sql);
+            
+            $sql="delete from asignacion_materia where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$res[$datos['elemento']]['modulo'];
+            toba::db('designa')->consultar($sql);
+        }
+        
+        function agregar($datos){
+            
+            $sql="select * from asignacion_materia where id_designacion=".$datos['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$datos['modulo'];
+            $res=toba::db('designa')->consultar($sql);
+            
+            if(count($res)>0){
+                toba::notificacion()->agregar('YA SE ENCUENTRA', "error");
+            }else{
+
+                if(!isset($datos['carga_horaria'])){
+                    $con="null";
+                }else{
+                    $con=$datos['carga_horaria'];
+                }
+                $sql="insert into asignacion_materia (id_designacion, id_materia, nro_tab8, rol,id_periodo,modulo,carga_horaria,anio,externa) values(".$datos['id_designacion'].",".$datos['id_materia'].",".$datos['nro_tab8'].",'".$datos['rol']."',".$datos['id_periodo'].",".$datos['modulo'].",".$con.",".$datos['anio'].",".$datos['externa'].")";
+                toba::db('designa')->consultar($sql);
+            }
+        }
+        function get_listado($filtro=array())
 	{
 		$where = array();
 		if (isset($filtro['id_materia'])) {

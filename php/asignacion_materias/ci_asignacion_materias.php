@@ -62,9 +62,7 @@ class ci_asignacion_materias extends toba_ci
 			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado_completo($this->s__datos_filtro));
 		} 
 	}
-//selecciona una materia
-	
-        
+        //selecciona una materia 
         function evt__cuadro__asignar($datos)
 	{
             //cargo la materia y el plan
@@ -75,58 +73,7 @@ class ci_asignacion_materias extends toba_ci
             $this->dep('datos')->tabla('plan_estudio')->cargar($plan);
             $this->set_pantalla('pant_asignacion');
 	}
-	//-----------------------------------------------------------------------------------
-	//---- form_asigna ------------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function conf__form_asigna(toba_ei_formulario_ml $form)
-	{
-            
-            if($this->s__mostrar_ml==1){
-                $this->dep('form_asigna')->descolapsar();
-                $form->ef('id_designacion')->set_obligatorio(true);
-                //$form->ef('carga_horaria')->set_obligatorio(true);
-                $form->ef('id_periodo')->set_obligatorio(true);
-                $form->ef('rol')->set_obligatorio(true);
-                $form->ef('modulo')->set_obligatorio(true);
-            }else{
-                $this->dep('form_asigna')->colapsar();
-            }
-
-                  
-            if (isset($this->s__anio)) {
-                $where=" and t_m.anio=".$this->s__anio;
-            }else{
-                $where='';
-            }
-            //$mat siempre va a tener valor porque la materia la selecciono en una pantalla anterior
-            $mat=$this->dep('datos')->tabla('materia')->get();
-            //muestra solo las asignaciones correspondientes a la UA que corresponde
-            
-            $sql="select * from asignacion_materia t_m where t_m.id_materia=".$mat['id_materia'].$where;
-            $res=toba::db('designa')->consultar($sql);
-          
-            $form->set_datos($res);//al inicio la cargo por lo tanto tiene datos
-               
-	}
-        function evt__form_asigna__modificacion($datos)
-	{
-            
-            print_r('modif');
-            
-            $mat=$this->dep('datos')->tabla('materia')->get();//recupero la materia seleccionada
-            foreach ($datos as $key=>$value) {
-               $datos[$key]['id_materia']=$mat['id_materia'];
-               $datos[$key]['anio']=$this->s__anio;
-               $datos[$key]['nro_tab8']=8;
-            }
-           
-           
-            //$this->dep('datos')->tabla('asignacion_materia')->procesar_filas($datos);
-           $this->s__guardar=$datos;
-         }
-
-	//-----------------------------------------------------------------------------------
+        //-----------------------------------------------------------------------------------
 	//---- form_materia -----------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
@@ -168,27 +115,65 @@ class ci_asignacion_materias extends toba_ci
 		}
 		";
 	}
+	//-----------------------------------------------------------------------------------
+	//---- form_asigna ------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form_asigna(toba_ei_formulario_ml $form)
+	{
+            
+            if($this->s__mostrar_ml==1){
+                $this->dep('form_asigna')->descolapsar();
+                $form->ef('id_designacion')->set_obligatorio(true);
+                $form->ef('id_periodo')->set_obligatorio(true);
+                $form->ef('rol')->set_obligatorio(true);
+                $form->ef('modulo')->set_obligatorio(true);
+            }else{
+                $this->dep('form_asigna')->colapsar();
+            }
+
+                  
+            if (isset($this->s__anio)) {
+                $where=" and t_m.anio=".$this->s__anio;
+            }else{
+                $where='';
+            }
+            //$mat siempre va a tener valor porque la materia la selecciono en una pantalla anterior
+            $mat=$this->dep('datos')->tabla('materia')->get();
+            //muestra solo las asignaciones correspondientes a la UA que corresponde
+            
+            $sql="select * from asignacion_materia t_m where t_m.id_materia=".$mat['id_materia'].$where." order by id_designacion";
+            $res=toba::db('designa')->consultar($sql);
+          
+            $form->set_datos($res);
+               
+	}
+        function evt__form_asigna__modificacion($datos)
+	{
+            $this->s__guardar=$datos;
+         }
+
+	
          //boton de la pantalla
         function evt__guardar()
 	{	
-            print_r('guardar');
+          // print_r($this->s__guardar);exit();
           if(isset($this->s__guardar)){
-             //print_r($this->s__guardar);exit();
-             
+            $mat=$this->dep('datos')->tabla('materia')->get(); 
             foreach ($this->s__guardar as $key=>$value) {
-                $dato['id_designacion']=$value['id_designacion'];
-                $dato['id_materia']=$value['id_materia'];
-                $dato['modulo']=$value['modulo'];
-                print_r($dato);
-                $n=array();   
-                $n[]=$value;
-                print_r($n);
+               $value['nro_tab8']=8;
+               $value['id_materia']=$mat['id_materia'];
+               $value['anio']=$this->s__anio;
+               $value['elemento']=$key;
+               $es_ext=$this->dep('datos')->tabla('materia')->es_externa($mat['id_materia']);
+               if($es_ext){$value['externa']=1;}
+                 else{$value['externa']=0;}
+                switch ($value['apex_ei_analisis_fila']) {
+                    case 'M':  $this->dep('datos')->tabla('asignacion_materia')->modificar($value); break;
+                    case 'B':  $this->dep('datos')->tabla('asignacion_materia')->eliminar($value); break;
+                    case 'A':  $this->dep('datos')->tabla('asignacion_materia')->agregar($value); break;
+                }
                 
-                $this->dep('datos')->tabla('asignacion_materia')->resetear();//limpia
-                $this->dep('datos')->tabla('asignacion_materia')->cargar($dato);//carga
-                $this->dep('datos')->tabla('asignacion_materia')->procesar_filas($n);
-                //$this->dep('datos')->tabla('asignacion_materia')->sincronizar();
-                //$this->dep('datos')->tabla('asignacion_materia')->resetear();
             }
           }
 //            $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
