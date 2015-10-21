@@ -60,4 +60,81 @@ INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dime
 	'34', --elemento
 	'FAHU '  --clave
 );
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'13', --usuario_perfil_datos
+	'13', --dimension
+	'35', --elemento
+	'FATA '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'14', --usuario_perfil_datos
+	'13', --dimension
+	'36', --elemento
+	'ASMA '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'15', --usuario_perfil_datos
+	'13', --dimension
+	'37', --elemento
+	'IBMP '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'16', --usuario_perfil_datos
+	'13', --dimension
+	'38', --elemento
+	'FAAS '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'17', --usuario_perfil_datos
+	'13', --dimension
+	'39', --elemento
+	'CUZA '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'18', --usuario_perfil_datos
+	'13', --dimension
+	'40', --elemento
+	'FADE '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'19', --usuario_perfil_datos
+	'13', --dimension
+	'41', --elemento
+	'FACA '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'20', --usuario_perfil_datos
+	'13', --dimension
+	'42', --elemento
+	'FALE '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'21', --usuario_perfil_datos
+	'13', --dimension
+	'43', --elemento
+	'FAME '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'22', --usuario_perfil_datos
+	'13', --dimension
+	'44', --elemento
+	'AUZA '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'23', --usuario_perfil_datos
+	'13', --dimension
+	'45', --elemento
+	'FAIN '  --clave
+);
 --- FIN Grupo de desarrollo 0

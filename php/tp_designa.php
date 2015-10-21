@@ -12,6 +12,7 @@
                 echo "<br>";
 		echo "<div style='font-size:15px;font-family:Verdana,Helvetica;color:#660033;font-weight:bold;'>";
 		echo "M&oacute;dulo Designaciones Docentes (SDD)";
+		
 		echo "</div>";
 		
 		echo "</div>\n\n";    
