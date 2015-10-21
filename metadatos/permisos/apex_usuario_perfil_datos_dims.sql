@@ -76,13 +76,6 @@ INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dime
 );
 INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
 	'designa', --proyecto
-	'15', --usuario_perfil_datos
-	'13', --dimension
-	'37', --elemento
-	'IBMP '  --clave
-);
-INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
-	'designa', --proyecto
 	'16', --usuario_perfil_datos
 	'13', --dimension
 	'38', --elemento
@@ -136,5 +129,12 @@ INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dime
 	'13', --dimension
 	'45', --elemento
 	'FAIN '  --clave
+);
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'24', --usuario_perfil_datos
+	'13', --dimension
+	'46', --elemento
+	'ESCM '  --clave
 );
 --- FIN Grupo de desarrollo 0

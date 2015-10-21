@@ -62,13 +62,6 @@ INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, d
 );
 INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
 	'designa', --proyecto
-	'15', --usuario_perfil_datos
-	'IBMP', --nombre
-	'Instituto de Biología Marina y Pesca', --descripcion
-	NULL  --listar
-);
-INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
-	'designa', --proyecto
 	'16', --usuario_perfil_datos
 	'FAAS', --nombre
 	'Facultad de Ciencia del Ambiente y la Salud', --descripcion
@@ -121,6 +114,13 @@ INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, d
 	'23', --usuario_perfil_datos
 	'FAIN', --nombre
 	'Facultad de Ingeniería', --descripcion
+	NULL  --listar
+);
+INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
+	'designa', --proyecto
+	'24', --usuario_perfil_datos
+	'ESCM', --nombre
+	'Escuela Superior de Ciencias Marinas', --descripcion
 	NULL  --listar
 );
 --- FIN Grupo de desarrollo 0
