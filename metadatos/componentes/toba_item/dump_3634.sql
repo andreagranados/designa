@@ -17,15 +17,15 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	'0', --carpeta
 	'0', --nivel_acceso
 	'web', --solicitud_tipo
-	'toba', --pagina_tipo_proyecto
-	'logon', --pagina_tipo
+	'designa', --pagina_tipo_proyecto
+	'designa', --pagina_tipo
 	'toba', --actividad_buffer_proyecto
 	'0', --actividad_buffer
 	'toba', --actividad_patron_proyecto
 	'abms_cd_c', --actividad_patron
 	'Autentificación de Usuarios', --nombre
 	NULL, --descripcion
-	NULL, --punto_montaje
+	'23', --punto_montaje
 	'', --actividad_accion
 	'0', --menu
 	NULL, --orden
@@ -39,7 +39,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --zona
 	NULL, --zona_orden
 	'0', --zona_listar
-	NULL, --imagen_recurso_origen
+	'apex', --imagen_recurso_origen
 	NULL, --imagen
 	NULL, --parametro_a
 	NULL, --parametro_b
