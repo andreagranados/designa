@@ -20,5 +20,6 @@ class dt_caracter extends toba_datos_tabla
 
 
 
+
 }
 ?>

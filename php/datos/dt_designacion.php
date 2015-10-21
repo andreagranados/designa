@@ -44,6 +44,9 @@ class dt_designacion extends toba_datos_tabla
 	function get_listado($filtro=array())
 	{
 		$where = array();
+		if (isset($filtro['anio_acad'])) {
+			$where[] = "anio_acad = ".quote($filtro['anio_acad']);
+		}
 		if (isset($filtro['uni_acad'])) {
 			$where[] = "uni_acad = ".quote($filtro['uni_acad']);
 		}
@@ -79,7 +82,8 @@ class dt_designacion extends toba_datos_tabla
 			t_td.descripcion as tipo_desig_nombre,
 			t_r.descripcion as id_reserva_nombre,
 			t_d.estado,
-			t_n5.tipo_norma as id_norma_cs_nombre
+			t_n5.tipo_norma as id_norma_cs_nombre,
+			t_d.por_permuta
 		FROM
 			designacion as t_d	LEFT OUTER JOIN docente as t_d1 ON (t_d.id_docente = t_d1.id_docente)
 			LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu)
@@ -109,6 +113,7 @@ class dt_designacion extends toba_datos_tabla
 		}
 		return toba::db('designa')->consultar($sql);
 	}
+
 
 
 

@@ -50,7 +50,7 @@ class ci_materias_conf extends toba_ci
 	
 	function evt__cuadro__seleccion($seleccion)
 	{
-            print_r($seleccion);
+            
                       
 	}
 

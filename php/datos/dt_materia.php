@@ -8,10 +8,12 @@ class dt_materia extends toba_datos_tabla
             return trim($resul[0]['uni_acad']);//le saco los blancos porque sino no muestra en el combo
         }
         function get_carrera($id_mat){
-            $sql = "select t_p.cod_carrera||'('||t_p.ordenanza||')' as cod_carrera  from materia t_m, plan_estudio t_p"
+            $sql = "select t_p.id_plan "
+                    . " from materia t_m, plan_estudio t_p"
                      . " where t_m.id_plan=t_p.id_plan and t_m.id_materia= ".$id_mat;
+            
             $resul = toba::db('designa')->consultar($sql);
-            return trim($resul[0]['cod_carrera']);//le saco los blancos porque sino no muestra en el combo
+            return $resul[0]['id_plan'];
         }
         function es_externa($id_mat){
             $sql="select * from materia t_m, plan_estudio t_p, unidad_acad t_u "

@@ -343,10 +343,11 @@ class ci_docente extends toba_ci
 	function conf__cuadro_cargos(designa_ei_cuadro $cuadro)
 	{
             //muestra todos los cargos que estan dentro del periodo vigente
+            $agente=$this->dep('datos')->tabla('docente')->get();
             if  (isset($this->s__datos_filtro_cargo)) {
-                $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_vigentes($this->s__agente['id_docente'],$this->s__datos_filtro_cargo));                             
+                $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_vigentes($agente['id_docente'],$this->s__datos_filtro_cargo));                             
             }else{   
-                $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_vigentes($this->s__agente['id_docente']));
+                $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_vigentes($agente['id_docente']));
             }
    
 	}
@@ -386,9 +387,7 @@ class ci_docente extends toba_ci
                 $this->dep('datos')->tabla('docente')->cargar($datos);
                 $dd['id_designacion']=$res[0]['id_designacion'];
                 $this->dep('datos')->tabla('designacion')->cargar($dd);
-                
-                $this->dep('datos')->tabla('designacion')->cargar($datos);
-            
+                      
                 $desig = $this->dep('datos')->tabla('designacion')->get();//obtengo la designacion recien cargada
             
                 if ($desig['id_norma'] <> null){//si tiene la norma del cd 

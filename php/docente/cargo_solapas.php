@@ -474,16 +474,19 @@ class cargo_solapas extends toba_ci
                     $x=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get();
                    
                     //obtengo la unidad academica
+                    //ojo tengo que hacer un trim en sigla porque sino no lo muestra
                     $ua=$this->controlador()->get_uni_acad($x['id_materia']);
                     $x['uni_acad']=$ua;
+                    
                     //obtengo la carrera
                     $car=$this->controlador()->get_carrera($x['id_materia']);
                    
                     $maes=$form->ef('cod_carrera')->get_maestros();  
                     $form->ef('cod_carrera')-> quitar_maestro($maes[0]);
-                    $maes=$form->ef('cod_carrera')->get_maestros(); 
+                                       
                     
-                    //$x['cod_carrera']='ACOM(0776/97)';
+                    $x['cod_carrera']=$car;
+                    //$x['cod_carrera']=2;//funciona
                     $maes=$form->ef('id_materia')->get_maestros();  
                     $form->ef('id_materia')-> quitar_maestro($maes[0]);
                                         

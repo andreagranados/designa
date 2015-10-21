@@ -8,8 +8,6 @@ class dt_unidad_acad extends toba_datos_tabla
 	}
 
 
-
-
         function get_ua(){
             
              $sql="select sigla,descripcion from unidad_acad ";
