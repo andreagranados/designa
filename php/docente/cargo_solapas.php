@@ -170,10 +170,8 @@ class cargo_solapas extends toba_ci
 	function evt__form_cargo__modificacion($datos)
 	{
          //print_r($datos);exit();// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
-          $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
-          if ($vale){
-             //--recupero la designacion que se desea modificar
-              
+          
+             //--recupero la designacion que se desea modificar 
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             
             //cuando presiona el boton modificar puede que modifique  la categ mapuche
@@ -205,6 +203,8 @@ class cargo_solapas extends toba_ci
                 
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
                 {//si modifica algo que afecte el credito
+                 $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
+                 if ($vale){
                     //verifico que tenga credito
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
@@ -217,6 +217,8 @@ class cargo_solapas extends toba_ci
                         $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
                         toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                      }
+                 }else{$mensaje='LA DESIGNACION DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
+                       toba::notificacion()->agregar(utf8_decode($mensaje), "error");}
             
                  }else{//no modifica nada de credito
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
@@ -229,12 +231,14 @@ class cargo_solapas extends toba_ci
                 if ($desig['estado']<>'L' && $desig['estado']<>'B'){$datos['estado']='R';};
                 $datos['check_presup']=0;
                 $datos['check_academica']=0;
-                $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número tkd. De hacer esto, se perderá el número. ¿Desea continuar?");                       
+                $mensaje=utf8_decode("Esta modificando una designación que tiene número tkd. La designación perderá el número tkd. ");                       
                 toba::notificacion()->agregar($mensaje,'info');
                 
                 //si modifica algo que afecte el credito
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
                 {
+                  $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
+                  if ($vale){
                     //verifico que tenga credito
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
@@ -250,6 +254,10 @@ class cargo_solapas extends toba_ci
                         $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
                         toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                      }
+                  }else{
+                      $mensaje='LA DESIGNACION DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
+                       toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                  }
                 }else{//no modifica nada de credito
                     //pasa a historico
                     $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
@@ -260,10 +268,7 @@ class cargo_solapas extends toba_ci
                     toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
                     }
                 }
-          }else{//la designacion no esta dentro del periodo contra el que se chequea
-              $mensaje='LA DESIGNACION DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
-              toba::notificacion()->agregar(utf8_decode($mensaje), "error");
-          }
+          
 	}
 
 	function evt__form_cargo__cancelar()
