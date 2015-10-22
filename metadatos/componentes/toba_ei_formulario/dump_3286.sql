@@ -491,8 +491,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --permitir_html
 	'0', --deshabilitar_rest_func
 	NULL, --estado_defecto
-	'0', --solo_lectura
-	'1', --solo_lectura_modificacion
+	'1', --solo_lectura
+	'0', --solo_lectura_modificacion
 	'get_categ_estatuto', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
@@ -503,7 +503,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
-	'cat_mapuche,ec', --carga_maestros
+	'ec,cat_mapuche', --carga_maestros
 	'0', --carga_cascada_relaj
 	'0', --cascada_mantiene_estado
 	'0', --carga_permite_no_seteado
@@ -574,8 +574,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --permitir_html
 	'0', --deshabilitar_rest_func
 	NULL, --estado_defecto
-	'0', --solo_lectura
-	'1', --solo_lectura_modificacion
+	'1', --solo_lectura
+	'0', --solo_lectura_modificacion
 	'get_dedicacion_categoria', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
@@ -1054,8 +1054,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --permitir_html
 	'0', --deshabilitar_rest_func
 	NULL, --estado_defecto
-	'0', --solo_lectura
-	'1', --solo_lectura_modificacion
+	'1', --solo_lectura
+	'0', --solo_lectura_modificacion
 	'get_descripcion_categoria', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include

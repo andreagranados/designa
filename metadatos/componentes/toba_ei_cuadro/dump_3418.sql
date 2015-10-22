@@ -568,9 +568,9 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3418', --objeto_cuadro
 	'2471', --objeto_cuadro_col
-	'licencia', --clave
+	'lsgh', --clave
 	'17', --orden
-	'Licencia?', --titulo
+	'LSGH?', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

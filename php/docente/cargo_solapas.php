@@ -54,6 +54,7 @@ class cargo_solapas extends toba_ci
                 $this->pantalla()->tab("pant_materias")->desactivar();
                 $this->pantalla()->tab("pant_gestion")->desactivar();
                 $this->pantalla()->tab("pant_novedad")->desactivar();
+                $this->pantalla()->tab("pant_novedad_b")->desactivar();
                 
 		}
         } 
@@ -77,8 +78,9 @@ class cargo_solapas extends toba_ci
             return $dedi;
 
         }
-        function get_categ_estatuto($id,$ec){
-            $est=$this->controlador()->get_categ_estatuto($id,$ec);
+        //ingresa como parametro el check y la categ
+        function get_categ_estatuto($ec,$id){
+            $est=$this->controlador()->get_categ_estatuto($ec,$id);
             return $est;
         }
         
@@ -97,18 +99,17 @@ class cargo_solapas extends toba_ci
                 $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,2);
                 
                 if ($band && $bandp){//si hay credito 
-                                       
-                    $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
-                    $docente=$this->controlador()->agente_seleccionado();
-                    $datos['uni_acad']= strtoupper($usuario);
+                    $docente=$this->controlador()->dep('datos')->tabla('docente')->get();
+                    $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
+                    $datos['uni_acad']= $ua[0]['sigla'];
                     $datos['id_docente']=$docente['id_docente'];
-                    $datos['uni_acad']= strtoupper($usuario);
                     $datos['nro_cargo']=0;
                     $datos['check_presup']=0;
                     $datos['check_academica']=0;
                     $datos['tipo_desig']=1;
-                    $datos['id_reserva']=0;
+                    $datos['id_reserva']=null;
                     $datos['estado']='A';
+                    $datos['por_permuta']=0;
                                       
                     
                     if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero 
@@ -135,7 +136,6 @@ class cargo_solapas extends toba_ci
                     $prog=$this->controlador()->dep('datos')->tabla('mocovi_programa')->programa_defecto();
                    
                     //obtengo la designacion recien cargada
-                   
                     $des=$this->controlador()->dep('datos')->tabla('designacion')->get();//trae el que acaba de insertar
                     $impu['id_programa']=$prog;
                     $impu['porc']=100;
@@ -143,8 +143,8 @@ class cargo_solapas extends toba_ci
                     
                     $this->controlador()->dep('datos')->tabla('imputacion')->set($impu);
                     $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
-                    $this->controlador()->resetear();
-
+                    $designacion['id_designacion']=$des['id_designacion'];
+                    $this->controlador()->dep('datos')->tabla('designacion')->cargar($designacion);
                 }
                 else{
                     $mensaje='NO SE DISPONE DE CRÉDITO PARA INGRESAR LA DESIGNACIÓN';

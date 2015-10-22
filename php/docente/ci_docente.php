@@ -7,6 +7,9 @@ class ci_docente extends toba_ci
         protected $s__designacion;
         protected $s__pantalla;
         
+        function get_ua(){
+            return $this->dep('datos')->tabla('unidad_acad')->get_ua();
+        }
         function get_carrera($id_mat){
             return $this->dep('datos')->tabla('materia')->get_carrera($id_mat);
         }
@@ -86,9 +89,9 @@ class ci_docente extends toba_ci
                 return($dedicacion);
             }
         }
-	function get_categ_estatuto($id,$ec){
+	function get_categ_estatuto($ec,$id){
             
-            if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
+            if ($id>='0' and $id<='20000'){//es un elemento seleccionado del popup
                 $sql="SELECT
 			t_cs.codigo_siu,
 			t_cs.descripcion
@@ -192,9 +195,7 @@ class ci_docente extends toba_ci
                 if (isset($this->s__datos_filtro)) {
                     $cuadro->set_datos($this->dep('datos')->tabla('docente')->get_listado($this->s__datos_filtro));
                         
-		} else {
-                    $cuadro->set_datos($this->dep('datos')->tabla('docente')->get_listado());
-		}
+		} 
 	}
         
 	function evt__cuadro__seleccion($datos)
@@ -274,6 +275,7 @@ class ci_docente extends toba_ci
             }
             //si estoy en la pantalla cargo_seleccion y presiono agregar entonces
             if($this->s__pantalla=='pant_cargo_seleccion'){
+                 $this->dep('datos')->tabla('designacion')->resetear();
                  $this->set_pantalla('pant_cargo');
             }   
 	}
