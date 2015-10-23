@@ -192,7 +192,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                         t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
                         m_c.costo_diario, 
                         t_t.porc,"
-                    . " (case when t_no.desde<='".$pdia."' then ( case when t_no.hasta >='".$udia."' then ((cast('".$udia."' as date)-cast('".$pdia."' as date))+1) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta>='".$udia."') then ('".$udia."'-t_no.desde+1) else (t_no.hasta-t_no.desde+1) end )end ) as dias_lic,"
+                    . " case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end  as dias_lic,"
                     . "case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
                         FROM designacion as t_d 
                             
@@ -366,7 +366,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                         t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
                         m_c.costo_diario, 
                         t_t.porc,"
-                    . " (case when t_no.desde<='".$pdia."' then ( case when t_no.hasta >='".$udia."' then ((cast('".$udia."' as date)-cast('".$pdia."' as date))+1) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta>='".$udia."') then ('".$udia."'-t_no.desde+1) else (t_no.hasta-t_no.desde+1) end )end ) as dias_lic,"
+                    . " case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end  as dias_lic,"
                     . "case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
                         FROM designacion as t_d 
                             
@@ -414,6 +414,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                     . " and b.id_periodo=d.id_periodo"
                     . " and d.actual " ;
             $sql = toba::perfil_de_datos()->filtrar($sql);
+           
             $resul=toba::db('designa')->consultar($sql);
             $tengo=0;
             if(count($resul)>0){

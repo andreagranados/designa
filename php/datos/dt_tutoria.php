@@ -6,7 +6,7 @@ class dt_tutoria extends toba_datos_tabla
                 $where = array(); 
                 
 		if (isset($filtro['descripcion'])) {
-                    $where[]=" descripcion ILIKE ".quote("%{$filtro['descripcion']}%");	
+                    $where[]=" t_t.descripcion ILIKE ".quote("%{$filtro['descripcion']}%");	
 		}
                 if (isset($filtro['uni_acad'])) {
                     $where[]= " uni_acad = ".quote("{$filtro['uni_acad']}");

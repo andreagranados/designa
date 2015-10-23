@@ -169,7 +169,7 @@ class cargo_solapas extends toba_ci
         //si ya tenia numero de tkd cambia su estado a R (rectificada)
 	function evt__form_cargo__modificacion($datos)
 	{
-         //print_r($datos);exit();// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
+            //print_r($datos);exit();// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
           
              //--recupero la designacion que se desea modificar 
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
@@ -177,7 +177,7 @@ class cargo_solapas extends toba_ci
             //cuando presiona el boton modificar puede que modifique  la categ mapuche
             //o puede modificar algun otro dato
             //por lo tanto $datos['cat_mapuche'] puede ser numero o no
-            if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero 
+            if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
                 $id=$datos['cat_mapuche'];
                 $sql="SELECT
 			t_cs.codigo_siu,
@@ -227,6 +227,7 @@ class cargo_solapas extends toba_ci
                      }
                 }
             else{//tiene numero de 540
+               
                 $datos['nro_540']=null;
                 if ($desig['estado']<>'L' && $desig['estado']<>'B'){$datos['estado']='R';};
                 $datos['check_presup']=0;
@@ -236,9 +237,11 @@ class cargo_solapas extends toba_ci
                 
                 //si modifica algo que afecte el credito
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
-                {
+                { 
+                  
                   $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
                   if ($vale){
+                    
                     //verifico que tenga credito
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);

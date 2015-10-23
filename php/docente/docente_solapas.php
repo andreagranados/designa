@@ -203,37 +203,36 @@ class docente_solapas extends toba_ci
 			$form->eliminar_evento('borrar');
 		}
 	}
-
-	/**
-	 * Atrapa la interacci�n del usuario con el bot�n asociado
-	 * @param array $datos Estado del componente al momento de ejecutar el evento. El formato es el mismo que en la carga de la configuraci�n
-	 */
+        //boton que trae de siu-mapuche los datos del docente, los muestra en pantalla y pide el ok para actualizar
 	function evt__form_docente__modificacion($datos)
-	{
-	}
+        {
+           
+        }
         
         //da de alta un nuevo docente
         function evt__form_docente__guardar($datos)
 	{
-            //print_r($datos);exit();// 27283999969
-            $datos['nro_tabla']=1;
-            $datos['nro_cuil1']=substr($datos['cuil'], 0, 2);
-            $datos['nro_cuil']=substr($datos['cuil'], 2, 8);
-            $datos['nro_cuil2']=substr($datos['cuil'], 10, 1);
-            $this->controlador()->dep('datos')->tabla('docente')->set($datos);    
-            $this->controlador()->dep('datos')->tabla('docente')->sincronizar();
-            $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
-            $datosc['id_docente']=$doc['id_docente'];  
-                      
-            $this->controlador()->dep('datos')->tabla('docente')->cargar($datosc);
-	    
-	}
-
+            
+            if($datos['legajo']==0){
+                $datos['nro_tabla']=1;
+                $datos['nro_cuil1']=substr($datos['cuil'], 0, 2);
+                $datos['nro_cuil']=substr($datos['cuil'], 2, 8);
+                $datos['nro_cuil2']=substr($datos['cuil'], 10, 1);
+                $this->controlador()->dep('datos')->tabla('docente')->set($datos);    
+                $this->controlador()->dep('datos')->tabla('docente')->sincronizar();
+                $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
+                $datosc['id_docente']=$doc['id_docente'];      
+                $this->controlador()->dep('datos')->tabla('docente')->cargar($datosc);
+            }else{
+                $mensaje='NO ESTA PERMITIDO MODIFICAR LOS DATOS DE UN DOCENTE CON LEGAJO. LOS MISMOS SERAN ACTUALIZADOS PERIODICAMENTE CON INFORMACIÓN SIU-MAPUCHE';
+                toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+               }
+            }
+         
 	//saque el boton por el momento
         function evt__form_docente__borrar($datos)
 	{
-            $this->controlador()->dep('datos')->tabla('docente')->eliminar_todo();
-	    
+            $this->controlador()->dep('datos')->tabla('docente')->eliminar_todo();  
 	}
         
 	

@@ -21,7 +21,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Asignación Tutorias - Form', --nombre
-	NULL, --titulo
+	'Formulario de Alta', --titulo
 	'0', --colapsable
 	NULL, --descripcion
 	'designa', --fuente_datos_proyecto
@@ -269,8 +269,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --carga_permite_no_seteado
 	NULL, --carga_no_seteado
 	NULL, --carga_no_seteado_ocultar
-	'30', --edit_tamano
-	'30', --edit_maximo
+	'50', --edit_tamano
+	NULL, --edit_maximo
 	NULL, --edit_mascara
 	NULL, --edit_unidad
 	NULL, --edit_rango

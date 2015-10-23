@@ -899,6 +899,10 @@ class dt_designacion extends toba_datos_tabla
 		}    
             $where.=" AND t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)";    
             
+            if (isset($filtro['id_departamento'])) {
+		 $where.=" AND t_d.id_departamento=".$filtro['id_departamento'];
+		}    
+            
             if (isset($filtro['condicion'])) {
                 switch ($filtro['condicion']) {
                     case 'R': $where.=" AND t_d.carac='R'";    break;
@@ -943,9 +947,10 @@ class dt_designacion extends toba_datos_tabla
                         t_d.cat_estat,
                         t_d.dedic, 
                         t_c.descripcion as carac,
-                        t_d3.descripcion as id_departamento,
-                        t_a.descripcion as id_area,
-                        t_o.descripcion as id_orientacion,
+                        t_d3.iddepto as id_departamento,
+                        t_d3.descripcion as departamento,
+                        t_a.descripcion as area,
+                        t_o.descripcion as orientacion,
                         t_d.uni_acad, 
                         t_m.quien_emite_norma as emite_norma,
                         t_d.id_norma, 
