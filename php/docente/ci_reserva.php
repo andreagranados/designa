@@ -121,8 +121,8 @@ class ci_reserva extends designa_ci
                 //-inserta la designacion de tipo reserva
                 $reserva=$this->controlador()->dep('datos')->tabla('reserva')->get();
                 $datos['id_reserva']=$reserva['id_reserva'];
-                $usuario = toba::usuario()->get_id();//recupero datos del usuario logueado
-                $datos['uni_acad']= strtoupper($usuario);
+                $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
+                $datos['uni_acad']= $ua[0]['sigla'];
                 $datos['nro_cargo']=0;
                 $datos['check_presup']=0;
                 $datos['check_academica']=0;
@@ -130,6 +130,7 @@ class ci_reserva extends designa_ci
                 $datos['concursado']=0;
                 $datos['estado']='A';
                 $datos['cat_mapuche']=$cat;
+                $datos['por_permuta']=0;
                 $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                 $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                 //---inserta la imputacion por defecto

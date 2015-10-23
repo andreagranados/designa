@@ -1136,7 +1136,7 @@ class dt_designacion extends toba_datos_tabla
                                 ) 
                             ";
               
-                        
+                     
             $con="select uni_acad,id_programa,nombre as programa,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto into temp auxi from (".$sql.")a".$where." group by uni_acad,id_programa,nombre";
             toba::db('designa')->consultar($con);
             //obtengo el credito de cada programa para cada facultad
@@ -1150,7 +1150,7 @@ class dt_designacion extends toba_datos_tabla
             
             toba::db('designa')->consultar($cp);
             
-            //al hacer RIGHT JOIN  todos los registros de la tabla derecha tengan o no correspondencia con la de la izquierda
+            //al hacer RIGHT JOIN  toma todos los registros de la tabla derecha tengan o no correspondencia con la de la izquierda
             $con="select a.uni_acad,a.id_programa,a.programa,b.credito,a.monto,(b.credito-a.monto) as saldo into temp auxi3"
                     . " from auxi a LEFT JOIN auxi2 b ON (a.uni_acad=b.id_unidad and a.id_programa=b.id_programa)";
             toba::db('designa')->consultar($con);
