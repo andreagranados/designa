@@ -124,7 +124,7 @@ class ci_docente extends toba_ci
             return $this->dep('datos')->tabla('mocovi_periodo_presupuestario')->pertenece_periodo($fd,$fh);
         }
         function get_categoria_popup($id){
-            if($id>='0' && $id<='2000'){//si es un numero 
+            if($id>='0' && $id<='20000'){//si es un numero 
                 
                 $sql="SELECT
 			t_cs.codigo_siu,

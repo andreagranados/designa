@@ -60,7 +60,8 @@ class ci_materias extends toba_ci
 	{
 		$this->dep('datos')->tabla('materia')->set($datos);
 		$this->dep('datos')->sincronizar();
-		$this->resetear();
+                $this->dep('datos')->cargar($datos);
+	   
 	}
 
 	

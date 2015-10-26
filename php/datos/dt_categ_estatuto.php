@@ -18,5 +18,6 @@ class dt_categ_estatuto extends toba_datos_tabla
 
 
 
+
 }
 ?>

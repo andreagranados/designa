@@ -171,11 +171,28 @@ class ci_reserva extends designa_ci
                 $datos['estado']='R';//siempre pasa a estado R porque las reservas no tienen licencia
                 $datos['check_presup']=0;
                 $datos['check_academica']=0;
-                $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número tkd. De hacer esto, se perderá el número. ¿Desea continuar?");                       
+                $mensaje=utf8_decode("Esta intentando modificar una designación que tiene número tkd. Perderá el número tkd.");                       
                 toba::notificacion()->agregar($mensaje,'info');
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
                     //verifico que tenga credito
-                    $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                    //$cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                     if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
+                        $id=$datos['cat_mapuche'];
+                        $sql="SELECT
+                                t_cs.codigo_siu,
+                                t_cs.descripcion,
+                                t_c.catest,
+                                t_c.id_ded
+                        FROM
+                                categ_siu as t_cs LEFT OUTER JOIN macheo_categ t_c ON (t_cs.codigo_siu=t_c.catsiu)
+                                where escalafon='D'
+                        ORDER BY descripcion";
+                        $resul=toba::db('designa')->consultar($sql);
+                
+                        $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
+                        $datos['cat_estat']=$resul[$id]['catest'];
+                        $datos['dedic']=$resul[$id]['id_ded'];
+                    }
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
                     $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
                         if ($band && $band2){//si hay credito
@@ -206,7 +223,24 @@ class ci_reserva extends designa_ci
              }else{//no tiene nro de 540
                    if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
                     //verifico que tenga credito
-                    $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                    //$cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                       if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
+                        $id=$datos['cat_mapuche'];
+                        $sql="SELECT
+                                t_cs.codigo_siu,
+                                t_cs.descripcion,
+                                t_c.catest,
+                                t_c.id_ded
+                        FROM
+                                categ_siu as t_cs LEFT OUTER JOIN macheo_categ t_c ON (t_cs.codigo_siu=t_c.catsiu)
+                                where escalafon='D'
+                        ORDER BY descripcion";
+                        $resul=toba::db('designa')->consultar($sql);
+                
+                        $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
+                        $datos['cat_estat']=$resul[$id]['catest'];
+                        $datos['dedic']=$resul[$id]['id_ded'];
+                    }   
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
                     $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
                         if ($band && $band2){//si hay credito
