@@ -132,7 +132,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'66', --objeto_ei_filtro_col
 	'3217', --objeto_ei_filtro
 	'designa', --objeto_ei_filtro_proyecto
-	'cadena', --tipo
+	'numero', --tipo
 	'legajo', --nombre
 	'legajo', --expresion
 	'Legajo', --etiqueta
@@ -307,8 +307,8 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'3217', --objeto_ei_filtro
 	'designa', --objeto_ei_filtro_proyecto
 	'cadena', --tipo
-	'documento', --nombre
-	'documento', --expresion
+	'nro_docum', --nombre
+	'nro_docum', --expresion
 	'Documento', --etiqueta
 	NULL, --descripcion
 	'0', --obligatorio

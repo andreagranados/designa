@@ -2,6 +2,7 @@
 class ci_docente extends toba_ci
 {
 	protected $s__datos_filtro;
+        protected $s__where;
         protected $s__agente;
         protected $s__datos_filtro_cargo;
         protected $s__designacion;
@@ -182,18 +183,21 @@ class ci_docente extends toba_ci
 	function evt__filtro__filtrar($datos)
 	{
 	    $this->s__datos_filtro = $datos;
+            $this->s__where = $this->dep('filtro')->get_sql_where();
+            
          }
 
 	function evt__filtro__cancelar()
 	{
 		unset($this->s__datos_filtro);
+                unset($this->s__where);
 	}
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
                 if (isset($this->s__datos_filtro)) {
-                    $cuadro->set_datos($this->dep('datos')->tabla('docente')->get_listado($this->s__datos_filtro));
+                    $cuadro->set_datos($this->dep('datos')->tabla('docente')->get_listado($this->s__where));
                         
 		} 
 	}

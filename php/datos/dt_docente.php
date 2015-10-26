@@ -1,54 +1,58 @@
 <?php
 class dt_docente extends toba_datos_tabla
 {
-	function get_listado($filtro=array())
+	function get_listado($where=null)
 	{
-            $where = array();  
+            if(!is_null($where)){
+                $where='Where '.$where;
+            }else{
+                $where='';
+            }
            
-            if (isset($filtro['legajo'])) {
-                    switch ($filtro['legajo']['condicion']) {
-                        case 'contiene':$where[] = "TRIM(cast(legajo as text)) ILIKE ".quote("%{$filtro['legajo']['valor']}%");break;
-                        case 'no_contiene':$where[] = "TRIM(cast(legajo as text)) NOT ILIKE ".quote("%{$filtro['legajo']['valor']}%");break;
-                        case 'comienza_con':$where[] = "TRIM(cast(legajo as text)) ILIKE ".quote("{$filtro['legajo']['valor']}%");break;
-                        case 'termina_con':$where[] = "TRIM(cast(legajo as text)) ILIKE ".quote("%{$filtro['legajo']['valor']}");break;
-                        case 'es_igual_a':$where[] = "TRIM(cast(legajo as text)) = ".quote("{$filtro['legajo']['valor']}");break;
-                        case 'es_distinto_de':$where[] = "TRIM(cast(legajo as text)) <> ".quote("{$filtro['legajo']['valor']}");break;
-                    }
-			
-		}
-            if (isset($filtro['documento'])) {
-                    switch ($filtro['documento']['condicion']) {
-                        case 'contiene':$where[] = "TRIM(cast(nro_docum as text)) ILIKE ".quote("%{$filtro['documento']['valor']}%");break;
-                        case 'no_contiene':$where[] = "TRIM(cast(nro_docum as text)) NOT ILIKE ".quote("%{$filtro['documento']['valor']}%");break;
-                        case 'comienza_con':$where[] = "TRIM(cast(nro_docum as text)) ILIKE ".quote("{$filtro['documento']['valor']}%");break;
-                        case 'termina_con':$where[] = "TRIM(cast(nro_docum as text)) ILIKE ".quote("%{$filtro['documento']['valor']}");break;
-                        case 'es_igual_a':$where[] = "TRIM(cast(nro_docum as text)) = ".quote("{$filtro['documento']['valor']}");break;
-                        case 'es_distinto_de':$where[] = "TRIM(cast(nro_docum as text)) <> ".quote("{$filtro['documento']['valor']}");break;
-                    }
-			
-		}
-            if (isset($filtro['apellido'])) {
-                    switch ($filtro['apellido']['condicion']) {
-                        case 'contiene':$where[] = "TRIM(apellido) ILIKE ".quote("%{$filtro['apellido']['valor']}%");break;
-                        case 'no_contiene':$where[] = "TRIM(apellido) NOT ILIKE ".quote("%{$filtro['apellido']['valor']}%");break;
-                        case 'comienza_con':$where[] = "TRIM(apellido) ILIKE ".quote("{$filtro['apellido']['valor']}%");break;
-                        case 'termina_con':$where[] = "TRIM(apellido) ILIKE ".quote("%{$filtro['apellido']['valor']}");break;
-                        case 'es_igual_a':$where[] = "TRIM(apellido) = ".quote("{$filtro['apellido']['valor']}");break;
-                        case 'es_distinto_de':$where[] = "TRIM(apellido) <> ".quote("{$filtro['apellido']['valor']}");break;
-                    }
-			
-    		}
-        	if (isset($filtro['nombre'])) {
-                    switch ($filtro['nombre']['condicion']) {
-                        case 'contiene':$where[] = "TRIM(t_d.nombre) ILIKE ".quote("%{$filtro['nombre']['valor']}%");break;
-                        case 'no_contiene':$where[] = "TRIM(t_d.nombre) NOT ILIKE ".quote("%{$filtro['nombre']['valor']}%");break;
-                        case 'comienza_con':$where[] = "TRIM(t_d.nombre) ILIKE ".quote("{$filtro['nombre']['valor']}%");break;
-                        case 'termina_con':$where[] = "TRIM(t_d.nombre) ILIKE ".quote("%{$filtro['nombre']['valor']}");break;
-                        case 'es_igual_a':$where[] = "TRIM(t_d.nombre) = ".quote("{$filtro['nombre']['valor']}");break;
-                        case 'es_distinto_de':$where[] = "TRIM(t_d.nombre) <> ".quote("{$filtro['nombre']['valor']}");break;
-                    }
-			
-		}
+//            if (isset($filtro['legajo'])) {
+//                    switch ($filtro['legajo']['condicion']) {
+//                        case 'contiene':$where[] = "TRIM(cast(legajo as text)) ILIKE ".quote("%{$filtro['legajo']['valor']}%");break;
+//                        case 'no_contiene':$where[] = "TRIM(cast(legajo as text)) NOT ILIKE ".quote("%{$filtro['legajo']['valor']}%");break;
+//                        case 'comienza_con':$where[] = "TRIM(cast(legajo as text)) ILIKE ".quote("{$filtro['legajo']['valor']}%");break;
+//                        case 'termina_con':$where[] = "TRIM(cast(legajo as text)) ILIKE ".quote("%{$filtro['legajo']['valor']}");break;
+//                        case 'es_igual_a':$where[] = "TRIM(cast(legajo as text)) = ".quote("{$filtro['legajo']['valor']}");break;
+//                        case 'es_distinto_de':$where[] = "TRIM(cast(legajo as text)) <> ".quote("{$filtro['legajo']['valor']}");break;
+//                    }
+//			
+//		}
+//            if (isset($filtro['documento'])) {
+//                    switch ($filtro['documento']['condicion']) {
+//                        case 'contiene':$where[] = "TRIM(cast(nro_docum as text)) ILIKE ".quote("%{$filtro['documento']['valor']}%");break;
+//                        case 'no_contiene':$where[] = "TRIM(cast(nro_docum as text)) NOT ILIKE ".quote("%{$filtro['documento']['valor']}%");break;
+//                        case 'comienza_con':$where[] = "TRIM(cast(nro_docum as text)) ILIKE ".quote("{$filtro['documento']['valor']}%");break;
+//                        case 'termina_con':$where[] = "TRIM(cast(nro_docum as text)) ILIKE ".quote("%{$filtro['documento']['valor']}");break;
+//                        case 'es_igual_a':$where[] = "TRIM(cast(nro_docum as text)) = ".quote("{$filtro['documento']['valor']}");break;
+//                        case 'es_distinto_de':$where[] = "TRIM(cast(nro_docum as text)) <> ".quote("{$filtro['documento']['valor']}");break;
+//                    }
+//			
+//		}
+//            if (isset($filtro['apellido'])) {
+//                    switch ($filtro['apellido']['condicion']) {
+//                        case 'contiene':$where[] = "TRIM(apellido) ILIKE ".quote("%{$filtro['apellido']['valor']}%");break;
+//                        case 'no_contiene':$where[] = "TRIM(apellido) NOT ILIKE ".quote("%{$filtro['apellido']['valor']}%");break;
+//                        case 'comienza_con':$where[] = "TRIM(apellido) ILIKE ".quote("{$filtro['apellido']['valor']}%");break;
+//                        case 'termina_con':$where[] = "TRIM(apellido) ILIKE ".quote("%{$filtro['apellido']['valor']}");break;
+//                        case 'es_igual_a':$where[] = "TRIM(apellido) = ".quote("{$filtro['apellido']['valor']}");break;
+//                        case 'es_distinto_de':$where[] = "TRIM(apellido) <> ".quote("{$filtro['apellido']['valor']}");break;
+//                    }
+//			
+//    		}
+//        	if (isset($filtro['nombre'])) {
+//                    switch ($filtro['nombre']['condicion']) {
+//                        case 'contiene':$where[] = "TRIM(t_d.nombre) ILIKE ".quote("%{$filtro['nombre']['valor']}%");break;
+//                        case 'no_contiene':$where[] = "TRIM(t_d.nombre) NOT ILIKE ".quote("%{$filtro['nombre']['valor']}%");break;
+//                        case 'comienza_con':$where[] = "TRIM(t_d.nombre) ILIKE ".quote("{$filtro['nombre']['valor']}%");break;
+//                        case 'termina_con':$where[] = "TRIM(t_d.nombre) ILIKE ".quote("%{$filtro['nombre']['valor']}");break;
+//                        case 'es_igual_a':$where[] = "TRIM(t_d.nombre) = ".quote("{$filtro['nombre']['valor']}");break;
+//                        case 'es_distinto_de':$where[] = "TRIM(t_d.nombre) <> ".quote("{$filtro['nombre']['valor']}");break;
+//                    }
+//			
+//		}
 	    $sql = "SELECT distinct 
 			t_d.id_docente,
 			t_d.legajo,
@@ -70,14 +74,9 @@ class dt_docente extends toba_datos_tabla
 		FROM
 			docente as t_d LEFT OUTER JOIN provincia as t_p ON (t_d.pcia_nacim = t_p.codigo_pcia)
 			LEFT OUTER JOIN pais as t_p1 ON (t_d.pais_nacim = t_p1.codigo_pais)
-                                     
+                         $where            
 		ORDER BY t_d.apellido,t_d.nombre";
             
-
-                if (count($where)>0) {
-			$sql = sql_concatenar_where($sql, $where);
-		}
-                
                 return toba::db('designa')->consultar($sql);
                 
 	}
