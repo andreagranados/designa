@@ -90,6 +90,7 @@ class cargo_solapas extends toba_ci
         //la inserta en estado A (alta)
 	function evt__form_cargo__alta($datos)
 	{
+         
             //si pertenece al periodo actual o al periodo presupuestando
             $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
             if ($vale){// si esta dentro del periodo
@@ -110,25 +111,12 @@ class cargo_solapas extends toba_ci
                     $datos['id_reserva']=null;
                     $datos['estado']='A';
                     $datos['por_permuta']=0;
-                                      
                     
-                    if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero 
-                        $id=$datos['cat_mapuche'];
-                        $sql="SELECT
-                            t_cs.codigo_siu,
-                            t_cs.descripcion,
-                            t_c.catest,
-                            t_c.id_ded
-                            FROM
-                                categ_siu as t_cs LEFT OUTER JOIN macheo_categ t_c ON (t_cs.codigo_siu=t_c.catsiu)
-                                where escalafon='D'
-                            ORDER BY descripcion";
-                        $resul=toba::db('designa')->consultar($sql);
-                
-                        $datos['cat_mapuche']=$resul[$id]['codigo_siu'];
-                        $datos['cat_estat']=$resul[$id]['catest'];
-                        $datos['dedic']=$resul[$id]['id_ded'];
-                    }
+                    if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero  
+                        $cat=$this->controlador()->get_categoria($datos['cat_mapuche']);
+                        $datos['cat_mapuche']=$cat;
+                        }
+                    
                     $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                    //trae el programa por defecto de la UA correspondiente
@@ -169,32 +157,18 @@ class cargo_solapas extends toba_ci
         //si ya tenia numero de tkd cambia su estado a R (rectificada)
 	function evt__form_cargo__modificacion($datos)
 	{
-            //print_r($datos);exit();// Array ( [desde] => 2015-02-01 [hasta] => 2016-01-31 [cat_mapuche] => ASOE [cate_siu_nombre] => Profesor Asociado Exclusivo [dedic] => 1 [cat_estat] => PAS [vinculo] => [carac] => R [id_departamento] => 1 [id_area] => 11 [id_orientacion] => 5 [observaciones] => ) 
-          
-             //--recupero la designacion que se desea modificar 
+            
+            //--recupero la designacion que se desea modificar 
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             
             //cuando presiona el boton modificar puede que modifique  la categ mapuche
             //o puede modificar algun otro dato
             //por lo tanto $datos['cat_mapuche'] puede ser numero o no
-            if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
-                $id=$datos['cat_mapuche'];
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion,
-                        t_c.catest,
-                        t_c.id_ded
-		FROM
-			categ_siu as t_cs LEFT OUTER JOIN macheo_categ t_c ON (t_cs.codigo_siu=t_c.catsiu)
-                        where escalafon='D'
-		ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                
-                $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
-                $datos['cat_estat']=$resul[$id]['catest'];
-                $datos['dedic']=$resul[$id]['id_ded'];
-            }
-            
+             if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero  
+                 $cat=$this->controlador()->get_categoria($datos['cat_mapuche']);
+                 $datos['cat_mapuche']=$cat;
+                 }
+           
             
             // verifico si la designacion que se quiere modificar tiene numero de 540
            
@@ -366,6 +340,22 @@ class cargo_solapas extends toba_ci
             $total=$resul[0]['total']+$datos['porc'];
             
             if($total<=100){
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                if($desig['nro_540']!=null){//tiene numero de 540
+                    $datos['nro_540']=null;
+                    if ($desig['estado']<>'L' && $desig['estado']<>'B'){
+                        $datos['estado']='R';};
+                    $datos['check_presup']=0;
+                    $datos['check_academica']=0;
+                    $mensaje=utf8_decode("Esta modificando una designación que tiene número tkd. La designación perderá el número tkd. ");                       
+                    toba::notificacion()->agregar($mensaje,'info');
+                   
+                    $this->controlador()->dep('datos')->tabla('designacionh')->set($desig);//agrega un nuevo registro al historico
+                    $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+                    $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                    $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();  
+                    
+                 }
                 $this->controlador()->dep('datos')->tabla('imputacion')->set($datos);
                 $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
                 $this->controlador()->dep('datos')->tabla('imputacion')->resetear();

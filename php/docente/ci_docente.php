@@ -104,6 +104,7 @@ class ci_docente extends toba_ci
                 if($ec==1 && (($resul[$id]['codigo_siu']=='ADJE')||($resul[$id]['codigo_siu']=='ADJS')||($resul[$id]['codigo_siu']=='ADJ1'))){
                     return('ASDEnc');
                 }else{//esta otra devuelve PAD
+                    
                     $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
                     $resul2=toba::db('designa')->consultar($sql2);
                     return($resul2[0]['catest']);
