@@ -697,8 +697,7 @@ class cargo_solapas extends toba_ci
             if($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $cuadro->set_datos($this->controlador()->dep('datos')->tabla('novedad')->get_novedades_desig($desig['id_designacion']));
-            }
-            
+            } 
 	}
         function evt__cuadro_licencia__seleccion($datos)
 	{
