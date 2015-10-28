@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3658]--  Informe Estado Actual 
+--[3658]--  Designaciones 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -13,7 +13,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	'3658', --item
 	NULL, --padre_id
 	'designa', --padre_proyecto
-	'3667', --padre
+	'3688', --padre
 	'0', --carpeta
 	'0', --nivel_acceso
 	'web', --solicitud_tipo
@@ -23,7 +23,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --actividad_buffer
 	NULL, --actividad_patron_proyecto
 	NULL, --actividad_patron
-	'Informe Estado Actual', --nombre
+	'Designaciones', --nombre
 	NULL, --descripcion
 	'23', --punto_montaje
 	NULL, --actividad_accion

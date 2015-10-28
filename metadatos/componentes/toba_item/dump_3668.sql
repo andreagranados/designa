@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3668]--  Total 
+--[3668]--  Total de Saldos y Créditos 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -13,7 +13,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	'3668', --item
 	NULL, --padre_id
 	'designa', --padre_proyecto
-	'3667', --padre
+	'3688', --padre
 	'0', --carpeta
 	'0', --nivel_acceso
 	'web', --solicitud_tipo
@@ -23,7 +23,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --actividad_buffer
 	NULL, --actividad_patron_proyecto
 	NULL, --actividad_patron
-	'Total', --nombre
+	'Total de Saldos y Créditos', --nombre
 	NULL, --descripcion
 	'23', --punto_montaje
 	NULL, --actividad_accion

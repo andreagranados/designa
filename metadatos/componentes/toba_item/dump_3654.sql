@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3654]--  Informe TKD 
+--[3654]--  Nuevo TKD 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -23,7 +23,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --actividad_buffer
 	NULL, --actividad_patron_proyecto
 	NULL, --actividad_patron
-	'Informe TKD', --nombre
+	'Nuevo TKD', --nombre
 	NULL, --descripcion
 	'23', --punto_montaje
 	NULL, --actividad_accion
