@@ -113,6 +113,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                                 . "where m_c.id_periodo=m_e.id_periodo "
                                 . "and m_c.codigo_siu='".trim($cat)."'".$where;
             $costo=toba::db('designa')->consultar($sql);
+            
             if(count($costo)>0){
                 $valor_categoria = $costo[0]['costo_diario'];       
             }else{
@@ -157,10 +158,9 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                             designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
                             LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
                             LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu)
-                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_c.id_periodo=m_e.id_periodo AND  ".$concat.")
-                            
-                            
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo)
+                          
                         WHERE  t_d.tipo_desig=1 
                             AND not exists(SELECT * from novedad t_no
                                             where t_no.id_designacion=t_d.id_designacion
@@ -177,8 +177,8 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                            
                             LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
                             LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu)
-                            LEFT OUTER JOIN  mocovi_periodo_presupuestario m_e ON (m_c.id_periodo=m_e.id_periodo AND  ".$concat."),
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
                             
                             novedad as t_no
                            
@@ -198,8 +198,8 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                             
                             LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion)
                             LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa)
-                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu)
-                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_c.id_periodo=m_e.id_periodo AND ".$concat.") ,
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
                        	    novedad t_no
                         WHERE t_d.tipo_desig=1 
                                 AND t_no.id_designacion=t_d.id_designacion
@@ -214,15 +214,15 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                         FROM designacion as t_d 
                             LEFT OUTER JOIN imputacion t_i ON (t_d.id_designacion=t_i.id_designacion)
                             LEFT OUTER JOIN mocovi_programa m_p ON (t_i.id_programa=m_p.id_programa) 
-                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu)
                             LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
-                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_c.id_periodo=m_e.id_periodo AND  ".$concat."),
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
                         reserva as t_r
                         WHERE t_d.id_reserva = t_r.id_reserva 
                                  AND t_d.tipo_desig=2 
                                 ) 
                             ";
-           
+           //print_r($sql);exit();
             //$where =" ,unidad_acad b WHERE a.desde <='".$udia."'  and (a.hasta >='".$pdia."' or a.hasta is null) and a.uni_acad=b.sigla";
             $sql="select * from (".$sql.")b, unidad_acad c WHERE b.uni_acad=c.sigla and b.desde <='".$udia."'  and (b.hasta >='".$pdia."' or b.hasta is null)";
             
@@ -404,7 +404,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             $sql = toba::perfil_de_datos()->filtrar($sql);
             
             $con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from (".$sql.")a" ;
-            
+            print_r($con);
             $res= toba::db('designa')->consultar($con);
             
             $gaste=$res[0]['monto'];
