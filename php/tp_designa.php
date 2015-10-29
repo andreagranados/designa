@@ -12,7 +12,9 @@
                 echo "<br>";
 		echo "<div style='font-size:15px;font-family:Verdana,Helvetica;color:#660033;font-weight:bold;'>";
 		echo "M&oacute;dulo Designaciones Docentes (SDD)";
-		
+		echo "</div>";
+		echo "<div>versión ".toba::proyecto()->get_version();
+                echo " <a href='ManualModuloDesignaciones.pdf'>Descargar Manual Ayuda</a>" ."</div>";
 		echo "</div>";
 		
 		echo "</div>\n\n";    
