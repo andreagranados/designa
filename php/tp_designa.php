@@ -15,6 +15,7 @@
 		echo "</div>";
 		echo "<div>versión ".toba::proyecto()->get_version();
                 echo " <a href='ManualModuloDesignaciones.pdf'>Descargar Manual Ayuda</a>" ."</div>";
+		echo " <a href='Disposicion005-15SH.pdf'>Disposición</a>" ."</div>";
 		echo "</div>";
 		
 		echo "</div>\n\n";    
