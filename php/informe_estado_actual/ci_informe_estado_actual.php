@@ -41,6 +41,9 @@ class ci_informe_estado_actual extends toba_ci
 	
         function evt__cuadro__seleccion($datos)
 	{
+            
+            $tipo=$this->dep('datos')->tabla('designacion')->tipo($datos['id_designacion']);
+            $parametros['tipo']=$tipo;
             $parametros['id_designacion']=$datos['id_designacion'];          
             toba::vinculador()->navegar_a('designa',3636,$parametros);
             

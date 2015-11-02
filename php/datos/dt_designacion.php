@@ -2,6 +2,11 @@
 class dt_designacion extends toba_datos_tabla
 {
 	
+        function tipo($desig){
+            $sql="select * from designacion where id_designacion=".$desig;
+            $resul=toba::db('designa')->consultar($sql);
+            return $resul[0]['tipo_desig'];
+        }
         function modifica_norma($id_des,$id_norma,$p){
             switch ($p) {
                 case 1: $sql="update designacion set id_norma=".$id_norma." where id_designacion=".$id_des;              break;
@@ -113,14 +118,6 @@ class dt_designacion extends toba_datos_tabla
 		}
 		return toba::db('designa')->consultar($sql);
 	}
-
-
-
-
-
-
-
-
 
 //trae todas las designaciones/reservas de una determinada facultad que entran dentro del periodo vigente
         function get_listado_vigentes($agente,$filtro=array())
@@ -239,7 +236,7 @@ class dt_designacion extends toba_datos_tabla
                 $pdia=$this->primer_dia_periodo();
 		
                 //que sea una designacion vigente, dentro del periodo actual
-		$where=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)";
+		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
                 $where.=" AND  nro_540 is null";
                 
 		if (isset($filtro['uni_acad'])) {
@@ -390,7 +387,10 @@ class dt_designacion extends toba_datos_tabla
                            	AND t_d.id_reserva = t_r.id_reserva                            	
                              )";
 		//print_r($sql);exit();
-                $sql="select *,((dias_des-dias_lsgh)*costo_diario*porc/100)as costo  from (".$sql.") a". $where." order by licencia"; 
+                //$sql="select *,((dias_des-dias_lsgh)*costo_diario*porc/100)as costo  from (".$sql.") a". $where." order by licencia"; 
+                $sql="select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma, a.tipo_norma, a.nro_540, a.observaciones,programa, porc,costo_diario, check_presup,licencia,a.dias_lsgh,a.dias_lic,".
+                        "case when  ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=2)) then 'L'  else a.estado end as estado".
+                        ",((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a LEFT JOIN novedad t_no ON (a.id_designacion=t_no.id_designacion and t_no.tipo_nov=2)". $where." order by a.docente_nombre,a.id_designacion";
                 $ar = toba::db('designa')->consultar($sql);
                 
                 $datos = array();
@@ -705,7 +705,10 @@ class dt_designacion extends toba_datos_tabla
                            	AND t_d.id_reserva = t_r.id_reserva                            	
                              )";
 		
-                $sql="select *,((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a". $where." order by licencia";  
+                //$sql="select *,((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a". $where." order by licencia";  
+                $sql="select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma, a.tipo_norma, a.nro_540, a.observaciones,programa, porc,costo_diario, check_presup,licencia,a.dias_lic,".
+                "case when  ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=2)) then 'L'  else a.estado end as estado".
+                ",((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a LEFT JOIN novedad t_no ON (a.id_designacion=t_no.id_designacion and t_no.tipo_nov=2)". $where." order by a.docente_nombre,a.id_designacion";    
                 return toba::db('designa')->consultar($sql);
             
 	}
@@ -722,7 +725,7 @@ class dt_designacion extends toba_datos_tabla
             
 	
                  //que sea una designacion correspondiente al periodo seleccionado
-		$where=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)";
+		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
                 
 		if (isset($filtro['uni_acad'])) {
 			$where.= "AND uni_acad = ".quote($filtro['uni_acad']);
@@ -761,7 +764,7 @@ class dt_designacion extends toba_datos_tabla
                                             where t_no.id_designacion=t_d.id_designacion
                                             and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)))
                         UNION
-                        (SELECT distinct t_d.id_designacion, t_d1.apellido||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,case when ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=1 or t_no.tipo_nov=4)) then 'B' else (case when ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=2)) then 'L' else t_d.estado end) end as estado,
+                        (SELECT distinct t_d.id_designacion, t_d1.apellido||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
                             0 as dias_lic, case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
                             FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
                             LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est) 
@@ -861,8 +864,11 @@ class dt_designacion extends toba_datos_tabla
                            	AND t_d.id_reserva = t_r.id_reserva                            	
                              )";
 		//print_r($sql);
-                $sql="select *,((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a". $where." order by docente_nombre,id_designacion";
-               	
+                //$sql="select *,((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a ". $where." order by docente_nombre,id_designacion";
+                $sql="select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma, a.tipo_norma, a.nro_540, a.observaciones,programa, porc,costo_diario, check_presup,licencia,a.dias_lic,".
+                        "case when  ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=2)) then 'L'  else a.estado end as estado".
+                        ",((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a LEFT JOIN novedad t_no ON (a.id_designacion=t_no.id_designacion and t_no.tipo_nov=2)". $where." order by a.docente_nombre,a.id_designacion";
+               	                
                 return toba::db('designa')->consultar($sql);
     
 	}

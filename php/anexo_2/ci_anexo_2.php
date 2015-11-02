@@ -2,6 +2,7 @@
 class ci_anexo_2 extends toba_ci
 {
 	protected $s__datos_filtro;
+        protected $s__where;
 
 
 	//---- Filtro -----------------------------------------------------------------------
@@ -23,21 +24,20 @@ class ci_anexo_2 extends toba_ci
 		unset($this->s__datos_filtro);
 	}
 
+        
+
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado($this->s__datos_filtro));
-		} else {
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado());
-		}
+                    $datos=$this->dep('datos')->tabla('asignacion_materia')->get_listado_materias($this->s__datos_filtro);               
+                    $cuadro->set_datos($datos);
+                    
+		} 
 	}
 
-	function evt__cuadro__seleccion($datos)
-	{
-		$this->dep('datos')->cargar($datos);
-	}
+	
 
 	
 	

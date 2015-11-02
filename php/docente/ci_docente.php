@@ -7,6 +7,7 @@ class ci_docente extends toba_ci
         protected $s__datos_filtro_cargo;
         protected $s__designacion;
         protected $s__pantalla;
+     
         
         function get_ua(){
             return $this->dep('datos')->tabla('unidad_acad')->get_ua();
@@ -385,8 +386,9 @@ class ci_docente extends toba_ci
 	function conf()
 	{
             $id = toba::memoria()->get_parametro('id_designacion');
-           
+            $tipo = toba::memoria()->get_parametro('tipo');
             if(isset($id)){
+                
                 $sql="select * from designacion where id_designacion=".$id;
                 $res=toba::db('designa')->consultar($sql);
                 
@@ -407,9 +409,15 @@ class ci_docente extends toba_ci
                 } 
             
                 $this->s__designacion=$this->dep('datos')->tabla('designacion')->get();//guardo la designacion seleccionada en una variable
-                $this->set_pantalla('pant_cargo');
                 
-                
+                if($tipo==1){
+                    $this->set_pantalla('pant_cargo');
+                }else{//es una reserva
+                    $datosr['id_reserva']=$res[0]['id_reserva'];
+                    $this->dep('datos')->tabla('reserva')->cargar($datosr);
+                    $this->set_pantalla('pant_reserva');
+                }
+     
             }
 	}
 

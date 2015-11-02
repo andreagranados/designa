@@ -76,5 +76,41 @@ class dt_asignacion_materia extends toba_datos_tabla
         
 	return toba::db('designa')->consultar($sql);
     }
+    
+    function get_listado_materias($filtro=array()){
+        if (isset($filtro['anio_acad'])) {
+            $anio= $filtro['anio_acad'];
+		}
+        if (isset($filtro['uni_acad'])) {
+            $ua= $filtro['uni_acad'];
+		}
+       
+        $sql="
+        select * into temp auxi from crosstab(
+        'select cast(a.id_designacion as text) as id_designacion,cast(desc_materia as text) as id_materia,cast(e.cod_carrera||''-''||b.desc_materia||''(''||b.cod_siu||'')-''||f.descripcion as text) as id_materia  from 
+        asignacion_materia a, materia b, designacion c, docente d, plan_estudio e, periodo f
+        where a.id_designacion=c.id_designacion
+        and a.id_materia=b.id_materia
+        and c.id_docente=d.id_docente
+        and b.id_plan=e.id_plan
+        and a.id_periodo=f.id_periodo
+        and a.anio=".$anio.
+        " and c.uni_acad=''".$ua."''".
+        "')
+        AS ct(designacion text, materia1 text,materia2 text, materia3 text, materia4 text,materia5 text,materia6 text);"; 
+             
+       toba::db('designa')->consultar($sql);
+       $sql="
+        select b.id_designacion,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,cast(d.nro_norma as text)||'/'||extract(year from d.fecha) as norma, t_d3.descripcion as departamento,t_a.descripcion as area,t_o.descripcion as orientacion,a.* 
+        from auxi a 
+        LEFT JOIN designacion b ON(cast(a.designacion as integer)=b.id_designacion)
+        LEFT JOIN docente c ON (b.id_docente=c.id_docente)
+        LEFT JOIN norma d ON (b.id_norma=d.id_norma)
+        LEFT OUTER JOIN departamento as t_d3 ON (b.id_departamento = t_d3.iddepto)
+        LEFT OUTER JOIN area as t_a ON (b.id_area = t_a.idarea) 
+        LEFT OUTER JOIN orientacion as t_o ON (b.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
+        ";
+       return toba::db('designa')->consultar($sql);
+    }
 }
 ?>

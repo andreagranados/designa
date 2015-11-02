@@ -7,6 +7,17 @@ class cargo_solapas extends toba_ci
     public $s__nombre_archivo;
     protected $s__alta_nov;
     protected $s__alta_novb;
+    protected $s__volver;
+    
+        function conf()
+        {
+            $id = toba::memoria()->get_parametro('id_designacion');
+            if(isset($id)){
+                $this->s__volver=1;
+            }else{
+                $this->s__volver=0;
+            }
+        }
         
            //trae los programas asociados a una UA
         function get_programas_ua(){
@@ -685,7 +696,11 @@ class cargo_solapas extends toba_ci
 	{
             //no hago el resetear porque pierdo los datos del docente cuando comienza a volver para atras
             //$this->controlador()->dep('datos')->resetear();
-            $this->controlador()->set_pantalla('pant_cargo_seleccion');
+            if($this->s__volver==1){//si viene desde el informe de estado actual
+                toba::vinculador()->navegar_a('designa',3658);
+            }else{
+                $this->controlador()->set_pantalla('pant_cargo_seleccion');
+            }
             
 	}
          //-----------------------------------------------------------------------------------
@@ -728,7 +743,7 @@ class cargo_solapas extends toba_ci
             //solo puede seleccionar tipo_nov 2 o 3 que son las licencias
             //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $desig['estado']='L';
+            //$desig['estado']='L';
             
             if($datos['desde']>$datos['hasta']){
                 toba::notificacion()->agregar('La fecha hasta debe ser mayor que la fecha desde','error');
@@ -737,8 +752,8 @@ class cargo_solapas extends toba_ci
                 if($desig['hasta']!= null){
                     if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$desig['hasta']){
                     
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        //$this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                        //$this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                         
                         $datos['id_designacion']=$desig['id_designacion'];
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
@@ -753,15 +768,15 @@ class cargo_solapas extends toba_ci
                     $udia=$this->controlador()->ultimo_dia_periodo(1);
                   
                     if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        //$this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                        //$this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                         
                         $datos['id_designacion']=$desig['id_designacion'];
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
                         toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
                         $this->s__alta_nov=0;//descolapsa el formulario de alta
-                        //$this->controlador()->dep('datos')->tabla('novedad')->resetear();  
+                        
                     }else{
                         toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
                       }
