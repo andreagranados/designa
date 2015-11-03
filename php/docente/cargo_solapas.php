@@ -897,7 +897,8 @@ class cargo_solapas extends toba_ci
             //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $desig['estado']='B';
-            
+            $desig['hasta']=$datos['desde'];//setea la fecha de baja de la designacion
+            $this->controlador()->dep('datos')->tabla('novedad')->setear_baja($desig['id_designacion'],$datos['desde']);
             if($desig['hasta']!= null){
                     if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] ){
                     

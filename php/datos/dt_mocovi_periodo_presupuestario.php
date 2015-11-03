@@ -184,8 +184,8 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                            
                         WHERE  t_d.tipo_desig=1 
                             AND t_no.id_designacion=t_d.id_designacion
-                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)
-                            AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null)
+                            AND ((t_no.tipo_nov=2 AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
+                                OR (t_no.tipo_nov=1 or t_no.tipo_nov=4))
                             )"
                         ."UNION
                         (SELECT distinct 
@@ -203,7 +203,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                        	    novedad t_no
                         WHERE t_d.tipo_desig=1 
                                 AND t_no.id_designacion=t_d.id_designacion
-                                AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 )
+                                AND (t_no.tipo_nov=2 )
                                 AND t_no.tipo_norma is not null
                                 AND t_no.tipo_emite is not null
                                 AND t_no.norma_legal is not null
@@ -222,13 +222,15 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                                  AND t_d.tipo_desig=2 
                                 ) 
                             ";
-           //print_r($sql);exit();
-            //$where =" ,unidad_acad b WHERE a.desde <='".$udia."'  and (a.hasta >='".$pdia."' or a.hasta is null) and a.uni_acad=b.sigla";
+                       
             $sql="select * from (".$sql.")b, unidad_acad c WHERE b.uni_acad=c.sigla and b.desde <='".$udia."'  and (b.hasta >='".$pdia."' or b.hasta is null)";
             
             $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
-            
-            $con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from (".$sql.")a" ;
+            $con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from ("
+                   . " select id_designacion,desde,hasta,uni_acad,costo_diario, porc,dias_des,sum(dias_lic) as dias_lic from (".$sql.")a"
+                    . " group by id_designacion,desde,hasta,uni_acad,costo_diario, porc,dias_des"
+                    . ")b";
+            //$con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from (".$sql.")a" ;
             $res= toba::db('designa')->consultar($con);
             
             $gaste=$res[0]['monto'];
@@ -359,8 +361,8 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                            
                         WHERE  t_d.tipo_desig=1 
                             AND t_no.id_designacion=t_d.id_designacion
-                            AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)
-                            AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null)
+                            AND (( t_no.tipo_nov=2 AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
+                                OR (t_no.tipo_nov=1 or t_no.tipo_nov=4))
                             )"
                         ."UNION
                         (SELECT distinct 
@@ -378,7 +380,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                        	    novedad t_no
                         WHERE t_d.tipo_desig=1 
                                 AND t_no.id_designacion=t_d.id_designacion
-                                AND (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)
+                                AND t_no.tipo_nov=2
                                 AND t_no.tipo_norma is not null
                                 AND t_no.tipo_emite is not null
                                 AND t_no.norma_legal is not null
@@ -403,8 +405,12 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             
             $sql = toba::perfil_de_datos()->filtrar($sql);
             
-            $con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from (".$sql.")a" ;
-            print_r($con);
+            //$con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from (".$sql.")a" ;
+            $con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from ("
+                   . " select id_designacion,desde,hasta,uni_acad,costo_diario, porc,dias_des,sum(dias_lic) as dias_lic from (".$sql.")a"
+                    . " group by id_designacion,desde,hasta,uni_acad,costo_diario, porc,dias_des"
+                    . ")b";
+            
             $res= toba::db('designa')->consultar($con);
             
             $gaste=$res[0]['monto'];

@@ -28,6 +28,11 @@ class dt_novedad extends toba_datos_tabla
                         . " LEFT OUTER JOIN tipo_novedad t_d ON (t_n.tipo_nov=t_d.id_tipo) $where order by t_n.desde";
 		return toba::db('designa')->consultar($sql);
 	}
+        function setear_baja($des,$hasta)
+        {
+            $sql="update novedad set hasta='".$hasta."' where id_designacion=".$des." and hasta is not null and hasta>='".$hasta."'";
+            toba::db('designa')->consultar($sql);
+        }
 }
 
 ?>
