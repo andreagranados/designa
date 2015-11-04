@@ -37,8 +37,16 @@ class ci_reserva extends designa_ci
 
 	function conf__form_reserva(toba_ei_formulario $form)
 	{
+           //esto por el boton atajo del listado de estado actual
             if($this->controlador()->dep('datos')->tabla('reserva')->esta_cargada()){
-            //if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario form_reserva 
+                $this->dep('form_reserva')->descolapsar();
+                $this->dep('form_reserva')->ef('desde')->set_obligatorio(true);
+                $this->dep('form_reserva')->ef('descripcion')->set_obligatorio(true);
+                $this->dep('form_reserva')->ef('cat_mapuche')->set_obligatorio(true);  
+                $this->dep('form_reserva')->ef('carac')->set_obligatorio(true); 
+            }
+               
+            if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario form_reserva 
                 $this->dep('form_reserva')->descolapsar();
                 $this->dep('form_reserva')->ef('desde')->set_obligatorio(true);
                 $this->dep('form_reserva')->ef('descripcion')->set_obligatorio(true);

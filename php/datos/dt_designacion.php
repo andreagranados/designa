@@ -437,12 +437,11 @@ class dt_designacion extends toba_datos_tabla
                 $pdia=$this->primer_dia_periodo();
 		$where = "";
                 
-                
                 //que sea una designacion vigente, dentro del periodo actual
 		$where=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)"
                         . " AND nro_540 is not null"
                     ." AND check_presup='NO'";//es decir check presupuesto = 0
-//                
+               
                 if (isset($filtro['uni_acad'])) {
 			$where.= " AND trim(uni_acad) = trim(".quote($filtro['uni_acad']).")";
 		}
@@ -466,7 +465,7 @@ class dt_designacion extends toba_datos_tabla
                         t_cs.descripcion as cat_mapuche_nombre,  
                         t_d.cat_estat,
                         t_d.dedic, 
-                        t_c.descripcion as carac,
+                        t_d.carac,
                         t_d3.descripcion as id_departamento,
                         t_a.descripcion as id_area,
                         t_o.descripcion as id_orientacion,
@@ -517,7 +516,7 @@ class dt_designacion extends toba_datos_tabla
                     t_cs.descripcion as cat_mapuche_nombre,
                     t_d.cat_estat,
                     t_d.dedic,
-                    t_c.descripcion as carac,
+                    t_d.carac,
                     t_d3.descripcion as id_departamento,
                     t_a.descripcion as id_area,
                     t_o.descripcion as id_orientacion,
@@ -906,9 +905,12 @@ class dt_designacion extends toba_datos_tabla
             $sql="select distinct t_d.id_designacion,t_r.id_reserva,t_r.descripcion as reserva,desde,hasta,cat_mapuche,cat_estat,dedic,carac,uni_acad,
                 (case when concursado=0 then 'NO' else 'SI' end) as concursado
                 from designacion t_d ,
-                reserva t_r
+                reserva t_r,
+                unidad_acad t_u
                 where t_d.id_reserva=t_r.id_reserva
-                and t_d.tipo_desig=2".$where;
+                and t_d.tipo_desig=2".$where
+                ." and t_d.uni_acad=t_u.sigla "    ;
+            $sql = toba::perfil_de_datos()->filtrar($sql);
             return toba::db('designa')->consultar($sql);
         
         }
@@ -1207,17 +1209,18 @@ class dt_designacion extends toba_datos_tabla
             if (isset($filtro['nro_tkd'])) {
 			$where.= " AND nro_540 = ".$filtro['nro_tkd'];
 		} 
-            $sql="(select * from designacionh".$where.
+            $sql="(select *,'H' as hist from designacionh".$where.
                             ") UNION"
-                 ."(select * from designacion".$where .")" ;  
-            $sql="select distinct a.id_designacion,uni_acad,nro_540,desde,hasta,cat_mapuche,cat_estat,dedic,carac,t_d1.apellido||', '||t_d1.nombre as docente_nombre,t_d1.legajo,t_d3.descripcion as id_departamento,t_a.descripcion as id_area,t_o.descripcion as id_orientacion,t_p.nombre as programa,t_i.porc "
+                 ."(select *,'' as hist from designacion".$where .")" ;  
+            $sql="select distinct a.id_designacion,uni_acad,nro_540,desde,hasta,cat_mapuche,cat_estat,dedic,carac,t_d1.apellido||', '||t_d1.nombre as docente_nombre,t_d1.legajo,t_d3.descripcion as id_departamento,t_a.descripcion as id_area,t_o.descripcion as id_orientacion,t_p.nombre as programa,t_i.porc,hist "
                     . "from (".$sql.")a "
                 ." LEFT OUTER JOIN departamento as t_d3 ON (a.id_departamento = t_d3.iddepto)" 
                 ." LEFT OUTER JOIN area as t_a ON (a.id_area = t_a.idarea) "
                 ." LEFT OUTER JOIN orientacion as t_o ON (a.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea) "
-                ." LEFT OUTER JOIN imputacion t_i ON (t_i.id_designacion=t_i.id_designacion)"
-                ." LEFT OUTER JOIN mocovi_programa t_p ON (t_i.id_programa=t_p.id_programa),docente t_d1 where a.id_docente=t_d1.id_docente"
-                    ;
+                ." LEFT OUTER JOIN imputacion t_i ON (t_i.id_designacion=a.id_designacion)"
+                ." LEFT OUTER JOIN mocovi_programa t_p ON (t_i.id_programa=t_p.id_programa)"
+                ." LEFT OUTER JOIN docente t_d1 ON ( a.id_docente=t_d1.id_docente)";
+                
             
             return toba::db('designa')->consultar($sql);
         }
