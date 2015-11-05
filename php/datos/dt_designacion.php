@@ -397,7 +397,8 @@ class dt_designacion extends toba_datos_tabla
                             .$where
                             ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
                             .") b "
-                            . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov=2)";
+                            . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov=2 and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
+                            . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                 $ar = toba::db('designa')->consultar($sql);
                 
                 $datos = array();
@@ -722,7 +723,8 @@ class dt_designacion extends toba_datos_tabla
                             .$where
                             ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des,dias_lic"
                             .") b "
-                            . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov=2)";
+                            . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov=2 and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
+                            . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                     
                
                 return toba::db('designa')->consultar($sql);
@@ -746,7 +748,11 @@ class dt_designacion extends toba_datos_tabla
 		if (isset($filtro['uni_acad'])) {
 			$where.= "AND uni_acad = ".quote($filtro['uni_acad']);
 		}
-               
+                if (isset($filtro['id_departamento'])) {
+			$sql="select * from departamento where iddepto=".$filtro['id_departamento'];
+                        $resul=toba::db('designa')->consultar($sql);
+                        $where.= " AND id_departamento =".quote($resul[0]['descripcion']);
+		}
               //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
        
                     $sql="(SELECT distinct t_d.id_designacion, t_d1.apellido||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
@@ -881,7 +887,7 @@ class dt_designacion extends toba_datos_tabla
                              )";
 		
                    //$sql="select *,((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a ". $where." order by docente_nombre,id_designacion";
-                    $sql= "select b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,((dias_des-dias_lic)*costo_diario*porc/100)as costo,"
+                    $sql=  "select b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,((dias_des-dias_lic)*costo_diario*porc/100)as costo,"
                             . " case when  ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=2)) then 'L'  else b.estado end as estado" 
                             . " from ("
                             ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
@@ -889,7 +895,8 @@ class dt_designacion extends toba_datos_tabla
                             .$where
                             ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des,dias_lic"
                             .") b "
-                            . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov=2)";
+                            . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov=2 and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
+                            . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                     
                
                    // print_r($sql);               
@@ -1237,7 +1244,7 @@ class dt_designacion extends toba_datos_tabla
 
         
         function get_equipos_cat($filtro=array()){
-             $where = "";
+            $where = "";
             
             if (isset($filtro['anio'])) {
 		$udia=$this->ultimo_dia_periodo_anio($filtro['anio']);
@@ -1272,6 +1279,43 @@ class dt_designacion extends toba_datos_tabla
               ";
             $sql = toba::perfil_de_datos()->filtrar($sql);
             $sql=$sql.$where. " order by desc_materia,docente_nombre";
+            
+            return toba::db('designa')->consultar($sql);
+        }
+        
+        function get_equipos_tut($filtro=array()){
+            $where = "";
+            
+            if (isset($filtro['anio'])) {
+		$udia=$this->ultimo_dia_periodo_anio($filtro['anio']);
+                $pdia=$this->primer_dia_periodo_anio($filtro['anio']);
+		}  
+                
+            $where.=" AND t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or hasta is null)";    
+            
+            if (isset($filtro['uni_acad'])) {
+			$where.= " AND t_d.uni_acad = ".quote($filtro['uni_acad']);
+		}
+            if (isset($filtro['id_departamento'])) {
+			$where.= " AND t_d.id_departamento = ".$filtro['id_departamento'];
+            }
+            $sql="select distinct t_d.id_designacion, t_doc.apellido||', '||t_doc.nombre as docente_nombre,t_doc.legajo,t_d.cat_mapuche,t_d.cat_estat||t_d.dedic as cat_est,t_d.carac,t_d.uni_acad,t_d.desde,t_d.hasta,t_d3.descripcion as id_departamento,t_ma.descripcion as id_area,t_o.descripcion as id_orientacion ,t_m.descripcion, t_p.descripcion as periodo,t_a.carga_horaria"
+                 . " from designacion t_d"
+                    ." LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto)" 
+                    ." LEFT OUTER JOIN area as t_ma ON (t_d.id_area = t_ma.idarea) "
+                    ." LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_ma.idarea) "
+                    . ",  docente t_doc,asignacion_tutoria t_a,tutoria t_m, periodo t_p,unidad_acad t_u"
+                
+                ." where  t_d.id_designacion=t_a.id_designacion
+                    and t_d.id_docente=t_doc.id_docente
+                    and t_a.id_tutoria=t_m.id_tutoria
+                    and t_a.periodo=t_p.id_periodo
+                    and t_d.uni_acad=t_u.sigla
+            
+              ";
+            
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $sql=$sql.$where;
             
             return toba::db('designa')->consultar($sql);
         }
