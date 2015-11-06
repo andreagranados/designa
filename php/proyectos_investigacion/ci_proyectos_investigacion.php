@@ -2,6 +2,7 @@
 class ci_proyectos_investigacion extends toba_ci
 {
 	protected $s__datos_filtro;
+        protected $s__mostrar;
 
 
 	//---- Filtro -----------------------------------------------------------------------
@@ -29,14 +30,14 @@ class ci_proyectos_investigacion extends toba_ci
 	{
 		if (isset($this->s__datos_filtro)) {
 			$cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_listado($this->s__datos_filtro));
-		} else {
-			$cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_listado());
-		}
+		} 
 	}
 
 	function evt__cuadro__seleccion($datos)
 	{
 		$this->dep('datos')->tabla('pinvestigacion')->cargar($datos);
+                $this->s__mostrar=1;
+           
 	}
 
 	function evt__cuadro__integrantes($datos)
@@ -48,34 +49,49 @@ class ci_proyectos_investigacion extends toba_ci
 
 	function conf__formulario(toba_ei_formulario $form)
 	{
-		if ($this->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-			$form->set_datos($this->dep('datos')->tabla('pinvestigacion')->get());
-		}
+
+            if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
+                $this->dep('formulario')->descolapsar();
+                $form->ef('codigo')->set_obligatorio('true');
+                $form->ef('nro_resol')->set_obligatorio('true');
+                $form->ef('fec_resol')->set_obligatorio('true');
+                $form->ef('tipo_emite')->set_obligatorio('true');
+                
+            }
+            else{$this->dep('formulario')->colapsar();
+              }
+              
+            if ($this->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $form->set_datos($this->dep('datos')->tabla('pinvestigacion')->get());
+            }
 	}
 
 	function evt__formulario__alta($datos)
 	{
-		$this->dep('datos')->tabla('pinvestigacion')->set($datos);
-		$this->dep('datos')->sincronizar();
+		$ua = $this->dep('datos')->tabla('unidad_acad')->get_ua();
+                $datos['uni_acad']= $ua[0]['sigla'];
+                $this->dep('datos')->tabla('pinvestigacion')->set($datos);
+		$this->dep('datos')->tabla('pinvestigacion')->sincronizar();
 		$this->resetear();
 	}
 
 	function evt__formulario__modificacion($datos)
 	{
 		$this->dep('datos')->tabla('pinvestigacion')->set($datos);
-		$this->dep('datos')->sincronizar();
+		$this->dep('datos')->tabla('pinvestigacion')->sincronizar();
 		$this->resetear();
 	}
 
 	function evt__formulario__baja()
 	{
-		$this->dep('datos')->eliminar_todo();
+		$this->dep('datos')->tabla('pinvestigacion')->eliminar_todo();
 		$this->resetear();
 	}
 
 	function evt__formulario__cancelar()
 	{
-		$this->resetear();
+            $this->s__mostrar=0;
+            $this->resetear();
 	}
 
 	function resetear()
@@ -107,7 +123,7 @@ class ci_proyectos_investigacion extends toba_ci
             $datos=$this->dep('datos')->tabla('pinvestigacion')->get();
             $sql="select * from integrante_interno_pi t_i where t_i.pinvest=".$datos['id_pinv'];
             $res=toba::db('designa')->consultar($sql);
-            $form_ml->set_datos($res);
+            //$form_ml->set_datos($res);
 	}
 
 	function evt__form_integrantes__modificacion($datos)
@@ -132,6 +148,38 @@ class ci_proyectos_investigacion extends toba_ci
 	}
 
 
+
+	//-----------------------------------------------------------------------------------
+	//---- JAVASCRIPT -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function extender_objeto_js()
+	{
+		echo "
+		//---- Eventos ---------------------------------------------
+		
+		{$this->objeto_js}.evt__agregar = function()
+		{
+		}
+		//---- Eventos ---------------------------------------------
+		
+		{$this->objeto_js}.evt__alta = function()
+		{
+		}
+		";
+	}
+
+
+	//-----------------------------------------------------------------------------------
+	//---- Eventos ----------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	
+	function evt__alta()
+	{
+            $this->s__mostrar=1;
+            $this->dep('datos')->tabla('pinvestigacion')->resetear();
+	}
 
 }
 ?>

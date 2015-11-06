@@ -5,6 +5,7 @@ class ci_asignacion_materias extends toba_ci
         protected $s__mostrar_ml;
         protected $s__anio;
         protected $s__guardar;
+        protected $s__where;
        
 
          function ini__operacion()
@@ -22,8 +23,8 @@ class ci_asignacion_materias extends toba_ci
                 $pdia=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->primer_dia_periodo_anio($this->s__anio);
                 $udia=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->ultimo_dia_periodo_anio($this->s__anio);
                
-                $sql="select distinct t_d.id_designacion,t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||')' as descripcion"
-                    . " from designacion t_d, docente t_d1, unidad_acad t_u"
+                $sql="select distinct t_d.id_designacion,case when t_d.id_norma is null then (t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||')') else t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||'-'||t_no.nro_norma||'/'|| extract(year from t_no.fecha)||')' end as descripcion "
+                    . " from designacion t_d LEFT OUTER JOIN norma t_no ON (t_d.id_norma=t_no.id_norma), docente t_d1, unidad_acad t_u"
                     . " where t_d.id_docente=t_d1.id_docente "
                     . " and t_d.uni_acad=t_u.sigla "
                     . "and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta is null)"
@@ -47,11 +48,13 @@ class ci_asignacion_materias extends toba_ci
 	function evt__filtro__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
+                $this->s__where = $this->dep('filtro')->get_sql_where();
 	}
 
 	function evt__filtro__cancelar()
 	{
 		unset($this->s__datos_filtro);
+                unset($this->s__where);
 	}
 
 	//---- Cuadro -----------------------------------------------------------------------
@@ -59,7 +62,7 @@ class ci_asignacion_materias extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado_completo($this->s__datos_filtro));
+			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado_completo($this->s__where));
 		} 
 	}
         //selecciona una materia 

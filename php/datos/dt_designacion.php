@@ -119,6 +119,7 @@ class dt_designacion extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
 
+
 //trae todas las designaciones/reservas de una determinada facultad que entran dentro del periodo vigente
         function get_listado_vigentes($agente,$filtro=array())
 	{
@@ -186,7 +187,7 @@ class dt_designacion extends toba_datos_tabla
 			t_a.descripcion as id_area,
                         t_d.uni_acad,
 			t_o.descripcion as id_orientacion,
-			t_n.tipo_norma as id_norma_nombre,
+			(t_n.nro_norma||'/'||cast(EXTRACT(YEAR from t_n.fecha) as text)) as norma,
 			t_e.nro_exp as id_expediente_nombre,
 			t_i.descripcion as tipo_incentivo_nombre,
 			t_di.descripcion as dedi_incen_nombre,
@@ -1319,7 +1320,26 @@ class dt_designacion extends toba_datos_tabla
             
             return toba::db('designa')->consultar($sql);
         }
-
+        function get_permutas($where=null){
+            if(!is_null($where)){
+                $where=' where '.$where;
+            }else{
+                $where='';
+            }
+            
+            $sql = "select * from (select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+            t_e.uni_acad, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza
+            from designacion t_d LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+            LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+            LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
+            asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do
+            where t_a.id_designacion=t_d.id_designacion
+            and t_a.id_materia=t_m.id_materia
+            and t_m.id_plan=t_e.id_plan
+            and t_d.id_docente=t_do.id_docente
+            and t_e.uni_acad<>t_d.uni_acad)b". $where;
+            return toba::db('designa')->consultar($sql);
+        }
 
 }
 ?>

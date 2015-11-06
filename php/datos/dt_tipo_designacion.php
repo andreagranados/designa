@@ -14,5 +14,6 @@ class dt_tipo_designacion extends toba_datos_tabla
 
 
 
+
 }
 ?>

@@ -66,6 +66,7 @@ class cargo_solapas extends toba_ci
                 $this->pantalla()->tab("pant_gestion")->desactivar();
                 $this->pantalla()->tab("pant_novedad")->desactivar();
                 $this->pantalla()->tab("pant_novedad_b")->desactivar();
+                $this->pantalla()->tab("pant_investigacion")->desactivar();
                 
 		}
         } 
@@ -483,10 +484,10 @@ class cargo_solapas extends toba_ci
                     $x=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get();
                    
                     //obtengo la unidad academica
-                    //ojo tengo que hacer un trim en sigla porque sino no lo muestra
+                    //ojo tengo que hacer un trim en sigla porque sino no lo muestra?
                     $ua=$this->controlador()->get_uni_acad($x['id_materia']);
                     $x['uni_acad']=$ua;
-                    
+                                        
                     //obtengo la carrera
                     $car=$this->controlador()->get_carrera($x['id_materia']);
                    
@@ -700,9 +701,27 @@ class cargo_solapas extends toba_ci
                 toba::vinculador()->navegar_a('designa',3658);
             }else{
                 $this->controlador()->set_pantalla('pant_cargo_seleccion');
+                $this->controlador()->dep('datos')->tabla('norma')->resetear();
+                $this->controlador()->dep('datos')->tabla('normacs')->resetear();
             }
             
 	}
+        //-----------------------------------------------------------------------------------
+	//---- form_inv -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+        function conf__form_inv(toba_ei_formulario $form)
+        {
+             if($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
+                $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                $form->set_datos($designacion);
+            }    
+            
+        }
+        function evt__form_inv__guardar($datos)
+        {
+            $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();  
+        }
          //-----------------------------------------------------------------------------------
 	//---- cuadro_licencia -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
