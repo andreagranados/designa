@@ -71,11 +71,12 @@ class ci_reserva extends designa_ci
                     $datosd['id_area']=utf8_decode($resul[0]['id_area']);
                     $datosd['id_orientacion']=  utf8_decode($resul[0]['id_orientacion']);
                    
-                }
-                
+                }            
                 $datosd=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $datosd['desc_categ']=$this->controlador()->get_descripcion_categoria($datosd['cat_mapuche']);
-                      
+                if ($datos['cat_estat']='ASDEnc'){
+                    $datosd['ec']=1;
+                }      
 		$form->set_datos($datosd);
 		} 
 	}
@@ -145,14 +146,12 @@ class ci_reserva extends designa_ci
                 
                 if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
                         $id=$datos['cat_mapuche'];
-                        $sql="SELECT
+                        $sql="SELECT distinct
                                 t_cs.codigo_siu,
-                                t_cs.descripcion,
-                                t_c.catest,
-                                t_c.id_ded
-                        FROM
-                                categ_siu as t_cs LEFT OUTER JOIN macheo_categ t_c ON (t_cs.codigo_siu=t_c.catsiu)
-                                where escalafon='D'
+                                t_cs.descripcion
+                              FROM
+                                categ_siu as t_cs 
+                                where t_cs.escalafon='D'
                         ORDER BY descripcion";
                         $resul=toba::db('designa')->consultar($sql);
                         if($datos['ec']==1 && (($resul[$id]['codigo_siu']=='ADJE')||($resul[$id]['codigo_siu']=='ADJS')||($resul[$id]['codigo_siu']=='ADJ1'))){
@@ -163,10 +162,11 @@ class ci_reserva extends designa_ci
                             $datos['cat_estat']=$resul2[0]['catest'];
                         }
                         $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
-                        $datos['dedic']=$resul[$id]['id_ded'];
+                                                
                 }
-                
+               
                 //--------------------------
+                
                 $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                 $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                 //---inserta la imputacion por defecto
@@ -212,16 +212,15 @@ class ci_reserva extends designa_ci
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
                     
                     //recupero categorias y dedicacion. 
-                    //Vuelvo a calcularlas independientemente de que ya esten en el formulario por si presiona el boton modificar antes de que se carguen esos valores
+                    //Vuelvo a calcularlas independientemente de que ya esten en el formulario por si presiona el boton modificar antes de que se carguen esos valores daria error
                         if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
                             $id=$datos['cat_mapuche'];
                             $sql="SELECT
                                 t_cs.codigo_siu,
-                                t_cs.descripcion,
-                                t_c.catest,
-                                t_c.id_ded
+                                t_cs.descripcion
+                                
                              FROM
-                                categ_siu as t_cs LEFT OUTER JOIN macheo_categ t_c ON (t_cs.codigo_siu=t_c.catsiu)
+                                categ_siu as t_cs 
                                 where escalafon='D'
                              ORDER BY descripcion";
                             $resul=toba::db('designa')->consultar($sql);
@@ -234,7 +233,7 @@ class ci_reserva extends designa_ci
                             }
                             $cat=$resul[$id]['codigo_siu'];
                             $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
-                            $datos['dedic']=$resul[$id]['id_ded'];
+                           
                         }
                     
                         //verifico que tenga credito
@@ -269,23 +268,29 @@ class ci_reserva extends designa_ci
                    if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
                     //verifico que tenga credito
                     $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                    //Vuelvo a calcularlas independientemente de que ya esten en el formulario por si presiona el boton modificar antes de que se carguen esos valores daria error
                     if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
-                        $id=$datos['cat_mapuche'];
-                        $sql="SELECT
+                            $id=$datos['cat_mapuche'];
+                            $sql="SELECT
                                 t_cs.codigo_siu,
-                                t_cs.descripcion,
-                                t_c.catest,
-                                t_c.id_ded
-                        FROM
-                                categ_siu as t_cs LEFT OUTER JOIN macheo_categ t_c ON (t_cs.codigo_siu=t_c.catsiu)
+                                t_cs.descripcion
+                                
+                             FROM
+                                categ_siu as t_cs 
                                 where escalafon='D'
-                        ORDER BY descripcion";
-                        $resul=toba::db('designa')->consultar($sql);
-                        
-                        $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
-                        $datos['cat_estat']=$resul[$id]['catest'];
-                        $datos['dedic']=$resul[$id]['id_ded'];
-                    }   
+                             ORDER BY descripcion";
+                            $resul=toba::db('designa')->consultar($sql);
+                            if($datos['ec']==1 && (($resul[$id]['codigo_siu']=='ADJE')||($resul[$id]['codigo_siu']=='ADJS')||($resul[$id]['codigo_siu']=='ADJ1'))){
+                                $datos['cat_estat']='ASDEnc';
+                            }else{//esta otra devuelve PAD
+                                $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
+                                $resul2=toba::db('designa')->consultar($sql2);
+                                $datos['cat_estat']=$resul2[0]['catest'];
+                            }
+                            $cat=$resul[$id]['codigo_siu'];
+                            $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
+                           
+                        } 
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
                     $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
                         if ($band && $band2){//si hay credito
