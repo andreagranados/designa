@@ -55,13 +55,6 @@ INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, d
 );
 INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
 	'designa', --proyecto
-	'14', --usuario_perfil_datos
-	'ASMA', --nombre
-	'Asentamiento Universitario San Martin de los Andes', --descripcion
-	NULL  --listar
-);
-INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
-	'designa', --proyecto
 	'16', --usuario_perfil_datos
 	'FAAS', --nombre
 	'Facultad de Ciencia del Ambiente y la Salud', --descripcion
