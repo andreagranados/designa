@@ -137,4 +137,11 @@ INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dime
 	'46', --elemento
 	'ESCM '  --clave
 );
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'25', --usuario_perfil_datos
+	'13', --dimension
+	'47', --elemento
+	'CRUB '  --clave
+);
 --- FIN Grupo de desarrollo 0
