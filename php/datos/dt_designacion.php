@@ -900,7 +900,7 @@ class dt_designacion extends toba_datos_tabla
                             . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                     
                
-                    print_r($sql);               
+                    //print_r($sql);               
                     return toba::db('designa')->consultar($sql);
     
 	}
