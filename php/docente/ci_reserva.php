@@ -5,6 +5,7 @@ class ci_reserva extends designa_ci
     protected $s__reserva;
     protected $s__desig;
     protected $s__volver;
+    protected $s__where;
     
 //---- cuadro_reserva -----------------------------------------------------------------------
 
@@ -390,9 +391,12 @@ class ci_reserva extends designa_ci
             
 	}
 
-	function conf__cuadro_docente(designa_ei_cuadro $cuadro)
+	function conf__cuadro_docente(toba_ei_cuadro $cuadro)
 	{
-            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('docente')->get_listado());
+            if (isset($this->s__where)) {
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('docente')->get_listado($this->s__where));                      
+		} 
+            
 	}
 
 	function evt__volver()
@@ -400,9 +404,9 @@ class ci_reserva extends designa_ci
             $this->controlador()->resetear();
             if($this->s__volver==1){
                 toba::vinculador()->navegar_a('designa',3658);
-            }
-           
+            } 
         }
+        
         function conf()
         {
             $id = toba::memoria()->get_parametro('id_designacion');
@@ -412,6 +416,20 @@ class ci_reserva extends designa_ci
                 $this->s__volver=0;
             }
         }
+
+	//-----------------------------------------------------------------------------------
+	//---- filtro_docente ---------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function evt__filtro_docente__filtrar($datos)
+	{
+            $this->s__where = $this->dep('filtro_docente')->get_sql_where();
+	}
+
+	function evt__filtro_docente__cancelar()
+	{
+            unset($this->s__where);
+	}
 
 }
 ?>

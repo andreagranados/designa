@@ -326,6 +326,8 @@ class cargo_solapas extends toba_ci
 	{
             if($this->s__alta_impu==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
                 $this->dep('form_imputacion')->descolapsar();
+                $form->ef('porc')->set_obligatorio(true);
+                $form->ef('id_programa')->set_obligatorio(true);
             }
             else{
                 $this->dep('form_imputacion')->colapsar();

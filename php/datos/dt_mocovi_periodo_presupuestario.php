@@ -164,7 +164,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                         WHERE  t_d.tipo_desig=1 
                             AND not exists(SELECT * from novedad t_no
                                             where t_no.id_designacion=t_d.id_designacion
-                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)))"
+                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 or t_no.tipo_nov=5)))"
                                             
                         ."UNION 
                         (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
@@ -203,7 +203,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                        	    novedad t_no
                         WHERE t_d.tipo_desig=1 
                                 AND t_no.id_designacion=t_d.id_designacion
-                                AND (t_no.tipo_nov=2 )
+                                AND (t_no.tipo_nov=2 or t_no.tipo_nov=5)
                                 AND t_no.tipo_norma is not null
                                 AND t_no.tipo_emite is not null
                                 AND t_no.norma_legal is not null
@@ -340,7 +340,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                         WHERE  t_d.tipo_desig=1 
                             AND not exists(SELECT * from novedad t_no
                                             where t_no.id_designacion=t_d.id_designacion
-                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4)))"
+                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 or t_no.tipo_nov=5)))"
                                             
                         ."UNION 
                         (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
@@ -379,7 +379,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                        	    novedad t_no
                         WHERE t_d.tipo_desig=1 
                                 AND t_no.id_designacion=t_d.id_designacion
-                                AND (t_no.tipo_nov=2 )
+                                AND (t_no.tipo_nov=2 or t_no.tipo_nov=5)
                                 AND t_no.tipo_norma is not null
                                 AND t_no.tipo_emite is not null
                                 AND t_no.norma_legal is not null

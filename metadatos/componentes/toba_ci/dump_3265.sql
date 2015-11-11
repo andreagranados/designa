@@ -433,7 +433,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1493', --pantalla
 	'pant_novedad', --identificador
 	'7', --orden
-	'Licencias', --etiqueta
+	'Licencias/Ceses', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
