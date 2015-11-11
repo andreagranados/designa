@@ -1,11 +1,9 @@
 <?php
 class ci_total extends toba_ci
 {
-    protected $s__datos_filtro;
+        protected $s__datos_filtro;
    
     
-        
-       
        function ini__operacion()
 	{
 		$this->dep('datos')->cargar();

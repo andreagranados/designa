@@ -109,6 +109,7 @@ class dt_mocovi_credito extends toba_datos_tabla
 		if (count($where)>0) {
 			$sql = sql_concatenar_where($sql, $where);
 		}
+                
 		return toba::db('designa')->consultar($sql);
 	}
 
