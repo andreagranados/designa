@@ -21,7 +21,15 @@ class ci_docente extends toba_ci
         
         function es_externa($id_mat){
              return $this->dep('datos')->tabla('materia')->es_externa($id_mat);
-            
+        }
+        function tiene_materias($des){
+            return $this->dep('datos')->tabla('designacion')->tiene_materias($des);
+        }
+        function tiene_novedades($des){
+            return $this->dep('datos')->tabla('designacion')->tiene_novedades($des);
+        }
+        function tiene_tutorias($des){
+            return $this->dep('datos')->tabla('designacion')->tiene_tutorias($des);
         }
 //trae los programas asociados a la UA correspondiente al usuario que se loguea
         function get_programas_ua(){
@@ -41,7 +49,6 @@ class ci_docente extends toba_ci
         //este metodo permite mostrar en el popup el codigo de la categoria
         //recibe como argumento el id 
         function get_descripcion_categoria($id){
- 
             if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
                 $sql="SELECT
 			t_cs.codigo_siu,
@@ -363,7 +370,7 @@ class ci_docente extends toba_ci
 	{
             
             $this->dep('datos')->tabla('designacion')->cargar($datos);
-            
+            $this->dep('datos')->tabla('imputacion')->cargar($datos);
             $desig = $this->dep('datos')->tabla('designacion')->get();//obtengo la designacion recien cargada
             
             if ($desig['id_norma'] <> null){//si tiene la norma del cd 

@@ -2,6 +2,36 @@
 class dt_designacion extends toba_datos_tabla
 {
 	
+        function tiene_materias($desig){
+            $sql="select * from asignacion_materia where id_designacion=".$desig;
+            $resul=toba::db('designa')->consultar($sql);
+            
+            if(isset($resul[0])){//sino es nulo
+                return true;
+            }else{
+                return false;
+            }
+         }
+         function tiene_novedades($desig){
+            $sql="select * from novedad where id_designacion=".$desig;
+            $resul=toba::db('designa')->consultar($sql);
+            
+            if(isset($resul[0])){//sino es nulo
+                return true;
+            }else{
+                return false;
+            }
+         }
+          function tiene_tutorias($desig){
+            $sql="select * from asignacion_tutoria where id_designacion=".$desig;
+            $resul=toba::db('designa')->consultar($sql);
+            
+            if(isset($resul[0])){//sino es nulo
+                return true;
+            }else{
+                return false;
+            }
+         }
         function tipo($desig){
             $sql="select * from designacion where id_designacion=".$desig;
             $resul=toba::db('designa')->consultar($sql);

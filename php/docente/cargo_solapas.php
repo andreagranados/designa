@@ -51,7 +51,7 @@ class cargo_solapas extends toba_ci
            
             if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()) {
                     $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                    $sql="select t_c.descripcion as cat from designacion t_d LEFT JOIN categ_siu t_c ON (t_d.cat_mapuche=t_c.codigo_siu) where t_d.cat_mapuche='".$designacion['cat_mapuche']."'";
+                    $sql="select distinct t_c.descripcion as cat from designacion t_d LEFT JOIN categ_siu t_c ON (t_d.cat_mapuche=t_c.codigo_siu) where t_d.cat_mapuche='".$designacion['cat_mapuche']."'";
                     $resul=toba::db('designa')->consultar($sql);
                     $designacion['cate_siu_nombre']=$resul[0]['cat'];
                     $form->set_datos($designacion);
@@ -162,8 +162,27 @@ class cargo_solapas extends toba_ci
 	{
                //ver que quede eliminado todo lo que tiene que ver con la designacion que se esta eliminando
                 //ver liberacion de credito, directamente al eliminar la designacion. No hace falta hacer nada aqui
-                $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
-		$this->controlador()->resetear();
+                $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                $mat=$this->controlador()->dep('datos')->tabla('designacion')->tiene_materias($des['id_designacion']);
+                if($mat){
+                    toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE MATERIAS ASIGNADAS", 'error');
+                }else{
+                    $nov=$this->controlador()->dep('datos')->tabla('designacion')->tiene_novedades($des['id_designacion']);
+                    if($nov){
+                        toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE NOVEDADES",'error' );
+                    }else{
+                        $tut=$this->controlador()->dep('datos')->tabla('designacion')->tiene_tutorias($des['id_designacion']);
+                        if($tut){
+                            toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE TUTORIAS", 'error');
+                        }else{
+                            $this->controlador()->dep('datos')->tabla('imputacion')->eliminar_todo();
+                            $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
+                            $this->controlador()->resetear();
+                        }
+                        
+                    }
+                }
+                
 	}
         //modifica la designacion
         //si ya tenia numero de tkd cambia su estado a R (rectificada)
