@@ -722,7 +722,7 @@ class dt_designacion extends toba_datos_tabla
                             ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
                             " from (".$sql.") a"
                             .$where
-                            ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des,dias_lic"
+                            ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
                             .") b "
                             . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov=2 and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
                             . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
@@ -1172,28 +1172,33 @@ class dt_designacion extends toba_datos_tabla
                                 ) 
                             ";
              
-            $con="select uni_acad,id_programa,nombre as programa,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto into temp auxi from ("
+            $con="select * into temp auxi from ("
+                    ."select uni_acad,id_programa,nombre as programa,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto  from ("
                     ."select id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,nombre,dias_des,sum(dias_lic) as dias_lic "
                     .  " from (".$sql.") a"
                     . $where
                     ." GROUP BY id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,nombre,dias_des"
-                    .")a".$where." group by uni_acad,id_programa,nombre";
-               
-           // $con="select uni_acad,id_programa,nombre as programa,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto into temp auxi from (".$sql.")a".$where." group by uni_acad,id_programa,nombre";
+                    .")a".$where." group by uni_acad,id_programa,nombre"
+                    . ")b, unidad_acad c where b.uni_acad=c.sigla";
+            $con = toba::perfil_de_datos()->filtrar($con);  
+            
             toba::db('designa')->consultar($con);
             //obtengo el credito de cada programa para cada facultad
-            $cp="select a.id_unidad,a.id_programa,d.nombre as programa,sum(a.credito) as credito into temp auxi2 from mocovi_credito a, mocovi_periodo_presupuestario b,  mocovi_programa d where "
-                    . " a.id_periodo=b.id_periodo and "
+            $cp="select a.id_unidad,a.id_programa,d.nombre as programa,sum(a.credito) as credito  "
+                    . " from mocovi_credito a, mocovi_periodo_presupuestario b,  mocovi_programa d , unidad_acad e"
+                    . " where a.id_periodo=b.id_periodo and "
                     . " b.anio=".$filtro['anio']." and "
                     . " a.id_escalafon='D' and"
-                    . " a.id_programa=d.id_programa ".$where2
+                    . " a.id_programa=d.id_programa and"
+                    . " a.id_unidad=e.sigla ".$where2
                     . " group by a.id_unidad,a.id_programa,d.nombre";
-            
+            $cp = toba::perfil_de_datos()->filtrar($cp); 
+            $cp="select * into temp auxi2 from (".$cp.")b";
             
             toba::db('designa')->consultar($cp);
             
             //al hacer RIGHT JOIN  toma todos los registros de la tabla derecha tengan o no correspondencia con la de la izquierda
-            $con="select a.uni_acad,a.id_programa,a.programa,b.credito,a.monto,(b.credito-a.monto) as saldo into temp auxi3"
+            $con="select a.uni_acad,a.id_programa,a.programa,b.credito,trunc(a.monto,2) as monto,trunc((b.credito-a.monto),2) as saldo into temp auxi3"
                     . " from auxi a LEFT JOIN auxi2 b ON (a.uni_acad=b.id_unidad and a.id_programa=b.id_programa)";
             toba::db('designa')->consultar($con);
                        

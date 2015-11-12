@@ -3,11 +3,11 @@ class ci_total extends toba_ci
 {
         protected $s__datos_filtro;
    
-    
-       function ini__operacion()
-	{
-		$this->dep('datos')->cargar();
-	}
+    //todo lo comentado correspondia a la grilla
+//       function ini__operacion()
+//	{
+//		$this->dep('datos')->cargar();
+//	}
 
 	//---- Filtro -----------------------------------------------------------------------
 
@@ -25,23 +25,27 @@ class ci_total extends toba_ci
 
 //-----------------------------------------------------------------------------------------
 
-	function evt__formulario__modificacion($datos)
-	{
-		$this->dep('datos')->procesar_filas($datos);
-	}
+//	function evt__formulario__modificacion($datos)
+//	{
+//		$this->dep('datos')->procesar_filas($datos);
+//	}
+//
+//	function conf__formulario(toba_ei_formulario_ml $componente)
+//	{
+//           if (isset($this->s__datos_filtro)) {
+//               //$x=$this->dep('datos')->get_totales($this->s__datos_filtro);
+//               //$componente->set_datos($x);
+//            } 
+//	}
 
-	function conf__formulario(toba_ei_formulario_ml $componente)
-	{
-           if (isset($this->s__datos_filtro)) {
+        function conf__cuadro(toba_ei_cuadro $cuadro)
+        {
+            if (isset($this->s__datos_filtro)) {
                $x=$this->dep('datos')->get_totales($this->s__datos_filtro);
-              
-               $componente->set_datos($x);
+               $cuadro->set_datos($x);
             } 
-
-
-	}
-
-
+    
+        }
 
 	
 
