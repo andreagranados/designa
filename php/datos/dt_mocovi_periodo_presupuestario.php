@@ -1,7 +1,24 @@
 <?php
 class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
 {
-	function get_descripciones()
+        function credito(){
+            //obtengo el credito de la UA para el periodo actual
+            $sql="select sum(b.credito) as cred "
+                     . " from mocovi_programa a, mocovi_credito b, mocovi_periodo_presupuestario c, unidad_acad d "
+                     . " where  a.id_programa=b.id_programa"
+                     . " and b.id_periodo=c.id_periodo "
+                     . " and a.id_unidad=d.sigla and c.actual";
+            $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
+            $resul=toba::db('designa')->consultar($sql);
+            if($resul[0]['cred'] <>null){
+                $tengo=$resul[0]['cred'];
+             }else{
+                $tengo=0;      
+                }
+            return $tengo;
+            
+        }
+        function get_descripciones()
 	{
 		$sql = "SELECT id_periodo, id_periodo FROM mocovi_periodo_presupuestario ORDER BY id_periodo";
 		return toba::db('designa')->consultar($sql);

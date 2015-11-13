@@ -33,6 +33,7 @@ class cargo_solapas extends toba_ci
         }
         
         function get_departamentos(){
+             
            return $this->controlador()->dep('datos')->tabla('departamento')->get_departamentos();
         } 
         //este metodo permite mostrar en el popup el nombre de la materia seleccionada
@@ -1006,12 +1007,16 @@ class cargo_solapas extends toba_ci
         }
         function evt__form_baja__modificacion($datos)
         {
+            
                //chequeo que este dentro del periodo de la designacion
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 if($desig['hasta']!= null){
                     if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] ){
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
+                        $d['hasta']=$datos['desde'];
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($d);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                         toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
                     }else{
                         toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
