@@ -370,7 +370,7 @@ class ci_docente extends toba_ci
 	{
             
             $this->dep('datos')->tabla('designacion')->cargar($datos);
-            $this->dep('datos')->tabla('imputacion')->cargar($datos);
+            //$this->dep('datos')->tabla('imputacion')->cargar($datos);
             $desig = $this->dep('datos')->tabla('designacion')->get();//obtengo la designacion recien cargada
             
             if ($desig['id_norma'] <> null){//si tiene la norma del cd 

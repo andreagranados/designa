@@ -103,7 +103,7 @@ class cargo_solapas extends toba_ci
         //la inserta en estado A (alta)
 	function evt__form_cargo__alta($datos)
 	{
-         print_r($datos);exit();
+         
             //si pertenece al periodo actual o al periodo presupuestando
             $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
             if ($vale){// si esta dentro del periodo
