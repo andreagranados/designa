@@ -103,7 +103,7 @@ class cargo_solapas extends toba_ci
         //la inserta en estado A (alta)
 	function evt__form_cargo__alta($datos)
 	{
-         
+         print_r($datos);exit();
             //si pertenece al periodo actual o al periodo presupuestando
             $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
             if ($vale){// si esta dentro del periodo
@@ -128,6 +128,9 @@ class cargo_solapas extends toba_ci
                     if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero  
                         $cat=$this->controlador()->get_categoria($datos['cat_mapuche']);
                         $datos['cat_mapuche']=$cat;
+                        //vuelvo a calcular cat estatuto y dedicacion por si presiona guardar antes de que se autocompleten los campos
+                        $datos['cat_estat']=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                        $datos['dedic']=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
                         }
                     
                     $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
@@ -199,6 +202,9 @@ class cargo_solapas extends toba_ci
              if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero  
                  $cat=$this->controlador()->get_categoria($datos['cat_mapuche']);
                  $datos['cat_mapuche']=$cat;
+                 //vuelvo a calcular cat estatuto y dedicacion por si presiona guardar antes de que se autocompleten los campos
+                 $datos['cat_estat']=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                 $datos['dedic']=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
                  }
            
             
@@ -368,8 +374,9 @@ class cargo_solapas extends toba_ci
 	function evt__form_imputacion__modificacion($datos)//aparece despues del cargar, por lo tanto modifica
 	{
             $impu=$this->controlador()->dep('datos')->tabla('imputacion')->get();
+            //sumo todo menos la imputacion seleccionada
             //debe verificar que no se exceda del 100%
-            $sql="select case when sum(porc) is null then 0 else sum(porc) end as total from imputacion where id_designacion=".$impu['id_designacion']." and id_programa<>".$datos['id_programa'];
+            $sql="select case when sum(porc) is null then 0 else sum(porc) end as total from imputacion where id_designacion=".$impu['id_designacion']." and id_programa<>".$impu['id_programa'];
             $resul=toba::db('designa')->consultar($sql);
             $total=$resul[0]['total']+$datos['porc'];
             

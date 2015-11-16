@@ -1,7 +1,26 @@
 <?php
 class dt_designacion extends toba_datos_tabla
 {
-	
+	function get_docente($id_d)
+        {
+          $sql="select * from designacion where id_designacion=".$id_d;
+          $res=toba::db('designa')->consultar($sql); 
+          return $res[0]['id_docente'];
+        }
+        function get_categorias_doc($id_doc=null)
+        {
+            
+            if(!is_null($id_doc)){
+                $where=' Where id_docente= '.$id_doc;
+            }else{
+                $where='';
+            }
+            $sql="select id_designacion,cat_estat||'-'||dedic||'('||extract(year from desde)||')'||uni_acad as categoria from designacion $where order by desde";
+          
+            return toba::db('designa')->consultar($sql); 
+             
+        }
+        
         function tiene_materias($desig){
             $sql="select * from asignacion_materia where id_designacion=".$desig;
             $resul=toba::db('designa')->consultar($sql);
