@@ -339,6 +339,7 @@ class cargo_solapas extends toba_ci
 	{
             $this->s__alta_impu=1;
             $this->controlador()->dep('datos')->tabla('imputacion')->cargar($datos);
+            
 	}
         
        
@@ -362,12 +363,14 @@ class cargo_solapas extends toba_ci
                     $form->ef('porc')->set_obligatorio(true);
                     $form->ef('id_programa')->set_obligatorio(true);
                     $datos=$this->controlador()->dep('datos')->tabla('imputacion')->get();
+                   
                     $form->set_datos($datos);
                     $form->eliminar_evento('guardar');
 		}
             else{
                 $form->eliminar_evento('modificacion');
-            }     
+            }  
+             
 	}
         
         

@@ -154,7 +154,7 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3328', --objeto_proveedor
 	'imputacion', --identificador
 	'1', --parametros_a
-	'4', --parametros_b
+	'1', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
 	'5'  --orden
