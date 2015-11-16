@@ -129,8 +129,8 @@ class cargo_solapas extends toba_ci
                         $cat=$this->controlador()->get_categoria($datos['cat_mapuche']);
                         $datos['cat_mapuche']=$cat;
                         //vuelvo a calcular cat estatuto y dedicacion por si presiona guardar antes de que se autocompleten los campos
-                        $datos['cat_estat']=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
-                        $datos['dedic']=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
+                        //$datos['cat_estat']=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                        //$datos['dedic']=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
                         }
                     
                     $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
@@ -203,8 +203,8 @@ class cargo_solapas extends toba_ci
                  $cat=$this->controlador()->get_categoria($datos['cat_mapuche']);
                  $datos['cat_mapuche']=$cat;
                  //vuelvo a calcular cat estatuto y dedicacion por si presiona guardar antes de que se autocompleten los campos
-                 $datos['cat_estat']=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
-                 $datos['dedic']=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
+                // $datos['cat_estat']=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                 //$datos['dedic']=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
                  }
            
             
