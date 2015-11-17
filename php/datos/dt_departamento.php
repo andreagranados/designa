@@ -21,7 +21,10 @@ class dt_departamento extends toba_datos_tabla
                     
                 }
                 $sql = "SELECT t_d.iddepto, t_d.descripcion FROM departamento t_d,unidad_acad t_u WHERE t_u.sigla=t_d.idunidad_academica $where";
-                            
+                //$sql="select sigla,descripcion from unidad_acad ";
+             //$sql = toba::perfil_de_datos()->filtrar($sql);
+             //$resul=toba::db('designa')->consultar($sql);
+                
                 if (!($usuario=='crub' or $usuario=='vlevaggi' or $usuario=='amastrocello' or $usuario=='pcorrea' or $usuario=='myacopini' or $usuario=='lgirardin' or $usuario=='akolomenski')){
                    $sql = toba::perfil_de_datos()->filtrar($sql);
                 }else{
