@@ -1277,9 +1277,9 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'8089', --objeto_ei_formulario_fila
 	'3286', --objeto_ei_formulario
 	'designa', --objeto_ei_formulario_proyecto
-	'permuta', --identificador
+	'por_permuta', --identificador
 	'ef_checkbox', --elemento_formulario
-	'permuta', --columnas
+	'por_permuta', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'14', --orden
