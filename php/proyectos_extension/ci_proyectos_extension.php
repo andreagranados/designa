@@ -148,6 +148,9 @@ class ci_proyectos_extension extends toba_ci
                 case 'pant_externo':
                     $this->s__mostrar_e=1;
                     break;
+                case 'pant_edicion':
+                    $this->s__mostrar=1;
+                    break;
             }
 
 	}
