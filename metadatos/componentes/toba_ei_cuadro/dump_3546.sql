@@ -157,7 +157,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3546', --objeto_cuadro
 	'2874', --objeto_cuadro_col
 	'monto', --clave
-	'3', --orden
+	'4', --orden
 	'Gastado', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'col-num-p2', --estilo
@@ -188,7 +188,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3546', --objeto_cuadro
 	'2875', --objeto_cuadro_col
 	'credito', --clave
-	'4', --orden
+	'3', --orden
 	'Crédito', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'col-num-p2', --estilo
