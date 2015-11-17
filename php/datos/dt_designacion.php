@@ -1297,7 +1297,7 @@ class dt_designacion extends toba_datos_tabla
             if (isset($filtro['nro_tkd'])) {
 			$where.= " AND nro_540 = ".$filtro['nro_tkd'];
 		} 
-            $sql="(select *,'H' as hist from designacionh".$where.
+            $sql="(select id_designacion, id_docente, nro_cargo, anio_acad, desde, hasta, cat_mapuche, cat_estat, dedic, carac, uni_acad, id_departamento, id_area, id_orientacion, id_norma, id_expediente, tipo_incentivo,  dedi_incen, cic_con, cargo_gestion, ord_gestion, emite_cargo_gestion, nro_gestion, observaciones, check_presup, nro_540, concursado, check_academica, tipo_desig, id_reserva, estado, id_norma_cs,  por_permuta,'H' as hist from designacionh".$where.
                             ") UNION"
                  ."(select *,'' as hist from designacion".$where .")" ;  
             $sql="select distinct a.id_designacion,uni_acad,nro_540,desde,hasta,cat_mapuche,cat_estat,dedic,carac,t_d1.apellido||', '||t_d1.nombre as docente_nombre,t_d1.legajo,t_d3.descripcion as id_departamento,t_a.descripcion as id_area,t_o.descripcion as id_orientacion,t_p.nombre as programa,t_i.porc,hist "
