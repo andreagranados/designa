@@ -180,7 +180,7 @@ class cargo_solapas extends toba_ci
                             toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE TUTORIAS", 'error');
                         }else{
                             $sql="delete from imputacion where id_designacion=".$des['id_designacion'];
-                            $result=toba::db('designa')->consultar($sql);
+                            toba::db('designa')->consultar($sql);
                             $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
                             $this->controlador()->resetear();
                         }

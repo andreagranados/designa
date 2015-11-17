@@ -314,6 +314,9 @@ class ci_reserva extends designa_ci
 
 	function evt__form_reserva__baja()
 	{
+            $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $sql="delete from imputacion where id_designacion=".$des['id_designacion'];
+            toba::db('designa')->consultar($sql);
             $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('reserva')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('designacion')->resetear();
