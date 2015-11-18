@@ -125,7 +125,7 @@ INSERT INTO apex_objeto_mt_me (objeto_mt_me_proyecto, objeto_mt_me, ev_procesar_
 	'500px', --ancho
 	'300px', --alto
 	NULL, --posicion_botonera
-	NULL, --tipo_navegacion
+	'tab_h', --tipo_navegacion
 	'0', --botonera_barra_item
 	'0', --con_toc
 	NULL, --incremental
@@ -230,7 +230,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1517', --pantalla
 	'pant_edicion', --identificador
 	'1', --orden
-	'Datos Principales', --etiqueta
+	'1-Datos Principales', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
@@ -249,7 +249,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1518', --pantalla
 	'pant_integrantesi', --identificador
 	'2', --orden
-	'Integrantes', --etiqueta
+	'2-Integrantes Internos', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
