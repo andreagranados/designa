@@ -126,17 +126,20 @@ class ci_impresion_540 extends toba_ci
                     );
 
                 $i=0;
+                $sum=0;
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
                         $sql="update designacion set nro_540=".$numero." where id_designacion=".$des['id_designacion'];
                         toba::db('designa')->consultar($sql);
                         $ayn=$des['docente_nombre'];
+                        $sum=$sum+$des['costo'];
                         $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => $des['programa'],'col4' => $des['porc'].'%','col5' => $ayn,'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'],'col9' => $des['dedic'],'col10' => $des['carac'],'col11' => $des['desde'],'col12' => $des['hasta'],'col13' => $des['id_departamento'],'col14' => $des['id_area'],'col15' => $des['id_orientacion'],'col16' => $des['dias_lsgh'],'col17' =>$des['dias_lic'] ,'col18' => $des['estado'],'col19' => round($des['costo'],2));
                         $i++;
                         
                     }
                     
                 }
+               $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' =>'' ,'col18' => 'TOTAL: ','col19' => round($sum,2));
             //  ‘showHeadings’=> permite mostrar los nombres de las columnas (encabezados) 1 muestra, 0 oculta.
             //‘shadeCol’=> color de celdas, se ingresa el color en formato RGB.
             //‘xOrientation’=> orientación del texto dentro de las celdas de la tabla.
@@ -151,14 +154,14 @@ class ci_impresion_540 extends toba_ci
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
                 //Encabezado: Logo Organización - Nombre 
                 //Recorremos cada una de las hojas del documento para agregar el encabezado
-                 foreach ($pdf->ezPages as $pageNum=>$id){ 
-                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
-                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
-                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_sti.jpg', 10, 525, 70, 66); 
-                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 680, 535, 130, 40);
-                    $pdf->closeObject(); 
-                 
-                }
+//                 foreach ($pdf->ezPages as $pageNum=>$id){ 
+//                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+//                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+//                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_sti.jpg', 10, 525, 70, 66); 
+//                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 680, 535, 130, 40);
+//                    $pdf->closeObject(); 
+//                 
+//                }
         }
             
     
