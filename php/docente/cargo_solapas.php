@@ -261,6 +261,7 @@ class cargo_solapas extends toba_ci
                      if ($band){//si hay credito
                         //pasa a historico
                         $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                        
                         $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
                         $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
