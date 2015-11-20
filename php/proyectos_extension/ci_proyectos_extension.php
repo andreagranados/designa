@@ -60,7 +60,7 @@ class ci_proyectos_extension extends toba_ci
 	{
             if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('formulario')->descolapsar();
-                $form->ef('codigo')->set_obligatorio('true');
+                $form->ef('denominacion')->set_obligatorio('true');
                 $form->ef('nro_resol')->set_obligatorio('true');
                 $form->ef('fecha_resol')->set_obligatorio('true');
                 $form->ef('emite_tipo')->set_obligatorio('true');   
