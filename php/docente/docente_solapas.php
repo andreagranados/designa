@@ -66,8 +66,7 @@ class docente_solapas extends toba_ci
                 $this->dep('form_curric')->descolapsar();
                 $form->ef('codc_titul')->set_obligatorio('true');
                 $form->ef('fec_emisi')->set_obligatorio('true');
-                $form->ef('codc_entot')->set_obligatorio('true');
-                
+                               
             }else{
                 $this->dep('form_curric')->colapsar();
               }
