@@ -3,7 +3,7 @@ class dt_integrante_externo_pe extends designa_datos_tabla
 {
     function get_listado($id_p=null)
     {
-        $sql="select * from integrante_externo_pe where id_pext=".$id_p;
+        $sql="select apellido||', '||nombre as nombre,tipo_docum,nro_docum,fec_nacim,tipo_sexo,pais_nacim,funcion_p,carga_horaria from integrante_externo_pe where id_pext=".$id_p;
         return toba::db('designa')->consultar($sql);  
     }
     function get_plantilla($id_p){
