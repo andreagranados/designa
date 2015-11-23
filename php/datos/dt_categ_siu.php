@@ -11,24 +11,16 @@ class dt_categ_siu extends toba_datos_tabla
 
 
 //trae listado de categorias docentes
-	function get_listado($filtro=array())
+	function get_listado()
 	{
-		$where = array();
-		if (isset($filtro['codigo_siu'])) {
-			$where[] = "codigo_siu ILIKE ".quote("%{$filtro['codigo_siu']}%");
-		}
-		if (isset($filtro['descripcion'])) {
-			$where[] = "descripcion ILIKE ".quote("%{$filtro['descripcion']}%");
-		}
+		
 		$sql = "SELECT
 			t_cs.codigo_siu,
 			t_cs.descripcion
 		FROM
 			categ_siu as t_cs where escalafon='D'
 		ORDER BY descripcion";
-		if (count($where)>0) {
-			$sql = sql_concatenar_where($sql, $where);
-		}
+		
 		return toba::db('designa')->consultar($sql);
                
 	}

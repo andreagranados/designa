@@ -72,16 +72,12 @@ class docente_solapas extends toba_ci
               }
             //muestra datos solo si selecciono previamente
             if ($this->controlador()->dep('datos')->tabla('titulos_docente')->esta_cargada()) {
-                        $datos=$this->controlador()->dep('datos')->tabla('titulos_docente')->get();
-                        
-                        //recupero pais y ciudad para mostrar en el formulario
-                        $sql="select t_l.localidad as ciudad,t_a.nombre as pais from entidad_otorgante t_e LEFT OUTER JOIN localidad t_l ON (t_l.id=t_e.cod_ciudad) LEFT OUTER JOIN provincia t_p ON (t_p.codigo_pcia=t_l.id_provincia) LEFT OUTER JOIN pais t_a ON (t_a.codigo_pais=t_p.cod_pais) where cod_entidad='".$datos['codc_entot']."'";
-                        $resul=toba::db('designa')->consultar($sql);
-                        $datos['ciudad']=$resul[0]['ciudad'];
-                        $datos['pais']=$resul[0]['pais'];
-                        $datos['codc_entot']=trim($datos['codc_entot']);//le saco los blancos porque sino no lo muestra 
-                        $form->set_datos($datos);
-                        $form->eliminar_evento('guardar');
+                $datos=$this->controlador()->dep('datos')->tabla('titulos_docente')->get();
+                $sql="select t_l.localidad as ciudad,t_a.nombre as pais from entidad_otorgante t_e LEFT OUTER JOIN localidad t_l ON (t_l.id=t_e.cod_ciudad) LEFT OUTER JOIN provincia t_p ON (t_p.codigo_pcia=t_l.id_provincia) LEFT OUTER JOIN pais t_a ON (t_a.codigo_pais=t_p.cod_pais) where cod_entidad='".$datos['codc_entot']."'";
+                $resul=toba::db('designa')->consultar($sql);
+                $datos['codc_entot']=trim($datos['codc_entot']);//le saco los blancos porque sino no lo muestra 
+                $form->set_datos($datos);
+                $form->eliminar_evento('guardar');
 		}   
             else{
                 $form->eliminar_evento('modificacion');
@@ -118,7 +114,7 @@ class docente_solapas extends toba_ci
        //se da de alta un nuevo titulo
         function evt__form_curric__guardar($datos)
 	{
-            
+            print_r($datos);
             $datos['id_docente']=$this->s__agente['id_docente'];
             $this->controlador()->dep('datos')->tabla('titulos_docente')->set($datos);
             $this->controlador()->dep('datos')->tabla('titulos_docente')->sincronizar();

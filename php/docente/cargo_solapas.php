@@ -108,6 +108,7 @@ class cargo_solapas extends toba_ci
             $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
             if ($vale){// si esta dentro del periodo
                 $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
+                
                 //le mando la categoria, la fecha desde y la fecha hasta
                 $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,1);
                 $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,2);
@@ -126,7 +127,6 @@ class cargo_solapas extends toba_ci
                     $datos['por_permuta']=0;
                     
                     if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero  
-                        $cat=$this->controlador()->get_categoria($datos['cat_mapuche']);
                         $datos['cat_mapuche']=$cat;
                         //vuelvo a calcular cat estatuto y dedicacion por si presiona guardar antes de que se autocompleten los campos
                         //$datos['cat_estat']=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);

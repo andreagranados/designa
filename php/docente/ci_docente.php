@@ -120,6 +120,24 @@ class ci_docente extends toba_ci
                 }
             }
         }
+        function get_categoria_popup($id){
+            if($id>='0' && $id<='20000'){//si es un numero 
+                
+                $sql="SELECT
+			t_cs.codigo_siu,
+			t_cs.descripcion
+                        
+		FROM
+			categ_siu as t_cs 
+                        where escalafon='D'
+		ORDER BY descripcion";
+                $resul=toba::db('designa')->consultar($sql);
+                
+                return ($resul[$id]['codigo_siu']);
+            }else{
+                return $id;
+            }           
+        } 
         /** Ultimo dia del periodo actual**/
         function ultimo_dia_periodo($per) { 
              return $this->dep('datos')->tabla('mocovi_periodo_presupuestario')->ultimo_dia_periodo($per);
@@ -133,25 +151,7 @@ class ci_docente extends toba_ci
         function pertenece_periodo($fd,$fh){
             return $this->dep('datos')->tabla('mocovi_periodo_presupuestario')->pertenece_periodo($fd,$fh);
         }
-        function get_categoria_popup($id){
-            if($id>='0' && $id<='20000'){//si es un numero 
-                
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion,
-                        t_c.catest,
-                        t_c.id_ded
-		FROM
-			categ_siu as t_cs LEFT OUTER JOIN macheo_categ t_c ON (t_cs.codigo_siu=t_c.catsiu)
-                        where escalafon='D'
-		ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                
-                return ($resul[$id]['codigo_siu']);
-            }else{
-                return $id;
-            }           
-        } 
+    
         function dias_transcurridos($fecha_i,$fecha_f){
             $dias=(strtotime($fecha_i)-strtotime($fecha_f))/86400;//Esta función espera que se proporcione una cadena que contenga un formato de fecha en Inglés US e intentará convertir ese formato a una fecha Unix
             $dias=abs($dias);
