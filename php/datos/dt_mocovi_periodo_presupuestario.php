@@ -243,7 +243,8 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             $sql="select * from (".$sql.")b, unidad_acad c WHERE b.uni_acad=c.sigla and b.desde <='".$udia."'  and (b.hasta >='".$pdia."' or b.hasta is null)";
             
             $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
-            $con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from ("
+            //$con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from ("
+            $con="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end)as monto from ("
                    . " select id_designacion,desde,hasta,uni_acad,costo_diario, porc,dias_des,sum(dias_lic) as dias_lic from (".$sql.")a"
                     . " group by id_designacion,desde,hasta,uni_acad,costo_diario, porc,dias_des"
                     . ")b";
@@ -251,7 +252,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             $res= toba::db('designa')->consultar($con);
             
             $gaste=$res[0]['monto'];
-            //print_r('gaste'.$gaste);exit();
+            
               //obtengo el credito de la UA para el periodo actual
             $sql="select sum(b.credito) as cred "
                      . " from mocovi_programa a, mocovi_credito b, mocovi_periodo_presupuestario c, unidad_acad d "
@@ -422,8 +423,8 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             
             $sql = toba::perfil_de_datos()->filtrar($sql);
                        
-            //$con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from (".$sql.")a" ;
-            $con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from ("
+            //$con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from ("
+            $con="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end)as monto from ("
                    . " select id_designacion,desde,hasta,uni_acad,costo_diario, porc,dias_des,sum(dias_lic) as dias_lic from (".$sql.")a"
                     . " group by id_designacion,desde,hasta,uni_acad,costo_diario, porc,dias_des"
                     . ")b";
