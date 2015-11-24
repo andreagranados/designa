@@ -121,31 +121,56 @@ class dt_asignacion_materia extends toba_datos_tabla
             $ua= $filtro['uni_acad'];
 		}
         $auxiliar=array();
-        $i=0;    
-        $sql="select  distinct b.id_designacion,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,d.nro_norma||'/'||extract(year from d.fecha) as norma, a.id_materia
+        $i=0; 
+        $j=0;
+        $sql="select a.id_designacion,a.agente,a.legajo,a.cat_mapuche,a.cat_estat,a.norma,a.id_materia,d.descripcion as id_departamento,ar.descripcion as id_area,o.descripcion as id_orientacion from (".
+                "select  distinct b.id_designacion,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,d.nro_norma||'/'||extract(year from d.fecha) as norma,a.id_periodo, a.id_materia, b.id_departamento,b.id_area,b.id_orientacion
                 from asignacion_materia a, designacion b, docente c, norma d
                 where a.id_designacion=b.id_designacion
                 and b.id_docente=c.id_docente
                 and b.id_norma=d.id_norma
                 and b.uni_acad='".$ua."'".
                 " and a.anio=".$anio.
-                " order by b.id_designacion, agente,legajo,cat_mapuche,cat_estat,norma,id_materia";
+                ") a LEFT OUTER JOIN departamento as d ON (a.id_departamento=d.iddepto)"
+                . " LEFT OUTER JOIN area as ar ON (a.id_area = ar.idarea)"
+                . " LEFT OUTER JOIN orientacion as o ON (a.id_orientacion = o.idorient and o.idarea=ar.idarea)" .
+                " order by id_designacion, agente,legajo,cat_mapuche,cat_estat,norma,id_periodo,id_materia";
         $resul=toba::db('designa')->consultar($sql);
-        $ant=$resul[0]['id_designacion'];
-        $primera=true;
+        if(isset($resul[0])){
+            $ant=$resul[0]['id_designacion'];
+            $primera=true;    
+        }
+       
         foreach ($resul as $key => $value) {
-            if($resul[$key]['id_designacion']==$ant){//mientras es la misma designacion
+            if($value['id_designacion']==$ant){//mientras es la misma designacion
                 if ($primera){
-                    $auxiliar[$i]['id_designacion']=$resul[$key]['id_designacion'];
-                    $auxiliar[$i]['agente']=$resul[$key]['agente'];
-                    $auxiliar[$i]['legajo']=$resul[$key]['legajo'];
+                   // print_r('hola'.$value['id_designacion']);
+                    $auxiliar[$i]['id_designacion']=$value['id_designacion'];
+                    $auxiliar[$i]['agente']=$value['agente'];
+                    $auxiliar[$i]['legajo']=$value['legajo'];
+                    $auxiliar[$i]['cat_mapuche']=$value['cat_mapuche'];
+                    $auxiliar[$i]['cat_estat']=$value['cat_estat'];
+                    $auxiliar[$i]['norma']=$value['norma'];
+                    $auxiliar[$i]['id_departamento']=$value['id_departamento'];
+                    $auxiliar[$i]['id_area']=$value['id_area'];
+                    $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
+                    $primera=false;
                 }
+                $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion as mat from materia a , plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_designacion=".$value['id_designacion']. " and e.anio=".$anio." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
+                $resul=toba::db('designa')->consultar($sql);
+                $auxiliar[$i]['mat'.$j]=$resul[0]['mat'];
+                $j++;
                 
             }else{
-                $ant=$resul[$key]['id_designacion'];
+                //print_r($auxiliar);
+                $ant=$value['id_designacion'];
                 $i=$i+1;
+                $j=0;
+                $primera=true;//cambio de designacion
             }
         }
+        //print_r($auxiliar);
+        return $auxiliar;
         
     }
 }

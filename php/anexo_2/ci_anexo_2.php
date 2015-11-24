@@ -34,8 +34,7 @@ class ci_anexo_2 extends toba_ci
                     //la siguiente linea usa crosstab
                    // $datos=$this->dep('datos')->tabla('asignacion_materia')->get_listado_materias($this->s__datos_filtro);               
                     $datos=$this->dep('datos')->tabla('asignacion_materia')->get_listado_materias2($this->s__datos_filtro);               
-                    print_r($datos);
-                    //$cuadro->set_datos($datos);
+                    $cuadro->set_datos($datos);
                     
 		} 
 	}

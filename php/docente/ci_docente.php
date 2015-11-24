@@ -301,9 +301,7 @@ class ci_docente extends toba_ci
         }
         function evt__agregar_reserva()
 	{
-	   
             $this->set_pantalla('pant_reserva');
-  
 	}
       	//-----------------------------------------------------------------------------------
 	//---- form_encabezado --------------------------------------------------------------
