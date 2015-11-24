@@ -120,15 +120,32 @@ class dt_asignacion_materia extends toba_datos_tabla
         if (isset($filtro['uni_acad'])) {
             $ua= $filtro['uni_acad'];
 		}
-      
-        $sql="delete from auxiliar;";
-        toba::db('designa')->consultar($sql);
-    //llamo a la funcion que llena la tabla auxiliar
-        $sql="select * from sabana('".$ua."',".$anio.");";
-        
-        toba::db('designa')->consultar($sql);
-        $sql=" select * from auxiliar";
-        return toba::db('designa')->consultar($sql);
+        $auxiliar=array();
+        $i=0;    
+        $sql="select  distinct b.id_designacion,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,d.nro_norma||'/'||extract(year from d.fecha) as norma, a.id_materia
+                from asignacion_materia a, designacion b, docente c, norma d
+                where a.id_designacion=b.id_designacion
+                and b.id_docente=c.id_docente
+                and b.id_norma=d.id_norma
+                and b.uni_acad='".$ua."'".
+                " and a.anio=".$anio.
+                " order by b.id_designacion, agente,legajo,cat_mapuche,cat_estat,norma,id_materia";
+        $resul=toba::db('designa')->consultar($sql);
+        $ant=$resul[0]['id_designacion'];
+        $primera=true;
+        foreach ($resul as $key => $value) {
+            if($resul[$key]['id_designacion']==$ant){//mientras es la misma designacion
+                if ($primera){
+                    $auxiliar[$i]['id_designacion']=$resul[$key]['id_designacion'];
+                    $auxiliar[$i]['agente']=$resul[$key]['agente'];
+                    $auxiliar[$i]['legajo']=$resul[$key]['legajo'];
+                }
+                
+            }else{
+                $ant=$resul[$key]['id_designacion'];
+                $i=$i+1;
+            }
+        }
         
     }
 }
