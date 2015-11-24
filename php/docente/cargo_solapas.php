@@ -33,7 +33,6 @@ class cargo_solapas extends toba_ci
         }
         
         function get_departamentos(){
-             
            return $this->controlador()->dep('datos')->tabla('departamento')->get_departamentos();
         } 
         //este metodo permite mostrar en el popup el nombre de la materia seleccionada

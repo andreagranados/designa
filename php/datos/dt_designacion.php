@@ -1097,7 +1097,6 @@ class dt_designacion extends toba_datos_tabla
                     ";
             //En este listado no muestra las designaciones que han sido dadas de baja
             $sql.=$where. " and not exists (select * from novedad t_no where t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov=1)";
-           
             return toba::db('designa')->consultar($sql);
         }
         function get_renovacion($filtro=array())
@@ -1328,7 +1327,7 @@ class dt_designacion extends toba_datos_tabla
         
         function get_equipos_cat($filtro=array()){
             $where = "";
-            
+ 
             if (isset($filtro['anio'])) {
 		$udia=$this->ultimo_dia_periodo_anio($filtro['anio']);
                 $pdia=$this->primer_dia_periodo_anio($filtro['anio']);
@@ -1362,7 +1361,7 @@ class dt_designacion extends toba_datos_tabla
               ";
             $sql = toba::perfil_de_datos()->filtrar($sql);
             $sql=$sql.$where. " order by desc_materia,docente_nombre";
-            
+           
             return toba::db('designa')->consultar($sql);
         }
         

@@ -31,8 +31,11 @@ class ci_anexo_2 extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-                    $datos=$this->dep('datos')->tabla('asignacion_materia')->get_listado_materias($this->s__datos_filtro);               
-                    $cuadro->set_datos($datos);
+                    //la siguiente linea usa crosstab
+                   // $datos=$this->dep('datos')->tabla('asignacion_materia')->get_listado_materias($this->s__datos_filtro);               
+                    $datos=$this->dep('datos')->tabla('asignacion_materia')->get_listado_materias2($this->s__datos_filtro);               
+                    print_r($datos);
+                    //$cuadro->set_datos($datos);
                     
 		} 
 	}

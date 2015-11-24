@@ -112,5 +112,24 @@ class dt_asignacion_materia extends toba_datos_tabla
         ";
        return toba::db('designa')->consultar($sql);
     }
+    
+    function get_listado_materias2($filtro=array()){
+        if (isset($filtro['anio_acad'])) {
+            $anio= $filtro['anio_acad'];
+		}
+        if (isset($filtro['uni_acad'])) {
+            $ua= $filtro['uni_acad'];
+		}
+      
+        $sql="delete from auxiliar;";
+        toba::db('designa')->consultar($sql);
+    //llamo a la funcion que llena la tabla auxiliar
+        $sql="select * from sabana('".$ua."',".$anio.");";
+        
+        toba::db('designa')->consultar($sql);
+        $sql=" select * from auxiliar";
+        return toba::db('designa')->consultar($sql);
+        
+    }
 }
 ?>

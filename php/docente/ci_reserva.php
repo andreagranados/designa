@@ -96,10 +96,7 @@ class ci_reserva extends designa_ci
             
         }
         function get_departamentos(){
-            $sql="select distinct t_d.* from departamento t_d, unidad_acad t_u where t_u.sigla=t_d.idunidad_academica";
-            $sql = toba::perfil_de_datos()->filtrar($sql);
-            return toba::db('designa')->consultar($sql);
-            
+            return $this->controlador()->dep('datos')->tabla('departamento')->get_departamentos();   
         } 
           //este metodo permite mostrar en el popup el codigo de la categoria
         //recibe como argumento el id 
