@@ -37,7 +37,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --parametro_f
 	NULL, --usuario
 	'2015-10-08 07:29:28', --creacion
-	'abajo'  --posicion_botonera
+	'arriba'  --posicion_botonera
 );
 --- FIN Grupo de desarrollo 0
 
@@ -261,6 +261,44 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	NULL, --template
 	NULL, --template_impresion
 	'23'  --punto_montaje
+);
+INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, identificador, orden, etiqueta, descripcion, tip, imagen_recurso_origen, imagen, objetos, eventos, subclase, subclase_archivo, template, template_impresion, punto_montaje) VALUES (
+	'designa', --objeto_ci_proyecto
+	'3511', --objeto_ci
+	'1530', --pantalla
+	'pant_integrantese', --identificador
+	'3', --orden
+	'3-Integrantes Externos', --etiqueta
+	NULL, --descripcion
+	NULL, --tip
+	'apex', --imagen_recurso_origen
+	NULL, --imagen
+	NULL, --objetos
+	NULL, --eventos
+	NULL, --subclase
+	NULL, --subclase_archivo
+	NULL, --template
+	NULL, --template_impresion
+	NULL  --punto_montaje
+);
+INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, identificador, orden, etiqueta, descripcion, tip, imagen_recurso_origen, imagen, objetos, eventos, subclase, subclase_archivo, template, template_impresion, punto_montaje) VALUES (
+	'designa', --objeto_ci_proyecto
+	'3511', --objeto_ci
+	'1531', --pantalla
+	'pant_planilla', --identificador
+	'4', --orden
+	'4-Planilla de Personal Afectado', --etiqueta
+	NULL, --descripcion
+	NULL, --tip
+	'apex', --imagen_recurso_origen
+	NULL, --imagen
+	NULL, --objetos
+	NULL, --eventos
+	NULL, --subclase
+	NULL, --subclase_archivo
+	NULL, --template
+	NULL, --template_impresion
+	NULL  --punto_montaje
 );
 --- FIN Grupo de desarrollo 0
 

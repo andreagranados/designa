@@ -86,7 +86,7 @@ class ci_proyectos_extension extends toba_ci
 	function evt__formulario__modificacion($datos)
 	{
 		$this->dep('datos')->tabla('pextension')->set($datos);
-		$this->dep('datos')->sincronizar();
+		$this->dep('datos')->tabla('pextension')->sincronizar();
 		$this->resetear();
 	}
 
@@ -182,19 +182,15 @@ class ci_proyectos_extension extends toba_ci
                 }
                 
             }
-            
             $form->set_datos($res);
         }
         
 	function evt__form_integrantes__guardar($datos)
 	{
-            
             $pe=$this->dep('datos')->tabla('pextension')->get();
             foreach ($datos as $clave => $elem){
-                
                  $datos[$clave]['id_pext']=$pe['id_pext'];    
-    
-                }
+            }
             
             $this->dep('datos')->tabla('integrante_interno_pe')->procesar_filas($datos);
             $this->dep('datos')->tabla('integrante_interno_pe')->sincronizar();

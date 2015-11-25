@@ -28,8 +28,11 @@ class ci_proyectos_investigacion extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_listado($this->s__datos_filtro));
+            $this->pantalla()->tab("pant_integrantesi")->desactivar();	
+            $this->pantalla()->tab("pant_integrantese")->desactivar();	
+            $this->pantalla()->tab("pant_planilla")->desactivar();	
+	    if (isset($this->s__datos_filtro)) {
+		$cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_listado($this->s__datos_filtro));
 		} 
 	}
 
@@ -107,23 +110,21 @@ class ci_proyectos_investigacion extends toba_ci
 
 	function conf__form_pinv(toba_ei_formulario $form)
 	{
-            if ($this->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $datos=$this->dep('datos')->tabla('pinvestigacion')->get();
-                $form->set_datos($this->dep('datos')->tabla('pinvestigacion')->get());
-		}
+            $this->pantalla()->tab("pant_edicion")->desactivar();	
+            $form->set_datos($this->dep('datos')->tabla('pinvestigacion')->get());
 	}
 
 	//-----------------------------------------------------------------------------------
 	//---- form_integrantes -------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	function conf__form_integrantes(toba_ei_formulario_ml $form_ml)
+	function conf__form_integrantes(toba_ei_formulario_ml $form)
 	{
             //muestra los integrantes internos del p de inv
-            $datos=$this->dep('datos')->tabla('pinvestigacion')->get();
-            $sql="select * from integrante_interno_pi t_i where t_i.pinvest=".$datos['id_pinv'];
-            $res=toba::db('designa')->consultar($sql);
-            //$form_ml->set_datos($res);
+            $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
+            $ar=array('id_pinv' => $pi['id_pinv']);
+            $res = $this->dep('datos')->tabla('integrante_interno_pe')->get_filas($ar);
+           
 	}
 
 	function evt__form_integrantes__modificacion($datos)

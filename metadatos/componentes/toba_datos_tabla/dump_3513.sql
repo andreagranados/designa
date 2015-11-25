@@ -72,20 +72,6 @@ INSERT INTO apex_objeto_db_registros (objeto_proyecto, objeto, max_registros, mi
 INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
 	'designa', --objeto_proyecto
 	'3513', --objeto
-	'1406', --col_id
-	'id_docente', --columna
-	'E', --tipo
-	'1', --pk
-	'', --secuencia
-	NULL, --largo
-	NULL, --no_nulo
-	'1', --no_nulo_db
-	NULL, --externa
-	'integrante_interno_pi'  --tabla
-);
-INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
-	'designa', --objeto_proyecto
-	'3513', --objeto
 	'1407', --col_id
 	'pinvest', --columna
 	'E', --tipo
@@ -94,7 +80,7 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	NULL, --largo
 	NULL, --no_nulo
 	'1', --no_nulo_db
-	NULL, --externa
+	'0', --externa
 	'integrante_interno_pi'  --tabla
 );
 INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
@@ -108,7 +94,7 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	'4', --largo
 	NULL, --no_nulo
 	'0', --no_nulo_db
-	NULL, --externa
+	'0', --externa
 	'integrante_interno_pi'  --tabla
 );
 INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
@@ -122,7 +108,7 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	NULL, --largo
 	NULL, --no_nulo
 	'0', --no_nulo_db
-	NULL, --externa
+	'0', --externa
 	'integrante_interno_pi'  --tabla
 );
 INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
@@ -136,7 +122,7 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	'10', --largo
 	NULL, --no_nulo
 	'0', --no_nulo_db
-	NULL, --externa
+	'0', --externa
 	'integrante_interno_pi'  --tabla
 );
 INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
@@ -150,7 +136,7 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	NULL, --largo
 	NULL, --no_nulo
 	'0', --no_nulo_db
-	NULL, --externa
+	'0', --externa
 	'integrante_interno_pi'  --tabla
 );
 INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
@@ -164,7 +150,21 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	'4', --largo
 	NULL, --no_nulo
 	'0', --no_nulo_db
-	NULL, --externa
+	'0', --externa
+	'integrante_interno_pi'  --tabla
+);
+INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
+	'designa', --objeto_proyecto
+	'3513', --objeto
+	'1452', --col_id
+	'id_designacion', --columna
+	'E', --tipo
+	'1', --pk
+	'', --secuencia
+	NULL, --largo
+	NULL, --no_nulo
+	'1', --no_nulo_db
+	'0', --externa
 	'integrante_interno_pi'  --tabla
 );
 --- FIN Grupo de desarrollo 0
