@@ -546,7 +546,13 @@ class cargo_solapas extends toba_ci
        //agrega una nueva asignacion materia
 	function evt__form_materias__alta($datos)
 	{
+            $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
             
+            if($datos['uni_acad']<>$ua[0]['sigla']){
+                $datos['externa']=1;
+            }else{
+                $datos['externa']=0;
+            }
             $datos['nro_tab8']=8;      
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $datos['id_designacion']=$desig['id_designacion'];

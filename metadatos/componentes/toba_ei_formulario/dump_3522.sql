@@ -57,7 +57,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --confirmacion
 	'ei-boton-alta', --estilo
 	'apex', --imagen_recurso_origen
-	NULL, --imagen
+	'guardar.gif', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'1', --orden
@@ -123,7 +123,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --confirmacion
 	'ei-boton-mod', --estilo
 	'apex', --imagen_recurso_origen
-	NULL, --imagen
+	'guardar.gif', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'3', --orden
@@ -156,7 +156,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --confirmacion
 	'ei-boton-canc', --estilo
 	'apex', --imagen_recurso_origen
-	NULL, --imagen
+	'deshacer.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'4', --orden
@@ -200,7 +200,7 @@ INSERT INTO apex_objeto_ut_formulario (objeto_ut_formulario_proyecto, objeto_ut_
 	NULL, --clase_proyecto
 	NULL, --clase
 	NULL, --auto_reset
-	NULL, --ancho
+	'100%', --ancho
 	'150px', --ancho_etiqueta
 	'0', --expandir_descripcion
 	NULL, --campo_bl
