@@ -44,7 +44,8 @@ class dt_materia extends toba_datos_tabla
                     $where=" WHERE id_plan=".$id_plan;
                 }
             $sql = "SELECT
-			t_m.id_materia,
+			distinct 
+                        t_m.id_materia,
 			t_m.desc_materia
 		FROM
 			materia as t_m	"

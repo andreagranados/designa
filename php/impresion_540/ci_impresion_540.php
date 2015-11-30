@@ -129,7 +129,7 @@ class ci_impresion_540 extends toba_ci
                 $sum=0;
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
-                        $sql="update designacion set nro_540=".$numero." where id_designacion=".$des['id_designacion'];
+                        $sql="update designacion set nro_540=".$numero." where id_designacion=".$des['id_designacion']." and nro_540 is null";
                         toba::db('designa')->consultar($sql);
                         $ayn=$des['docente_nombre'];
                         $sum=$sum+$des['costo'];
@@ -139,6 +139,7 @@ class ci_impresion_540 extends toba_ci
                     }
                     
                 }
+                
                $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' =>'' ,'col18' => 'TOTAL: ','col19' => round($sum,2));
             //  ‘showHeadings’=> permite mostrar los nombres de las columnas (encabezados) 1 muestra, 0 oculta.
             //‘shadeCol’=> color de celdas, se ingresa el color en formato RGB.
