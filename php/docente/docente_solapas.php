@@ -32,25 +32,23 @@ class docente_solapas extends toba_ci
     //-----------------------------------------------------------------------------------
 
     function conf__cuadro_curric(toba_ei_cuadro $cuadro)
-	{
+    {
         //recupero todo los titulos y los muestro
         $sql="select * from titulos_docente t_t LEFT JOIN titulo t_i ON (t_t.codc_titul=t_i.codc_titul) where t_t.id_docente=".$this->s__agente['id_docente'];
         $resul=toba::db('designa')->consultar($sql);
         $cuadro->set_datos($resul);//si resul no tiene nada no muestra nada
-        }
+    }
 
     //asociado al boton edicion
     function evt__cuadro_curric__seleccion($datos)
-	{
+    {
         //debe hacer aparecer el formulario con los datos del titulo
         $this->s__mostrar_fcurri=1;
         $this->controlador()->dep('datos')->tabla('titulos_docente')->cargar($datos);
         
-	}
+    }
         
-    function evt__cuadro_curric__eliminar($datos)
-	{
-	}
+   
 
 	//-----------------------------------------------------------------------------------
 	//---- form_curric ------------------------------------------------------------------
@@ -356,10 +354,29 @@ class docente_solapas extends toba_ci
 	function conf__form_botones(toba_ei_formulario $form)
 	{
             if (!$this->controlador()->dep('datos')->tabla('docente')->esta_cargada()){//porque se selecciono previamente un agente
-			$form->eliminar_evento('desig');
-		} 
-            
+		$form->eliminar_evento('desig');
+            }  
 	}
 
+    //-----------------------------------------------------------------------------------
+    //---- cuadro_pext ----------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
+
+    function conf__cuadro_pext(toba_ei_cuadro $cuadro)
+    {
+       $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
+       $datos=$this->controlador()->dep('datos')->tabla('integrante_interno_pe')->sus_proyectos_ext($doc['id_docente']);
+       $cuadro->set_datos($datos);
+    }
+    //-----------------------------------------------------------------------------------
+    //---- cuadro_pinv ----------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
+
+    function conf__cuadro_pinv(toba_ei_cuadro $cuadro)
+    {
+       $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
+       $datos=$this->controlador()->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv($doc['id_docente']);
+       $cuadro->set_datos($datos);
+    }
 }
 ?>

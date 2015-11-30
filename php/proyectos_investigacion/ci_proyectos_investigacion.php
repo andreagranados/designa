@@ -3,6 +3,8 @@ class ci_proyectos_investigacion extends toba_ci
 {
 	protected $s__datos_filtro;
         protected $s__mostrar;
+        protected $s__pantalla;
+        protected $s__mostrar_e;
 
 
 	//---- Filtro -----------------------------------------------------------------------
@@ -39,14 +41,15 @@ class ci_proyectos_investigacion extends toba_ci
 	function evt__cuadro__seleccion($datos)
 	{
 		$this->dep('datos')->tabla('pinvestigacion')->cargar($datos);
-                $this->s__mostrar=1;
-           
+                $this->s__mostrar=1;  
 	}
 
 	function evt__cuadro__integrantes($datos)
 	{
             $this->set_pantalla('pant_integrantesi');
             $this->dep('datos')->tabla('pinvestigacion')->cargar($datos);
+            $ar=array('pinvest' => $datos['id_pinv']);
+            $this->dep('datos')->tabla('integrante_interno_pi')->cargar($ar);
 	}
 	//---- Formulario -------------------------------------------------------------------
 
@@ -122,32 +125,37 @@ class ci_proyectos_investigacion extends toba_ci
 	{
             //muestra los integrantes internos del p de inv
             $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
-            $ar=array('id_pinv' => $pi['id_pinv']);
-            $res = $this->dep('datos')->tabla('integrante_interno_pe')->get_filas($ar);
+            
+            $ar=array('pinvest' => $pi['id_pinv']);
+            $res = $this->dep('datos')->tabla('integrante_interno_pi')->get_filas($ar);
+            if(isset($res)){//si hay integrantes
+                
+                foreach ($res as $key => $value) {
+                    $doc=$this->dep('datos')->tabla('designacion')->get_docente($res[$key]['id_designacion']);
+                    $res[$key]['id_docente']=$doc;
+                    //autocompleto con blanco hasta 5
+                    $res[$key]['funcion_p']=str_pad($res[$key]['funcion_p'], 4); 
+                    $res[$key]['ua']=str_pad($res[$key]['ua'], 5); 
+                    
+                }
+                
+            }
+            $form->set_datos($res);
            
 	}
 
-	function evt__form_integrantes__modificacion($datos)
+        function evt__form_integrantes__guardar($datos)
 	{
-            
-            $proy=$this->dep('datos')->tabla('pinvestigacion')->get();//recupero el proyecto seleccionado
-            print_r($proy);exit();
-            foreach ($datos as $key=>$value) {
-               $datos[$key]['pinvest']=$proy['id_pinv'];
-               $datos[$key]['id_docente']=$proy['docente_nombre'];
-               
+            $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
+            foreach ($datos as $clave => $elem){
+                 $datos[$clave]['pinvest']=$pi['id_pinv'];  
+                  
             }
-            print_r($datos);
+            
             $this->dep('datos')->tabla('integrante_interno_pi')->procesar_filas($datos);
-	}
-         //boton de la pantalla
-        function evt__guardar()
-	{	
             $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-	    $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
-            $this->dep('datos')->tabla('integrante_interno_pi')->cargar();//despues de guarda actualiza
+            
 	}
-
 
 
 	//-----------------------------------------------------------------------------------
@@ -178,9 +186,50 @@ class ci_proyectos_investigacion extends toba_ci
 	
 	function evt__alta()
 	{
-            $this->s__mostrar=1;
-            $this->dep('datos')->tabla('pinvestigacion')->resetear();
+            switch ($this->s__pantalla) {
+              case 'pant_edicion':
+                    $this->s__mostrar=1;
+                    $this->dep('datos')->tabla('pinvestigacion')->resetear();
+                    break;
+              case 'pant_externo':
+                   $this->s__mostrar_e=1;
+                  break;
+            }
+            
+	}
+        //-----------------------------------------------------------------------------------
+	//---- Configuraciones --------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__pant_edicion(toba_ei_pantalla $pantalla)
+	{
+            $this->s__pantalla = "pant_edicion";
 	}
 
+	function conf__pant_integrantesi(toba_ei_pantalla $pantalla)
+	{
+            $this->s__pantalla = "pant_interno";
+	}
+
+	function conf__pant_integrantese(toba_ei_pantalla $pantalla)
+	{
+            $this->s__pantalla = "pant_externo";
+	}
+        function conf__form_integrante_e(toba_ei_formulario $form)
+	{
+
+            if($this->s__mostrar_e==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
+                $this->dep('form_integrante_e')->descolapsar();
+                $form->ef('apellido')->set_obligatorio('true');
+                $form->ef('nombre')->set_obligatorio('true');
+                $form->ef('tipo_docum')->set_obligatorio('true');
+                $form->ef('nro_docum')->set_obligatorio('true');
+                $form->ef('funcion_p')->set_obligatorio('true');
+                $form->ef('carga_horaria')->set_obligatorio('true');
+            }else{
+                
+                $this->dep('form_integrante_e')->colapsar();
+            }
+        }
 }
 ?>

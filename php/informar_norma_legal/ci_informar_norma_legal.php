@@ -4,6 +4,7 @@ class ci_informar_norma_legal extends toba_ci
 	protected $s__datos_filtro;
         protected $s__listado;
         protected $s__datos;
+        protected $s__mostrar;
 
        
         function credito ($ua){
@@ -22,6 +23,7 @@ class ci_informar_norma_legal extends toba_ci
 	function evt__filtro__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
+                $this->s__mostrar=1;
 	}
 
 	function evt__filtro__cancelar()
@@ -45,7 +47,11 @@ class ci_informar_norma_legal extends toba_ci
 
 	function conf__formulario(toba_ei_formulario $form)
 	{
-		
+            if($this->s__mostrar==1){
+               $this->dep('formulario')->descolapsar();      
+             }else{
+               $this->dep('formulario')->colapsar();      
+             }
                 
 	}
 

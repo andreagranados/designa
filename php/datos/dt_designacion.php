@@ -15,8 +15,9 @@ class dt_designacion extends toba_datos_tabla
             }else{
                 $where='';
             }
-            $sql="select id_designacion,cat_estat||'-'||dedic||'('||extract(year from desde)||')'||uni_acad as categoria from designacion $where order by desde";
-          
+            $sql="select t_d.id_designacion,t_d.id_designacion||'-'||t_d.cat_estat||'-'||t_d.dedic||'('||extract(year from t_d.desde)||')'||t_d.uni_acad as categoria "
+                    . " from designacion t_d, unidad_acad t_u $where and t_d.uni_acad=t_u.sigla order by desde";
+            
             return toba::db('designa')->consultar($sql); 
              
         }
@@ -580,7 +581,8 @@ class dt_designacion extends toba_datos_tabla
                 caracter as t_c,
                 unidad_acad as t_ua
                 WHERE t_d.id_docente = t_d1.id_docente 
-                    AND t_d.carac = t_c.id_car AND t_d.uni_acad = t_ua.sigla 
+                    AND t_d.carac = t_c.id_car 
+                    AND t_d.uni_acad = t_ua.sigla 
                     AND t_d.tipo_desig=1 
                     
                  )
@@ -1333,7 +1335,8 @@ class dt_designacion extends toba_datos_tabla
                 $pdia=$this->primer_dia_periodo_anio($filtro['anio']);
 		}  
                 
-            $where.=" AND t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or hasta is null)";    
+            $where.=" AND t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or hasta is null)"
+                    . " AND t_a.anio=".$filtro['anio'];    
             
             if (isset($filtro['uni_acad'])) {
 			$where.= " AND t_d.uni_acad = ".quote($filtro['uni_acad']);

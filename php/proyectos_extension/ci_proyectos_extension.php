@@ -50,7 +50,7 @@ class ci_proyectos_extension extends toba_ci
             $this->set_pantalla('pant_integrantesi');
             $this->dep('datos')->tabla('pextension')->cargar($datos);
             $ar=array('id_pext' => $datos['id_pext']);
-            $this->dep('datos')->tabla('integrante_interno_pe')->cargar($datos);
+            $this->dep('datos')->tabla('integrante_interno_pe')->cargar($ar);
 	}
 
 
