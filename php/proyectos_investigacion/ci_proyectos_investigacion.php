@@ -215,6 +215,9 @@ class ci_proyectos_investigacion extends toba_ci
 	{
             $this->s__pantalla = "pant_externo";
 	}
+        //-----------------------------------------------------------------------------------
+	//---- form_integrante_e ------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
         function conf__form_integrante_e(toba_ei_formulario $form)
 	{
 
@@ -222,14 +225,48 @@ class ci_proyectos_investigacion extends toba_ci
                 $this->dep('form_integrante_e')->descolapsar();
                 $form->ef('apellido')->set_obligatorio('true');
                 $form->ef('nombre')->set_obligatorio('true');
+                $form->ef('tipo_sexo')->set_obligatorio('true');
                 $form->ef('tipo_docum')->set_obligatorio('true');
                 $form->ef('nro_docum')->set_obligatorio('true');
                 $form->ef('funcion_p')->set_obligatorio('true');
                 $form->ef('carga_horaria')->set_obligatorio('true');
             }else{
-                
                 $this->dep('form_integrante_e')->colapsar();
             }
+            if ($this->dep('datos')->tabla('integrante_externo_pi')->esta_cargada()) {
+		$form->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get());
+		}
         }
+        function evt__form_integrante_e__guardar($datos)
+	{
+            $pe=$this->dep('datos')->tabla('pinvestigacion')->get();
+            $datos['pinvest']=$pe['id_pinv'];
+            $datos['nro_tabla']=1;
+            $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
+            $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+            $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+	}
+
+        //-----------------------------------------------------------------------------------
+	//---- cuadro_intt -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+        function conf__cuadro_intt(toba_ei_cuadro $cuadro)
+	{
+            $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
+            $cuadro->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get_listado($pi['id_pinv']));
+	}
+        function evt__cuadro_intt__seleccion($datos)
+	{
+            $this->s__mostrar_e=1;
+            $pe=$this->dep('datos')->tabla('pinvestigacion')->get();
+            $datos['pinvest']=$pe['id_pinv'];
+            $this->dep('datos')->tabla('integrante_externo_pi')->cargar($datos);
+	}
+        function conf__cuadro_plantilla(toba_ei_cuadro $cuadro)
+	{
+            $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
+            $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
+            $cuadro->set_datos($datos);
+	}
 }
 ?>

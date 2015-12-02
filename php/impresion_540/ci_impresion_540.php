@@ -76,6 +76,7 @@ class ci_impresion_540 extends toba_ci
             //ya tiene valor, filtrar y solo mostrar la que estan seleccionadas
             //print_r($this->s__listado);
             if (isset($this->s__seleccionadas)){//si selecciono para imprimir
+                            
                 //genero un nuevo numero de 540
                 $sql="insert into impresion_540(id,fecha_impresion) values (nextval('impresion_540_id_seq'),current_date)";
                 toba::db('designa')->consultar($sql);
@@ -127,24 +128,21 @@ class ci_impresion_540 extends toba_ci
 
                 $i=0;
                 $sum=0;
+                $comma_separated = implode(',', $sele);
+                $sql="update designacion set nro_540=".$numero." where id_designacion in (".$comma_separated .") and nro_540 is null";
+                toba::db('designa')->consultar($sql);
+                
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
-                        $sql="update designacion set nro_540=".$numero." where id_designacion=".$des['id_designacion']." and nro_540 is null";
-                        toba::db('designa')->consultar($sql);
                         $ayn=$des['docente_nombre'];
                         $sum=$sum+$des['costo'];
                         $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => $des['programa'],'col4' => $des['porc'].'%','col5' => $ayn,'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'],'col9' => $des['dedic'],'col10' => $des['carac'],'col11' => $des['desde'],'col12' => $des['hasta'],'col13' => $des['id_departamento'],'col14' => $des['id_area'],'col15' => $des['id_orientacion'],'col16' => $des['dias_lsgh'],'col17' =>$des['dias_lic'] ,'col18' => $des['estado'],'col19' => round($des['costo'],2));
-                        $i++;
-                        
+                        $i++;  
                     }
-                    
                 }
                 
-               $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' =>'' ,'col18' => 'TOTAL: ','col19' => round($sum,2));
-            //  ‘showHeadings’=> permite mostrar los nombres de las columnas (encabezados) 1 muestra, 0 oculta.
-            //‘shadeCol’=> color de celdas, se ingresa el color en formato RGB.
-            //‘xOrientation’=> orientación del texto dentro de las celdas de la tabla.
-            //‘width’=> asigna el ancho de la tabla.
+                $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' =>'' ,'col18' => 'TOTAL: ','col19' => round($sum,2));
+            
                //genera la tabla de datos
                 $car=utf8_decode("Carácter");
                 $area=utf8_decode("Área");
@@ -163,9 +161,9 @@ class ci_impresion_540 extends toba_ci
 //                    $pdf->closeObject(); 
 //                 
 //                }
+                
         }
-            
-    
+
         }
 	
        

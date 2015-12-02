@@ -129,8 +129,7 @@ class dt_asignacion_materia extends toba_datos_tabla
         $auxiliar=array();
         $i=0; 
         $j=0;
-        //$sql="select a.id_designacion,a.anio,a.uni_acad,a.agente,a.legajo,a.cat_mapuche,a.cat_estat,n.nro_norma||'/'||extract(year from n.fecha) as norma,a.id_materia,d.descripcion as id_departamento,ar.descripcion as id_area,o.descripcion as id_orientacion,gestion "
-          $sql="select a.id_designacion,a.anio,a.uni_acad,a.agente,a.legajo,a.cat_mapuche,a.cat_estat,n.nro_norma||'/'||extract(year from n.fecha) as norma,a.id_materia,d.descripcion as id_departamento,ar.descripcion as id_area,o.descripcion as id_orientacion,gestion  from (".
+        $sql="select a.id_designacion,a.anio,a.uni_acad,a.agente,a.legajo,a.cat_mapuche,a.cat_estat,n.nro_norma||'/'||extract(year from n.fecha) as norma,a.id_materia,d.descripcion as id_departamento,ar.descripcion as id_area,o.descripcion as id_orientacion,gestion  from (".
                 "select * from (".
                  "select  distinct b.id_designacion,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.id_periodo, a.id_materia, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
                     from asignacion_materia a, designacion b, docente c
@@ -164,11 +163,19 @@ class dt_asignacion_materia extends toba_datos_tabla
                     $auxiliar[$i]['id_area']=$value['id_area'];
                     $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
                     $auxiliar[$i]['gestion']=$value['gestion'];
+                    //verifico si tiene algun proyecto de extension
                     $sql="select t_p.nro_resol||'-'||t_i.funcion_p as pe from integrante_interno_pe t_i, pextension t_p "
                             . " where t_i.id_pext=t_p.id_pext and t_i.id_designacion=".$value['id_designacion'];
                     $resul=toba::db('designa')->consultar($sql);
                     if(count($resul)>0){
                         $auxiliar[$i]['extension']=$resul[0]['pe'];
+                    }
+                    //verifico si tiene proyectos de investigacion
+                    $sql="select t_p.codigo||'-'||t_i.funcion_p||'-'||t_i.carga_horaria||'hs' as pe from integrante_interno_pi t_i, pinvestigacion t_p "
+                            . " where t_i.pinvest=t_p.id_pinv  and t_i.id_designacion=".$value['id_designacion'];
+                    $resul=toba::db('designa')->consultar($sql);
+                    if(count($resul)>0){
+                        $auxiliar[$i]['investigacion']=$resul[0]['pe'];
                     }
                     $primera=false;
                 }
@@ -185,16 +192,16 @@ class dt_asignacion_materia extends toba_datos_tabla
                 $j=0;
                 $primera=true;//cambio de designacion
                 $auxiliar[$i]['id_designacion']=$value['id_designacion'];
-                    $auxiliar[$i]['agente']=$value['agente'];
-                    $auxiliar[$i]['legajo']=$value['legajo'];
-                    $auxiliar[$i]['cat_mapuche']=$value['cat_mapuche'];
-                    $auxiliar[$i]['cat_estat']=$value['cat_estat'];
-                    $auxiliar[$i]['norma']=$value['norma'];
-                    $auxiliar[$i]['id_departamento']=$value['id_departamento'];
-                    $auxiliar[$i]['id_area']=$value['id_area'];
-                    $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
-                    $auxiliar[$i]['gestion']=$value['gestion'];
-                    $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
+                $auxiliar[$i]['agente']=$value['agente'];
+                $auxiliar[$i]['legajo']=$value['legajo'];
+                $auxiliar[$i]['cat_mapuche']=$value['cat_mapuche'];
+                $auxiliar[$i]['cat_estat']=$value['cat_estat'];
+                $auxiliar[$i]['norma']=$value['norma'];
+                $auxiliar[$i]['id_departamento']=$value['id_departamento'];
+                $auxiliar[$i]['id_area']=$value['id_area'];
+                $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
+                $auxiliar[$i]['gestion']=$value['gestion'];
+                $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
                 $resul=toba::db('designa')->consultar($sql);
                 $auxiliar[$i]['mat'.$j]=$resul[0]['mat'];
                 $j++;
