@@ -298,7 +298,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'carga_horaria', --identificador
 	'ef_editable', --elemento_formulario
 	'carga_horaria', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'4', --orden
 	'Carga Horaria', --etiqueta
