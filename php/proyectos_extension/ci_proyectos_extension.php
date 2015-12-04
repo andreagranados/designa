@@ -147,6 +147,7 @@ class ci_proyectos_extension extends toba_ci
                     break;
                 case 'pant_externo':
                     $this->s__mostrar_e=1;
+                    $this->dep('datos')->tabla('integrante_externo_pe')->resetear();
                     break;
                 case 'pant_edicion':
                     $this->s__mostrar=1;
@@ -269,7 +270,24 @@ class ci_proyectos_extension extends toba_ci
             $this->dep('datos')->tabla('integrante_externo_pe')->resetear();
 	}
 
-	
+	function evt__form_integrante_e__baja($datos)
+        {
+            $this->dep('datos')->tabla('integrante_externo_pe')->eliminar_todo();
+	    $this->dep('datos')->tabla('integrante_externo_pe')->resetear();
+             
+        }
+        function evt__form_integrante_e__modificacion($datos)
+        {
+            $this->dep('datos')->tabla('integrante_externo_pe')->set($datos);
+            $this->dep('datos')->tabla('integrante_externo_pe')->sincronizar();
+            
+             
+        }
+        function evt__form_integrante_e__cancelar()
+	{
+            $this->s__mostrar_e=0;
+            $this->dep('datos')->tabla('integrante_externo_pe')->resetear();
+	}
 	//-----------------------------------------------------------------------------------
 	//---- cuadro_plantilla -------------------------------------------------------------
 	//-----------------------------------------------------------------------------------

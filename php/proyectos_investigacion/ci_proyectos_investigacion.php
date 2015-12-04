@@ -148,8 +148,7 @@ class ci_proyectos_investigacion extends toba_ci
 	{
             $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
             foreach ($datos as $clave => $elem){
-                 $datos[$clave]['pinvest']=$pi['id_pinv'];  
-                  
+                 $datos[$clave]['pinvest']=$pi['id_pinv'];      
             }
             
             $this->dep('datos')->tabla('integrante_interno_pi')->procesar_filas($datos);
@@ -193,6 +192,7 @@ class ci_proyectos_investigacion extends toba_ci
                     break;
               case 'pant_externo':
                    $this->s__mostrar_e=1;
+                  $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
                   break;
             }
             
@@ -237,6 +237,7 @@ class ci_proyectos_investigacion extends toba_ci
 		$form->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get());
 		}
         }
+        //da de alta un nuevo integrante dentro del proyecto 
         function evt__form_integrante_e__guardar($datos)
 	{
             $pe=$this->dep('datos')->tabla('pinvestigacion')->get();
@@ -244,6 +245,24 @@ class ci_proyectos_investigacion extends toba_ci
             $datos['nro_tabla']=1;
             $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
             $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+            $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+	}
+        function evt__form_integrante_e__baja($datos)
+        {
+            $this->dep('datos')->tabla('integrante_externo_pi')->eliminar_todo();
+	    $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+             
+        }
+        function evt__form_integrante_e__modificacion($datos)
+        {
+            $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
+            $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+            
+             
+        }
+        function evt__form_integrante_e__cancelar()
+	{
+            $this->s__mostrar_e=0;
             $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
 	}
 

@@ -414,7 +414,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3445', --objeto_cuadro
 	'2571', --objeto_cuadro_col
 	'id_orientacion', --clave
-	'15', --orden
+	'16', --orden
 	'Orientación', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'0', --estilo
@@ -600,7 +600,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3445', --objeto_cuadro
 	'2595', --objeto_cuadro_col
 	'id_area', --clave
-	'16', --orden
+	'15', --orden
 	'Área', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo

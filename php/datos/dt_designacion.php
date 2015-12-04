@@ -280,7 +280,127 @@ class dt_designacion extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
                
 	}
-    
+        //devuelve true si esta en rojo y false en caso contrario
+        function en_rojo($udia,$pdia){
+            $concat=" m_e.actual ";//periodo actual. Los tkd siempre se hacen en el periodo actual
+            $where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
+            //Obtengo lo que gaste
+            $sql = "(SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,"
+                    . "m_c.costo_diario,"
+                    . "t_t.porc,t_t.id_programa,"
+                    . "0 as dias_lic,"
+                    . " case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
+                            FROM 
+                            designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
+                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
+                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo)
+                          
+                        WHERE  t_d.tipo_desig=1 
+                            AND not exists(SELECT * from novedad t_no
+                                            where t_no.id_designacion=t_d.id_designacion
+                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 or t_no.tipo_nov=5)))"
+                                            
+                        ."UNION 
+                        (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
+                        m_c.costo_diario,
+                        t_t.porc,t_t.id_programa,
+                        0 as dias_lic,
+                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
+                        
+                            FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
+                           
+                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
+                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
+                            
+                            novedad as t_no
+                           
+                        WHERE  t_d.tipo_desig=1 
+                            AND t_no.id_designacion=t_d.id_designacion
+                            AND ((t_no.tipo_nov=2 AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
+                                OR (t_no.tipo_nov=1 or t_no.tipo_nov=4))
+                            )"
+                        ."UNION
+                        (SELECT distinct 
+                        t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
+                        m_c.costo_diario, 
+                        t_t.porc,t_t.id_programa,"
+                    . " sum(case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end ) as dias_lic,"
+                    . " case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
+                        FROM designacion as t_d 
+                            
+                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion)
+                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa)
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
+                       	    novedad t_no
+                        WHERE t_d.tipo_desig=1 
+                                AND t_no.id_designacion=t_d.id_designacion
+                                AND (t_no.tipo_nov=2 or t_no.tipo_nov=5)
+                                AND t_no.tipo_norma is not null
+                                AND t_no.tipo_emite is not null
+                                AND t_no.norma_legal is not null
+                        GROUP BY t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,m_c.costo_diario,t_t.porc,t_t.id_programa  )".
+                    "UNION
+                        (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta, t_d.uni_acad,m_c.costo_diario, t_t.porc,t_t.id_programa,0 as dias_lic,
+                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
+                        FROM designacion as t_d 
+                            LEFT OUTER JOIN imputacion t_i ON (t_d.id_designacion=t_i.id_designacion)
+                            LEFT OUTER JOIN mocovi_programa m_p ON (t_i.id_programa=m_p.id_programa) 
+                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
+                        reserva as t_r
+                        WHERE t_d.id_reserva = t_r.id_reserva 
+                                 AND t_d.tipo_desig=2 
+                                ) 
+                            ";
+                       
+            $sql="select * from (".$sql.")b, unidad_acad c WHERE b.uni_acad=c.sigla and b.desde <='".$udia."'  and (b.hasta >='".$pdia."' or b.hasta is null)";
+            
+            $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
+            
+             //---------------Obtengo el credito de cada programa de la UA para el periodo actual
+            $cred="select id_programa,sum(credito) as cred "
+                     . " from  mocovi_credito b, mocovi_periodo_presupuestario c, unidad_acad d "
+                     . " where  "
+                     . " b.id_periodo=c.id_periodo "
+                     . " and b.id_unidad=d.sigla "
+                     . " and c.actual"
+                        . " group by id_programa";
+            $cred = toba::perfil_de_datos()->filtrar($cred);//aplico el perfil de datos
+            $resul=toba::db('designa')->consultar($cred);
+            $band=false;
+            $i=0;
+            $long=count($resul);
+            while(!$band && $i<$long){
+                //veo cuanto gaste de este programa
+                $con="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end)as monto from ("
+                   . " select id_designacion,desde,hasta,uni_acad,costo_diario,porc ,id_programa ,dias_des ,sum(dias_lic) as dias_lic "
+                    . " from (".$sql.")a where id_programa=".$resul[$i]['id_programa']
+                    . " group by id_designacion,desde,hasta,uni_acad,costo_diario, porc,id_programa,dias_des"
+                    . ")b";
+               // print_r($con);print_r('-');print_r($resul[$i]['cred']);exit();        
+                $res= toba::db('designa')->consultar($con);
+                //print_r($res);exit();
+                if($res[0]['monto'] <>null){
+                    $gaste=$res[0]['monto'];
+                }else{
+                    $gaste=0;      
+                }
+                if($gaste>$resul[$i]['cred']){
+                    $band=true;
+                    }
+                $i++;
+            }
+                
+            return $band;   
+               
+                
+        }
         function get_listado_540($filtro=array())
 	{
                 $udia=$this->ultimo_dia_periodo();
@@ -454,31 +574,32 @@ class dt_designacion extends toba_datos_tabla
                 $datos = array();
                
                 
-                 //---------------Obtengo el credito de la UA para el periodo actual
-                $cred="select sum(b.credito) as cred "
-                     . " from mocovi_programa a, mocovi_credito b, mocovi_periodo_presupuestario c, unidad_acad d "
-                     . " where  a.id_programa=b.id_programa"
-                     . " and b.id_periodo=c.id_periodo "
-                     . " and a.id_unidad=d.sigla and c.actual";
-                $cred = toba::perfil_de_datos()->filtrar($cred);//aplico el perfil de datos
-            
-                $resul=toba::db('designa')->consultar($cred);
-                if($resul[0]['cred'] <>null){
-                    $tengo=$resul[0]['cred'];
-                }else{
-                    $tengo=0;      
-                }
+//                 //---------------Obtengo el credito de la UA para el periodo actual
+//                $cred="select sum(b.credito) as cred "
+//                     . " from mocovi_programa a, mocovi_credito b, mocovi_periodo_presupuestario c, unidad_acad d "
+//                     . " where  a.id_programa=b.id_programa"
+//                     . " and b.id_periodo=c.id_periodo "
+//                     . " and a.id_unidad=d.sigla and c.actual";
+//                $cred = toba::perfil_de_datos()->filtrar($cred);//aplico el perfil de datos
+//            
+//                $resul=toba::db('designa')->consultar($cred);
+//                if($resul[0]['cred'] <>null){
+//                    $tengo=$resul[0]['cred'];
+//                }else{
+//                    $tengo=0;      
+//                }
                 //-----------------------------------------------------------------------
                 //--Lo que gaste
                
-                $con=" select sum(costo)as monto  ".
-                            " from (".$sql.") a"
-                            .$where;
-                
-                $resul=toba::db('designa')->consultar($con);        
-                $gaste=$resul[0]['monto'];
-                //print_r($gaste);
-                if($gaste>$tengo){//si gaste mas de lo que tengo
+//                $con=" select sum(costo)as monto  ".
+//                            " from (".$sql.") a"
+//                            .$where;
+//                
+//                $resul=toba::db('designa')->consultar($con);        
+//                $gaste=$resul[0]['monto'];
+                $band=$this->en_rojo($udia,$pdia);
+                //print_r($band);exit();
+                if($band){//si gaste mas de lo que tengo
                     toba::notificacion()->agregar('USTED ESTA EN ROJO','error'); 
                 }
                 else{
@@ -1249,7 +1370,6 @@ class dt_designacion extends toba_datos_tabla
                             ";
              
             $con="select * into temp auxi from ("
-                    //."select uni_acad,id_programa,nombre as programa,sum((dias_des-dias_lic)*costo_diario*porc/100)as monto  "
                     ."select uni_acad,id_programa,nombre as programa,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end )as monto  "
                     . " from ("
                     ."select id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,nombre,dias_des,sum(dias_lic) as dias_lic "
@@ -1414,7 +1534,8 @@ class dt_designacion extends toba_datos_tabla
              
             $sql =   "select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
             t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza
-            from designacion t_d LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+            from designacion t_d 
+            LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
             LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
             LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
             asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, unidad_acad t_u
