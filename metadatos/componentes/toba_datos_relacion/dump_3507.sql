@@ -81,7 +81,7 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3507', --objeto_consumidor
 	'3568', --objeto_proveedor
 	'integrante_externo_pi', --identificador
-	'1', --parametros_a
+	'0', --parametros_a
 	'1', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
@@ -93,7 +93,7 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3507', --objeto_consumidor
 	'3513', --objeto_proveedor
 	'integrante_interno_pi', --identificador
-	'1', --parametros_a
+	'0', --parametros_a
 	'1000', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar

@@ -283,9 +283,16 @@ class ci_proyectos_investigacion extends toba_ci
 	}
         function conf__cuadro_plantilla(toba_ei_cuadro $cuadro)
 	{
+            $this->pantalla()->tab("pant_edicion")->desactivar();	
             $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
             $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
             $cuadro->set_datos($datos);
+	}
+        function evt__volver()
+	{
+            $this->set_pantalla('pant_edicion');
+            $this->dep('datos')->tabla('pinvestigacion')->resetear();
+            $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
 	}
 }
 ?>
