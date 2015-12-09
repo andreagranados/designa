@@ -120,7 +120,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'&Modificar', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
-	NULL, --confirmacion
+	'¿Esta seguro que desea modificar?', --confirmacion
 	'ei-boton-mod', --estilo
 	'apex', --imagen_recurso_origen
 	'guardar.gif', --imagen

@@ -567,7 +567,7 @@ class dt_designacion extends toba_datos_tabla
                             ." GROUP BY a.id_designacion,a.id_programa,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
                             .") b "
                             . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
-                            . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
+                            . " order by programa,docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                     
                 $ar = toba::db('designa')->consultar($sql);
                 
@@ -598,7 +598,7 @@ class dt_designacion extends toba_datos_tabla
 //                $resul=toba::db('designa')->consultar($con);        
 //                $gaste=$resul[0]['monto'];
                 $band=$this->en_rojo($udia,$pdia);
-                //print_r($band);exit();
+                
                 if($band){//si gaste mas de lo que tengo
                     toba::notificacion()->agregar('USTED ESTA EN ROJO','error'); 
                 }
@@ -622,7 +622,6 @@ class dt_designacion extends toba_datos_tabla
                                         'porc' => $ar[$i]['porc'] ,
                                         'legajo' => $ar[$i]['legajo'] ,
                                         'estado' => $ar[$i]['estado'] ,
-                                        //'dias_lsgh' => $ar[$i]['dias_lsgh'] ,
                                         'dias_lic' => $ar[$i]['dias_lic'] ,
                                         'i' => $i,
 				);

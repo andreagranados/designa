@@ -74,7 +74,7 @@ class ci_impresion_540 extends toba_ci
             // la variable $this->s__seleccionadas no tiene valor hasta que no presiona el boton filtrar
             //if(isset($this->s__seleccionadas)){print_r('si');exit();}else{print_r('no');exit();}
             //ya tiene valor, filtrar y solo mostrar la que estan seleccionadas
-            //print_r($this->s__listado);
+            
             if (isset($this->s__seleccionadas)){//si selecciono para imprimir
                             
                 //genero un nuevo numero de 540
@@ -128,26 +128,38 @@ class ci_impresion_540 extends toba_ci
 
                 $i=0;
                 $sum=0;
+                $sub=0;
+                $programa=$this->s__listado[0]['programa'];
+                
                 $comma_separated = implode(',', $sele);
                 $sql="update designacion set nro_540=".$numero." where id_designacion in (".$comma_separated .") and nro_540 is null";
                 toba::db('designa')->consultar($sql);
                 
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
+                    
+                    if(strcmp($programa, $des['programa']) !== 0){
+                       $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+                       $sub=0; 
+                       $programa=$des['programa'];
+                       $i++;
+                    }
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
                         $ayn=$des['docente_nombre'];
                         $sum=$sum+$des['costo'];
-                        $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => $des['programa'],'col4' => $des['porc'].'%','col5' => $ayn,'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'],'col9' => $des['dedic'],'col10' => $des['carac'],'col11' => $des['desde'],'col12' => $des['hasta'],'col13' => $des['id_departamento'],'col14' => $des['id_area'],'col15' => $des['id_orientacion'],'col16' => $des['dias_lsgh'],'col17' =>$des['dias_lic'] ,'col18' => $des['estado'],'col19' => round($des['costo'],2));
+                        $sub=$sub+$des['costo'];
+                        $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => $des['programa'],'col4' => $des['porc'].'%','col5' => $ayn,'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'],'col9' => $des['dedic'],'col10' => $des['carac'],'col11' => $des['desde'],'col12' => $des['hasta'],'col13' => $des['id_departamento'],'col14' => $des['id_area'],'col15' => $des['id_orientacion'],'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
                         $i++;  
                     }
                 }
                 
-                $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' =>'' ,'col18' => 'TOTAL: ','col19' => round($sum,2));
+               $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+               $datos[$i+1]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
             
                //genera la tabla de datos
                 $car=utf8_decode("Carácter");
                 $area=utf8_decode("Área");
                 $orient=utf8_decode("Orientación");
-                $pdf->ezTable($datos, array('col1'=>'UA', 'col2'=>'Id','col3' => 'Programa','col4' => 'Porc','col5' => 'Ap y Nombre','col6' => 'Legajo','col7' => 'Cat Mapuche','col8' => 'Cat Estatuto','col9' => 'Dedic','col10' => $car,'col11' => 'Desde','col12' => 'Hasta','col13' => 'Departamento','col14' => $area,'col15' => $orient,'col16' => 'LSGH','col17' => 'Dias Lic','col18' => 'Estado','col19' => 'Costo'), $titulo, $opciones);
+                $pdf->ezTable($datos, array('col1'=>'UA', 'col2'=>'Id','col3' => 'Programa','col4' => 'Porc','col5' => 'Ap y Nombre','col6' => 'Legajo','col7' => 'Cat Mapuche','col8' => 'Cat Estatuto','col9' => 'Dedic','col10' => $car,'col11' => 'Desde','col12' => 'Hasta','col13' => 'Departamento','col14' => $area,'col15' => $orient,'col16' => 'Dias Lic','col17' => 'Estado','col18' => 'Costo'), $titulo, $opciones);
 
                 //agrega texto al pdf. Los primeros 2 parametros son las coordenadas (x,y) el tercero es el tamaño de la letra, y el cuarto el string a agregar
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
