@@ -235,7 +235,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'3509', --objeto_ei_formulario
 	'designa', --objeto_ei_formulario_proyecto
 	'codigo', --identificador
-	'ef_editable_numero', --elemento_formulario
+	'ef_editable', --elemento_formulario
 	'codigo', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio

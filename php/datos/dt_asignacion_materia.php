@@ -114,12 +114,7 @@ class dt_asignacion_materia extends toba_datos_tabla
     }
     
     function get_listado_materias2($where=null){
-//        if (isset($filtro['anio_acad'])) {
-//            $anio= $filtro['anio_acad'];
-//		}
-//        if (isset($filtro['uni_acad'])) {
-//            $ua= $filtro['uni_acad'];
-//		}
+
         if(!is_null($where)){
                 $where='Where '.$where;
             }else{
@@ -164,7 +159,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                     $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
                     $auxiliar[$i]['gestion']=$value['gestion'];
                     //verifico si tiene algun proyecto de extension
-                    $sql="select t_p.codigo||'-'||t_i.funcion_p||'-'||t_i.carga_horaria||'hs' as pe from integrante_interno_pe t_i, pextension t_p "
+                    $sql="select t_p.nro_resol||'-'||t_i.funcion_p||'-'||t_i.carga_horaria||'hs' as pe from integrante_interno_pe t_i, pextension t_p "
                             . " where t_i.id_pext=t_p.id_pext and t_i.id_designacion=".$value['id_designacion'];
                     $resul=toba::db('designa')->consultar($sql);
 
@@ -174,7 +169,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                     }
                     $auxiliar[$i]['extension']=$pe;
                     //verifico si tiene proyectos de investigacion
-                    $sql="select t_p.nro_resol||'-'||t_i.funcion_p||'-'||t_i.carga_horaria||'hs' as pe from integrante_interno_pi t_i, pinvestigacion t_p "
+                    $sql="select t_p.codigo||'-'||t_i.funcion_p||'-'||t_i.carga_horaria||'hs' as pe from integrante_interno_pi t_i, pinvestigacion t_p "
                             . " where t_i.pinvest=t_p.id_pinv  and t_i.id_designacion=".$value['id_designacion'];
                     $resul=toba::db('designa')->consultar($sql);
 

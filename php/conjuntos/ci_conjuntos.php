@@ -2,7 +2,8 @@
 class ci_conjuntos extends toba_ci
 {
 	protected $s__datos_filtro;
-             
+        protected $s__where;     
+        protected $s__mostrar_e;
 
         function get_materias(){
             $sql="select id_materia,cod_carrera||'-'||desc_materia||'('||cod_siu||')' as descripcion from materia t_m, plan_estudio t_p, unidad_acad t_u"
@@ -14,7 +15,7 @@ class ci_conjuntos extends toba_ci
         }
 	//---- Filtro -----------------------------------------------------------------------
 
-	function conf__filtro(toba_ei_formulario $filtro)
+	function conf__filtros(toba_ei_filtro $filtro)
 	{
 		if (isset($this->s__datos_filtro)) {
 			$filtro->set_datos($this->s__datos_filtro);
@@ -22,36 +23,46 @@ class ci_conjuntos extends toba_ci
                 $this->pantalla()->tab("pant_conjunto")->desactivar();
 	}
 
-	function evt__filtro__filtrar($datos)
+	function evt__filtros__filtrar($datos)
 	{
-		$this->s__datos_filtro = $datos;
+            $this->s__datos_filtro = $datos;
+            $this->s__where = $this->dep('filtros')->get_sql_where();
 	}
 
-	function evt__filtro__cancelar()
+	function evt__filtros__cancelar()
 	{
 		unset($this->s__datos_filtro);
+                unset($this->s__where);
 	}
 
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('conjunto')->get_listado($this->s__datos_filtro));
+            if (isset($this->s__datos_filtro)) {
+		$cuadro->set_datos($this->dep('datos')->tabla('conjunto')->get_listado($this->s__where));
 		} 
+            else{
+                $cuadro->set_datos($this->dep('datos')->tabla('conjunto')->get_listado());
+            }    
 	}
 
 	function evt__cuadro__seleccion($datos)
 	{
-		$this->dep('datos')->tabla('conjunto')->cargar($datos);
-                $this->set_pantalla('pant_conjunto');
+            $this->dep('datos')->tabla('conjunto')->cargar($datos);
+            $this->set_pantalla('pant_conjunto');
 	}
-
+        function evt__cuadro__edicion($datos)
+        {
+            $this->s__mostrar_e=1;
+            $this->dep('datos')->tabla('conjunto')->cargar($datos);
+        }
 	//---- Formulario -------------------------------------------------------------------
 
 	function conf__formulario(toba_ei_formulario $form)
 	{
-		if ($this->dep('datos')->tabla('conjunto')->esta_cargada()) {
+            $this->pantalla()->tab("pant_edicion")->desactivar();		
+            if ($this->dep('datos')->tabla('conjunto')->esta_cargada()) {
                     $conj=$this->dep('datos')->tabla('conjunto')->get();
                     $res=$this->dep('datos')->tabla('en_conjunto')->materias($conj['id_conjunto']);
                     
@@ -88,6 +99,88 @@ class ci_conjuntos extends toba_ci
 	
 
 	
+
+	
+
+	//-----------------------------------------------------------------------------------
+	//---- form_conj --------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form_conj(toba_ei_formulario $form)
+	{
+            if($this->s__mostrar_e==1){
+                $this->dep('form_conj')->descolapsar();
+                $form->ef('descripcion')->set_obligatorio('true');
+                $form->ef('id_periodo')->set_obligatorio('true');  
+                $form->ef('id_periodo_pres')->set_obligatorio('true');    
+            }
+            else{$this->dep('form_conj')->colapsar();
+              }
+              
+            if ($this->dep('datos')->tabla('conjunto')->esta_cargada()) {
+                $x=$this->dep('datos')->tabla('conjunto')->get();
+                print_r($x);
+                $form->set_datos($this->dep('datos')->tabla('conjunto')->get());
+            }
+	}
+
+	function evt__form_conj__alta($datos)
+	{
+            $ua = $this->dep('datos')->tabla('unidad_acad')->get_ua();
+            $datos['ua']= $ua[0]['sigla'];
+            $this->dep('datos')->tabla('conjunto')->set($datos);
+            $this->dep('datos')->tabla('conjunto')->sincronizar();
+           // $this->resetear();
+	}
+
+	function evt__form_conj__baja()
+	{
+            $this->dep('datos')->tabla('conjunto')->eliminar_todo();
+	    $this->dep('datos')->tabla('conjunto')->resetear();
+	}
+
+	function evt__form_conj__modificacion($datos)
+	{
+            $this->dep('datos')->tabla('conjunto')->set($datos);
+            $this->dep('datos')->tabla('conjunto')->sincronizar();
+	}
+
+	function evt__form_conj__cancelar()
+	{
+          $this->s__mostrar_e=0;
+          $this->dep('datos')->tabla('conjunto')->resetear();
+	}
+
+	//-----------------------------------------------------------------------------------
+	//---- Eventos ----------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function evt__alta()
+	{
+            $this->s__mostrar_e=1;
+            $this->dep('datos')->tabla('conjunto')->resetear();
+	}
+
+	//-----------------------------------------------------------------------------------
+	//---- JAVASCRIPT -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function extender_objeto_js()
+	{
+		echo "
+		//---- Eventos ---------------------------------------------
+		
+		{$this->objeto_js}.evt__volver = function()
+		{
+		}
+		";
+	}
+        function evt__volver()
+	{
+            $this->set_pantalla('pant_edicion');
+            //$this->dep('datos')->tabla('pinvestigacion')->resetear();
+            //$this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+	}
 
 }
 ?>
