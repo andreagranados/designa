@@ -1,6 +1,10 @@
 <?php
 class dt_designacion extends toba_datos_tabla
 {
+        function chequear_presup($id_des){
+            $sql="update designacion set check_presup=1 where id_designacion=".$id_des;
+            toba::db('designa')->consultar($sql); 
+        }
 	function get_docente($id_d)
         {
           $sql="select * from designacion where id_designacion=".$id_d;
@@ -772,13 +776,11 @@ class dt_designacion extends toba_datos_tabla
                 $where.=" AND a.nro_540 is not null
                           AND a.nro_norma is not null";
                 
-                //print_r($filtro);//Array ( [uni_acad] => ASMA [condicion] => I ) 
+                
 		if (isset($filtro['uni_acad'])) {
 			$where.= " AND a.uni_acad = ".quote($filtro['uni_acad']);
 		}
-                if (isset($filtro['programa'])) {
-			$where.= " AND a.id_programa = ".$filtro['programa'];
-		}
+
                 if (isset($filtro['nro_540'])) {
 			$where.= " AND a.nro_540 = ".$filtro['nro_540'];
 		}  

@@ -8,7 +8,18 @@ class ci_docente extends toba_ci
         protected $s__designacion;
         protected $s__pantalla;
      
-        
+        function get_horas_docencia($id_doc,$udia,$pdia){
+            return $this->dep('datos')->tabla('docente')->get_horas_docencia($id_doc,$udia,$pdia);
+        }
+        function get_horas_pinv($id_doc,$udia,$pdia){
+            return $this->dep('datos')->tabla('docente')->get_horas_pinv($id_doc,$udia,$pdia);
+        }
+        function get_horas_ext($id_doc,$udia,$pdia){
+            return $this->dep('datos')->tabla('docente')->get_horas_ext($id_doc,$udia,$pdia);
+        }
+        function get_horas_gestion($id_doc,$udia,$pdia){
+            return $this->dep('datos')->tabla('docente')->get_horas_gestion($id_doc,$udia,$pdia);
+        }
         function get_ua(){
             return $this->dep('datos')->tabla('unidad_acad')->get_ua();
         }

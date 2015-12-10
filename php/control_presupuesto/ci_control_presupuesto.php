@@ -2,6 +2,7 @@
 class ci_control_presupuesto extends toba_ci
 {
 	protected $s__datos_filtro;
+        protected $s__datos;
 
         //calculo el credito asignado a la facultad que ingresa como argumento
         function credito ($ua){
@@ -19,8 +20,11 @@ class ci_control_presupuesto extends toba_ci
 
 	function conf__filtro(toba_ei_formulario $filtro)
 	{
-		if (isset($this->s__datos_filtro)) {
-			$filtro->set_datos($this->s__datos_filtro);
+	    if(isset($this->s__datos)){
+                $filtro->eliminar_evento('chequear');	
+            }
+            if (isset($this->s__datos_filtro)) {
+		$filtro->set_datos($this->s__datos_filtro);
 		}
 	}
 
@@ -28,7 +32,12 @@ class ci_control_presupuesto extends toba_ci
 	{
 		$this->s__datos_filtro = $datos;
 	}
-
+        function evt__filtro__chequear($datos)
+        {
+           foreach ($this->s__datos as $value) {
+               $this->dep('datos')->tabla('designacion')->chequear_presup($value['id_designacion']);
+            }
+        }
 	function evt__filtro__cancelar()
 	{
 		unset($this->s__datos_filtro);
@@ -41,8 +50,8 @@ class ci_control_presupuesto extends toba_ci
 		if (isset($this->s__datos_filtro)) {
                     //busca todas las designaciones que estan dentro del periodo vigente, que tienen numero de 540 y ademas tienen el numero de la norma legal
                     //a presupuesto no le interesa chequear nada que no tenga norma legal
-                    
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_presup($this->s__datos_filtro));
+                    $this->s__datos=$this->dep('datos')->tabla('designacion')->get_listado_presup($this->s__datos_filtro);
+                    $cuadro->set_datos($this->s__datos);
 		} 
 	}
 

@@ -437,7 +437,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'2336', --objeto_cuadro_col
 	'nro_540', --clave
 	'5', --orden
-	'Número 540', --titulo
+	'Número tkd', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

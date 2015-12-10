@@ -47,7 +47,31 @@ class docente_solapas extends toba_ci
         $this->controlador()->dep('datos')->tabla('titulos_docente')->cargar($datos);
         
     }
-        
+    //-----------------------------------------------------------------------------------
+    //---- form_porc ------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
+    function conf__form_porc(toba_ei_formulario $form)
+    {
+         if ($this->controlador()->dep('datos')->tabla('docente')->esta_cargada()){
+            $datos=$this->controlador()->dep('datos')->tabla('docente')->get();
+            $udia=$this->controlador()->dep('datos')->tabla('mocovi_periodo_presupuestario')->ultimo_dia_periodo();
+            $pdia=$this->controlador()->dep('datos')->tabla('mocovi_periodo_presupuestario')->primer_dia_periodo();
+            $hd=$this->controlador()->get_horas_docencia($datos['id_docente'],$udia,$pdia);
+            $hi=$this->controlador()->get_horas_pinv($datos['id_docente'],$udia,$pdia);
+            $he=$this->controlador()->get_horas_ext($datos['id_docente'],$udia,$pdia);
+            $hg=$this->controlador()->get_horas_gestion($datos['id_docente'],$udia,$pdia);
+            $total=$hd+$hi+$he+$hg;
+            $datos['porcdedicdocente']=$hd/$total*100;
+            $datos['porcdedicaextens']=$he/$total*100;
+            $datos['porcdedicinvestig']=$hi/$total*100;
+            $datos['porcdedicagestion']=$hg/$total*100;
+            $datos['hd']=$hd;
+            $datos['hi']=$hi;
+            $datos['he']=$he;
+            $datos['hg']=$hg;
+            $form->set_datos($datos);
+         }   
+    }  
    
 
 	//-----------------------------------------------------------------------------------
