@@ -23,7 +23,28 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'Docente - CI - docente_solapas - cuadro_pinv', --nombre
 	'Listado de Proyectos de Investigación en los que participa', --titulo
 	'0', --colapsable
-	NULL, --descripcion
+	'D-Director UNCo   <br>
+DE-Director Externo  <br>
+DP-Director de Programa<br>
+DSp-Director de Subproyecto UNCo <br>
+DESp-Director Externo de Subproyecto<br>
+C-Codirector<br>
+CE-Codirector Externo<br>
+ID-Integrante Docente UNCo<br>
+IA-Integrante Alumno<br>
+IND-Integrante No Docente<br>
+IE-Integrante Externo<br>
+T-Técnico<br>
+A-Asesor<br>
+CO-Colaborador<br>
+BUIA-Becario UNCo Iniciación Alumno<br>
+BUGI-Becario UNCo Graduado Iniciación<br>
+BUGP-Becario UNCo Graduado Perfeccionamiento<br>
+BC-Becario CONICET<br>
+BA-Becario Agencia<br>
+IC-Integrante CONICET<br>
+EU-Egresado Unco<br>
+IAP-Integrante Alumno de Postgrado<br>', --descripcion
 	NULL, --fuente_datos_proyecto
 	NULL, --fuente_datos
 	NULL, --solicitud_registrar
@@ -226,14 +247,14 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	NULL, --ancho
 	'1', --formateo
 	NULL, --vinculo_indice
-	NULL, --no_ordenar
+	'0', --no_ordenar
 	NULL, --mostrar_xls
 	NULL, --mostrar_pdf
 	NULL, --pdf_propiedades
 	NULL, --desabilitado
-	NULL, --total
+	'0', --total
 	NULL, --total_cc
-	NULL, --usar_vinculo
+	'0', --usar_vinculo
 	NULL, --vinculo_carpeta
 	NULL, --vinculo_item
 	NULL, --vinculo_popup

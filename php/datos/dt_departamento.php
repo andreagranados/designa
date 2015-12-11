@@ -7,6 +7,9 @@ class dt_departamento extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
 
+
+
+
         function get_departamentos($id_ua=null)
 	{
 		$where ="";

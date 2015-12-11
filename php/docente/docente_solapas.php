@@ -87,8 +87,7 @@ class docente_solapas extends toba_ci
             if($this->s__mostrar_fcurri==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('form_curric')->descolapsar();
                 $form->ef('codc_titul')->set_obligatorio('true');
-                $form->ef('fec_emisi')->set_obligatorio('true');
-                               
+                                               
             }else{
                 $this->dep('form_curric')->colapsar();
               }
@@ -136,7 +135,7 @@ class docente_solapas extends toba_ci
        //se da de alta un nuevo titulo
         function evt__form_curric__guardar($datos)
 	{
-            print_r($datos);
+            
             $datos['id_docente']=$this->s__agente['id_docente'];
             $this->controlador()->dep('datos')->tabla('titulos_docente')->set($datos);
             $this->controlador()->dep('datos')->tabla('titulos_docente')->sincronizar();
