@@ -17,7 +17,7 @@ class dt_docente extends toba_datos_tabla
             return $hd;
         }
         function get_horas_gestion($id_doc,$udia,$pdia){
-            $sql="select sum (case when cargo_gestion is not null then 40  else 0 end ) as hg
+            $sql="select sum (case when (cargo_gestion=='SEFC' or cargo_gestion=='RECT' or cargo_gestion=='SEFE' or cargo_gestion=='SEUE' or cargo_gestion=='VDEE' or cargo_gestion=='DECE' or cargo_gestion=='VREE') then 40  else case when (cargo_gestion=='SEFP' or cargo_gestion=='DECP') then 20 else 0 end end ) as hg
                    from designacion t_d 
                     where id_docente=".$id_doc.       
                     " and desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)      ";
