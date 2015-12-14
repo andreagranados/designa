@@ -395,7 +395,8 @@ class dt_designacion extends toba_datos_tabla
                 }else{
                     $gaste=0;      
                 }
-                if($gaste>$resul[$i]['cred']){
+                
+                if(($resul[$i]['cred']-$gaste)<-50){//if($gaste>$resul[$i]['cred']){
                     $band=true;
                     }
                 $i++;
@@ -576,31 +577,7 @@ class dt_designacion extends toba_datos_tabla
                 $ar = toba::db('designa')->consultar($sql);
                 
                 $datos = array();
-               
-                
-//                 //---------------Obtengo el credito de la UA para el periodo actual
-//                $cred="select sum(b.credito) as cred "
-//                     . " from mocovi_programa a, mocovi_credito b, mocovi_periodo_presupuestario c, unidad_acad d "
-//                     . " where  a.id_programa=b.id_programa"
-//                     . " and b.id_periodo=c.id_periodo "
-//                     . " and a.id_unidad=d.sigla and c.actual";
-//                $cred = toba::perfil_de_datos()->filtrar($cred);//aplico el perfil de datos
-//            
-//                $resul=toba::db('designa')->consultar($cred);
-//                if($resul[0]['cred'] <>null){
-//                    $tengo=$resul[0]['cred'];
-//                }else{
-//                    $tengo=0;      
-//                }
-                //-----------------------------------------------------------------------
-                //--Lo que gaste
-               
-//                $con=" select sum(costo)as monto  ".
-//                            " from (".$sql.") a"
-//                            .$where;
-//                
-//                $resul=toba::db('designa')->consultar($con);        
-//                $gaste=$resul[0]['monto'];
+     
                 $band=$this->en_rojo($udia,$pdia);
                 
                 if($band){//si gaste mas de lo que tengo
