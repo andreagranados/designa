@@ -235,7 +235,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                     $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
                     $auxiliar[$i]['gestion']=$value['gestion'];
                 
-                    $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
+                    $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
                     $resul=toba::db('designa')->consultar($sql);
                     if(isset($resul[0])){
                         $auxiliar[$i]['mat'.$j]=$resul[0]['mat'];
@@ -270,7 +270,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                     $primera=false;
                 }
                 //obtengo una materia
-                $sql=  "select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion as mat,e.id_periodo from "
+                $sql=  "select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat,e.id_periodo from "
                         . " materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_periodo=r.id_periodo and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and a.id_materia=".$value['id_materia'];
                 $resul=toba::db('designa')->consultar($sql);
                 //preguntar si resul tiene datos
@@ -297,7 +297,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
                 $auxiliar[$i]['gestion']=$value['gestion'];
                 
-                $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
+                $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
                 $resul=toba::db('designa')->consultar($sql);
                 if(isset($resul[0])){
                     $auxiliar[$i]['mat'.$j]=$resul[0]['mat'];
