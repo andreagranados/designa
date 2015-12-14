@@ -118,8 +118,6 @@ class ci_conjuntos extends toba_ci
               }
               
             if ($this->dep('datos')->tabla('conjunto')->esta_cargada()) {
-                $x=$this->dep('datos')->tabla('conjunto')->get();
-                print_r($x);
                 $form->set_datos($this->dep('datos')->tabla('conjunto')->get());
             }
 	}
