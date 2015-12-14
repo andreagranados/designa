@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3684]--  Equipos de Otras Actividades 
+--[3699]--  Manual Presupuesto 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -10,25 +10,25 @@
 INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre, carpeta, nivel_acceso, solicitud_tipo, pagina_tipo_proyecto, pagina_tipo, actividad_buffer_proyecto, actividad_buffer, actividad_patron_proyecto, actividad_patron, nombre, descripcion, punto_montaje, actividad_accion, menu, orden, solicitud_registrar, solicitud_obs_tipo_proyecto, solicitud_obs_tipo, solicitud_observacion, solicitud_registrar_cron, prueba_directorios, zona_proyecto, zona, zona_orden, zona_listar, imagen_recurso_origen, imagen, parametro_a, parametro_b, parametro_c, publico, redirecciona, usuario, exportable, creacion, retrasar_headers) VALUES (
 	NULL, --item_id
 	'designa', --proyecto
-	'3684', --item
+	'3699', --item
 	NULL, --padre_id
 	'designa', --padre_proyecto
-	'3689', --padre
+	'3695', --padre
 	'0', --carpeta
 	'0', --nivel_acceso
 	'web', --solicitud_tipo
 	'toba', --pagina_tipo_proyecto
-	'normal', --pagina_tipo
+	'NO', --pagina_tipo
 	NULL, --actividad_buffer_proyecto
 	NULL, --actividad_buffer
 	NULL, --actividad_patron_proyecto
 	NULL, --actividad_patron
-	'Equipos de Otras Actividades', --nombre
+	'Manual Presupuesto', --nombre
 	NULL, --descripcion
 	'23', --punto_montaje
-	NULL, --actividad_accion
+	'manual_circuito_presupuesto/ci_manual_circuito_presupuesto.php', --actividad_accion
 	'1', --menu
-	'3', --orden
+	'8', --orden
 	'0', --solicitud_registrar
 	NULL, --solicitud_obs_tipo_proyecto
 	NULL, --solicitud_obs_tipo
@@ -40,27 +40,15 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --zona_orden
 	'0', --zona_listar
 	'apex', --imagen_recurso_origen
-	NULL, --imagen
+	'ayuda_presup.png', --imagen
 	NULL, --parametro_a
 	NULL, --parametro_b
 	NULL, --parametro_c
-	'0', --publico
+	'1', --publico
 	NULL, --redirecciona
 	NULL, --usuario
 	'0', --exportable
-	'2015-10-20 18:54:34', --creacion
+	'2015-12-11 17:39:12', --creacion
 	'0'  --retrasar_headers
 );
 --- FIN Grupo de desarrollo 0
-
-------------------------------------------------------------
--- apex_item_objeto
-------------------------------------------------------------
-INSERT INTO apex_item_objeto (item_id, proyecto, item, objeto, orden, inicializar) VALUES (
-	NULL, --item_id
-	'designa', --proyecto
-	'3684', --item
-	'3530', --objeto
-	'0', --orden
-	NULL  --inicializar
-);

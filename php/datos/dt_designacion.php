@@ -1505,7 +1505,7 @@ class dt_designacion extends toba_datos_tabla
             if (isset($filtro['id_departamento'])) {
 			$where.= " AND t_d.id_departamento = ".$filtro['id_departamento'];
             }
-            $sql="select distinct t_d.id_designacion, t_doc.apellido||', '||t_doc.nombre as docente_nombre,t_doc.legajo,t_d.cat_mapuche,t_d.cat_estat||t_d.dedic as cat_est,t_d.carac,t_d.uni_acad,t_d.desde,t_d.hasta,t_d3.descripcion as id_departamento,t_ma.descripcion as id_area,t_o.descripcion as id_orientacion ,t_m.descripcion, t_p.descripcion as periodo,t_a.carga_horaria"
+            $sql="select distinct t_d.id_designacion, t_doc.apellido||', '||t_doc.nombre as docente_nombre,t_doc.legajo,t_d.cat_mapuche,t_d.cat_estat||t_d.dedic as cat_est,t_d.carac,t_d.uni_acad,t_d.desde,t_d.hasta,t_d3.descripcion as id_departamento,t_ma.descripcion as id_area,t_o.descripcion as id_orientacion ,t_m.descripcion, t_p.descripcion as periodo,t_a.carga_horaria,t_a.rol"
                  . " from designacion t_d"
                     ." LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto)" 
                     ." LEFT OUTER JOIN area as t_ma ON (t_d.id_area = t_ma.idarea) "
