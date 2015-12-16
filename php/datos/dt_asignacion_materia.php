@@ -182,38 +182,50 @@ class dt_asignacion_materia extends toba_datos_tabla
        
         return $titulos;
     }
-    
-    function get_listado_materias2($where=null){
+    //trae las asignaciones a materia de ese periodo
+    //ojo que considera el periodo de asignacion_materia
+    //no trae designaciones que esten de licencia/baja/renuncia en ese periodo
+    function get_listado_materias2($where=null,$anio){
 
         if(!is_null($where)){
-                $where='Where '.$where;
-            }else{
-                $where='';
-            } 
-            
+                    $where=' WHERE '.$where;
+                }else{
+                    $where='';
+                }
+      
         $auxiliar=array();
         $i=0; 
         $j=0;
-        $sql="select a.id_designacion,a.id_docente,a.anio,a.uni_acad,a.agente,a.legajo,a.cat_mapuche,a.cat_estat,n.nro_norma||'/'||extract(year from n.fecha) as norma,a.id_materia,d.descripcion as id_departamento,ar.descripcion as id_area,o.descripcion as id_orientacion,gestion  from (".
+        $sql="select a.id_designacion,a.id_docente,a.anio,a.uni_acad,a.agente,a.legajo,a.cat_mapuche,a.cat_estat,n.nro_norma||'/'||extract(year from n.fecha) as norma,a.id_materia,a.modulo,d.descripcion as id_departamento,ar.descripcion as id_area,o.descripcion as id_orientacion,gestion  from (".
                 "select * from (".
-                 "select  distinct b.id_designacion,b.id_docente,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.id_periodo, a.id_materia, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
+                 "select  distinct b.id_designacion,b.id_docente,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.id_periodo, a.id_materia,a.modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
                     from asignacion_materia a, designacion b, docente c
                     where a.id_designacion=b.id_designacion
                     and b.id_docente=c.id_docente
+                    and not exists (select * from novedad t_nov, mocovi_periodo_presupuestario t_per
+                                    where b.id_designacion=t_nov.id_designacion
+                                    and t_nov.tipo_nov in (1,2,5,4,5)
+                                    and t_per.anio=$anio
+                                    and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))
                     UNION
-                 select  distinct b.id_designacion,b.id_docente,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.periodo, a.id_tutoria, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
+                 select  distinct b.id_designacion,b.id_docente,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.periodo, a.id_tutoria,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
                     from asignacion_tutoria a, designacion b, docente c
                     where a.id_designacion=b.id_designacion
                     and b.id_docente=c.id_docente
-                    and (rol='TUTO' or rol='COOR' or rol='POST')".
+                    and (rol='TUTO' or rol='COOR' or rol='POST')
+                    and not exists (select * from novedad t_nov, mocovi_periodo_presupuestario t_per
+                                    where b.id_designacion=t_nov.id_designacion
+                                    and t_nov.tipo_nov in (1,2,5,4,5)
+                                    and t_per.anio=$anio
+                                    and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))".
                 ") b $where"
-                  . ")a"
+                  . ")a "
                 . " LEFT OUTER JOIN norma n ON (a.id_norma=n.id_norma) "
                 . " LEFT OUTER JOIN departamento as d ON (a.id_departamento=d.iddepto)"
                 . " LEFT OUTER JOIN area as ar ON (a.id_area = ar.idarea)"
                 . " LEFT OUTER JOIN orientacion as o ON (a.id_orientacion = o.idorient and o.idarea=ar.idarea)" .
-                " order by  agente,legajo,id_designacion,cat_mapuche,cat_estat,norma,id_periodo,id_materia";
-          
+                " order by  agente,legajo,id_designacion,cat_mapuche,cat_estat,norma,id_periodo,id_materia,modulo";
+        
         $resul=toba::db('designa')->consultar($sql);
         
         if(isset($resul[0])){
@@ -235,7 +247,8 @@ class dt_asignacion_materia extends toba_datos_tabla
                     $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
                     $auxiliar[$i]['gestion']=$value['gestion'];
                 
-                    $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
+                    $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.modulo=".$value['modulo']." and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
+                    
                     $resul=toba::db('designa')->consultar($sql);
                     if(isset($resul[0])){
                         $auxiliar[$i]['mat'.$j]=$resul[0]['mat'];
@@ -271,7 +284,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 }
                 //obtengo una materia
                 $sql=  "select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat,e.id_periodo from "
-                        . " materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_periodo=r.id_periodo and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and a.id_materia=".$value['id_materia'];
+                        . " materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_periodo=r.id_periodo and e.modulo=".$value['modulo']." and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and a.id_materia=".$value['id_materia'];
                 $resul=toba::db('designa')->consultar($sql);
                 //preguntar si resul tiene datos
                 
@@ -297,7 +310,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
                 $auxiliar[$i]['gestion']=$value['gestion'];
                 
-                $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
+                $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.modulo=".$value['modulo']." and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
                 $resul=toba::db('designa')->consultar($sql);
                 if(isset($resul[0])){
                     $auxiliar[$i]['mat'.$j]=$resul[0]['mat'];

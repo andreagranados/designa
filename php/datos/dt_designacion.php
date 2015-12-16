@@ -98,7 +98,33 @@ class dt_designacion extends toba_datos_tabla
             $sql="select fecha_inicio from mocovi_periodo_presupuestario where anio=".$anio;
             $resul=toba::db('designa')->consultar($sql);
             return $resul[0]['fecha_inicio'];
-           }
+        }
+        function get_dedicacion_horas($filtro=array())
+	{
+		if (isset($filtro['uni_acad'])) {
+		    $where = "WHERE t_d.uni_acad = ".quote($filtro['uni_acad']);
+		}
+                
+		
+                //que sea una designacion vigente, dentro del periodo actual
+		$where.=" and  t_d.desde <= '".$filtro['udia']."' and (t_d.hasta >= '".$filtro['pdia']."' or t_d.hasta is null)";
+
+                $sql="select b.*,((case when b.hs_mat is not null then b.hs_mat else 0 end) + (case when b.hs_pi is not null then b.hs_pi else 0 end)+(case when b.hs_pe is not null then b.hs_pe else 0 end)+(case when b.hs_pos is not null then b.hs_pos else 0 end)+(case when b.hs_tut is not null then b.hs_tut else 0 end)+(case when b.hs_otros is not null then b.hs_otros else 0 end))as hs_total 
+                    from (select a.*,sum(t_a.carga_horaria) as hs_mat,sum(t_e.carga_horaria)as hs_pe,sum(t_i.carga_horaria) as hs_pi,sum(t_t.carga_horaria) as hs_pos,sum(t_tu.carga_horaria) as hs_tut,sum(t_ot.carga_horaria) as hs_otros
+                        from
+                        (select t_d.id_designacion,t_d.uni_acad,t_do.apellido||t_do.nombre as agente,t_do.legajo,t_d.carac,t_d.cat_mapuche,t_d.dedic,t_d.desde,t_d.hasta,t_d.estado   
+                        from designacion t_d , docente t_do
+                        $where
+                        and t_d.id_docente=t_do.id_docente
+                        )a LEFT OUTER JOIN asignacion_materia t_a ON (a.id_designacion=t_a.id_designacion)
+                        LEFT OUTER JOIN integrante_interno_pi t_i ON (a.id_designacion=t_i.id_designacion)
+                        LEFT OUTER JOIN integrante_interno_pe t_e ON (a.id_designacion=t_e.id_designacion)
+                        LEFT OUTER JOIN asignacion_tutoria t_t ON (a.id_designacion=t_t.id_designacion and t_t.rol='POST')
+                        LEFT OUTER JOIN asignacion_tutoria t_ot ON (a.id_designacion=t_ot.id_designacion and t_t.rol='OTRO')
+                        LEFT OUTER JOIN asignacion_tutoria t_tu ON (a.id_designacion=t_tu.id_designacion and (t_tu.rol='COOR' or t_tu.rol='TUTO'))
+                        group by a.id_designacion,a.uni_acad,a.agente,a.legajo,a.carac,a.cat_mapuche,a.dedic,a.desde,a.hasta,a.estado)b";
+                return toba::db('designa')->consultar($sql);
+        }
         
 	function get_listado($filtro=array())
 	{
@@ -172,6 +198,7 @@ class dt_designacion extends toba_datos_tabla
 		}
 		return toba::db('designa')->consultar($sql);
 	}
+
 
 
 //trae todas las designaciones/reservas de una determinada facultad que entran dentro del periodo vigente
@@ -1115,7 +1142,13 @@ class dt_designacion extends toba_datos_tabla
             if (isset($filtro['id_departamento'])) {
 		 $where.=" AND t_d.id_departamento=".$filtro['id_departamento'];
 		}    
-            
+            if (isset($filtro['id_area'])) {
+                $where.=" AND t_d.id_area=".$filtro['id_area'];
+            }
+            if (isset($filtro['id_orientacion'])) {
+                $where.=" AND t_d.id_orientacion=".$filtro['id_orientacion'];
+            }
+              
             if (isset($filtro['condicion'])) {
                 switch ($filtro['condicion']) {
                     case 'R': $where.=" AND t_d.carac='R'";    break;
@@ -1160,7 +1193,9 @@ class dt_designacion extends toba_datos_tabla
                         t_d.cat_estat,
                         t_d.dedic, 
                         t_c.descripcion as carac,
-                        t_d3.iddepto as id_departamento,
+                        t_d.id_departamento,
+                        t_d.id_area,
+                        t_d.id_orientacion,
                         t_d3.descripcion as departamento,
                         t_a.descripcion as area,
                         t_o.descripcion as orientacion,
@@ -1198,6 +1233,7 @@ class dt_designacion extends toba_datos_tabla
                     ";
             //En este listado no muestra las designaciones que han sido dadas de baja
             $sql.=$where. " and not exists (select * from novedad t_no where t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov=1)";
+            
             return toba::db('designa')->consultar($sql);
         }
         function get_renovacion($filtro=array())

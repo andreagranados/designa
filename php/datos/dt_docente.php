@@ -1,6 +1,31 @@
 <?php
 class dt_docente extends toba_datos_tabla
 {
+        function get_agente($id_doc){
+            $sql="select apellido||', '||nombre as nombre from docente where id_docente=".$id_doc;
+            $res = toba::db('designa')->consultar($sql);
+            return $res[0]['nombre'];
+        }
+        function get_legajo($id_doc){
+            $sql="select legajo from docente where id_docente=".$id_doc;
+            $res = toba::db('designa')->consultar($sql);
+            return $res[0]['legajo'];
+        }
+        function get_designaciones($id_doc){
+            $sql="select t_d.id_designacion,t_dep.descripcion as depto,t_a.descripcion as area,t_or.descripcion as orient,t_u.descripcion as ua,t_d.desde,t_d.hasta,t_e.descripcion as cat, t_c.descripcion as caracter,t_de.descripcion as ded"
+                    . " from designacion t_d "
+                    . " LEFT OUTER JOIN categ_estatuto t_e ON (t_e.codigo_est=t_d.cat_estat)"
+                    . " LEFT OUTER JOIN caracter t_c ON (t_c.id_car=t_d.carac)"
+                    . " LEFT OUTER JOIN dedicacion t_de ON (t_d.dedic=t_de.id_ded)"
+                    . " LEFT OUTER JOIN unidad_acad t_u ON (t_d.uni_acad=t_u.sigla)"
+                    . " LEFT OUTER JOIN departamento t_dep ON (t_d.id_departamento=t_dep.iddepto)"
+                    . " LEFT OUTER JOIN area t_a ON (t_d.id_area=t_a.idarea)"
+                    . " LEFT OUTER JOIN orientacion t_or ON (t_or.idorient=t_d.id_orientacion and t_or.idarea=t_a.idarea)"
+                    . " where id_docente=".$id_doc
+                    ." order by ua,t_d.desde";
+            return toba::db('designa')->consultar($sql);
+            
+        }
         function get_horas_docencia($id_doc,$udia,$pdia){
            //simple 10 hs
             //parcial 20 hs
@@ -17,7 +42,7 @@ class dt_docente extends toba_datos_tabla
             return $hd;
         }
         function get_horas_gestion($id_doc,$udia,$pdia){
-            $sql="select sum (case when (cargo_gestion=='SEFC' or cargo_gestion=='RECT' or cargo_gestion=='SEFE' or cargo_gestion=='SEUE' or cargo_gestion=='VDEE' or cargo_gestion=='DECE' or cargo_gestion=='VREE') then 40  else case when (cargo_gestion=='SEFP' or cargo_gestion=='DECP') then 20 else 0 end end ) as hg
+            $sql="select sum (case when (cargo_gestion='SEFC' or cargo_gestion='RECT' or cargo_gestion='SEFE' or cargo_gestion='SEUE' or cargo_gestion='VDEE' or cargo_gestion='DECE' or cargo_gestion='VREE') then 40  else case when (cargo_gestion='SEFP' or cargo_gestion='DECP') then 20 else 0 end end ) as hg
                    from designacion t_d 
                     where id_docente=".$id_doc.       
                     " and desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)      ";
@@ -59,15 +84,16 @@ class dt_docente extends toba_datos_tabla
             }
             return $hi;
         }
-        function get_listado($where=null)
+     
+	function get_listado($where=null)
 	{
-            if(!is_null($where)){
-                $where='Where '.$where;
-            }else{
-                $where='';
-            }
- 
-	    $sql = "SELECT distinct 
+		
+		if(!is_null($where)){
+                    $where=' WHERE '.$where;
+                }else{
+                    $where='';
+                }
+		$sql = "SELECT
 			t_d.id_docente,
 			t_d.legajo,
 			t_d.apellido,
@@ -76,31 +102,33 @@ class dt_docente extends toba_datos_tabla
 			t_d.tipo_docum,
 			t_d.nro_docum,
 			t_d.fec_nacim,
-			cast (cast(t_d.nro_cuil1 as text)||cast(t_d.nro_cuil as text)||cast(  t_d.nro_cuil2 as text) as numeric) as cuil,
+			t_d.nro_cuil1,
 			t_d.nro_cuil,
 			t_d.nro_cuil2,
 			t_d.tipo_sexo,
-			t_d.fec_ingreso,
-			t_p.descripcion_pcia as pcia_nacim_nombre,
-			t_p1.nombre as pais_nacim_nombre
-			
-                        
+			t_p.nombre as pais_nacim_nombre,
+			t_d.porcdedicdocente,
+			t_d.porcdedicinvestig,
+			t_d.porcdedicagestion,
+			t_d.porcdedicaextens,
+			t_p1.descripcion_pcia as pcia_nacim_nombre,
+			t_d.fec_ingreso
 		FROM
-			docente as t_d LEFT OUTER JOIN provincia as t_p ON (t_d.pcia_nacim = t_p.codigo_pcia)
-			LEFT OUTER JOIN pais as t_p1 ON (t_d.pais_nacim = t_p1.codigo_pais)
-                         $where            
-		ORDER BY t_d.apellido,t_d.nombre";
-            
-                return toba::db('designa')->consultar($sql);
-                
+			docente as t_d	LEFT OUTER JOIN pais as t_p ON (t_d.pais_nacim = t_p.codigo_pais)
+			LEFT OUTER JOIN provincia as t_p1 ON (t_d.pcia_nacim = t_p1.codigo_pcia)
+		$where ORDER BY nombre";
+		
+		return toba::db('designa')->consultar($sql);
 	}
+
 
 
 	function get_descripciones()
 	{
-		$sql = "SELECT distinct id_docente, apellido||', '||nombre||'-'||tipo_docum||':'||nro_docum as nombre FROM docente where nro_docum is not null ORDER BY nombre";
+		$sql = "SELECT id_docente, nombre FROM docente ORDER BY nombre";
 		return toba::db('designa')->consultar($sql);
 	}
+
 
         
 

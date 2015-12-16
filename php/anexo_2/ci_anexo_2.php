@@ -18,12 +18,14 @@ class ci_anexo_2 extends toba_ci
 	{
 		$this->s__datos_filtro = $datos;
                 $this->s__where = $this->dep('filtros')->get_sql_where();
+                
 	}
 
 	function evt__filtros__cancelar()
 	{
 		unset($this->s__datos_filtro);
                 unset($this->s__where);
+                
 	}
 
         
@@ -35,7 +37,8 @@ class ci_anexo_2 extends toba_ci
 		if (isset($this->s__datos_filtro)) {
                     //la siguiente linea usa crosstab
                    // $datos=$this->dep('datos')->tabla('asignacion_materia')->get_listado_materias($this->s__datos_filtro);               
-                    $datos=$this->dep('datos')->tabla('asignacion_materia')->get_listado_materias2($this->s__where);               
+                    
+                    $datos=$this->dep('datos')->tabla('asignacion_materia')->get_listado_materias2($this->s__where,$this->s__datos_filtro['anio']['valor']);               
                     $cuadro->set_datos($datos);
                     
 		} 
