@@ -452,7 +452,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1496', --pantalla
 	'pant_tutorias', --identificador
 	'5', --orden
-	'Tutorías', --etiqueta
+	'Otras Actividades', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen

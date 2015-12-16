@@ -10,4 +10,10 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'Solo Consulta', --descripcion
 	'0'  --permite_edicion
 );
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'3', --restriccion_funcional
+	'solo consulta docente', --descripcion
+	'0'  --permite_edicion
+);
 --- FIN Grupo de desarrollo 0
