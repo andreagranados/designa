@@ -39,7 +39,6 @@ class ci_certificacion extends toba_ci
 	function evt__cuadro__seleccion($datos)
 	{
             $this->s__agente=$datos;//[id_docente] => 49
-            $this->dep('datos')->cargar($datos);
             $this->set_pantalla('pant_certif');
 	}
 
@@ -66,7 +65,8 @@ class ci_certificacion extends toba_ci
                 //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
             $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
                 //Luego definimos la ubicación de la fecha en el pie de página.
-            $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
+            $pdf->addText(480,20,8,"Sistema MOCOVI-Modulo Designaciones Docentes".date('d/m/Y h:i:s a')); 
+            $pdf->addText(80,60,8,"Se extiende el presente certificado el ".date("d/m/Y")." a las ".date("h").":".date("i")." ".date("A").", a pedido del interesado, y a los efectos de ser presentado ante quien corresponda."."\n"); 
                 //Configuración de Título.
             $salida->titulo(utf8_d_seguro("Certificado de Actividades Académicas"));
                 
@@ -91,11 +91,10 @@ class ci_certificacion extends toba_ci
             $ag=$this->dep('datos')->tabla('docente')->get_agente($this->s__agente['id_docente']);
             $leg=$this->dep('datos')->tabla('docente')->get_legajo($this->s__agente['id_docente']);
             $desig=$this->dep('datos')->tabla('docente')->get_designaciones($this->s__agente['id_docente']);
-            $desemp=  utf8_decode('desempeña/ñó');
-            $anio=utf8_decode('año');
+                 
             $per=  utf8_decode('período');
-            $ded=  utf8_decode('dedicación');
-            $pdf->addText(70,480,10,"<b>CERTIFICO QUE: </b>".$ag." Legajo ".$leg." se ".$desemp." como personal de la Universidad Nacional del Comahue como:"."\n"); 
+            
+            $pdf->addText(70,480,10,"<b>CERTIFICO QUE: </b>".$ag." Legajo ".$leg." se ".utf8_decode('desempeña/nó')." como personal de la Universidad Nacional del Comahue como:"."\n"); 
             
             $x=80;
             $y=460;
@@ -103,18 +102,26 @@ class ci_certificacion extends toba_ci
             
             foreach ($desig as $des) {
                
-               $pdf->addText($x,$y,10,"<b>".trim($des['cat'])."</b> ".trim($des['caracter'])." (Departamento: ".trim($des['depto']).") con $ded ".trim($des['ded'])." durante el $per ". date_format(date_create($des['desde']),'d/m/Y')." al ".date_format(date_create($des['hasta']),'d/m/Y')."\n"); 
+               $pdf->addText($x,$y,10,"<b>".trim($des['cat'])."</b> ".trim($des['caracter'])." (Departamento: ".trim($des['depto']).") con ".utf8_decode('dedicación').trim($des['ded'])." durante el $per ". date_format(date_create($des['desde']),'d/m/Y')." al ".date_format(date_create($des['hasta']),'d/m/Y')."\n"); 
+               $lic=$this->dep('datos')->tabla('designacion')->get_licencias($des['id_designacion']);
                $y=$y-20;
+               foreach ($lic as $value) {
+                   $pdf->addText($x+5,$y,10,"*".$value['descripcion']." desde ".$value['desde']." hasta ".$value['hasta']);
+                   $y=$y-20;
+               }
+               
                $pdf->addText($x,$y,10," en las siguientes materias: ");
                $y=$y-20;
                $mat=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig($des['id_designacion']);
                foreach ($mat as $value) {
-                   $pdf->addText($x+5,$y,10,"*".$value['desc_materia']." durante el ".$value['id_periodo']." del ".$anio." ".$value['anio']);
+                   $pdf->addText($x+5,$y,10,"*".$value['desc_materia']." durante el ".$value['id_periodo']." del ".utf8_decode('año')." ".$value['anio']);
                    $y=$y-20;
                }
             }
             //$pdf->ezTable($datos, array('col1'=>'UA','col2'=>'Categoria','col3'=>'Dedicacion','col4'=>'Caracter','col5'=>'Desde','col6'=>'Hasta'), $titulo, $opciones);
-            $pdf->addText(80,$y,10,"<b>Se extiende el presente certificado el ".date("d/m/Y")." a las ".date("h").":".date("i")." ".date("A").", a pedido del interesado, y a los efectos de ser presentado ante quien corresponda."."\n"); 
+            //$pdf->addText(80,$y,10,"<b>Se extiende el presente certificado el ".date("d/m/Y")." a las ".date("h").":".date("i")." ".date("A").", a pedido del interesado, y a los efectos de ser presentado ante quien corresponda."."\n"); 
+            
+            
         }
 
 }

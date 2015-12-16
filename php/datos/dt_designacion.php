@@ -1,6 +1,13 @@
 <?php
 class dt_designacion extends toba_datos_tabla
 {
+        function get_licencias($id_desig){
+            $sql="select t_t.descripcion,t_n.desde,t_n.hasta from novedad t_n , tipo_novedad  t_t"
+                    . " where t_n.id_designacion=".$id_desig.
+                    " and (t_n.tipo_nov=2 or t_n.tipo_nov=5) "
+                    . " and t_t.id_tipo=t_n.tipo_nov"
+                    . " order by t_n.desde";
+        }
         function chequear_presup($id_des){
             $sql="update designacion set check_presup=1 where id_designacion=".$id_des;
             toba::db('designa')->consultar($sql); 
