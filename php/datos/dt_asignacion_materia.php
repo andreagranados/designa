@@ -114,7 +114,7 @@ class dt_asignacion_materia extends toba_datos_tabla
     }
     function get_postgrados($id_desig){
        $post='';
-       $sql="select t_t.descripcion from asignacion_tutoria t_a, tutoria t_t"
+       $sql="select t_t.descripcion,t_a.carga_horaria from asignacion_tutoria t_a, tutoria t_t"
                . " where t_a.id_designacion=".$id_desig
                ." and t_a.id_tutoria=t_t.id_tutoria"
                . " and t_a.rol='POST'"; 
@@ -122,13 +122,17 @@ class dt_asignacion_materia extends toba_datos_tabla
        $primera=true;
        if(count($resul)>0){
             foreach ($resul as $value) {
-                
+                if($value['carga_horaria'] != null){
+                    $hs='-'.$value['carga_horaria'].'hs';
+                }else{
+                    $hs='';
+                }
                 if(!$primera){
-                   $post=$post.'/'.$value['descripcion']   ;
+                   $post=$post.'/'.$value['descripcion'].$hs   ;
                     
                 }else{
                     $primera=false;
-                    $post=$post.$value['descripcion']   ;
+                    $post=$post.$value['descripcion'].$hs   ;
                 }
             }
             
@@ -137,7 +141,7 @@ class dt_asignacion_materia extends toba_datos_tabla
     }
     function get_tutorias($id_desig){
        $post='';
-       $sql="select t_t.descripcion from asignacion_tutoria t_a, tutoria t_t"
+       $sql="select t_t.descripcion,t_a.carga_horaria from asignacion_tutoria t_a, tutoria t_t"
                . " where t_a.id_designacion=".$id_desig
                ." and t_a.id_tutoria=t_t.id_tutoria"
                . " and (t_a.rol='TUTO' or t_a.rol='COOR')"; 
@@ -145,13 +149,47 @@ class dt_asignacion_materia extends toba_datos_tabla
        $primera=true;
        if(count($resul)>0){
             foreach ($resul as $value) {
+                if($value['carga_horaria'] != null){
+                    $hs='-'.$value['carga_horaria'].'hs';
+                }else{
+                    $hs='';
+                }
                 
                 if(!$primera){
-                   $post=$post.'/'.$value['descripcion']   ;
+                   $post=$post.'/'.$value['descripcion'].$hs   ;
                     
                 }else{
                     $primera=false;
-                    $post=$post.$value['descripcion']   ;
+                    $post=$post.$value['descripcion'].$hs   ;
+                }
+            }
+            
+        }
+       
+        return $post;
+    }
+       function get_otros($id_desig){
+       $post='';
+       $sql="select t_t.descripcion,t_a.carga_horaria from asignacion_tutoria t_a, tutoria t_t"
+               . " where t_a.id_designacion=".$id_desig
+               ." and t_a.id_tutoria=t_t.id_tutoria"
+               . " and (t_a.rol='OTRO')"; 
+       $resul=toba::db('designa')->consultar($sql);
+       $primera=true;
+       if(count($resul)>0){
+            foreach ($resul as $value) {
+                if($value['carga_horaria'] != null){
+                    $hs='-'.$value['carga_horaria'].'hs';
+                }else{
+                    $hs='';
+                }
+                
+                if(!$primera){
+                   $post=$post.'/'.$value['descripcion'].$hs  ;
+                    
+                }else{
+                    $primera=false;
+                    $post=$post.$value['descripcion'].$hs   ;
                 }
             }
             
@@ -220,7 +258,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                                     and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))".
                     " UNION "
                 //designaciones asociadas a pi que no tienen licencia y no tienen materias ni tutorias
-                . " select  distinct b.id_designacion,b.id_docente,0 as anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,0,0,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
+                . " select  distinct b.id_designacion,b.id_docente,$anio as anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,0,0,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
                     from integrante_interno_pi a, designacion b, docente c, mocovi_periodo_presupuestario t_per
                     where a.id_designacion=b.id_designacion
                     and b.id_docente=c.id_docente
@@ -278,6 +316,8 @@ class dt_asignacion_materia extends toba_datos_tabla
                     $auxiliar[$i]['postgrado']=$pos;
                     $tut=$this->get_tutorias($value['id_designacion']);
                     $auxiliar[$i]['tutoria']=$tut;
+                    $otros=$this->get_otros($value['id_designacion']);
+                    $auxiliar[$i]['otros']=$otros;
                     //verifico si tiene algun proyecto de extension
                     $sql="select t_p.nro_resol||'-'||t_i.funcion_p||'-'||t_i.carga_horaria||'hs' as pe from integrante_interno_pe t_i, pextension t_p "
                             . " where t_i.id_pext=t_p.id_pext and t_i.id_designacion=".$value['id_designacion'];
@@ -340,6 +380,8 @@ class dt_asignacion_materia extends toba_datos_tabla
                 $auxiliar[$i]['postgrado']=$pos;
                 $tut=$this->get_tutorias($value['id_designacion']);
                 $auxiliar[$i]['tutoria']=$tut;
+                $otros=$this->get_otros($value['id_designacion']);
+                $auxiliar[$i]['otros']=$otros;
                 //verifico si tiene algun proyecto de extension
                 $sql="select t_p.nro_resol||'-'||t_i.funcion_p||'-'||t_i.carga_horaria||'hs' as pe from integrante_interno_pe t_i, pextension t_p "
                             . " where t_i.id_pext=t_p.id_pext and t_i.id_designacion=".$value['id_designacion'];

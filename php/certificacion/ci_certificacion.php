@@ -66,26 +66,27 @@ class ci_certificacion extends toba_ci
             $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
                 //Luego definimos la ubicación de la fecha en el pie de página.
             $pdf->addText(480,20,8,"Sistema MOCOVI-Modulo Designaciones Docentes".date('d/m/Y h:i:s a')); 
-            $pdf->addText(80,60,8,"Se extiende el presente certificado el ".date("d/m/Y")." a las ".date("h").":".date("i")." ".date("A").", a pedido del interesado, y a los efectos de ser presentado ante quien corresponda."."\n"); 
+            $pdf->addText(80,170,10,"Se extiende el presente certificado el ".date("d/m/Y")." a las ".date("h").":".date("i")." ".date("A").", a pedido del interesado, y a los efectos de ser presentado ante quien corresponda."."\n"); 
+            $pdf->addText(750,90,10,"------------------"); 
+            $pdf->addText(750,80,10,"Firma y Sello"); 
                 //Configuración de Título.
             $salida->titulo(utf8_d_seguro("Certificado de Actividades Académicas"));
-                
-               
+ 
             $titulo=" ";
             //-- Cuadro con datos
             $opciones = array(
                     'splitRows'=>0,
                     'shaded'=>1,
-                    'showLines'=>1,
+                    'showLines'=>0,
                     'rowGap' => 1,
                     'showHeadings' => true,
                     'titleFontSize' => 9,
-                    'fontSize' => 6,
+                    'fontSize' => 10,
                     'shadeCol' => array(0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
                     'outerLineThickness' => 0.7,
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
-                    'width' => 800
+                    'width' => 700
                     );
             
             $ag=$this->dep('datos')->tabla('docente')->get_agente($this->s__agente['id_docente']);
@@ -93,34 +94,56 @@ class ci_certificacion extends toba_ci
             $desig=$this->dep('datos')->tabla('docente')->get_designaciones($this->s__agente['id_docente']);
                  
             $per=  utf8_decode('período');
+            $i=0;
             
-            $pdf->addText(70,480,10,"<b>CERTIFICO QUE: </b>".$ag." Legajo ".$leg." se ".utf8_decode('desempeña/nó')." como personal de la Universidad Nacional del Comahue como:"."\n"); 
-            
-            $x=80;
-            $y=460;
-            
+            $texto="<b>CERTIFICO QUE: </b>".$ag." Legajo ".$leg." se ".utf8_decode('desempeña/nó')." en la Universidad Nacional del Comahue como:"."\n";
+            $datos[$i]=array('col1' => $texto);
+            $i++;
+                 
             
             foreach ($desig as $des) {
-               
-               $pdf->addText($x,$y,10,"<b>".trim($des['cat'])."</b> ".trim($des['caracter'])." (Departamento: ".trim($des['depto']).") con ".utf8_decode('dedicación').trim($des['ded'])." durante el $per ". date_format(date_create($des['desde']),'d/m/Y')." al ".date_format(date_create($des['hasta']),'d/m/Y')."\n"); 
+               $norma="";
+               if($des['tipo_norma']!=null){
+                   $norma=", ".$des['tipo_norma'].$des['nro_norma']."/".date('Y',strtotime($des['fecha'])).", ";
+               }
+               $texto="<b>".trim($des['cat'])."</b> ".trim($des['caracter'])." (".trim($des['ua'])." Departamento: ".trim($des['depto']).") con ".utf8_decode('dedicación ').trim($des['ded']).$norma." durante el $per ". date_format(date_create($des['desde']),'d/m/Y')." al ".date_format(date_create($des['hasta']),'d/m/Y');
+               $datos[$i]=array('col1' => $texto);
+               $i++;
                $lic=$this->dep('datos')->tabla('designacion')->get_licencias($des['id_designacion']);
-               $y=$y-20;
+               
                foreach ($lic as $value) {
-                   $pdf->addText($x+5,$y,10,"*".$value['descripcion']." desde ".$value['desde']." hasta ".$value['hasta']);
-                   $y=$y-20;
+                   $texto="<i>".trim($value['descripcion'])." desde ".date_format(date_create($value['desde']),'d/m/Y')." hasta ".date_format(date_create($value['hasta']),'d/m/Y')."</i>)";
+                   $datos[$i]=array('col1' => $texto);
+                   $i++;
                }
                
-               $pdf->addText($x,$y,10," en las siguientes materias: ");
-               $y=$y-20;
+               $primera=true;
                $mat=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig($des['id_designacion']);
                foreach ($mat as $value) {
-                   $pdf->addText($x+5,$y,10,"*".$value['desc_materia']." durante el ".$value['id_periodo']." del ".utf8_decode('año')." ".$value['anio']);
-                   $y=$y-20;
+                   if($primera){
+                        $texto="    en las siguientes materias: ";
+                        $datos[$i]=array('col1' => $texto);
+                        $primera=false;
+                   }
+                   $i++;
+                   $texto="       *".$value['desc_materia']." durante el ".$value['id_periodo']." del ".utf8_decode('año')." ".$value['anio'];
+                   $datos[$i]=array('col1' => $texto); 
                }
+               
+               $datos[$i]=array('col1' => '   ');
+               $i++;
+               
             }
-            //$pdf->ezTable($datos, array('col1'=>'UA','col2'=>'Categoria','col3'=>'Dedicacion','col4'=>'Caracter','col5'=>'Desde','col6'=>'Hasta'), $titulo, $opciones);
-            //$pdf->addText(80,$y,10,"<b>Se extiende el presente certificado el ".date("d/m/Y")." a las ".date("h").":".date("i")." ".date("A").", a pedido del interesado, y a los efectos de ser presentado ante quien corresponda."."\n"); 
+            $pdf->ezTable($datos, array('col1'=>''), $titulo, $opciones);
             
+            //Recorremos cada una de las hojas del documento para agregar el encabezado
+            foreach ($pdf->ezPages as $pageNum=>$id){ 
+                $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+                $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo-unc.jpg', 20, 515, 70, 66); 
+                $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 680, 535, 130, 40);
+                $pdf->closeObject();                  
+            }
             
         }
 

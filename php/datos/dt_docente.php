@@ -12,12 +12,13 @@ class dt_docente extends toba_datos_tabla
             return $res[0]['legajo'];
         }
         function get_designaciones($id_doc){
-            $sql="select t_d.id_designacion,t_dep.descripcion as depto,t_a.descripcion as area,t_or.descripcion as orient,t_u.descripcion as ua,t_d.desde,t_d.hasta,t_e.descripcion as cat, t_c.descripcion as caracter,t_de.descripcion as ded"
+            $sql="select t_d.id_designacion,t_no.nro_norma,t_no.tipo_norma,t_no.fecha,t_dep.descripcion as depto,t_a.descripcion as area,t_or.descripcion as orient,t_u.descripcion as ua,t_d.desde,t_d.hasta,t_e.descripcion as cat, t_c.descripcion as caracter,t_de.descripcion as ded"
                     . " from designacion t_d "
                     . " LEFT OUTER JOIN categ_estatuto t_e ON (t_e.codigo_est=t_d.cat_estat)"
                     . " LEFT OUTER JOIN caracter t_c ON (t_c.id_car=t_d.carac)"
                     . " LEFT OUTER JOIN dedicacion t_de ON (t_d.dedic=t_de.id_ded)"
                     . " LEFT OUTER JOIN unidad_acad t_u ON (t_d.uni_acad=t_u.sigla)"
+                    . " LEFT OUTER JOIN norma t_no ON (t_d.id_norma=t_no.id_norma) "
                     . " LEFT OUTER JOIN departamento t_dep ON (t_d.id_departamento=t_dep.iddepto)"
                     . " LEFT OUTER JOIN area t_a ON (t_d.id_area=t_a.idarea)"
                     . " LEFT OUTER JOIN orientacion t_or ON (t_or.idorient=t_d.id_orientacion and t_or.idarea=t_a.idarea)"

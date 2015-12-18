@@ -506,7 +506,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3482', --objeto_cuadro
 	'2904', --objeto_cuadro_col
-	'id_departamento', --clave
+	'dep', --clave
 	'8', --orden
 	'Departamento', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
@@ -537,7 +537,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3482', --objeto_cuadro
 	'2905', --objeto_cuadro_col
-	'id_area', --clave
+	'area', --clave
 	'9', --orden
 	'Área', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
@@ -568,7 +568,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3482', --objeto_cuadro
 	'2906', --objeto_cuadro_col
-	'id_orientacion', --clave
+	'ori', --clave
 	'10', --orden
 	'Orientación', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo

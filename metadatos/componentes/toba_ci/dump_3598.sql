@@ -98,10 +98,10 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2415', --dep_id
+	'2418', --dep_id
 	'3598', --objeto_consumidor
-	'3597', --objeto_proveedor
-	'filtro', --identificador
+	'3599', --objeto_proveedor
+	'filtros', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
 	NULL, --parametros_c
@@ -120,11 +120,11 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'3598', --objeto_ci
 	'1540', --pantalla
 	'pant_edicion', --identificador
-	'0', --orden
+	'1', --orden
 	'Pantalla', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
-	NULL, --imagen_recurso_origen
+	'apex', --imagen_recurso_origen
 	NULL, --imagen
 	NULL, --objetos
 	NULL, --eventos
@@ -132,7 +132,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	NULL, --subclase_archivo
 	NULL, --template
 	NULL, --template_impresion
-	NULL  --punto_montaje
+	'23'  --punto_montaje
 );
 --- FIN Grupo de desarrollo 0
 
@@ -151,5 +151,5 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'1540', --pantalla
 	'3598', --objeto_ci
 	'0', --orden
-	'2415'  --dep_id
+	'2418'  --dep_id
 );
