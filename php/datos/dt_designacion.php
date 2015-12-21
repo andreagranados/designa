@@ -117,12 +117,12 @@ class dt_designacion extends toba_datos_tabla
                 }
                
                 // print_r($where);WHERE uni_acad = 'FAIF' AND	anio = '2016'
-                $sql="select b.*,case when (b.desde <= t_no.hasta and (b.hasta >= t_no.desde or b.hasta is null)) then 'L' else estado end as estado,((case when b.hs_mat is not null then b.hs_mat else 0 end) + (case when b.hs_pi is not null then b.hs_pi else 0 end)+(case when b.hs_pe is not null then b.hs_pe else 0 end)+(case when b.hs_pos is not null then b.hs_pos else 0 end)+(case when b.hs_tut is not null then b.hs_tut else 0 end)+(case when b.hs_otros is not null then b.hs_otros else 0 end))as hs_total ,case when dedic=1 then 40 else case when dedic=2 then 20 else (case when dedic=3 then 10 else 0 end) end end as hs_desig                 
+                $sql="select b.*,t_dep.descripcion as depart,t_a.descripcion as area,t_o.descripcion as orientacion,case when (b.desde <= t_no.hasta and (b.hasta >= t_no.desde or b.hasta is null)) then 'L' else estado end as estado,((case when b.hs_mat is not null then b.hs_mat else 0 end) + (case when b.hs_pi is not null then b.hs_pi else 0 end)+(case when b.hs_pe is not null then b.hs_pe else 0 end)+(case when b.hs_pos is not null then b.hs_pos else 0 end)+(case when b.hs_tut is not null then b.hs_tut else 0 end)+(case when b.hs_otros is not null then b.hs_otros else 0 end))as hs_total ,case when dedic=1 then 40 else case when dedic=2 then 20 else (case when dedic=3 then 10 else 0 end) end end as hs_desig                 
                      from 
                        (select a.*,sum(t_a.carga_horaria) as hs_mat,sum(t_e.carga_horaria)as hs_pe,sum(t_i.carga_horaria) as hs_pi,sum(t_t.carga_horaria) as hs_pos,sum(t_tu.carga_horaria) as hs_tut,sum(t_ot.carga_horaria) as hs_otros
                         from
                         (   select * from (
-                            select t_pe.anio,t_d.id_designacion,t_d.uni_acad,t_do.apellido||', '||t_do.nombre as agente,t_do.legajo,t_d.carac,t_d.cat_mapuche,t_d.dedic,t_d.desde,t_d.hasta,t_d.estado   
+                            select t_pe.anio,t_d.id_designacion,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_do.apellido||', '||t_do.nombre as agente,t_do.legajo,t_d.carac,t_d.cat_mapuche,t_d.dedic,t_d.desde,t_d.hasta,t_d.estado   
                             from designacion t_d , docente t_do, mocovi_periodo_presupuestario t_pe
                             where t_d.id_docente=t_do.id_docente
                             and (t_d.desde <=t_pe.fecha_fin and (t_d.hasta>=t_pe.fecha_inicio or t_d.hasta is null))
@@ -135,9 +135,13 @@ class dt_designacion extends toba_datos_tabla
                         LEFT OUTER JOIN asignacion_tutoria t_t ON (a.id_designacion=t_t.id_designacion and t_t.rol='POST')
                         LEFT OUTER JOIN asignacion_tutoria t_ot ON (a.id_designacion=t_ot.id_designacion and t_t.rol='OTRO')
                         LEFT OUTER JOIN asignacion_tutoria t_tu ON (a.id_designacion=t_tu.id_designacion and (t_tu.rol='COOR' or t_tu.rol='TUTO'))
-                        group by a.anio,a.id_designacion,a.uni_acad,a.agente,a.legajo,a.carac,a.cat_mapuche,a.dedic,a.desde,a.hasta,a.estado
+                        group by a.anio,a.id_designacion,a.id_departamento,a.id_area,a.id_orientacion,a.uni_acad,a.agente,a.legajo,a.carac,a.cat_mapuche,a.dedic,a.desde,a.hasta,a.estado
                         )b"
-                        . " LEFT OUTER JOIN novedad t_no ON (t_no.id_designacion=b.id_designacion and t_no.tipo_nov in (2,5))";
+                        . " LEFT OUTER JOIN novedad t_no ON (t_no.id_designacion=b.id_designacion and t_no.tipo_nov in (2,5))"
+                        . " LEFT OUTER JOIN departamento t_dep ON (b.id_departamento=t_dep.iddepto)"
+                        . " LEFT OUTER JOIN area t_a ON (b.id_area=t_a.idarea)"
+                        . " LEFT OUTER JOIN orientacion t_o ON (t_o.idorient=b.id_orientacion and t_o.idarea=t_a.idarea)";
+                
                 return toba::db('designa')->consultar($sql);
         }
         
@@ -145,10 +149,10 @@ class dt_designacion extends toba_datos_tabla
 	{
 		$where = array();
 		if (isset($filtro['anio_acad'])) {
-			$where[] = "anio_acad = ".quote($filtro['anio_acad']);
+			$where[] = " anio_acad = ".quote($filtro['anio_acad']);
 		}
 		if (isset($filtro['uni_acad'])) {
-			$where[] = "uni_acad = ".quote($filtro['uni_acad']);
+			$where[] = " uni_acad = ".quote($filtro['uni_acad']);
 		}
 		$sql = "SELECT
 			t_d.id_designacion,
@@ -1477,6 +1481,7 @@ class dt_designacion extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
 
+
         //solo trae las designaciones que tienen materias asociadas
         //designaciones de la Unidad Academica y del periodo x
         function get_equipos_cat($where=null){
@@ -1487,7 +1492,7 @@ class dt_designacion extends toba_datos_tabla
                     $where='';
                 }
             
-            $sql="select c.id_designacion,c.dep,c.area,c.ori,t_doc.apellido||', '||t_doc.nombre as docente_nombre, t_doc.legajo, c.cat_estat||c.dedic as cat_est,c.carac,c.uni_acad,c.desde,c.hasta,t_m.desc_materia||' # '||t_plan.uni_acad||' - '||t_plan.cod_carrera||' ('||cod_siu||')' as desc_materia, t_p.descripcion as periodo,t_mo.descripcion as modulo,ti.desc_item as rol ,t_a.carga_horaria from ("
+            $sql="select c.id_designacion,c.dep,c.area,c.ori,t_doc.apellido||', '||t_doc.nombre as docente_nombre, t_doc.legajo, c.cat_estat||c.dedic as cat_est,c.carac,c.uni_acad,c.desde,c.hasta,t_m.desc_materia||' # '||t_plan.uni_acad||' - '||t_plan.cod_carrera||' ('||cod_siu||')' as desc_materia,t_plan.cod_carrera, t_plan.ordenanza,t_p.descripcion as periodo,t_mo.descripcion as modulo,ti.desc_item as rol ,t_a.carga_horaria from ("
                   ." select * from ("  
                     ."select a.*,t_d3.descripcion as dep,t_ma.descripcion as area,t_o.descripcion as ori from ("
                         ."select t_d.*,t_pe.anio "
@@ -1514,7 +1519,7 @@ class dt_designacion extends toba_datos_tabla
               ";
             
             //$sql = toba::perfil_de_datos()->filtrar($sql);lo saco porque puse como obligatoria la facultad
-                     
+                  
             return toba::db('designa')->consultar($sql);
         }
         

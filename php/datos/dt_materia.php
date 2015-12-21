@@ -193,6 +193,7 @@ class dt_materia extends toba_datos_tabla
 	}
 
 
+
         function get_listado_completo($where=null)
         {
 

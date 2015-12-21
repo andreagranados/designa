@@ -41,11 +41,11 @@ class dt_asignacion_materia extends toba_datos_tabla
                 toba::db('designa')->consultar($sql);
             }
         }
-        function get_listado($filtro=array())
+	function get_listado($filtro=array())
 	{
 		$where = array();
-		if (isset($filtro['id_materia'])) {
-			$where[] = "id_materia = ".quote($filtro['id_materia']);
+		if (isset($filtro['anio'])) {
+			$where[] = "anio = ".quote($filtro['anio']);
 		}
 		$sql = "SELECT
 			t_am.id_designacion,
@@ -65,6 +65,7 @@ class dt_asignacion_materia extends toba_datos_tabla
 		}
 		return toba::db('designa')->consultar($sql);
 	}
+
 
     function get_listado_desig($des){
         $sql = "SELECT t_a.id_designacion,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,t_t.desc_item as rol,t_p.descripcion as id_periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_a.anio"
@@ -410,5 +411,103 @@ class dt_asignacion_materia extends toba_datos_tabla
         return $auxiliar;
         
     }
+     function get_dictado_conjunto($where=null){
+         
+         if(!is_null($where)){
+                    $where=' where '.$where;
+                }else{
+                    $where='';
+                }
+        $auxiliar=array();
+        $i=0; 
+        $j=0;
+        $sql="select b.*,t_mod.descripcion as mod,t_t.desc_item as rol from(
+              select * from (
+                select t_d.uni_acad,t_pe.id_periodo as id_periodo_pres,t_do.apellido||', '||t_do.nombre as agente,t_do.legajo,t_d.id_designacion,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.dedic,t_m.id_materia,t_m.id_periodo,rol,t_r.descripcion as per,t_m.anio,modulo,carga_horaria
+                from docente t_do,designacion t_d,asignacion_materia t_m, mocovi_periodo_presupuestario t_pe, periodo t_r
+                where 
+                t_do.id_docente=t_d.id_docente
+                and t_d.id_designacion=t_m.id_designacion
+                and t_pe.anio=t_m.anio
+                and t_m.id_periodo=t_r.id_periodo  ) b 
+                $where )b"
+                . " LEFT OUTER JOIN en_conjunto t_e ON (b.id_materia=t_e.id_materia)"
+                . " LEFT OUTER JOIN conjunto t_c ON ( t_e.id_conjunto=t_c.id_conjunto and t_c.id_periodo_pres=b.id_periodo_pres and t_c.id_periodo=b.id_periodo)"
+                . " LEFT OUTER JOIN modulo t_mod ON (b.modulo=t_mod.id_modulo)"
+                . " LEFT OUTER JOIN tipo t_t ON (b.rol=t_t.desc_abrev)"
+                . " order by agente,legajo,id_designacion";
+        
+        $resul= toba::db('designa')->consultar($sql);
+      
+        if(isset($resul[0])){
+            $ant=$resul[0]['id_designacion'];
+            $primera=true;    
+        }
+      
+        foreach ($resul as $key => $value) {
+           if($value['id_designacion']==$ant){//mientras es la misma designacion
+                if ($primera){
+                    $primera=false;
+                    $auxiliar[$i]['uni_acad']=$value['uni_acad'];
+                    $auxiliar[$i]['id_designacion']=$value['id_designacion'];
+                    $auxiliar[$i]['agente']=$value['agente'];
+                    $auxiliar[$i]['legajo']=$value['legajo'];
+                    $auxiliar[$i]['cat_estat']=$value['cat_estat'];
+                    $auxiliar[$i]['dedic']=$value['dedic'];
+                    $auxiliar[$i]['rol']=$value['rol'];
+                    $auxiliar[$i]['per']=$value['per'];
+                    $auxiliar[$i]['anio']=$value['anio'];
+                    $auxiliar[$i]['mod']=$value['mod'];
+                    $auxiliar[$i]['id_materia']=$value['id_materia'];
+                    $auxiliar[$i]['modulo']=$value['modulo'];
+                    
+                
+                    $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.modulo=".$value['modulo']." and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
+                    
+                    $res=toba::db('designa')->consultar($sql);
+                    if(isset($res[0])){
+                        $auxiliar[$i]['mat'.$j]=$res[0]['mat'];
+                    }  
+                }
+                 //obtengo una materia
+                $sql=  "select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')' as mat,e.id_periodo from "
+                        . " materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_periodo=r.id_periodo and e.modulo=".$value['modulo']." and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and a.id_materia=".$value['id_materia'];
+                $res=toba::db('designa')->consultar($sql);
+                //preguntar si res tiene datos
+                if(isset($res[0])){
+                    $auxiliar[$i]['mat'.$j]=$res[0]['mat'];
+                }
+                $j++;
+           }else{
+               $ant=$value['id_designacion'];
+                $i=$i+1;
+                $j=0;
+                $primera=true;//cambio de designacion
+                $auxiliar[$i]['uni_acad']=$value['uni_acad'];
+                $auxiliar[$i]['id_designacion']=$value['id_designacion'];
+                $auxiliar[$i]['agente']=$value['agente'];
+                $auxiliar[$i]['legajo']=$value['legajo'];
+                $auxiliar[$i]['cat_estat']=$value['cat_estat'];
+                $auxiliar[$i]['dedic']=$value['dedic'];
+                $auxiliar[$i]['rol']=$value['rol'];
+                $auxiliar[$i]['per']=$value['per'];
+                $auxiliar[$i]['anio']=$value['anio'];
+                $auxiliar[$i]['mod']=$value['mod'];
+                $auxiliar[$i]['modulo']=$value['modulo'];
+                $auxiliar[$i]['id_materia']=$value['id_materia'];
+                
+                 //obtengo una materia
+                $sql=  "select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')' as mat,e.id_periodo from "
+                        . " materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.id_periodo=r.id_periodo and e.modulo=".$value['modulo']." and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and a.id_materia=".$value['id_materia'];
+                $res=toba::db('designa')->consultar($sql);
+                //preguntar si res tiene datos
+                if(isset($res[0])){
+                    $auxiliar[$i]['mat'.$j]=$res[0]['mat'];
+                }
+                $j++;
+           }
+        }
+       return $auxiliar;  
+     }
 }
 ?>
