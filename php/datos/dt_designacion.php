@@ -229,9 +229,9 @@ class dt_designacion extends toba_datos_tabla
                  //[activo] => Array ( [condicion] => es_igual_a [valor] => 0 )
 		if (isset($filtro['activo'])) {
                     if($filtro['activo']['valor']==1){//activo
-                        $where[]="desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)";
+                        $where[]="t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)";
                     }else{//no activo
-                        $where[]="not (desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null))";
+                        $where[]="not (t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null))";
                     }
 			
 		}
@@ -239,21 +239,21 @@ class dt_designacion extends toba_datos_tabla
                 // [desde] => Array ( [condicion] => es_igual_a [valor] => 2015-08-18 )
                 if (isset($filtro['desde'])) {
                     switch ($filtro['desde']['condicion']) {
-                        case 'es_igual_a':$where[] = "desde = '".$filtro['desde']['valor']."'";break;
-                        case 'es_distinto_de':$where[] = "desde <> '".$filtro['desde']['valor']."'";break;
-                        case 'desde':$where[] = "desde >= '".$filtro['desde']['valor']."'";break;
-                        case 'hasta':$where[] = "desde < '".$filtro['desde']['valor']."'";break;
-                        case 'entre':$where[] = "(desde >= '".$filtro['desde']['valor']['desde']."' and desde<='".$filtro['desde']['valor']['hasta']."')";break;
+                        case 'es_igual_a':$where[] = "t_d.desde = '".$filtro['desde']['valor']."'";break;
+                        case 'es_distinto_de':$where[] = "t_d.desde <> '".$filtro['desde']['valor']."'";break;
+                        case 'desde':$where[] = "t_d.desde >= '".$filtro['desde']['valor']."'";break;
+                        case 'hasta':$where[] = "t_d.desde < '".$filtro['desde']['valor']."'";break;
+                        case 'entre':$where[] = "(t_d.desde >= '".$filtro['desde']['valor']['desde']."' and t_d.desde<='".$filtro['desde']['valor']['hasta']."')";break;
                     }
 			
 		}
 		if (isset($filtro['hasta'])) {
                     switch ($filtro['hasta']['condicion']) {
-                        case 'es_igual_a':$where[] = "hasta = '".$filtro['hasta']['valor']."'";break;
-                        case 'es_distinto_de':$where[] = "hasta <> '".$filtro['hasta']['valor']."'";break;
-                        case 'desde':$where[] = "hasta >= '".$filtro['hasta']['valor']."'";break;
-                        case 'hasta':$where[] = "hasta < '".$filtro['hasta']['valor']."'";break;
-                        case 'entre':$where[] = "(hasta >= '".$filtro['hasta']['valor']['desde']."' and hasta<='".$filtro['desde']['valor']['hasta']."')";break;
+                        case 'es_igual_a':$where[] = "t_d.hasta = '".$filtro['hasta']['valor']."'";break;
+                        case 'es_distinto_de':$where[] = "t_d.hasta <> '".$filtro['hasta']['valor']."'";break;
+                        case 'desde':$where[] = "t_d.hasta >= '".$filtro['hasta']['valor']."'";break;
+                        case 'hasta':$where[] = "t_d.hasta < '".$filtro['hasta']['valor']."'";break;
+                        case 'entre':$where[] = "(t_d.hasta >= '".$filtro['hasta']['valor']['desde']."' and t_d.hasta<='".$filtro['desde']['valor']['hasta']."')";break;
                     }
 			
 		}
@@ -298,7 +298,8 @@ class dt_designacion extends toba_datos_tabla
                         case when (t_no.desde <= t_d.hasta and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end as lic,
 			t_d.observaciones
 		FROM
-			designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu)
+			designacion as t_d 
+                        LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu)
 			LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5))
                         LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est)
 			LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma)
