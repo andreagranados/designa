@@ -384,6 +384,12 @@ class ci_reserva extends designa_ci
             
             $datos['tipo_desig']=1;
             $datos['id_reserva']=null;
+            $datos['nro_540']=null;
+            $datos['id_norma']=null;
+            //pasa a historico
+            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();          
+            $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
+            $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
             //borro la reserva??
             $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
             $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
