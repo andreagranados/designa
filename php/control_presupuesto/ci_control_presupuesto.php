@@ -20,9 +20,7 @@ class ci_control_presupuesto extends toba_ci
 
 	function conf__filtro(toba_ei_formulario $filtro)
 	{
-	    if(isset($this->s__datos)){
-                $filtro->eliminar_evento('chequear');	
-            }
+	    
             if (isset($this->s__datos_filtro)) {
 		$filtro->set_datos($this->s__datos_filtro);
 		}
@@ -31,23 +29,26 @@ class ci_control_presupuesto extends toba_ci
 	function evt__filtro__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
+                $this->dep('filtro')->evento('chequear')->mostrar();
 	}
         function evt__filtro__chequear($datos)
         {
-           foreach ($this->s__datos as $value) {
+           
+            foreach ($this->s__datos as $value) {
                $this->dep('datos')->tabla('designacion')->chequear_presup($value['id_designacion']);
             }
         }
 	function evt__filtro__cancelar()
 	{
 		unset($this->s__datos_filtro);
+                unset($this->s__datos);
 	}
 
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
+		if (isset($this->s__datos_filtro)) {//si no es null
                     //busca todas las designaciones que estan dentro del periodo vigente, que tienen numero de 540 y ademas tienen el numero de la norma legal
                     //a presupuesto no le interesa chequear nada que no tenga norma legal
                     $this->s__datos=$this->dep('datos')->tabla('designacion')->get_listado_presup($this->s__datos_filtro);
@@ -70,45 +71,8 @@ class ci_control_presupuesto extends toba_ci
 		$this->resetear();
 	}
 
-	//---- Formulario -------------------------------------------------------------------
-
-	function conf__formulario(toba_ei_formulario $form)
-	{
-		if ($this->dep('datos')->esta_cargada()) {
-			$form->set_datos($this->dep('datos')->tabla('designacion')->get());
-		}
-	}
-
-	function evt__formulario__alta($datos)
-	{
-		$this->dep('datos')->tabla('designacion')->set($datos);
-		$this->dep('datos')->sincronizar();
-		$this->resetear();
-	}
-
-	function evt__formulario__modificacion($datos)
-	{
-		$this->dep('datos')->tabla('designacion')->set($datos);
-		$this->dep('datos')->sincronizar();
-		$this->resetear();
-	}
-
-	function evt__formulario__baja()
-	{
-		$this->dep('datos')->eliminar_todo();
-		$this->resetear();
-	}
-
-	function evt__formulario__cancelar()
-	{
-		$this->resetear();
-	}
-
-	function resetear()
-	{
-		$this->dep('datos')->resetear();
-	}
-
+	
+	
 }
 
 ?>
