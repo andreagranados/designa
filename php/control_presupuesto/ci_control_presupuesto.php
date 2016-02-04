@@ -29,7 +29,7 @@ class ci_control_presupuesto extends toba_ci
 	function evt__filtro__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
-                $this->dep('filtro')->evento('chequear')->mostrar();
+               
 	}
         function evt__filtro__chequear($datos)
         {

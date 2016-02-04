@@ -21,6 +21,7 @@ class dt_incentivo extends toba_datos_tabla
 
 
 
+
 	function get_listado()
 	{
 		$sql = "SELECT

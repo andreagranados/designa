@@ -1,6 +1,74 @@
 <?php
+require_once 'dt_mocovi_periodo_presupuestario.php';
+require_once 'consultas_mapuche.php';
+
 class dt_designacion extends toba_datos_tabla
 {
+        function get_comparacion($filtro){
+            //print_r($filtro);exit();// Array ( [uni_acad] => FAIF [anio] => 2016 ) 
+            $salida=array();
+            $udia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+            $pdia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+                    
+            //recupero los cargos de mapuche de ese periodo y esa ua
+            $datos_mapuche = consultas_mapuche::get_cargos($filtro['uni_acad'],$udia,$pdia);
+            
+            $sql=" CREATE LOCAL TEMP TABLE auxi
+            (   id_desig integer,
+            ua   character(5),
+            nro_legaj  integer,
+            ape character varying(100),
+            nom character varying(100),
+            nro_cargo integer,
+            codc_categ character varying(4),
+            caracter character varying(4),
+            fec_alta date,
+            fec_baja date
+            );";
+            toba::db('designa')->consultar($sql);
+            foreach ($datos_mapuche as $valor) {
+                if(isset($valor['fec_baja'])){
+                    $concat="'".$valor['fec_baja']."'";
+                }else{
+                    $concat="null";
+                }
+                $sql=" insert into auxi values (null,'".$valor['codc_uacad']."',".$valor['nro_legaj'].",'".$valor['desc_appat']."','".$valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.")";
+                //print_r($sql);exit();
+                toba::db('designa')->consultar($sql);
+            }
+          //------------------------------------------------------
+            $where='';
+            if(isset($filtro['uni_acad'])){
+                $where=" and t_d.uni_acad='".$filtro['uni_acad']."'";
+            }
+            $sql=" select a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,b.nro_cargo from "
+                    . "(select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup "
+                    . " from designacion t_d, docente t_do
+                       where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
+                            and t_d.id_docente=t_do.id_docente".$where.")a "
+                    . " LEFT OUTER JOIN auxi b ON (a.cat_mapuche=b.codc_categ
+                                                and a.legajo=b.nro_legaj
+                                                and a.uni_acad=b.ua
+                                                and b.fec_alta <= '".$udia."' and (b.fec_baja >= '".$pdia."' or b.fec_baja is null)
+                                                )"
+                    ." UNION "
+                    ."select '-1' as id_desig,ua,ape,nom,nro_legaj,null,codc_categ,null as check_presup,caracter,null,null,fec_alta,fec_baja,nro_cargo"
+                    ." from auxi b "
+                    ." where
+                        not exists (select * from designacion c, docente d
+                                    where 
+                                    c.id_docente=d.id_docente
+                                    and d.legajo=b.nro_legaj
+                                    and c.uni_acad=b.ua 
+                                    and c.cat_mapuche=b.codc_categ
+                                    ) "
+                    ." order by uni_acad,apellido,nombre";
+            //print_r($sql);
+            $resul = toba::db('designa')->consultar($sql);
+            //print_r($resul);
+            return $resul;
+  
+        }
         function get_licencias($id_desig){
             $sql="select t_t.descripcion,t_n.desde,t_n.hasta from novedad t_n , tipo_novedad  t_t"
                     . " where t_n.id_designacion=".$id_desig.
@@ -148,11 +216,8 @@ class dt_designacion extends toba_datos_tabla
 	function get_listado($filtro=array())
 	{
 		$where = array();
-		if (isset($filtro['anio_acad'])) {
-			$where[] = " anio_acad = ".quote($filtro['anio_acad']);
-		}
 		if (isset($filtro['uni_acad'])) {
-			$where[] = " uni_acad = ".quote($filtro['uni_acad']);
+			$where[] = "uni_acad = ".quote($filtro['uni_acad']);
 		}
 		$sql = "SELECT
 			t_d.id_designacion,
@@ -217,6 +282,7 @@ class dt_designacion extends toba_datos_tabla
 		}
 		return toba::db('designa')->consultar($sql);
 	}
+
 
 
 

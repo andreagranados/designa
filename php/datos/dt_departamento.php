@@ -11,6 +11,7 @@ class dt_departamento extends toba_datos_tabla
 
 
 
+
         function get_departamentos($id_ua=null)
 	{
 		$where ="";
