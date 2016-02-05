@@ -15,7 +15,7 @@ class consultas_mapuche
  	where b.fec_alta <= '".$udia."' and (b.fec_baja >= '".$pdia."' or b.fec_baja is null)
  	and a.nro_legaj=b.nro_legaj".$where;
  	
- 	print_r($sql);
+ 	
  	$datos_mapuche = toba::db('mapuche')->consultar($sql);
  	
  	return $datos_mapuche;

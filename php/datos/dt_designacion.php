@@ -32,7 +32,7 @@ class dt_designacion extends toba_datos_tabla
                 }else{
                     $concat="null";
                 }
-                $sql=" insert into auxi values (null,'".$valor['codc_uacad']."',".$valor['nro_legaj'].",'".$valor['desc_appat']."','".$valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.")";
+                $sql=" insert into auxi values (null,'".$valor['codc_uacad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.")";
                 //print_r($sql);exit();
                 toba::db('designa')->consultar($sql);
             }
@@ -41,7 +41,7 @@ class dt_designacion extends toba_datos_tabla
             if(isset($filtro['uni_acad'])){
                 $where=" and t_d.uni_acad='".$filtro['uni_acad']."'";
             }
-            $sql=" select a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,b.nro_cargo from "
+            $sql=" select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,b.nro_cargo from "
                     . "(select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup "
                     . " from designacion t_d, docente t_do
                        where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
@@ -62,7 +62,7 @@ class dt_designacion extends toba_datos_tabla
                                     and c.uni_acad=b.ua 
                                     and c.cat_mapuche=b.codc_categ
                                     ) "
-                    ." order by uni_acad,apellido,nombre";
+                    ." order by uni_acad,apellido,nombre,id_designacion,nro_cargo";
             //print_r($sql);
             $resul = toba::db('designa')->consultar($sql);
             //print_r($resul);
