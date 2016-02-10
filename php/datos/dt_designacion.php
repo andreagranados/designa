@@ -15,6 +15,7 @@ class dt_designacion extends toba_datos_tabla
             
             $sql=" CREATE LOCAL TEMP TABLE auxi
             (   id_desig integer,
+            chkstopliq  integer,
             ua   character(5),
             nro_legaj  integer,
             ape character varying(100),
@@ -23,7 +24,8 @@ class dt_designacion extends toba_datos_tabla
             codc_categ character varying(4),
             caracter character varying(4),
             fec_alta date,
-            fec_baja date
+            fec_baja date,
+            lic     text
             );";
             toba::db('designa')->consultar($sql);
             foreach ($datos_mapuche as $valor) {
@@ -32,27 +34,34 @@ class dt_designacion extends toba_datos_tabla
                 }else{
                     $concat="null";
                 }
-                $sql=" insert into auxi values (null,'".$valor['codc_uacad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.")";
-                //print_r($sql);exit();
+                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$valor['codc_uacad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",'".$valor['lic']."')";
+                
                 toba::db('designa')->consultar($sql);
             }
           //------------------------------------------------------
+            
             $where='';
             if(isset($filtro['uni_acad'])){
                 $where=" and t_d.uni_acad='".$filtro['uni_acad']."'";
             }
-            $sql=" select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,b.nro_cargo from "
-                    . "(select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup "
+            $sql=" select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,b.nro_cargo,b.chkstopliq,b.lic,a.licd from "
+                    . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup"
                     . " from designacion t_d, docente t_do
-                       where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
-                            and t_d.id_docente=t_do.id_docente".$where.")a "
+                        where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
+                             and t_d.id_docente=t_do.id_docente".$where.")a "
+                            ." LEFT OUTER JOIN novedad c
+							ON(a.id_designacion=c.id_designacion
+							and c.tipo_nov in(2,4,5)
+							and c.desde <= '".$udia."' and (c.hasta >= '".$pdia."' or c.hasta is null)
+							)"
+                         .")a"
                     . " LEFT OUTER JOIN auxi b ON (a.cat_mapuche=b.codc_categ
                                                 and a.legajo=b.nro_legaj
                                                 and a.uni_acad=b.ua
                                                 and b.fec_alta <= '".$udia."' and (b.fec_baja >= '".$pdia."' or b.fec_baja is null)
                                                 )"
                     ." UNION "
-                    ."select '-1' as id_desig,ua,ape,nom,nro_legaj,null,codc_categ,null as check_presup,caracter,null,null,fec_alta,fec_baja,nro_cargo"
+                    ."select '-1' as id_desig,ua,ape,nom,nro_legaj,null,codc_categ,null as check_presup,caracter,null,null,fec_alta,fec_baja,nro_cargo,chkstopliq,lic,null"
                     ." from auxi b "
                     ." where
                         not exists (select * from designacion c, docente d
@@ -63,9 +72,9 @@ class dt_designacion extends toba_datos_tabla
                                     and c.cat_mapuche=b.codc_categ
                                     ) "
                     ." order by uni_acad,apellido,nombre,id_designacion,nro_cargo";
-            //print_r($sql);
+            
             $resul = toba::db('designa')->consultar($sql);
-            //print_r($resul);
+            
             return $resul;
   
         }
