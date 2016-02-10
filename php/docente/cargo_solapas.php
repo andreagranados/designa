@@ -166,25 +166,34 @@ class cargo_solapas extends toba_ci
                //ver que quede eliminado todo lo que tiene que ver con la designacion que se esta eliminando
                 //ver liberacion de credito, directamente al eliminar la designacion. No hace falta hacer nada aqui
                 $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                $mat=$this->controlador()->dep('datos')->tabla('designacion')->tiene_materias($des['id_designacion']);
-                if($mat){
-                    toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE MATERIAS ASIGNADAS", 'error');
-                }else{
-                    $nov=$this->controlador()->dep('datos')->tabla('designacion')->tiene_novedades($des['id_designacion']);
-                    if($nov){
-                        toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE NOVEDADES",'error' );
-                    }else{
-                        $tut=$this->controlador()->dep('datos')->tabla('designacion')->tiene_tutorias($des['id_designacion']);
-                        if($tut){
-                            toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE TUTORIAS", 'error');
+               
+                if($des['nro_540']==null){//solo puedo borrar si no tiene tkd
+                    $tkd=$this->controlador()->dep('datos')->tabla('designacionh')->existe_tkd($des['id_designacion']);
+                    if ($tkd){
+                            toba::notificacion()->agregar("NO SE PUEDE ELIMINAR UNA DESIGNACION QUE HA TENIDO NUMERO DE TKD", 'error');
+                    }else{//nunca se genero tkd para esta designacion
+                        $mat=$this->controlador()->dep('datos')->tabla('designacion')->tiene_materias($des['id_designacion']);
+                        if($mat){
+                            toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE MATERIAS ASIGNADAS", 'error');
                         }else{
-                            $sql="delete from imputacion where id_designacion=".$des['id_designacion'];
-                            toba::db('designa')->consultar($sql);
-                            $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
-                            $this->controlador()->resetear();
+                            $nov=$this->controlador()->dep('datos')->tabla('designacion')->tiene_novedades($des['id_designacion']);
+                            if($nov){
+                                toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE NOVEDADES",'error' );
+                            }else{
+                                $tut=$this->controlador()->dep('datos')->tabla('designacion')->tiene_tutorias($des['id_designacion']);
+                                 if($tut){
+                                    toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE TUTORIAS", 'error');
+                                }else{
+                                    $sql="delete from imputacion where id_designacion=".$des['id_designacion'];
+                                    toba::db('designa')->consultar($sql);
+                                    $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
+                                    $this->controlador()->resetear();
+                                }
+                            }
                         }
-                        
                     }
+                }else{
+                    toba::notificacion()->agregar("NO SE PUEDE ELIMINAR UNA DESIGNACION QUE TIENE NUMERO DE TKD", 'error');
                 }
                 
 	}
@@ -1023,9 +1032,7 @@ class cargo_solapas extends toba_ci
                     }else{
                         toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
                       }
-                    
-                
-   
+      
             }
             
         }
