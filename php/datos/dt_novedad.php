@@ -35,6 +35,23 @@ class dt_novedad extends toba_datos_tabla
             $sql="update novedad set hasta='".$hasta."' where id_designacion=".$des." and hasta is not null and hasta>='".$hasta."'";
             toba::db('designa')->consultar($sql);
         }
+        function estado_designacion($id_desig){
+            $sql="select * from novedad where id_designacion=".$id_desig;
+            $res=toba::db('designa')->consultar($sql);
+            if (!isset($res['id_novedad'])){//sino tiene ninguna licencia
+                $sql="select * from designacionh where id_designacion=".$id_desig;
+                $res=toba::db('designa')->consultar($sql);
+                if(count($res)>0){//vuelve a estado rectificada porque ha sido modificada 
+                    $estad='R';
+                }else{
+                    $estad='A';
+                }
+
+            }else{
+                $estad='L';
+            }
+            return $estad;
+        }
 }
 
 ?>

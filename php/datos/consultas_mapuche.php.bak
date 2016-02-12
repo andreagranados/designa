@@ -3,7 +3,7 @@
 class consultas_mapuche
 {
  function get_dh01($documentos){
- 	$sql="select * from mapuche.dh01 where nro_docum in( $documentos)";
+ 	$sql="select * from mapuche.dh01 where nro_docum any $documentos";
  	$datos_mapuche = toba::db('mapuche')->consultar($sql);
  	return $datos_mapuche;
  	}

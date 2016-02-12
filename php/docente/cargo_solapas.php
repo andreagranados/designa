@@ -793,7 +793,7 @@ class cargo_solapas extends toba_ci
                 $form->ef('tipo_nov')->set_obligatorio('true');
                 $form->ef('desde')->set_obligatorio('true');
                 $form->ef('hasta')->set_obligatorio('true');
-                //no pudo obligatorios los campos de la norma cuando se ingresa la licencia
+                //no pongo obligatorios los campos de la norma cuando se ingresa la licencia
                 //$form->ef('tipo_norma')->set_obligatorio('true');
                 //$form->ef('tipo_emite')->set_obligatorio('true');
                 //$form->ef('norma_legal')->set_obligatorio('true');
@@ -810,9 +810,12 @@ class cargo_solapas extends toba_ci
             //solo puede seleccionar tipo_nov 2 o 3 que son las licencias
             //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            //si tiene tkd pierde el tkd
+            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $desig['estado']='L';
+            
             $mensaje="";
-            if($desig['nro_540']!=null){
+          
+            if($desig['nro_540']!=null){//si tiene tkd pierde el tkd
                 $mensaje=utf8_decode("La designación ha perdido el número de tkd. ");
                 $desig['nro_540']=null;
             }            
@@ -822,43 +825,29 @@ class cargo_solapas extends toba_ci
             }else{//chequeo que este dentro del periodo de la designacion
                 
                 if($desig['hasta']!= null){
-                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$desig['hasta']){
-                    
-                        if($mensaje !=null){
-                            $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                        }
-                        
-                        
+                    $udia=$desig['hasta'];
+                }else{
+                    $udia=$this->controlador()->ultimo_dia_periodo(1);
+                }
+                if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
+                       if($mensaje!=''){//guardo historico
+                            $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);
+                            $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+                       }
+                        //modif los datos de la designacion
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        //guardo la licencia                             
                         $datos['id_designacion']=$desig['id_designacion'];
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
                         $this->s__alta_nov=0;//descolapsa el formulario de alta
                         //$this->controlador()->dep('datos')->tabla('novedad')->resetear();  
                         toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
-                    }else{
-                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
-                    }
-                }else{//la fecha hasta de la designacion es nula (cargo regular)
-                    $udia=$this->controlador()->ultimo_dia_periodo(1);
-                  
-                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
-                        if($mensaje !=null){
-                            $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                        }
-                        
-                        $datos['id_designacion']=$desig['id_designacion'];
-                        $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
-                        toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente.','info');
-                        $this->s__alta_nov=0;//descolapsa el formulario de alta
-                        
-                    }else{
-                        toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
-                      }
-                    
+                }else{
+                    toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
                 }
+              
             }
 	}
 
@@ -873,29 +862,21 @@ class cargo_solapas extends toba_ci
             //cuando elimina la licencia tambien debe cambiar el estado de la designacion !!!!!!!
              //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $estado=$this->controlador()->dep('datos')->tabla('novedad')->estado_designacion($desig['id_designacion']);
+            $desig['estado']=$estado;
             $mensaje='';
+           
             if ($desig['nro_540'] != null){
                 $mensaje=utf8_decode('La designación ha perdido su número tkd');
+                //cuando elimino la licencia entonces pierde el tkd
+                $desig['nro_540']=null;
+                $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);
+                $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
             }
-            $sql="select * from novedad where id_designacion=".$desig['id_designacion'];
-            $res=toba::db('designa')->consultar($sql);
-            //cuando elimino la licencia entonces pierde el tkd
-            $desig['nro_540']=null;
-            if (!isset($res['id_novedad'])){//Si no trae resultados,la designacion ya no tiene licencia
-                //veo si la paso a estado A o R
-                $sql="select * from designacionh where id_designacion=".$desig['id_designacion'];
-                $res=toba::db('designa')->consultar($sql);
-               
-                if(count($res)>0){//vuelve a estado rectificada porque ha sido modificada 
-                    $desig['estado']='R';
-                }else{
-                    $desig['estado']='A';
-                };
-                
-                }
+            $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
             if ($mensaje!= ''){
-                $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                 toba::notificacion()->agregar($mensaje,'info'); 
             }
             
@@ -912,37 +893,32 @@ class cargo_solapas extends toba_ci
                 toba::notificacion()->agregar('La fecha hasta debe ser mayor a la fecha desde','error');
             }else{//chequeo que este dentro del periodo de la designacion
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 //si modifica una licencia de una designacion con tkd pierde el tkd
                 $mensaje='';
                 if ($desig['nro_540'] != null){
                     $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
                 }
                 if($desig['hasta']!= null){
-                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$desig['hasta']){
-                        if ($mensaje!= ''){
-                            $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                         }
-                        $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
-                        toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
-                    }else{
-                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
-                    }
+                    $udia=$desig['hasta'];
                 }else{
                     $udia=$this->controlador()->ultimo_dia_periodo(1);
-                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
-                        if ($mensaje!= ''){
-                            $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                         }
-                        $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
-                        toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
-                    }else{
-                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
-                    }   
-                }   
+                }
+                if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
+                
+                    if ($mensaje!= ''){
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);
+                        $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+                    }
+                    $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
+                    $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
+                    toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
+                }else{
+                    toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                }
+
             }  
 	}
         function evt__form_licencia__cancelar($datos)
@@ -991,51 +967,47 @@ class cargo_solapas extends toba_ci
             //solo puede seleccionar tipo_nov 1 o 4 que son la baja o la renuncia
             //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            
             $desig['estado']='B';
             $desig['hasta']=$datos['desde'];//setea la fecha de baja de la designacion
-            //si la designacion tiene tkd entonces pierde el tkd
+            //si la designacion tiene tkd entonces pasa a historico y pierde el tkd
             $mensaje='';
+            
             if ($desig['nro_540'] != null){
                 $desig['nro_540']=null;
                 $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
                }
-            $this->controlador()->dep('datos')->tabla('novedad')->setear_baja($desig['id_designacion'],$datos['desde']);
-            if($desig['hasta']!= null){
-                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] ){
-                    
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                        
-                        $datos['id_designacion']=$desig['id_designacion'];
-                        $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
-                        $this->s__alta_novb=0;//descolapsa el formulario de alta
-                        toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
-                        
-                       
-                    }else{
-                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
-                    }
-                }else{//la fecha hasta de la designacion es nula (cargo regular)
-                    $udia=$this->controlador()->ultimo_dia_periodo(1);
-                  
-                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia ){
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                        
-                        $datos['id_designacion']=$desig['id_designacion'];
-                        $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
-                        $this->s__alta_novb=0;//descolapsa el formulario de alta
-                        toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente.','info');
-                        
-                    }else{
-                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
-                      }
-      
-            }
             
+            if($desig['hasta']!= null){
+                $udia=$desig['hasta'];
+            }else{//la fecha hasta de la designacion es nula (cargo regular)
+                $udia=$this->controlador()->ultimo_dia_periodo(1);
+            }
+            if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia ){
+                    $this->controlador()->dep('datos')->tabla('novedad')->setear_baja($desig['id_designacion'],$datos['desde']);
+                    if($mensaje!=''){
+                    //agrego historico
+                        $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
+                        $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar(); 
+                    }
+                    //borra el tkd de la designacion (si lo tenia),setea la fecha de baja y el estado de la designacion
+                    $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+                    $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                      //guarda la novedad  
+                    $datos['id_designacion']=$desig['id_designacion'];
+                    $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
+                    $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
+                    $this->s__alta_novb=0;//descolapsa el formulario de alta
+                    toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente.','info');
+  
+            }else{
+                toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
+            }
+ 
         }
+        //eliminacion de una baja o renuncia
+        //si elimino una baja o renuncia de una designacion con numero de tkd, entonces pasa a historico y pierde tkd
         function evt__form_baja__baja()
         {
             $this->controlador()->dep('datos')->tabla('novedad_baja')->eliminar_todo();
@@ -1044,69 +1016,62 @@ class cargo_solapas extends toba_ci
             //cuando elimina la licencia tambien debe cambiar el estado de la designacion !!!!!!!
              //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $sql="select * from novedad where id_designacion=".$desig['id_designacion'];
-            $res=toba::db('designa')->consultar($sql);
+            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+           
+            $estado=$this->controlador()->dep('datos')->tabla('novedad')->estado_designacion($desig['id_designacion']);
+            $desig['estado']=$estado;
             $mensaje='';
             if ($desig['nro_540'] != null){
                 $desig['nro_540']=null;
                 $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
             }
-            if (!isset($res['id_novedad'])){//Si no trae resultados,la designacion ya no tiene licencia
-                //veo si la paso a estado A o R
-                $sql="select * from designacionh where id_designacion=".$desig['id_designacion'];
-                $res=toba::db('designa')->consultar($sql);
-               
-                if(count($res)>0){//vuelve a estado rectificada porque ha sido modificada 
-                    $desig['estado']='R';
-                }else{
-                    $desig['estado']='A';
-                };
+           
+            $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);
+            $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+            $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
+            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                 
-                $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                if($mensaje!='') {
-                    toba::notificacion()->agregar($mensaje,'info');
-                }
-            }
-            
+            if($mensaje!='') {
+                toba::notificacion()->agregar($mensaje,'info');
+            }   
         }
         function evt__form_baja__modificacion($datos)
         {
             
                //chequeo que este dentro del periodo de la designacion
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $mensaje='';
+                $hist=false;
                 if ($desig['nro_540'] != null){
+                    $hist=true;
                     $desig['nro_540']=null;
                     $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
                 }
                 if($desig['hasta']!= null){
-                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$desig['hasta'] ){
+                    $udia=$desig['hasta'];
+                }else{//fecha hasta de la designacion es nula
+                    $udia=$this->controlador()->ultimo_dia_periodo(1);
+                }
+                if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia){
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
+                        if($hist){
+                        //agrego historico
+                            $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
+                            $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar(); 
+                        }
+                        //borra tkd y guarda fecha de baja de la designacion
                         $desig['hasta']=$datos['desde'];
                         $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                         toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
-                    }else{
-                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
-                    }
                 }else{
-                    $udia=$this->controlador()->ultimo_dia_periodo(1);
-                    if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia ){
-                        $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                        toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
-                    }else{
-                        toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                        toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
                     }
-                    
-                }
-           
+                
         }
-         function evt__form_baja__cancelar($datos)
+        function evt__form_baja__cancelar($datos)
         {
             $this->controlador()->dep('datos')->tabla('novedad_baja')->resetear();
             $this->s__alta_novb=0;
