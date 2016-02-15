@@ -7,8 +7,8 @@ class dt_designacion extends toba_datos_tabla
         function get_comparacion($filtro){
             //print_r($filtro);exit();// Array ( [uni_acad] => FAIF [anio] => 2016 ) 
             $salida=array();
-            $udia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
-            $pdia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
                     
             //recupero los cargos de mapuche de ese periodo y esa ua
             $datos_mapuche = consultas_mapuche::get_cargos($filtro['uni_acad'],$udia,$pdia);

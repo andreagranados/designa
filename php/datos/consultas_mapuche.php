@@ -30,7 +30,7 @@ class consultas_mapuche
  	where b.fec_alta <= '".$udia."' and (b.fec_baja >= '".$pdia."' or b.fec_baja is null)
  	and b.codc_categ=c.codc_categ
 	and c.tipo_escal='D'
- 	and a.nro_legaj=b.nro_legaj".$where.")a ".
+ 	and a.nro_legaj=b.nro_legaj".$where." )a ".
  	" LEFT OUTER JOIN lic b
  	                                ON (a.nro_cargo=b.nro_cargo or a.nro_legaj=b.nro_legaj)";
  	
