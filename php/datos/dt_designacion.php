@@ -370,7 +370,7 @@ class dt_designacion extends toba_datos_tabla
 			t_d.ord_gestion,
 			t_te.quien_emite_norma as emite_cargo_gestion_nombre,
 			t_d.nro_gestion,
-                        case when (t_no.desde <= t_d.hasta and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end as lic,
+                        case when t_d.hasta is null then case when (t_no.desde <= '".$udia."' and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end else (case when (t_no.desde <= t_d.hasta and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end ) end as lic,
 			t_d.observaciones
 		FROM
 			designacion as t_d 

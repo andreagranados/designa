@@ -101,44 +101,51 @@ class dt_docente extends toba_datos_tabla
                     . " where a.id_docente=b.id_docente".$where
                     . " and a.legajo=0";
             $documentos=toba::db('designa')->consultar($sql);
-                        
-            $doc=array();
-            foreach ($documentos as $value) {
-                $doc[]=$value['nro_docum'];
-            }
-            $conjunto=implode(",",$doc);
-            //recupero de mapuche los datos de las personas con documento x
-                     
-            $datos_mapuche = consultas_mapuche::get_dh01($conjunto);
             
-            $sql=" CREATE LOCAL TEMP TABLE auxi
-            (   
-            nro_legaj integer,
-            desc_appat  character(20),
-            desc_nombr  character(20),
-            tipo_doc  character(4),
-            nro_doc integer, 
-            nro_cuil3 integer,
-            nro_cuil4 integer,
-            nro_cuil5 integer,
-            sexo character(1),
-            nacim date
-            );";
-            toba::db('designa')->consultar($sql);
-            foreach ($datos_mapuche as $valor) {
-                $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."')";
-                toba::db('designa')->consultar($sql);
-            }
+            if(count($documentos)>0){//si hay docentes sin legajo
+                 
+                $doc=array();
+                foreach ($documentos as $value) {
+                    $doc[]=$value['nro_docum'];
+                }
+                $conjunto=implode(",",$doc);
+                //recupero de mapuche los datos de las personas con documento x
+                       
+                $datos_mapuche = consultas_mapuche::get_dh01($conjunto);
+                if(count($datos_mapuche)>0){ 
+                    $sql=" CREATE LOCAL TEMP TABLE auxi(
+                        nro_legaj integer,
+                        desc_appat  character(20),
+                        desc_nombr  character(20),
+                        tipo_doc  character(4),
+                        nro_doc integer, 
+                        nro_cuil3 integer,
+                        nro_cuil4 integer,
+                        nro_cuil5 integer,
+                        sexo character(1),
+                        nacim date
+                    );";
+                    toba::db('designa')->consultar($sql);
+                    foreach ($datos_mapuche as $valor) {
+                        $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."')";
+                        toba::db('designa')->consultar($sql);
+                    }
             
-            $sql = "SELECT * from ("
-                    . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim from docente a, designacion b"
+                    $sql = "SELECT * from ("
+                    . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim "
+                    . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente".$where
                     . " and a.legajo=0) a LEFT OUTER JOIN auxi b "
-                    .                   " ON (a.nro_docum=b.nro_doc)"
-                    ;
+                    .                   " ON (a.nro_docum=b.nro_doc)";
                     
-           return toba::db('designa')->consultar($sql);
-         
+                    return toba::db('designa')->consultar($sql);
+                }else{//no encontro nada en mapuche
+                    return array();//retorna arreglo vacio
+                }
+                   
+            }else{//no hay docentes sin legajo
+                return array();
+            }
         }
 	function get_listado($where=null)
 	{
