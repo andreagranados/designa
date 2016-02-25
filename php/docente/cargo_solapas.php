@@ -984,7 +984,7 @@ class cargo_solapas extends toba_ci
             }else{//la fecha hasta de la designacion es nula (cargo regular)
                 $udia=$this->controlador()->ultimo_dia_periodo(1);
             }
-            if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia ){
+            if( $datos['desde']>=($desig['desde']-1) && $datos['desde']<=$udia ){
                     $this->controlador()->dep('datos')->tabla('novedad')->setear_baja($desig['id_designacion'],$datos['desde']);
                     if($mensaje!=''){
                     //agrego historico
