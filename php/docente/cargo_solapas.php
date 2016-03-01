@@ -559,16 +559,23 @@ class cargo_solapas extends toba_ci
             
             if($datos['uni_acad']<>$ua[0]['sigla']){
                 $datos['externa']=1;
+                $uni=$ua[0]['sigla'];
             }else{
                 $datos['externa']=0;
+                $uni=$datos['uni_acad'];
             }
+                      
             $datos['nro_tab8']=8;      
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $datos['id_designacion']=$desig['id_designacion'];
-            $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
-            $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
-            $this->s__alta_mate=0;//descolapsa el formulario de alta
-                 
+            $band=$this->controlador()->dep('datos')->tabla('conjunto')->control($datos['id_materia'],$datos['anio'],$datos['id_periodo'],$uni,$desig['id_designacion']);
+            if($band){
+                $datos['id_designacion']=$desig['id_designacion'];
+                $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
+                $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
+                $this->s__alta_mate=0;//descolapsa el formulario de alta
+            }   else{
+                 toba::notificacion()->agregar('Ya tiene asociada una materia del conjunto', 'info');
+            }  
 	}
         function evt__form_materias__baja($datos)
         {
@@ -1053,7 +1060,7 @@ class cargo_solapas extends toba_ci
                 }else{//fecha hasta de la designacion es nula
                     $udia=$this->controlador()->ultimo_dia_periodo(1);
                 }
-                if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia){
+                if( $datos['desde']>=$desig['desde']-1 && $datos['desde']<=$udia){
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
                         if($hist){

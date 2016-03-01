@@ -11,7 +11,7 @@ class dt_area extends toba_datos_tabla
             return toba::db('designa')->consultar($sql);
            
 	}
-
+   
 	function get_listado()
 	{
 		$sql = "SELECT
