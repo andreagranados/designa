@@ -39,8 +39,8 @@ class dt_departamento extends toba_datos_tabla
 	function get_listado($filtro=array())
 	{
 		$where = array();
-		if (isset($filtro['idunidad_academica'])) {
-			$where[] = "idunidad_academica = ".quote($filtro['idunidad_academica']);
+		if (isset($filtro['iddepto'])) {
+			$where[] = "iddepto = ".quote($filtro['iddepto']);
 		}
 		$sql = "SELECT
 			t_d.iddepto,
@@ -57,6 +57,7 @@ class dt_departamento extends toba_datos_tabla
 		}
 		return toba::db('designa')->consultar($sql);
 	}
+
         function get_listado_filtro($where=null)
         {
             if(!is_null($where)){
@@ -80,8 +81,9 @@ class dt_departamento extends toba_datos_tabla
             }
         }
         function get_listado_completo($where=null){
+            
             if(!is_null($where)){
-                    $where=' WHERE '.$where;
+                $where=' WHERE '.$where;
                 }else{
                     $where='';
                 }
@@ -94,9 +96,9 @@ class dt_departamento extends toba_datos_tabla
                     . " order by a.descripcion,b.descripcion,c.descripcion";
             
             $sql2=" CREATE LOCAL TEMP TABLE auxi(
-                        departamento character(70),
-                        area character(70),
-                        orientacion character(70)
+                        departamento character(100),
+                        area character(100),
+                        orientacion character(100)
                     );";
             toba::db('designa')->consultar($sql2);
             $res=toba::db('designa')->consultar($sql);

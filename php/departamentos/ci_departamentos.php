@@ -38,8 +38,12 @@ class ci_departamentos extends toba_ci
             $this->pantalla()->tab("pant_orientaciones")->desactivar();	
             $this->pantalla()->tab("pant_final")->desactivar();	
             if (isset($this->s__datos_filtro)) {
-		   $cuadro->set_datos($this->dep('datos')->tabla('departamento')->get_listado_filtro($this->s__where));
-                   $this->pantalla()->tab("pant_final")->activar();	
+                if($this->s__datos_filtro['idunidad_academica']['condicion']=='es_distinto_de'){
+                    toba::notificacion()->agregar(utf8_decode('Seleccione la condición: es igual a'), 'info');    
+                }else{
+                    $cuadro->set_datos($this->dep('datos')->tabla('departamento')->get_listado_filtro($this->s__where));
+                    $this->pantalla()->tab("pant_final")->activar();	   
+                    }
 		} 
 	}
 
@@ -294,7 +298,6 @@ class ci_departamentos extends toba_ci
         {
             $area=$this->dep('datos')->tabla('area')->get();
             $datos['idarea']=$area['idarea'];
-            print_r($datos);exit();
             $this->controlador()->dep('datos')->tabla('orientacion')->set($datos);
             $this->controlador()->dep('datos')->tabla('orientacion')->sincronizar();
              
@@ -332,7 +335,7 @@ class ci_departamentos extends toba_ci
 	function conf__cuadro_completo(toba_ei_cuadro $cuadro)
 	{
            
-            if (isset($this->s__datos_filtro)) {
+            if (isset($this->s__where)) {
                 $this->pantalla()->tab("pant_final")->activar();	
 		$cuadro->set_datos($this->dep('datos')->tabla('departamento')->get_listado_completo($this->s__where));
 		}

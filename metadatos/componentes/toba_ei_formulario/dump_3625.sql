@@ -57,7 +57,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
-	NULL, --imagen
+	'refrescar.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'1', --orden
@@ -90,7 +90,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
-	NULL, --imagen
+	'borrar.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'2', --orden
@@ -123,7 +123,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
-	NULL, --imagen
+	'deshacer.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'3', --orden
@@ -156,7 +156,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
-	NULL, --imagen
+	'guardar.gif', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'4', --orden
