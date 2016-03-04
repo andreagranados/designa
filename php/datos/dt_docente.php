@@ -189,9 +189,10 @@ class dt_docente extends toba_datos_tabla
 
 	function get_descripciones()
 	{
-		$sql = "SELECT id_docente, apellido||', '||nombre as nombre FROM docente ORDER BY nombre";
+		$sql = "SELECT id_docente, nombre FROM docente ORDER BY nombre";
 		return toba::db('designa')->consultar($sql);
 	}
+
 
 
 

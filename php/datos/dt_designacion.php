@@ -78,6 +78,29 @@ class dt_designacion extends toba_datos_tabla
             return $resul;
   
         }
+        function get_renuncias_sin_consumo($filtro=array()){
+                if (isset($filtro['anio_acad'])) {
+                	$pdia=$this->primer_dia_periodo_anio($filtro['anio_acad']);
+		}       
+            
+	
+                 
+		$where=" WHERE a.desde >= '".$pdia."' and a.desde <= '".$pdia."'";
+                
+		if (isset($filtro['uni_acad'])) {
+			$where.= "AND uni_acad = ".quote($filtro['uni_acad']);
+		}
+            
+                $sql="select a.id_designacion,a.desde,a.hasta,a.cat_mapuche,a.cat_estat,a.uni_acad,a.dedic,a.carac,b.apellido||', '||b.nombre as docente, 0 as costo "
+                        . "from designacion a, docente b, novedad c"
+                        .$where
+                        ." and a.hasta=a.desde-1
+                        and a.id_docente=b.id_docente
+                        and a.id_designacion=c.id_designacion
+                        and c.tipo_nov in (1,4)";
+                       
+                return toba::db('designa')->consultar($sql);
+        }
         function get_licencias($id_desig){
             $sql="select t_t.descripcion,t_n.desde,t_n.hasta from novedad t_n , tipo_novedad  t_t"
                     . " where t_n.id_designacion=".$id_desig.
@@ -225,6 +248,9 @@ class dt_designacion extends toba_datos_tabla
 	function get_listado($filtro=array())
 	{
 		$where = array();
+		if (isset($filtro['anio_acad'])) {
+			$where[] = "anio_acad = ".quote($filtro['anio_acad']);
+		}
 		if (isset($filtro['uni_acad'])) {
 			$where[] = "uni_acad = ".quote($filtro['uni_acad']);
 		}
@@ -291,6 +317,7 @@ class dt_designacion extends toba_datos_tabla
 		}
 		return toba::db('designa')->consultar($sql);
 	}
+
 
 
 
