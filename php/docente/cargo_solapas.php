@@ -248,18 +248,17 @@ class cargo_solapas extends toba_ci
                      }
                 }
             else{//tiene numero de 540
-               
-                $datos['nro_540']=null;
                 if ($desig['estado']<>'L' && $desig['estado']<>'B'){$datos['estado']='R';};
-                $datos['check_presup']=0;
-                $datos['check_academica']=0;
-                $mensaje=utf8_decode("Esta modificando una designación que tiene número tkd. La designación perderá el número tkd. ");                       
-                toba::notificacion()->agregar($mensaje,'info');
-                
+    
                 //si modifica algo que afecte el credito
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
-                { 
-                  
+                { //entonces pierde el nro_540 y el check_presup
+                  $datos['nro_540']=null;
+                  $datos['check_presup']=0;
+                  $datos['check_academica']=0;
+                  $mensaje=utf8_decode("Esta modificando una designación que tiene número tkd. La designación perderá el número tkd. ");                       
+                  toba::notificacion()->agregar($mensaje,'info');
+               
                   $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
                   if ($vale){
                     
@@ -269,7 +268,6 @@ class cargo_solapas extends toba_ci
                      if ($band){//si hay credito
                         //pasa a historico
                         $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                        
                         $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
                         $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
@@ -284,10 +282,6 @@ class cargo_solapas extends toba_ci
                        toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                   }
                 }else{//no modifica nada de credito
-                    //pasa a historico
-                    $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                    $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
-                    $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
                     $this->controlador()->dep('datos')->tabla('designacion')->set($datos);//modifico la designacion
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                     toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
@@ -814,17 +808,19 @@ class cargo_solapas extends toba_ci
 	}
         function evt__form_licencia__alta($datos)
 	{
-            //solo puede seleccionar tipo_nov 2 o 3 que son las licencias
+            //solo puede seleccionar tipo_nov 2 , 3 o 5 que son las licencias o cese
             //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $desig['estado']='L';
             
             $mensaje="";
-          
-            if($desig['nro_540']!=null){//si tiene tkd pierde el tkd
+            //las licencias con goce no afectan el credito entonces no pierde tkd
+            if($desig['nro_540']!=null && $datos['tipo_nov']!=3){//si tiene tkd pierde el tkd y no estoy ingresando una L con goce
                 $mensaje=utf8_decode("La designación ha perdido el número de tkd. ");
                 $desig['nro_540']=null;
+                $desig['check_presup']=0;
+                $desig['check_academica']=0;
             }            
             
             if($datos['desde']>$datos['hasta']){
@@ -849,10 +845,9 @@ class cargo_solapas extends toba_ci
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
                         $this->s__alta_nov=0;//descolapsa el formulario de alta
-                        //$this->controlador()->dep('datos')->tabla('novedad')->resetear();  
                         toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
                 }else{
-                    toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                    toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
                 }
               
             }
@@ -863,6 +858,7 @@ class cargo_solapas extends toba_ci
 	 */
 	function evt__form_licencia__baja()
 	{
+            $nove=$this->controlador()->dep('datos')->tabla('novedad')->get();
             $this->controlador()->dep('datos')->tabla('novedad')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('novedad')->resetear();
             $this->s__alta_nov=0;
@@ -874,10 +870,12 @@ class cargo_solapas extends toba_ci
             $desig['estado']=$estado;
             $mensaje='';
            
-            if ($desig['nro_540'] != null){
+            if ($desig['nro_540']!= null && $nove['tipo_nov']!=3){// si la designacion tiene tkd y estoy borrando una licencia que afecta credito
                 $mensaje=utf8_decode('La designación ha perdido su número tkd');
                 //cuando elimino la licencia entonces pierde el tkd
                 $desig['nro_540']=null;
+                $desig['check_presup']=0;
+                $desig['check_academica']=0;
                 $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);
                 $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
             }
@@ -901,10 +899,28 @@ class cargo_solapas extends toba_ci
             }else{//chequeo que este dentro del periodo de la designacion
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                //si modifica una licencia de una designacion con tkd pierde el tkd
+               
+                //si modifica algo que efecte al credito de una designacion con tkd entonces pierde el tkd
                 $mensaje='';
-                if ($desig['nro_540'] != null){
-                    $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
+                if ($desig['nro_540']!=null){
+                    //recupero los datos de la novedad que esta modificando
+                    $nove=$this->controlador()->dep('datos')->tabla('novedad')->get();
+                    $pierde=0;
+                    if($nove['tipo_nov']==3){//licencia con goce
+                        if($datos['tipo_nov']!=3){//afecta credito
+                            $pierde=1;
+                        }
+                    }else{
+                        if($datos['tipo_nov']!=$nove['tipo_nov']||$datos['desde']!=$nove['desde']||$datos['hasta']!=$nove['hasta']){//efecta credito
+                            $pierde=1;
+                        }
+                    }
+                    if($pierde==1){
+                        $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
+                        $desig['nro_540']=null;
+                        $desig['check_presup']=0;
+                        $desig['check_academica']=0;
+                    }
                 }
                 if($desig['hasta']!= null){
                     $udia=$desig['hasta'];
@@ -923,7 +939,7 @@ class cargo_solapas extends toba_ci
                     $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
                     toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
                 }else{
-                    toba::notificacion()->agregar('El periodo de la licencia debe estar dentro del periodo de la designacion','error');
+                    toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
                 }
 
             }  
@@ -983,6 +999,8 @@ class cargo_solapas extends toba_ci
             
             if ($desig['nro_540'] != null){
                 $desig['nro_540']=null;
+                $desig['check_presup']=0;
+                $desig['check_academica']=0;
                 $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
                }
             
@@ -1030,6 +1048,8 @@ class cargo_solapas extends toba_ci
             $mensaje='';
             if ($desig['nro_540'] != null){
                 $desig['nro_540']=null;
+                $desig['check_presup']=0;
+                $desig['check_academica']=0;
                 $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
             }
            
@@ -1044,16 +1064,18 @@ class cargo_solapas extends toba_ci
         }
         function evt__form_baja__modificacion($datos)
         {
-            
-               //chequeo que este dentro del periodo de la designacion
+           //chequeo que este dentro del periodo de la designacion
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $mensaje='';
-                $hist=false;
                 if ($desig['nro_540'] != null){
-                    $hist=true;
-                    $desig['nro_540']=null;
-                    $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
+                    $nove=$this->controlador()->dep('datos')->tabla('novedad')->get();
+                    if($datos['tipo_nov']!=$nove['tipo_nov']||$datos['desde']!=$nove['desde']){
+                        $desig['nro_540']=null;
+                        $desig['check_presup']=0;
+                        $desig['check_academica']=0;
+                        $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
+                    }
                 }
                 if($desig['hasta']!= null){
                     $udia=$desig['hasta'];
@@ -1063,8 +1085,7 @@ class cargo_solapas extends toba_ci
                 if( $datos['desde']>=$desig['desde']-1 && $datos['desde']<=$udia){
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
-                        if($hist){
-                        //agrego historico
+                        if($mensaje!=''){//agrego historico
                             $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
                             $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar(); 
                         }
