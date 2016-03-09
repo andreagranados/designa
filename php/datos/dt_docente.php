@@ -101,7 +101,7 @@ class dt_docente extends toba_datos_tabla
                     . " where a.id_docente=b.id_docente".$where
                     . " and a.legajo=0";
             $documentos=toba::db('designa')->consultar($sql);
-            
+           
             if(count($documentos)>0){//si hay docentes sin legajo
                  
                 $doc=array();
@@ -135,10 +135,11 @@ class dt_docente extends toba_datos_tabla
                     . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim "
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente".$where
-                    . " and a.legajo=0) a LEFT OUTER JOIN auxi b "
+                    . " and a.legajo=0) a INNER JOIN auxi b "
                     .                   " ON (a.nro_docum=b.nro_doc)";
                     
                     return toba::db('designa')->consultar($sql);
+                    
                 }else{//no encontro nada en mapuche
                     return array();//retorna arreglo vacio
                 }
