@@ -16,9 +16,11 @@ class ci_reserva extends designa_ci
         
         function evt__cuadro_reserva__seleccion($datos)
 	{
+            $datosi['id_designacion']=$datos['id_designacion'];
             $datosr['id_reserva']=$datos['id_reserva'];
             $this->controlador()->dep('datos')->tabla('reserva')->cargar($datosr);//busca la reserva con ese id y la carga
             $this->controlador()->dep('datos')->tabla('designacion')->cargar($datos);
+            $this->controlador()->dep('datos')->tabla('imputacion')->cargar($datosi);
             $this->s__mostrar=1;
 		
 	}
@@ -45,6 +47,7 @@ class ci_reserva extends designa_ci
                 $this->dep('form_reserva')->ef('descripcion')->set_obligatorio(true);
                 $this->dep('form_reserva')->ef('cat_mapuche')->set_obligatorio(true);  
                 $this->dep('form_reserva')->ef('carac')->set_obligatorio(true); 
+                $this->dep('form_reserva')->ef('id_imp')->set_obligatorio(true); 
             }
                
             if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario form_reserva 
@@ -53,6 +56,7 @@ class ci_reserva extends designa_ci
                 $this->dep('form_reserva')->ef('descripcion')->set_obligatorio(true);
                 $this->dep('form_reserva')->ef('cat_mapuche')->set_obligatorio(true);  
                 $this->dep('form_reserva')->ef('carac')->set_obligatorio(true);  
+                $this->dep('form_reserva')->ef('id_imp')->set_obligatorio(true); 
             }
             else{
                 $this->dep('form_reserva')->colapsar();
@@ -75,6 +79,9 @@ class ci_reserva extends designa_ci
                 }            
                 $datosd=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $datosd['desc_categ']=$this->controlador()->get_descripcion_categoria($datosd['cat_mapuche']);
+                $datosi=$this->controlador()->dep('datos')->tabla('imputacion')->get();
+                $datosd['id_imp']=$datosi['id_programa'];
+                
                 if ($datos['cat_estat']='ASDEnc'){
                     $datosd['ec']=1;
                 }      
@@ -167,13 +174,13 @@ class ci_reserva extends designa_ci
                 
                 $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                 $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                //---inserta la imputacion por defecto
-                
+                //---inserta la imputacion que se selecciona
                 $des=$this->controlador()->dep('datos')->tabla('designacion')->get();//trae el que acaba de insertar
-                $sql="select m_p.id_programa from mocovi_programa m_p ,mocovi_tipo_programa m_t,unidad_acad t_u where m_p.id_tipo_programa=m_t.id_tipo_programa and m_t.id_tipo_programa=1 and t_u.sigla=m_p.id_unidad";
-                $sql = toba::perfil_de_datos()->filtrar($sql);
-                $resul=toba::db('designa')->consultar($sql);
-                $impu['id_programa']=$resul[0]['id_programa'];
+                //$sql="select m_p.id_programa from mocovi_programa m_p ,mocovi_tipo_programa m_t,unidad_acad t_u where m_p.id_tipo_programa=m_t.id_tipo_programa and m_t.id_tipo_programa=1 and t_u.sigla=m_p.id_unidad";
+                //$sql = toba::perfil_de_datos()->filtrar($sql);
+                //$resul=toba::db('designa')->consultar($sql);
+                //$impu['id_programa']=$resul[0]['id_programa'];
+                $impu['id_programa']=$datos['id_imp'];
                 $impu['porc']=100;
                 $impu['id_designacion']=$des['id_designacion'];
                 $this->controlador()->dep('datos')->tabla('imputacion')->set($impu);
@@ -192,26 +199,24 @@ class ci_reserva extends designa_ci
         //modifico la reserva
         //modifica el estado a R (rectificada) cuando tenia nro de 540 
 	function evt__form_reserva__modificacion($datos)
-	{
-                        
+	{   
+            
             //debe verificar si hay credito antes de hacer la modificacion
             //--recupero la designacion que se desea modificar
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $this->controlador()->dep('datos')->tabla('reserva')->set($datos);
-            $this->controlador()->dep('datos')->tabla('reserva')->sincronizar();
-            $this->controlador()->dep('datos')->tabla('reserva')->resetear();
-            if($desig['nro_540'] != null){//si tiene nro de 540
-                $datos['nro_540']=null;
-                $datos['estado']='R';//siempre pasa a estado R porque las reservas no tienen licencia
-                $datos['check_presup']=0;
-                $datos['check_academica']=0;
-                $mensaje=utf8_decode("Esta intentando modificar una reserva que tiene número tkd. Perderá el número tkd.");                       
-                toba::notificacion()->agregar($mensaje,'info');
-                if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
-                    
-                    //recupero categorias y dedicacion. 
-                    //Vuelvo a calcularlas independientemente de que ya esten en el formulario por si presiona el boton modificar antes de que se carguen esos valores daria error
-                        if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
+            
+            //recupero lo imputacion
+            $datosi=$this->controlador()->dep('datos')->tabla('imputacion')->get();           
+            $datosi['id_programa']=$datos['id_imp'];
+            
+            $mensaje="";
+            
+            $cat=$datos['cat_mapuche'];
+            
+            //recupero categorias y dedicacion. 
+            //esto es si seleccionan otra categoria
+            //Vuelvo a calcularlas independientemente de que ya esten en el formulario por si presiona el boton modificar antes de que se carguen esos valores daria error
+            if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
                             $id=$datos['cat_mapuche'];
                             $sql="SELECT
                                 t_cs.codigo_siu,
@@ -232,79 +237,54 @@ class ci_reserva extends designa_ci
                             $cat=$resul[$id]['codigo_siu'];
                             $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
                            
+             }
+               //solo si toca algo que tiene que ver con el credito pierde el tkd     
+            if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
+                       if($desig['nro_540'] != null){//si tiene nro de 540
+                          $datos['nro_540']=null;
+                          $datos['estado']='R';//siempre pasa a estado R porque las reservas no tienen licencia
+                          $datos['check_presup']=0;
+                          $datos['check_academica']=0;
+                          $mensaje=utf8_decode("Ha modificado una reserva que tiene número tkd. La misma ha perdido el número tkd.");                       
                         }
-                    
                         //verifico que tenga credito
                         $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
                         $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
                         if ($band && $band2){//si hay credito
-                            ///PASAR AL HISTORICO SI SE MODIFICA TENIENDO NUMERO DE TKD
-                            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                            $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
-                            $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
-                            //guarda designacion
+                            if($mensaje!=''){///PASAR AL HISTORICO SI SE MODIFICA TENIENDO NUMERO DE TKD
+                                $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                                $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
+                                $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+                            }
+                            //guarda designacion y la imputacion
                             $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                             $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                            toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+                            $this->controlador()->dep('datos')->tabla('reserva')->set($datos);
+                            $this->controlador()->dep('datos')->tabla('reserva')->sincronizar();
+                            $this->controlador()->dep('datos')->tabla('reserva')->resetear();
+                            $this->controlador()->dep('datos')->tabla('imputacion')->set($datosi);
+                            $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
+                            $this->controlador()->dep('datos')->tabla('imputacion')->resetear();
+
+                            toba::notificacion()->agregar($mensaje.' Los datos se guardaron correctamente', 'info');
                         }else{
-                            $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA RESERVA';
-                            toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                            $mensaje=utf8_decode('NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA RESERVA');
+                            toba::notificacion()->agregar($mensaje, "error");
                         }                   
                 }else{//no toca nada que afecte el credito
-                    ///PASAR AL HISTORICO SI SE MODIFICA TENIENDO NUMERO DE TKD
-                        $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                        $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
-                        $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
-                        //guarda designacion
+                        //guarda designacion y la imputacion
+                   
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                        toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+                        $this->controlador()->dep('datos')->tabla('reserva')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('reserva')->sincronizar();
+                        $this->controlador()->dep('datos')->tabla('reserva')->resetear();
+                        $this->controlador()->dep('datos')->tabla('imputacion')->set($datosi);
+                        $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
+                        $this->controlador()->dep('datos')->tabla('imputacion')->resetear();
+                        toba::notificacion()->agregar($mensaje.' Los datos se guardaron correctamente', 'info');
                     }
-                
-                
-             }else{//no tiene nro de 540
-                   if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
-                    //verifico que tenga credito
-                    $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-                    //Vuelvo a calcularlas independientemente de que ya esten en el formulario por si presiona el boton modificar antes de que se carguen esos valores daria error
-                    if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
-                            $id=$datos['cat_mapuche'];
-                            $sql="SELECT
-                                t_cs.codigo_siu,
-                                t_cs.descripcion
-                                
-                             FROM
-                                categ_siu as t_cs 
-                                where escalafon='D'
-                             ORDER BY descripcion";
-                            $resul=toba::db('designa')->consultar($sql);
-                            if($datos['ec']==1 && (($resul[$id]['codigo_siu']=='ADJE')||($resul[$id]['codigo_siu']=='ADJS')||($resul[$id]['codigo_siu']=='ADJ1'))){
-                                $datos['cat_estat']='ASDEnc';
-                            }else{//esta otra devuelve PAD
-                                $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
-                                $resul2=toba::db('designa')->consultar($sql2);
-                                $datos['cat_estat']=$resul2[0]['catest'];
-                            }
-                            $cat=$resul[$id]['codigo_siu'];
-                            $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
-                           
-                        } 
-                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
-                    $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
-                        if ($band && $band2){//si hay credito
-                            $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                            toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
-                        }else{
-                            $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA RESERVA';
-                            toba::notificacion()->agregar(utf8_decode($mensaje), "error");
-                        }                   
-                    }else{//no toca nada que afecte el credito
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                        toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
-                    }
-             }
+        
             $this->s__mostrar=0;
             
 	}
@@ -312,12 +292,23 @@ class ci_reserva extends designa_ci
 	function evt__form_reserva__baja()
 	{
             $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $sql="delete from imputacion where id_designacion=".$des['id_designacion'];
-            toba::db('designa')->consultar($sql);
-            $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
-            $this->controlador()->dep('datos')->tabla('reserva')->eliminar_todo();
-            $this->controlador()->dep('datos')->tabla('designacion')->resetear();
-            toba::notificacion()->agregar('Se ha eliminado la reserva', 'info');
+            if($des['nro_540']==null){//solo puedo borrar si no tiene tkd
+                $tkd=$this->controlador()->dep('datos')->tabla('designacionh')->existe_tkd($des['id_designacion']);
+                    if ($tkd){
+                            toba::notificacion()->agregar("NO SE PUEDE ELIMINAR UNA DESIGNACION QUE HA TENIDO NUMERO DE TKD", 'error');
+                    }else{//nunca se genero tkd para esta designacion
+                        $this->controlador()->dep('datos')->tabla('imputacion')->eliminar_todo();
+                        $this->controlador()->dep('datos')->tabla('imputacion')->resetear();
+                        $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
+                        $this->controlador()->dep('datos')->tabla('designacion')->resetear();
+                        $this->controlador()->dep('datos')->tabla('reserva')->eliminar_todo();
+                        $this->controlador()->dep('datos')->tabla('reserva')->resetear();
+                        toba::notificacion()->agregar('Se ha eliminado la reserva', 'info');
+                    }
+            }else{
+                    toba::notificacion()->agregar("NO SE PUEDE ELIMINAR UNA DESIGNACION QUE TIENE NUMERO DE TKD", 'error');
+                }
+            
             $this->s__mostrar=0;
 	}
 

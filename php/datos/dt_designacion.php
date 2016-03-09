@@ -1246,6 +1246,7 @@ class dt_designacion extends toba_datos_tabla
                 and t_d.tipo_desig=2".$where
                 ." and t_d.uni_acad=t_u.sigla "    ;
             $sql = toba::perfil_de_datos()->filtrar($sql);
+            $sql = $sql." order by reserva";
             return toba::db('designa')->consultar($sql);
         
         }
