@@ -2,6 +2,7 @@
 class ci_informe_estado_actual extends toba_ci
 {
 	protected $s__datos_filtro;
+        protected $s__desig;
 
 
         function credito ($ua){
@@ -41,14 +42,28 @@ class ci_informe_estado_actual extends toba_ci
 	
         function evt__cuadro__seleccion($datos)
 	{
-            
             $tipo=$this->dep('datos')->tabla('designacion')->tipo($datos['id_designacion']);
             $parametros['tipo']=$tipo;
             $parametros['id_designacion']=$datos['id_designacion'];          
             toba::vinculador()->navegar_a('designa',3636,$parametros);
             
 	}
-
+        function evt__cuadro__historico($datos)
+        {
+            $this->s__desig=$datos['id_designacion']; 
+            $this->set_pantalla('pant_historico');
+        }
+        function conf__cuadroh(toba_ei_cuadro $cuadro)
+        {
+            if (isset($this->s__desig)) {
+		$cuadro->set_datos($this->dep('datos')->tabla('designacionh')->get_historico_desig($this->s__desig));
+		} 
+        }
+        function evt__volver()
+        {	
+            unset($this->s__desig);  
+            $this->set_pantalla('pant_edicion');
+        }
 	//---- Formulario -------------------------------------------------------------------
 
 	function conf__formulario(toba_ei_formulario $form)
