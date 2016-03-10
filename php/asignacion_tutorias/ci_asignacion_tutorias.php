@@ -216,24 +216,21 @@ class ci_asignacion_tutorias extends toba_ci
 	function evt__form_asigna__modificacion($datos)
 	{
            $this->s__datos=$datos;
-            
 	}
 
 
         //boton de la pantalla
         function evt__guardar()
 	{	
-            //print_r($this->s__datos);exit();
             $tut=$this->dep('datos')->tabla('tutoria')->get();
             
             foreach ($this->s__datos as $key=>$value) {
+                
                 $value['id_tutoria']=$tut['id_tutoria'];
                 $value['anio']=$this->s__anio;
                 $value['nro_tab9']=9;
                 $value['elemento']=$key;
-                if($value['carga_horaria']==null){
-                    $value['carga_horaria']=0;
-                }
+                
                 switch ($value['apex_ei_analisis_fila']) {
                     case 'M':  $this->dep('datos')->tabla('asignacion_tutoria')->modificar($value); break;
                     case 'B':  $this->dep('datos')->tabla('asignacion_tutoria')->eliminar($value); break;
