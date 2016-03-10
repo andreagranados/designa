@@ -243,7 +243,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                     and b.id_docente=c.id_docente
                     and not exists (select * from novedad t_nov, mocovi_periodo_presupuestario t_per
                                     where b.id_designacion=t_nov.id_designacion
-                                    and t_nov.tipo_nov in (1,2,5,4,5)
+                                    and t_nov.tipo_nov in (1,2,4,5)
                                     and t_per.anio=$anio
                                     and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))
                     UNION
@@ -251,10 +251,10 @@ class dt_asignacion_materia extends toba_datos_tabla
                     from asignacion_tutoria a, designacion b, docente c
                     where a.id_designacion=b.id_designacion
                     and b.id_docente=c.id_docente
-                    and (rol='TUTO' or rol='COOR' or rol='POST')
+                    and (rol='TUTO' or rol='COOR' or rol='POST' or rol='OTRO')
                     and not exists (select * from novedad t_nov, mocovi_periodo_presupuestario t_per
                                     where b.id_designacion=t_nov.id_designacion
-                                    and t_nov.tipo_nov in (1,2,5,4,5)
+                                    and t_nov.tipo_nov in (1,2,4,5)
                                     and t_per.anio=$anio
                                     and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))".
                     " UNION "
