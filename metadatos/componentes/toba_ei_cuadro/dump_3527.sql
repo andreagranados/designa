@@ -26,7 +26,8 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'El rol de la actividad permite identificar el tipo de actividad:<br>
 TUTO: Tutor de una Tutoría<br>
 COOR: Coordinador de una Tutoría<br>
-POST: Postgrado<br>', --descripcion
+POST: Postgrado<br>
+OTRO: Otro <br>', --descripcion
 	NULL, --fuente_datos_proyecto
 	NULL, --fuente_datos
 	NULL, --solicitud_registrar

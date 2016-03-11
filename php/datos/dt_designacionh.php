@@ -13,11 +13,7 @@ class dt_designacionh extends toba_datos_tabla
              return true;
          }
      }
-     function get_historico_desig($id_desig){
-         $sql="select * from designacionh where id_designacion=".$id_desig;
-         
-         return toba::db('designa')->consultar($sql);
-     }
+     
 }
 
 ?>

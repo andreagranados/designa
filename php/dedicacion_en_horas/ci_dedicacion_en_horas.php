@@ -23,7 +23,7 @@ class ci_dedicacion_en_horas extends toba_ci
 	function evt__filtros__cancelar()
 	{
 		unset($this->s__datos_filtro);
-                unset ($this->s__where);
+                unset($this->s__where);
 	}
 
 	//---- Cuadro -----------------------------------------------------------------------
@@ -31,53 +31,11 @@ class ci_dedicacion_en_horas extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-                     $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_dedicacion_horas($this->s__where));
+                    $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_dedicacion_horas($this->s__where,$this->s__datos_filtro));
 		} 
 	}
 
-	function evt__cuadro__seleccion($datos)
-	{
-		$this->dep('datos')->cargar($datos);
-	}
-
-	//---- Formulario -------------------------------------------------------------------
-
-	function conf__formulario(toba_ei_formulario $form)
-	{
-		if ($this->dep('datos')->esta_cargada()) {
-			$form->set_datos($this->dep('datos')->tabla('designacion')->get());
-		}
-	}
-
-	function evt__formulario__alta($datos)
-	{
-		$this->dep('datos')->tabla('designacion')->set($datos);
-		$this->dep('datos')->sincronizar();
-		$this->resetear();
-	}
-
-	function evt__formulario__modificacion($datos)
-	{
-		$this->dep('datos')->tabla('designacion')->set($datos);
-		$this->dep('datos')->sincronizar();
-		$this->resetear();
-	}
-
-	function evt__formulario__baja()
-	{
-		$this->dep('datos')->eliminar_todo();
-		$this->resetear();
-	}
-
-	function evt__formulario__cancelar()
-	{
-		$this->resetear();
-	}
-
-	function resetear()
-	{
-		$this->dep('datos')->resetear();
-	}
+	
 
 }
 

@@ -56,7 +56,7 @@ class ci_informe_estado_actual extends toba_ci
         function conf__cuadroh(toba_ei_cuadro $cuadro)
         {
             if (isset($this->s__desig)) {
-		$cuadro->set_datos($this->dep('datos')->tabla('designacionh')->get_historico_desig($this->s__desig));
+		$cuadro->set_datos($this->dep('datos')->tabla('logs_designacion')->get_historico_desig($this->s__desig));
 		} 
         }
         function evt__volver()
