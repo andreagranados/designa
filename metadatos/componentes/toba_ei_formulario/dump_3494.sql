@@ -355,7 +355,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --carga_sql
 	'designa', --carga_fuente
 	NULL, --carga_lista
-	'anio', --carga_col_clave
+	'id_periodo', --carga_col_clave
 	'anio', --carga_col_desc
 	NULL, --carga_maestros
 	'0', --carga_cascada_relaj

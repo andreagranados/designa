@@ -217,6 +217,10 @@ class docente_solapas extends toba_ci
                 $form->set_datos($datos);
 		} else {//sino es para cargar uno nuevo, por lo tanto elimino el evento borrar (del formulario)
 			$form->eliminar_evento('borrar');
+                        $this->pantalla()->tab("pant_curriculum")->desactivar();	
+                        $this->pantalla()->tab("pant_invest")->desactivar();	
+                        $this->pantalla()->tab("pant_exten")->desactivar();
+                        $this->pantalla()->tab("pant_porcentajes")->desactivar();
 		}
 	}
         //boton que trae de siu-mapuche los datos del docente, los muestra en pantalla y pide el ok para actualizar

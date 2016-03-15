@@ -73,7 +73,6 @@ class ci_conjuntos extends toba_ci
                     }
                    
                     $conj['id_materia']=$seleccionadas;
-                   
                     return $conj;
                    
 		}
