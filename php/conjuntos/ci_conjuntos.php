@@ -42,9 +42,7 @@ class ci_conjuntos extends toba_ci
             if (isset($this->s__datos_filtro)) {
 		$cuadro->set_datos($this->dep('datos')->tabla('conjunto')->get_listado($this->s__where));
 		} 
-            else{
-                $cuadro->set_datos($this->dep('datos')->tabla('conjunto')->get_listado());
-            }    
+            
 	}
 
 	function evt__cuadro__seleccion($datos)

@@ -54,6 +54,7 @@ class dt_conjunto extends toba_datos_tabla
 			t_ec.id_conjunto,
                         t_ec.descripcion,
 			t_ec.ua,
+                        t_ec.id_periodo,
 			t_p.descripcion as id_periodo_nombre,
 			t_mpp.anio
                      FROM
