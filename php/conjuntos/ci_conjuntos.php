@@ -173,8 +173,9 @@ class ci_conjuntos extends toba_ci
         function evt__volver()
 	{
             $this->set_pantalla('pant_edicion');
-            //$this->dep('datos')->tabla('pinvestigacion')->resetear();
-            //$this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+            $this->s__mostrar_e=0;
+            $this->dep('datos')->tabla('conjunto')->resetear();
+            
 	}
 
 }
