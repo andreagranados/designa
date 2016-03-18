@@ -31,7 +31,8 @@ class ci_certificacion extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
+            $this->pantalla()->tab("pant_certif")->desactivar();
+            if (isset($this->s__datos_filtro)) {
 			$cuadro->set_datos($this->dep('datos')->tabla('docente')->get_docentes_propios($this->s__where));
 		} 
 	}
@@ -76,7 +77,6 @@ class ci_certificacion extends toba_ci
             //-- Cuadro con datos
             $opciones = array(
                     'splitRows'=>0,
-                    'shaded'=>1,
                     'showLines'=>0,
                     'rowGap' => 1,
                     'showHeadings' => true,
@@ -93,10 +93,9 @@ class ci_certificacion extends toba_ci
             $leg=$this->dep('datos')->tabla('docente')->get_legajo($this->s__agente['id_docente']);
             $desig=$this->dep('datos')->tabla('docente')->get_designaciones($this->s__agente['id_docente']);
                  
-            $per=  utf8_decode('período');
             $i=0;
             
-            $texto="<b>CERTIFICO QUE: </b>".$ag." Legajo ".$leg." se ".utf8_decode('desempeña/nó')." en la Universidad Nacional del Comahue como:"."\n";
+            $texto="<b>CERTIFICO QUE: </b>".$ag." Legajo ".$leg." se ".utf8_decode('desempeña/ó')." en la Universidad Nacional del Comahue como:"."\n";
             $datos[$i]=array('col1' => $texto);
             $i++;
                  
@@ -106,7 +105,12 @@ class ci_certificacion extends toba_ci
                if($des['tipo_norma']!=null){
                    $norma=", ".$des['tipo_norma'].$des['nro_norma']."/".date('Y',strtotime($des['fecha'])).", ";
                }
-               $texto="<b>".trim($des['cat'])."</b> ".trim($des['caracter'])." (".trim($des['ua'])." Departamento: ".trim($des['depto']).") con ".utf8_decode('dedicación ').trim($des['ded']).$norma." durante el $per ". date_format(date_create($des['desde']),'d/m/Y')." al ".date_format(date_create($des['hasta']),'d/m/Y');
+               if($des['hasta']==null){
+                   $hasta="";
+               }else{
+                   $hasta=" hasta ".date_format(date_create($des['hasta']),'d/m/Y');
+               }
+               $texto="<b>".trim($des['cat'])."</b> ".trim($des['caracter'])." (".trim($des['ua'])." Departamento: ".trim($des['depto']).") con ".utf8_decode('dedicación ').trim($des['ded']).$norma." desde ". date_format(date_create($des['desde']),'d/m/Y').$hasta;
                $datos[$i]=array('col1' => $texto);
                $i++;
                $lic=$this->dep('datos')->tabla('designacion')->get_licencias($des['id_designacion']);
@@ -126,7 +130,8 @@ class ci_certificacion extends toba_ci
                         $primera=false;
                    }
                    $i++;
-                   $texto="       *".$value['desc_materia']." durante el ".$value['id_periodo']." del ".utf8_decode('año')." ".$value['anio'];
+                   
+                   $texto="       *".$value['desc_materia']." ".$value['id_periodo']." ".utf8_decode('año')." ".$value['anio'];
                    $datos[$i]=array('col1' => $texto); 
                }
                
@@ -139,9 +144,12 @@ class ci_certificacion extends toba_ci
             //Recorremos cada una de las hojas del documento para agregar el encabezado
             foreach ($pdf->ezPages as $pageNum=>$id){ 
                 $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                //definimos el path a la imagen de logo de la organizacion
+                $imagen = toba::proyecto()->get_path().'/www/img/logo-unc.jpg';
+                $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
                 //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
-                $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo-unc.jpg', 20, 515, 70, 66); 
-                $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 680, 535, 130, 40);
+                $pdf->addJpegFromFile($imagen, 20, 515, 70, 66); 
+                $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
                 $pdf->closeObject();                  
             }
             

@@ -191,7 +191,7 @@ class dt_docente extends toba_datos_tabla
             }else{
                     $where='';
             }
-            $sql = "select * from
+            $sql = "select distinct a.* from
                        (SELECT
 			t_d.id_docente,
 			t_d.legajo,

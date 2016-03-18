@@ -18,11 +18,15 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             return $tengo;
             
         }
-        function get_descripciones()
-	{
-		$sql = "SELECT id_periodo, id_periodo FROM mocovi_periodo_presupuestario ORDER BY id_periodo";
-		return toba::db('designa')->consultar($sql);
-	}
+		function get_descripciones()
+		{
+			$sql = "SELECT id_periodo, id_periodo FROM mocovi_periodo_presupuestario ORDER BY id_periodo";
+			return toba::db('designa')->consultar($sql);
+		}
+
+
+
+
         
         function get_anios()
 	{

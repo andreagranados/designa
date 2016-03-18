@@ -3,6 +3,7 @@ class ci_dictados_conjuntos extends toba_ci
 {
 	protected $s__datos_filtro;
         protected $s__where;
+        protected $s__conj;
 
 
 	//---- Filtro -----------------------------------------------------------------------
@@ -37,10 +38,37 @@ class ci_dictados_conjuntos extends toba_ci
 
 	function evt__cuadro__seleccion($datos)
 	{
-		$this->dep('datos')->cargar($datos);
+            $this->s__conj=$datos['id_conjunto'];
+            $this->set_pantalla('pant_conjunto');	
+           
 	}
 
-	
-}
+	function conf__cuadro_conj(toba_ei_cuadro $cuadro)
+        {
+            $cuadro->set_datos($this->dep('datos')->tabla('en_conjunto')->get_materias($this->s__conj)); 
+        }
+        function conf__form_conj(toba_ei_formulario $form)
+	{
+             if (isset($this->s__conj)) {
+                $conj=$this->dep('datos')->tabla('conjunto')->get_conjunto($this->s__conj);
+                $texto='Conjunto: '.$conj[0]['conjunto']." de ".$conj[0]['periodo']." ".$conj[0]['anio'];
+                $form->set_titulo($texto);
+            }
+	}
+	//-----------------------------------------------------------------------------------
+	//---- JAVASCRIPT -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
 
+	
+	//-----------------------------------------------------------------------------------
+	//---- Eventos ----------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function evt__volver()
+	{
+            unset($this->s__conj);
+            $this->set_pantalla('pant_edicion');
+	}
+
+}
 ?>

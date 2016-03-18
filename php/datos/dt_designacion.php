@@ -1629,7 +1629,7 @@ class dt_designacion extends toba_datos_tabla
                         order by docente_nombre) a ".$where.")b LEFT OUTER JOIN departamento d ON (b.id_departamento=d.iddepto)"
                     . " LEFT OUTER JOIN area a ON (a.idarea=b.id_area) "
                     . " LEFT OUTER JOIN orientacion o ON (o.idorient=b.id_orientacion and o.idarea=b.id_area)" ;    
-                         
+                        
             return toba::db('designa')->consultar($sql);
         }
         
