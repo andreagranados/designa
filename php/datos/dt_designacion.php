@@ -247,7 +247,7 @@ class dt_designacion extends toba_datos_tabla
                             )b $where2
                         
                         )a 
-                        LEFT OUTER JOIN asignacion_materia t_a ON (a.id_designacion=t_a.id_designacion)
+                        LEFT OUTER JOIN asignacion_materia t_a ON (a.id_designacion=t_a.id_designacion and t_a.anio=a.anio)
                         LEFT OUTER JOIN integrante_interno_pi t_i ON (a.id_designacion=t_i.id_designacion)
                         LEFT OUTER JOIN integrante_interno_pe t_e ON (a.id_designacion=t_e.id_designacion)
                         LEFT OUTER JOIN asignacion_tutoria t_t ON (a.id_designacion=t_t.id_designacion and t_t.rol='POST')

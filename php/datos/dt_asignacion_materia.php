@@ -8,24 +8,25 @@ class dt_asignacion_materia extends toba_datos_tabla
             }else{
                 $con=$datos['carga_horaria'];
             }
-            $sql="select * from asignacion_materia where id_materia=".$datos['id_materia']." and anio=".$datos['anio']." order by id_designacion";
+            //aqui los ordeno por el mismo criterio que cuando los muestro en form_asigna para poder identificar cual es el que voy a modificar
+            $sql="select * from asignacion_materia where id_materia=".$datos['id_materia']." and anio=".$datos['anio']." order by id_designacion,modulo";
             $res=toba::db('designa')->consultar($sql);
-            $sql="update asignacion_materia set id_designacion=".$datos['id_designacion'].",id_materia=".$datos['id_materia'].",modulo=".$datos['modulo'].",carga_horaria=".$con.",rol='".$datos['rol']."',id_periodo=".$datos['id_periodo']." where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$res[$datos['elemento']]['modulo'];
+            $sql="update asignacion_materia set id_designacion=".$datos['id_designacion'].",id_materia=".$datos['id_materia'].",modulo=".$datos['modulo'].",carga_horaria=".$con.",rol='".$datos['rol']."',id_periodo=".$datos['id_periodo']." where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$res[$datos['elemento']]['modulo']." and anio=".$datos['anio'];
             
             toba::db('designa')->consultar($sql);
         }
         function eliminar($datos){
            
-            $sql="select * from asignacion_materia where id_materia=".$datos['id_materia']." and anio=".$datos['anio']." order by id_designacion";
+            $sql="select * from asignacion_materia where id_materia=".$datos['id_materia']." and anio=".$datos['anio']." order by id_designacion,modulo";
             $res=toba::db('designa')->consultar($sql);
             
-            $sql="delete from asignacion_materia where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$res[$datos['elemento']]['modulo'];
+            $sql="delete from asignacion_materia where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$res[$datos['elemento']]['modulo']." and anio=".$datos['anio'];
             toba::db('designa')->consultar($sql);
         }
         
         function agregar($datos){
-            
-            $sql="select * from asignacion_materia where id_designacion=".$datos['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$datos['modulo'];
+            //primero verifico que no se encuentre
+            $sql="select * from asignacion_materia where id_designacion=".$datos['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$datos['modulo']." and anio=".$datos['anio'];
             $res=toba::db('designa')->consultar($sql);
             
             if(count($res)>0){
@@ -68,12 +69,13 @@ class dt_asignacion_materia extends toba_datos_tabla
 
 
     function get_listado_desig($des){
-        $sql = "SELECT t_a.id_designacion,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,t_t.desc_item as rol,t_p.descripcion as id_periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_a.anio"
+        $sql = "SELECT distinct t_a.id_designacion,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,t_t.desc_item as rol,t_p.descripcion as id_periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_a.anio"
                 . " FROM asignacion_materia t_a LEFT OUTER JOIN materia t_m ON (t_m.id_materia=t_a.id_materia)"
                 . " LEFT OUTER JOIN periodo t_p ON (t_p.id_periodo=t_a.id_periodo)"
                 . " LEFT OUTER JOIN tipo t_t ON (t_a.nro_tab8=t_t.nro_tabla and t_a.rol=t_t.desc_abrev)"
                 . " LEFT OUTER JOIN modulo t_o ON (t_a.modulo=t_o.id_modulo)"
-                . " where t_a.id_designacion=".$des;
+                . " where t_a.id_designacion=".$des
+                ." order by t_a.anio,t_o.id_modulo";
         
 	return toba::db('designa')->consultar($sql);
     }

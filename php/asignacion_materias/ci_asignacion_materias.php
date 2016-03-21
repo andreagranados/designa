@@ -124,7 +124,6 @@ class ci_asignacion_materias extends toba_ci
 
 	function conf__form_asigna(toba_ei_formulario_ml $form)
 	{
-            
             if($this->s__mostrar_ml==1){
                 $this->dep('form_asigna')->descolapsar();
                 $form->ef('id_designacion')->set_obligatorio(true);
@@ -134,27 +133,25 @@ class ci_asignacion_materias extends toba_ci
             }else{
                 $this->dep('form_asigna')->colapsar();
             }
-
-                  
-            if (isset($this->s__anio)) {
+           if (isset($this->s__anio)) {
                 $where=" and t_m.anio=".$this->s__anio;
+                //$mat siempre va a tener valor porque la materia la selecciono en una pantalla anterior
+                $mat=$this->dep('datos')->tabla('materia')->get();
+                //muestra solo las asignaciones correspondientes a la UA que corresponde
+                $sql="select * from asignacion_materia t_m where t_m.id_materia=".$mat['id_materia'].$where." order by id_designacion,modulo";
+                $res=toba::db('designa')->consultar($sql);
+                
             }else{
-                $where='';
+                $res=array();
             }
-            //$mat siempre va a tener valor porque la materia la selecciono en una pantalla anterior
-            $mat=$this->dep('datos')->tabla('materia')->get();
-            //muestra solo las asignaciones correspondientes a la UA que corresponde
             
-            $sql="select * from asignacion_materia t_m where t_m.id_materia=".$mat['id_materia'].$where." order by id_designacion";
-            $res=toba::db('designa')->consultar($sql);
-          
             $form->set_datos($res);
                
 	}
         function evt__form_asigna__modificacion($datos)
 	{
             $this->s__guardar=$datos;
-         }
+        }
 
 	
          //boton de la pantalla
