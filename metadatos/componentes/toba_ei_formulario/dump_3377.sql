@@ -362,7 +362,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'3377', --objeto_ei_formulario
 	'designa', --objeto_ei_formulario_proyecto
 	'nro_540', --identificador
-	'ef_editable', --elemento_formulario
+	'ef_combo', --elemento_formulario
 	'nro_540', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
@@ -370,32 +370,32 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'Número TKD', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
-	NULL, --colapsado
-	NULL, --desactivado
+	'0', --colapsado
+	'0', --desactivado
 	NULL, --estilo
 	NULL, --total
 	NULL, --inicializacion
-	NULL, --permitir_html
-	NULL, --deshabilitar_rest_func
+	'0', --permitir_html
+	'0', --deshabilitar_rest_func
 	NULL, --estado_defecto
-	NULL, --solo_lectura
+	'0', --solo_lectura
 	'0', --solo_lectura_modificacion
-	NULL, --carga_metodo
+	'get_descripciones_ua', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
-	NULL, --carga_dt
+	'3220', --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
-	NULL, --carga_fuente
+	'designa', --carga_fuente
 	NULL, --carga_lista
-	NULL, --carga_col_clave
-	NULL, --carga_col_desc
-	NULL, --carga_maestros
-	NULL, --carga_cascada_relaj
+	'nro_540', --carga_col_clave
+	'nro_540', --carga_col_desc
+	'uni_acad', --carga_maestros
+	'0', --carga_cascada_relaj
 	'0', --cascada_mantiene_estado
-	'0', --carga_permite_no_seteado
-	NULL, --carga_no_seteado
-	NULL, --carga_no_seteado_ocultar
+	'1', --carga_permite_no_seteado
+	'--Seleccione--', --carga_no_seteado
+	'0', --carga_no_seteado_ocultar
 	NULL, --edit_tamano
 	NULL, --edit_maximo
 	NULL, --edit_mascara
@@ -434,7 +434,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --selec_serializar
 	NULL, --selec_cant_columnas
 	NULL, --upload_extensiones
-	NULL, --punto_montaje
+	'23', --punto_montaje
 	NULL  --placeholder
 );
 --- FIN Grupo de desarrollo 0

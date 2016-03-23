@@ -1603,7 +1603,16 @@ class dt_designacion extends toba_datos_tabla
 		$sql = "SELECT id_designacion, cat_mapuche FROM designacion ORDER BY cat_mapuche";
 		return toba::db('designa')->consultar($sql);
 	}
-
+        function get_descripciones_ua($ua=null)
+        {
+            $where="";
+            if(isset($ua)){
+                $where=" where uni_acad='$ua' and nro_540 is not null";
+            }
+            $sql = "SELECT distinct nro_540 FROM designacion $where order by nro_540";
+            
+            return toba::db('designa')->consultar($sql);
+        }
 
         //solo trae las designaciones que tienen materias asociadas
         //designaciones de la Unidad Academica y del periodo x
