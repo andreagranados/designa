@@ -210,7 +210,7 @@ class dt_designacion extends toba_datos_tabla
         function get_dedicacion_horas($where=null,$filtro=array())
 	{
                 if(!is_null($where)){
-                    $where=' WHERE '.$where;
+                    $where=' WHERE desde<>hasta and hasta>desde and '.$where;
                 }else{
                     $where='';
                 }
