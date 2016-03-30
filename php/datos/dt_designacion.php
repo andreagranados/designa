@@ -1557,12 +1557,12 @@ class dt_designacion extends toba_datos_tabla
             toba::db('designa')->consultar($cp);
             
             //al hacer RIGHT JOIN  toma todos los registros de la tabla derecha tengan o no correspondencia con la de la izquierda
-            $con="select a.uni_acad,a.id_programa,a.programa,b.credito,trunc(a.monto,2) as monto,trunc((b.credito-a.monto),2) as saldo into temp auxi3"
+            $con="select a.uni_acad,a.id_programa,a.programa,b.credito,trunc(a.monto,2) as monto,case when b.credito is null then trunc((0-a.monto),2) else trunc((b.credito-a.monto),2) end as saldo into temp auxi3"
                     . " from auxi a LEFT JOIN auxi2 b ON (a.uni_acad=b.id_unidad and a.id_programa=b.id_programa)";
             toba::db('designa')->consultar($con);
                        
-            
-            $con="insert into auxi3 select a.id_unidad,a.id_programa,a.programa,a.credito,0,0-credito "
+            //no gasto nada
+            $con="insert into auxi3 select a.id_unidad,a.id_programa,a.programa,a.credito,0,credito "
                         . " from auxi2 a where not exists (select * from auxi b"
                         . " where a.id_unidad=b.uni_acad and a.id_programa=b.id_programa)"
                         . $where3;
