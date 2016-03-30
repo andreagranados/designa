@@ -1562,13 +1562,11 @@ class dt_designacion extends toba_datos_tabla
             toba::db('designa')->consultar($con);
                        
             
-            $con="insert into auxi3 select a.id_unidad,a.id_programa,a.programa,a.credito,0,credito "
+            $con="insert into auxi3 select a.id_unidad,a.id_programa,a.programa,a.credito,0,0-credito "
                         . " from auxi2 a where not exists (select * from auxi b"
                         . " where a.id_unidad=b.uni_acad and a.id_programa=b.id_programa)"
                         . $where3;
-                toba::db('designa')->consultar($con);
-                         
-            
+            toba::db('designa')->consultar($con);
             $con="select * from auxi3";
             return toba::db('designa')->consultar($con);
         }
