@@ -50,9 +50,8 @@ class ci_impresion_540 extends toba_ci
             //y que no tengan el check de presupuesto
                 
                if (isset($this->s__datos_filtro)) {
-                    $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro));
-                    $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro);
-                      
+                   $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro); 
+                   $cuadro->set_datos($this->s__listado);
 		} //hasta que no presiona filtrar no aparece nada
                
                 
