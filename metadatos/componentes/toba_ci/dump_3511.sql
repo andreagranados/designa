@@ -285,7 +285,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1518', --pantalla
 	'pant_integrantesi', --identificador
 	'2', --orden
-	'2-Integrantes Internos', --etiqueta
+	'2-Integrantes Docentes', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
@@ -304,7 +304,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1530', --pantalla
 	'pant_integrantese', --identificador
 	'3', --orden
-	'3-Integrantes Externos', --etiqueta
+	'3-Otros Integrantes', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen

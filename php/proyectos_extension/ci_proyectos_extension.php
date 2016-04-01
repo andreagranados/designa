@@ -63,7 +63,7 @@ class ci_proyectos_extension extends toba_ci
                 $form->ef('denominacion')->set_obligatorio('true');
                 $form->ef('nro_resol')->set_obligatorio('true');
                 $form->ef('fecha_resol')->set_obligatorio('true');
-                $form->ef('emite_tipo')->set_obligatorio('true');   
+                //$form->ef('emite_tipo')->set_obligatorio('true');   
             }
             else{
                 $this->dep('formulario')->colapsar();
