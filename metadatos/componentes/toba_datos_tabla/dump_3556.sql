@@ -139,4 +139,46 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	'0', --externa
 	'integrante_interno_pe'  --tabla
 );
+INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
+	'designa', --objeto_proyecto
+	'3556', --objeto
+	'1542', --col_id
+	'desde', --columna
+	'F', --tipo
+	'1', --pk
+	'', --secuencia
+	NULL, --largo
+	NULL, --no_nulo
+	'1', --no_nulo_db
+	'0', --externa
+	'integrante_interno_pe'  --tabla
+);
+INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
+	'designa', --objeto_proyecto
+	'3556', --objeto
+	'1543', --col_id
+	'hasta', --columna
+	'F', --tipo
+	'0', --pk
+	'', --secuencia
+	NULL, --largo
+	NULL, --no_nulo
+	'0', --no_nulo_db
+	'0', --externa
+	'integrante_interno_pe'  --tabla
+);
+INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
+	'designa', --objeto_proyecto
+	'3556', --objeto
+	'1544', --col_id
+	'rescd', --columna
+	'C', --tipo
+	'0', --pk
+	'', --secuencia
+	'12', --largo
+	NULL, --no_nulo
+	'0', --no_nulo_db
+	'0', --externa
+	'integrante_interno_pe'  --tabla
+);
 --- FIN Grupo de desarrollo 0

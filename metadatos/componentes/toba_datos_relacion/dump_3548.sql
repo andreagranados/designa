@@ -73,7 +73,7 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'1', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
-	'5'  --orden
+	'4'  --orden
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
@@ -85,7 +85,7 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'1', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
-	'4'  --orden
+	'3'  --orden
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
@@ -97,19 +97,19 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'1000', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
-	'3'  --orden
+	'2'  --orden
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2358', --dep_id
+	'2506', --dep_id
 	'3548', --objeto_consumidor
-	'3547', --objeto_proveedor
+	'3678', --objeto_proveedor
 	'pextension', --identificador
 	'1', --parametros_a
 	'1', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
-	'1'  --orden
+	'5'  --orden
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
@@ -121,6 +121,6 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'1', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
-	'2'  --orden
+	'1'  --orden
 );
 --- FIN Grupo de desarrollo 0

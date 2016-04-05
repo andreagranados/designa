@@ -324,7 +324,8 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_planilla', --identificador
 	'4', --orden
 	'4-Planilla de Personal Afectado', --etiqueta
-	NULL, --descripcion
+	'Muestra todos los integrantes cuya fecha "HASTA" coincide con la fecha hasta del proyecto correspondiente. <br>
+Los integrantes que no tienen esa fecha se han dado de baja previo a la finalización del mismo.', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen
@@ -334,7 +335,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	NULL, --subclase_archivo
 	NULL, --template
 	NULL, --template_impresion
-	NULL  --punto_montaje
+	'23'  --punto_montaje
 );
 --- FIN Grupo de desarrollo 0
 

@@ -8,7 +8,19 @@ class ci_proyectos_extension extends toba_ci
         protected $s__integrantes;
         protected $s__pantalla;
 
-
+        function fecha_desde_proyecto(){
+            $datos=$this->dep('datos')->tabla('pextension')->get();
+            return date("d/m/Y",strtotime($datos['fec_desde']));
+        }
+        function fecha_hasta_proyecto(){
+            $datos=$this->dep('datos')->tabla('pextension')->get();
+            return date("d/m/Y",strtotime($datos['fec_hasta']));
+        }
+       
+        function resolucion_proyecto(){
+            $datos=$this->dep('datos')->tabla('pextension')->get();
+            return $datos['nro_resol'];
+        }
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtro(toba_ei_formulario $filtro)
@@ -63,21 +75,54 @@ class ci_proyectos_extension extends toba_ci
                 $form->ef('denominacion')->set_obligatorio('true');
                 $form->ef('nro_resol')->set_obligatorio('true');
                 $form->ef('fecha_resol')->set_obligatorio('true');
-                //$form->ef('emite_tipo')->set_obligatorio('true');   
+                $form->ef('fec_desde')->set_obligatorio('true');   
+                $form->ef('fec_hasta')->set_obligatorio('true');
+                
             }
             else{
                 $this->dep('formulario')->colapsar();
               }	
               
             if ($this->dep('datos')->tabla('pextension')->esta_cargada()) {
-		$form->set_datos($this->dep('datos')->tabla('pextension')->get());
+                $datos=$this->dep('datos')->tabla('pextension')->get();
+                if($datos['financiacion']==true){
+                        $datos['financiacion']='SI';
+                    };
+                if($datos['financiacion']==false) {   
+                        $datos['financiacion']='NO';
+                    };
+		$form->set_datos($datos);
 		}
+            //pregunto si el usuario logueado esta asociado a un perfil para desactivar los campos que no debe completar
+             
+            //
+            $perfil=toba::usuario()->get_perfil_datos();   
+            if($perfil!=null){//si esta asociado a un perfil de datos entonces no permito que toquen los sig campos
+                $form->ef('nro_ord_cs')->set_solo_lectura(true);   
+                $form->ef('res_rect')->set_solo_lectura(true);   
+                $form->ef('expediente')->set_solo_lectura(true);   
+                $form->ef('estado')->set_solo_lectura(true);   
+                $form->ef('financiacion')->set_solo_lectura(true);   
+                $form->ef('monto')->set_solo_lectura(true);   
+                $form->ef('fecha_rendicion')->set_solo_lectura(true);   
+                $form->ef('rendicion_monto')->set_solo_lectura(true);   
+                $form->ef('fecha_prorroga1')->set_solo_lectura(true);   
+                $form->ef('fecha_prorroga2')->set_solo_lectura(true);   
+            }
+             //print_r($perfil);
 	}
 
 	function evt__formulario__alta($datos)
 	{
 		$ua = $this->dep('datos')->tabla('unidad_acad')->get_ua();
                 $datos['uni_acad']= $ua[0]['sigla'];
+                if(trim($datos['financiacion'])=='SI'){
+                        $datos['financiacion']=true;
+                    };
+                if(trim($datos['financiacion'])=='NO') {   
+                        $datos['financiacion']=false;
+                    };
+                
                 $this->dep('datos')->tabla('pextension')->set($datos);
 		$this->dep('datos')->tabla('pextension')->sincronizar();
 		$this->resetear();
@@ -85,15 +130,24 @@ class ci_proyectos_extension extends toba_ci
 
 	function evt__formulario__modificacion($datos)
 	{
-		$this->dep('datos')->tabla('pextension')->set($datos);
-		$this->dep('datos')->tabla('pextension')->sincronizar();
-		$this->resetear();
+            
+            if(trim($datos['financiacion'])=='SI'){
+                $datos['financiacion']=true;
+                    };
+            if(trim($datos['financiacion'])=='NO') {   
+                $datos['financiacion']=false;
+                    };	
+                    
+            $this->dep('datos')->tabla('pextension')->set($datos);
+            $this->dep('datos')->tabla('pextension')->sincronizar();
+		
 	}
 
 	function evt__formulario__baja()
 	{
 		$this->dep('datos')->tabla('pextension')->eliminar_todo();
 		$this->resetear();
+                $this->s__mostrar=0;
 	}
 
 	function evt__formulario__cancelar()
@@ -170,9 +224,16 @@ class ci_proyectos_extension extends toba_ci
         
         function conf__form_integrantes(toba_ei_formulario_ml $form)
         {
-            $pe=$this->dep('datos')->tabla('pextension')->get();
-            $ar=array('id_pext' => $pe['id_pext']);
-            $res = $this->dep('datos')->tabla('integrante_interno_pe')->get_filas($ar);
+           $pe=$this->dep('datos')->tabla('pextension')->get();
+           $ar=array('id_pext' => $pe['id_pext']);
+           $res = $this->dep('datos')->tabla('integrante_interno_pe')->get_filas($ar);
+           //ordenamos el arreglo
+           //$aux tiene la información que queremos ordenar
+           foreach ($res as $key => $row) {
+                $aux[$key] = $row['id_designacion'].$row['desde'];
+            }
+            array_multisort($aux, SORT_ASC, $res);
+                       
             if(isset($res)){//si hay integrantes
                 
                 foreach ($res as $key => $value) {
@@ -192,6 +253,7 @@ class ci_proyectos_extension extends toba_ci
             foreach ($datos as $clave => $elem){
                  $datos[$clave]['id_pext']=$pe['id_pext'];    
             }
+            //verifico que las fechas correspondan
             
             $this->dep('datos')->tabla('integrante_interno_pe')->procesar_filas($datos);
             $this->dep('datos')->tabla('integrante_interno_pe')->sincronizar();
@@ -250,14 +312,20 @@ class ci_proyectos_extension extends toba_ci
                 $form->ef('tipo_sexo')->set_obligatorio('true');   
                 $form->ef('funcion_p')->set_obligatorio('true');   
                 $form->ef('carga_horaria')->set_obligatorio('true');   
+                $form->ef('desde')->set_obligatorio('true');   
+                $form->ef('hasta')->set_obligatorio('true');   
+                $form->ef('rescd')->set_obligatorio('true');   
             }
             else{
                 $this->dep('form_integrante_e')->colapsar();
               }	
               
             if ($this->dep('datos')->tabla('integrante_externo_pe')->esta_cargada()) {
-		$form->set_datos($this->dep('datos')->tabla('integrante_externo_pe')->get());
+                $datos=$this->dep('datos')->tabla('integrante_externo_pe')->get();
+                $datos['funcion_p']=str_pad($datos['funcion_p'], 5); 
+                $form->set_datos($datos);
 		}
+             
 	}
 
 	function evt__form_integrante_e__guardar($datos)
