@@ -215,6 +215,7 @@ class ci_proyectos_extension extends toba_ci
             $this->set_pantalla('pant_edicion');
             $this->dep('datos')->tabla('pextension')->resetear();
             $this->dep('datos')->tabla('integrante_interno_pe')->resetear();
+            $this->s__mostrar=0;
 	}
        
 	//-----------------------------------------------------------------------------------

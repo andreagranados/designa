@@ -419,7 +419,7 @@ class dt_designacion extends toba_datos_tabla
 			t_d.ord_gestion,
 			t_te.quien_emite_norma as emite_cargo_gestion_nombre,
 			t_d.nro_gestion,
-                        case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when (t_no.desde <= '".$udia."' and (t_no.hasta >= '".$pdia."' or t_no.hasta is null)) then 'SI' else 'NO' end
+case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when (t_no.desde <= '".$udia."' and (t_no.hasta >= '".$pdia."' or t_no.hasta is null)) then 'SI' else 'NO' end
                                                                  else case when (t_no.desde <= '".$udia."' and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end 
                                                                  end
 			    else case when t_d.desde<'".$pdia."' then case when (t_no.desde <= t_d.hasta and (t_no.hasta >= '".$pdia."' or t_no.hasta is null)) then 'SI' else 'NO' end
@@ -430,7 +430,7 @@ class dt_designacion extends toba_datos_tabla
 		FROM
 			designacion as t_d 
                         LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu)
-			LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5))
+			LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<='".$udia."' and (t_no.hasta>'".$pdia."' or t_no.hasta is null))
                         LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est)
 			LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma)
 			LEFT OUTER JOIN expediente as t_e ON (t_d.id_expediente = t_e.id_exp)
