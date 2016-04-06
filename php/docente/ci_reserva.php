@@ -377,6 +377,8 @@ class ci_reserva extends designa_ci
             $datos['id_reserva']=null;
             $datos['nro_540']=null;
             $datos['id_norma']=null;
+            $datos['check_presup']=0;
+            $datos['check_academica']=0;
             //pasa a historico
             $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();          
             $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico

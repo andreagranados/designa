@@ -794,6 +794,7 @@ class cargo_solapas extends toba_ci
                 $form->ef('tipo_nov')->set_obligatorio('true');
                 $form->ef('desde')->set_obligatorio('true');
                 $form->ef('hasta')->set_obligatorio('true');
+                $form->ef('sub_tipo')->set_solo_lectura(true);   
                 //no pongo obligatorios los campos de la norma cuando se ingresa la licencia
                 //$form->ef('tipo_norma')->set_obligatorio('true');
                 //$form->ef('tipo_emite')->set_obligatorio('true');
