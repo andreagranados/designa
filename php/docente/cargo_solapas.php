@@ -343,12 +343,8 @@ class cargo_solapas extends toba_ci
 	{
             $this->s__alta_impu=1;
             $this->controlador()->dep('datos')->tabla('imputacion')->cargar($datos);
-            
-	}
-        
+        }
        
-	
-
 	//-----------------------------------------------------------------------------------
 	//---- form_imputacion --------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -370,16 +366,16 @@ class cargo_solapas extends toba_ci
                    
                     $form->set_datos($datos);
                     $form->eliminar_evento('guardar');
-		}
+                   }
             else{
                 $form->eliminar_evento('modificacion');
             }  
-             
 	}
         
         
 	function evt__form_imputacion__modificacion($datos)//aparece despues del cargar, por lo tanto modifica
 	{
+            print_r('hola');
             $impu=$this->controlador()->dep('datos')->tabla('imputacion')->get();
             //sumo todo menos la imputacion seleccionada
             //debe verificar que no se exceda del 100%
@@ -841,7 +837,11 @@ class cargo_solapas extends toba_ci
                         //modif los datos de la designacion
                         $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                        //guardo la licencia                             
+                        //guardo la licencia    
+                        if($datos['tipo_nov']==2){//si es una LSGH
+                            $datos['nro_tab10']=10;
+                            $datos['sub_tipo']='NORM';
+                        }
                         $datos['id_designacion']=$desig['id_designacion'];
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
@@ -929,7 +929,9 @@ class cargo_solapas extends toba_ci
                     $udia=$this->controlador()->ultimo_dia_periodo(1);
                 }
                 if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
-                
+                  if($datos['sub_tipo']=='MATE'){
+                      toba::notificacion()->agregar('Las licencias por maternidad no se pueden modificar.','error');
+                  }else{
                     if ($mensaje!= ''){
                         $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
@@ -939,6 +941,7 @@ class cargo_solapas extends toba_ci
                     $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                     $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
                     toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
+                  }  
                 }else{
                     toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
                 }

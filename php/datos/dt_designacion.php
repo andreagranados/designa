@@ -9,7 +9,20 @@ class dt_designacion extends toba_datos_tabla
             $salida=array();
             $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
             $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
-                    
+            $where2="";
+            if(isset($filtro['tipo'])){
+                switch ($filtro['tipo']) {
+                    case 1: $where2=" where id_designacion=-1 and chkstopliq=0 and lic='NO'";
+                        break;
+                    case 2: $where2=" where nro_cargo is null";
+                        break;
+                    case 3: $where2=" where id_designacion<>-1 and nro_cargo is not null";
+                        break;
+
+                }
+                
+            }
+            
             //recupero los cargos de mapuche de ese periodo y esa ua
             $datos_mapuche = consultas_mapuche::get_cargos($filtro['uni_acad'],$udia,$pdia);
             
@@ -44,7 +57,7 @@ class dt_designacion extends toba_datos_tabla
             if(isset($filtro['uni_acad'])){
                 $where=" and t_d.uni_acad='".$filtro['uni_acad']."'";
             }
-            $sql=" select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,b.nro_cargo,b.chkstopliq,b.lic,a.licd from "
+            $sql="select * from( select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,b.nro_cargo,b.chkstopliq,b.lic,a.licd from "
                     . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup"
                     . " from designacion t_d, docente t_do
                         where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
@@ -71,7 +84,7 @@ class dt_designacion extends toba_datos_tabla
                                     and c.uni_acad=b.ua 
                                     and c.cat_mapuche=b.codc_categ
                                     ) "
-                    ." order by uni_acad,apellido,nombre,id_designacion,nro_cargo";
+                    ." order by uni_acad,apellido,nombre,id_designacion,nro_cargo) d $where2";
             
             $resul = toba::db('designa')->consultar($sql);
             
@@ -1165,15 +1178,17 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             $where=" AND desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)";
             //trae las reservas que caen dentro del periodo
             $sql="select distinct t_d.id_designacion,t_r.id_reserva,t_r.descripcion as reserva,desde,hasta,cat_mapuche,cat_estat,dedic,carac,uni_acad,
-                (case when concursado=0 then 'NO' else 'SI' end) as concursado
-                from designacion t_d ,
-                reserva t_r,
-                unidad_acad t_u
-                where t_d.id_reserva=t_r.id_reserva
-                and t_d.tipo_desig=2".$where
-                ." and t_d.uni_acad=t_u.sigla "    ;
+                    (case when concursado=0 then 'NO' else 'SI' end) as concursado
+                    from designacion t_d, reserva t_r, unidad_acad t_u
+                    where t_d.id_reserva=t_r.id_reserva
+                    and t_d.tipo_desig=2".$where
+                    ." and t_d.uni_acad=t_u.sigla "    ;
             $sql = toba::perfil_de_datos()->filtrar($sql);
-            $sql = $sql." order by reserva";
+            $sql = "select b.*,t_m.nombre as programa from (".$sql.") b "
+                    . "LEFT OUTER JOIN imputacion t_i ON (t_i.id_designacion=b.id_designacion)
+                        LEFT OUTER JOIN mocovi_programa t_m ON (t_i.id_programa=t_m.id_programa)
+                    order by reserva";
+            
             return toba::db('designa')->consultar($sql);
         
         }

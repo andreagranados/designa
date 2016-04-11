@@ -18,15 +18,13 @@ class ci_equipos_de_catedra extends toba_ci
 	function evt__filtros__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
-                $this->s__where = $this->dep('filtros')->get_sql_where();
-                
+                $this->s__where = $this->dep('filtros')->get_sql_where();    
 	}
 
 	function evt__filtros__cancelar()
 	{
 		unset($this->s__datos_filtro);
-                unset($this->s__where);
-                       
+                unset($this->s__where);             
 	}
 
 	//---- Cuadro -----------------------------------------------------------------------

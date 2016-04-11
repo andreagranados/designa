@@ -77,7 +77,7 @@ class ci_impresion_540 extends toba_ci
             if (isset($this->s__seleccionadas)){//si selecciono para imprimir
                             
                 //genero un nuevo numero de 540
-                $sql="insert into impresion_540(id,fecha_impresion) values (nextval('impresion_540_id_seq'),current_date)";
+                $sql="insert into impresion_540(id,fecha_impresion,expediente) values (nextval('impresion_540_id_seq'),current_date,'')";
                 toba::db('designa')->consultar($sql);
                 
                 $sql="select currval('impresion_540_id_seq') as numero";//para recuperar el ultimo valor insertado, lo trae de la misma sesion por lo tanto no hay problema si hay otros usuarios ingresando al mismo tiempo
@@ -136,13 +136,14 @@ class ci_impresion_540 extends toba_ci
                 
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
                     
-                    if(strcmp($programa, $des['programa']) !== 0){
-                       $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
-                       $sub=0; 
-                       $programa=$des['programa'];
-                       $i++;
-                    }
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
+                        if(strcmp($programa, $des['programa']) !== 0){//compara
+                            $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+                            $sub=0; 
+                            $programa=$des['programa'];
+                            $i++;
+                        }
+                        
                         $ayn=$des['docente_nombre'];
                         $sum=$sum+$des['costo'];
                         $sub=$sub+$des['costo'];
@@ -150,9 +151,10 @@ class ci_impresion_540 extends toba_ci
                         $i++;  
                     }
                 }
-                
-               $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
-               $datos[$i+1]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
+              
+                $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+                $datos[$i+1]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
+                          
             
                //genera la tabla de datos
                 $car=utf8_decode("Carácter");
