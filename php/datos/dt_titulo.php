@@ -3,7 +3,7 @@ class dt_titulo extends toba_datos_tabla
 {
 	function get_descripciones()
 	{
-		$sql = "SELECT codc_titul, desc_titul FROM titulo ORDER BY codc_nivel";
+		$sql = "SELECT codc_titul, desc_titul FROM titulo ORDER BY desc_titul";
 		return toba::db('designa')->consultar($sql);
 	}
 

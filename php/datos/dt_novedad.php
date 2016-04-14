@@ -6,11 +6,36 @@ class dt_novedad extends toba_datos_tabla
 		$sql = "SELECT id_novedad, tipo_norma FROM novedad ORDER BY tipo_norma";
 		return toba::db('designa')->consultar($sql);
 	}
-        function get_listado()
+	function get_listado($filtro=array())
 	{
-		$sql = "SELECT id_novedad, tipo_norma FROM novedad ORDER BY tipo_norma";
+		$where = array();
+		if (isset($filtro['tipo_nov'])) {
+			$where[] = "tipo_nov = ".quote($filtro['tipo_nov']);
+		}
+		$sql = "SELECT
+			t_n.id_novedad,
+			t_tn.descripcion as tipo_nov_nombre,
+			t_n.desde,
+			t_n.hasta,
+			t_d.cat_mapuche as id_designacion_nombre,
+			t_tne.nombre_tipo as tipo_norma_nombre,
+			t_te.quien_emite_norma as tipo_emite_nombre,
+			t_n.norma_legal,
+			t_n.observaciones,
+			t_n.nro_tab10,
+			t_n.sub_tipo
+		FROM
+			novedad as t_n	LEFT OUTER JOIN tipo_novedad as t_tn ON (t_n.tipo_nov = t_tn.id_tipo)
+			LEFT OUTER JOIN designacion as t_d ON (t_n.id_designacion = t_d.id_designacion)
+			LEFT OUTER JOIN tipo_norma_exp as t_tne ON (t_n.tipo_norma = t_tne.cod_tipo)
+			LEFT OUTER JOIN tipo_emite as t_te ON (t_n.tipo_emite = t_te.cod_emite)
+		ORDER BY norma_legal";
+		if (count($where)>0) {
+			$sql = sql_concatenar_where($sql, $where);
+		}
 		return toba::db('designa')->consultar($sql);
 	}
+
         //trae las novedades de tipo 2, 3 y 5
         function get_novedades_desig($des)
 	{
@@ -54,5 +79,4 @@ class dt_novedad extends toba_datos_tabla
             return $estad;
         }
 }
-
 ?>

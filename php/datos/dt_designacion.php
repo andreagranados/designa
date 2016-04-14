@@ -4,7 +4,39 @@ require_once 'consultas_mapuche.php';
 
 class dt_designacion extends toba_datos_tabla
 {
-        function get_comparacion($filtro){
+    function get_lic_maternidad($filtro){
+        $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+        $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+        $datos_lic = consultas_mapuche::get_lic_maternidad($filtro['uni_acad'],$udia,$pdia);
+        $sql=" CREATE LOCAL TEMP TABLE auxi
+            (   nro_legaj integer,
+            nro_cargo  integer,
+            desde      date,
+            hasta      date,
+            tipo_lic     text
+            );";
+        toba::db('designa')->consultar($sql);
+        foreach ($datos_lic as $valor) {
+                if(!isset($valor['nro_cargo'])){
+                    $valor['nro_cargo']='null';
+                    
+                }
+                $sql=" insert into auxi values (".$valor['nro_legaj'].",".$valor['nro_cargo'].",'".$valor['fec_desde']."','".$valor['fec_hasta']."','".$valor['tipo_lic']. "')";           
+                toba::db('designa')->consultar($sql);
+            }
+         
+        $sql="select distinct t_do.legajo, t_a.tipo_lic, t_a.desde, t_a.hasta"
+                . " from designacion t_d, docente t_do, auxi t_a"
+                . " where t_d.id_docente=t_do.id_docente"
+                . " and t_a.nro_legaj=t_do.legajo";  
+        
+        $res=toba::db('designa')->consultar($sql);
+        $sql="drop table auxi;";
+        toba::db('designa')->consultar($sql);
+        return $res;
+            
+    }    
+    function get_comparacion($filtro){
             //print_r($filtro);exit();// Array ( [uni_acad] => FAIF [anio] => 2016 ) 
             $salida=array();
             $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
@@ -1523,6 +1555,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		$sql = "SELECT id_designacion, cat_mapuche FROM designacion ORDER BY cat_mapuche";
 		return toba::db('designa')->consultar($sql);
 	}
+
         function get_descripciones_ua($ua=null)
         {
             $where="";

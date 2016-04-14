@@ -26,5 +26,6 @@ class dt_tipo_emite extends toba_datos_tabla
 
 
 
+
 }
 ?>

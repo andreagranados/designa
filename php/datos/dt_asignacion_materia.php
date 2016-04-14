@@ -420,14 +420,31 @@ class dt_asignacion_materia extends toba_datos_tabla
                 }else{
                     $where='';
                 }
-        $auxiliar=array();
-        $i=0; 
-        $j=0;
-        // solo traigo las designaciones de la ua que tiene asignacion_materias del año seleccionado
+        //creo una tabla temporal
+        $sql=" CREATE LOCAL TEMP TABLE auxi
+            (   uni_acad    character(4),
+                agente      character varying,
+                legajo      integer,
+                id_designacion  integer,
+                cat_estat   character varying,
+                per         character varying,
+                modulo      character varying,
+                carga_horaria   integer,
+                rol         character varying,
+                anio        integer,
+                id_conjunto integer,
+                id_materia  integer,
+                mat0            character varying,
+                en_conj         character varying
+                
+            );";
+        toba::db('designa')->consultar($sql);        
+         // solo traigo las designaciones de la ua que tiene asignacion_materias del año seleccionado
         // //ojo que busca por el año de la asignacion_materia
         //que tienen asociadas materias que estan en conjuntos (que se dictan en conjunto)
         //el modulo y el rol son obligatorios en asignacion_materia por eso el join
-        $sql="select *,t_p.uni_acad||'#'||t_p.cod_carrera||'#'||desc_materia||'('||cod_siu||')' as mat0 from
+        $sql=" insert into auxi select b.uni_acad,b.agente,b.legajo,b.id_designacion,b.cat_estat,b.per,b.modulo,b.carga_horaria,b.rol,b.anio,c.id_conjunto,c.id_materia,t_p.uni_acad||'#'||t_p.cod_carrera||'#'||desc_materia||'('||cod_siu||')' as mat0,'' as en_conj
+               from
                (select * from ( select t_d.uni_acad,t_pe.id_periodo as id_periodo_pres,t_do.apellido||', '||t_do.nombre as agente,t_do.legajo,t_d.id_designacion,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.dedic,t_m.id_materia,t_m.id_periodo,t_t.desc_item as rol,t_r.descripcion as per,t_m.anio,t_mod.descripcion as modulo,carga_horaria
  		from docente t_do,designacion t_d,asignacion_materia t_m, mocovi_periodo_presupuestario t_pe, periodo t_r , tipo t_t, modulo t_mod
  		where t_do.id_docente=t_d.id_docente 
@@ -439,7 +456,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 and t_m.modulo=t_mod.id_modulo
  		 ) b
             $where"
-            .")b INNER JOIN ( select * from en_conjunto t_e,conjunto  t_c
+            .")b INNER JOIN ( select t_c.id_conjunto,t_c.id_periodo_pres,t_c.id_periodo,t_c.ua,t_e.id_materia from en_conjunto t_e,conjunto  t_c
  	                WHERE t_e.id_conjunto=t_c.id_conjunto
  	                
  	                )c
@@ -451,10 +468,28 @@ class dt_asignacion_materia extends toba_datos_tabla
  	                LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)
                     order by id_designacion,b.id_materia    ";
         
-        $resul= toba::db('designa')->consultar($sql);
-     
+        toba::db('designa')->consultar($sql);
+        $resul=toba::db('designa')->consultar("select * from auxi");
+        
+        foreach ($resul as $key => $value) {
+            $en_conjunto="";
+            $sql="select t_p.cod_carrera||'-'||t_m.desc_materia||'('||cod_siu||')' as mat from en_conjunto t_e, materia t_m, plan_estudio t_p"
+                    . " where t_e.id_conjunto=".$value['id_conjunto']
+                    ." and t_e.id_materia=t_m.id_materia"
+                    . " and t_m.id_plan=t_p.id_plan";
+            
+            $conj= toba::db('designa')->consultar($sql);
+            foreach ($conj as $valor) {
+                $en_conjunto=$en_conjunto.'#'.$valor['mat'];
+            }
+            $sql2="update auxi set en_conj='".$en_conjunto."' where id_designacion=".$value['id_designacion']." and id_materia=".$value['id_materia']." and id_conjunto=".$value['id_conjunto'];
+           
+            toba::db('designa')->consultar($sql2);
+        }
+        
+        $resul=toba::db('designa')->consultar("select * from auxi");
         return $resul;  
-       
+        
      }
 }
 ?>

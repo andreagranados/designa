@@ -16,8 +16,8 @@ class dt_tipo_norma_exp extends toba_datos_tabla
 	{
 		$sql = "SELECT cod_tipo, nombre_tipo FROM tipo_norma_exp ORDER BY nombre_tipo";
 		return toba::db('designa')->consultar($sql);
-               
 	}
+
 
 
 

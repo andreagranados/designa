@@ -16,7 +16,7 @@ class consultas_mapuche
 		and b.fec_desde <= '".$udia."' and (b.fec_hasta >= '".$pdia."' or b.fec_hasta is null)
 		and (b.nro_cargo=a.nro_cargo or b.nro_legaj=a.nro_legaj)
 		and a.codc_uacad='".$ua."'";	
-	
+	print_r($sql);
 	return toba::db('mapuche')->consultar($sql);
  	
  	}	

@@ -48,7 +48,7 @@ class dt_conjunto extends toba_datos_tabla
                 }else{
                     $where='';
                 }
-                $sql = "select * from (SELECT
+                $sql = "select c.*,count(distinct t_e.id_materia) as cant_mat from (select * from (SELECT
 			t_c.id_conjunto,
 			t_c.descripcion,
                         t_c.ua,
@@ -56,13 +56,15 @@ class dt_conjunto extends toba_datos_tabla
                         t_p.descripcion as id_periodo_nombre,
                         t_c.id_periodo
 			
-		FROM
+                        FROM
 			conjunto as t_c 
                         LEFT OUTER JOIN mocovi_periodo_presupuestario t_m ON (t_c.id_periodo_pres=t_m.id_periodo )
                         LEFT OUTER JOIN periodo t_p ON (t_p.id_periodo=t_c.id_periodo)
 
 		)b	
-		$where";
+		$where )c LEFT OUTER JOIN en_conjunto t_e 
+                    ON (t_e.id_conjunto=c.id_conjunto)
+		group by c.id_conjunto,c.descripcion,c.ua,c.anio,c.id_periodo_nombre,c.id_periodo";
 		
 		return toba::db('designa')->consultar($sql);
 	}
