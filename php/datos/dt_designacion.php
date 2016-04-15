@@ -25,14 +25,15 @@ class dt_designacion extends toba_datos_tabla
                 toba::db('designa')->consultar($sql);
             }
          
-        $sql="select distinct t_do.legajo, t_a.tipo_lic, t_a.desde, t_a.hasta"
+        $sql="select distinct trim(t_do.apellido)||', '||t_do.nombre as agente,t_do.legajo, t_a.tipo_lic, t_a.desde, t_a.hasta,t_d.id_designacion,t_d.desde as fec_desde,t_d.hasta as fec_hasta,t_d.cat_mapuche"
                 . " from designacion t_d, docente t_do, auxi t_a"
                 . " where t_d.id_docente=t_do.id_docente"
-                . " and t_a.nro_legaj=t_do.legajo";  
+                . " and t_a.nro_legaj=t_do.legajo"
+                . " and t_d.desde<='".$udia."' and (t_d.hasta>='".$pdia."' or t_d.hasta is null)"
+                . " order by agente";  
         
         $res=toba::db('designa')->consultar($sql);
-        $sql="drop table auxi;";
-        toba::db('designa')->consultar($sql);
+        
         return $res;
             
     }    
