@@ -1072,9 +1072,9 @@ class cargo_solapas extends toba_ci
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $mensaje='';
-               
+              
                 if ($desig['nro_540'] != null){
-                    $nove=$this->controlador()->dep('datos')->tabla('novedad')->get();
+                    $nove=$this->controlador()->dep('datos')->tabla('novedad_baja')->get();
                     
                     if($datos['tipo_nov']!=$nove['tipo_nov']||$datos['desde']!=$nove['desde']){
                         $desig['nro_540']=null;
@@ -1083,6 +1083,7 @@ class cargo_solapas extends toba_ci
                         $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
                     }
                 }
+                
                 if($desig['hasta']!= null){
                     $udia=$desig['hasta'];
                 }else{//fecha hasta de la designacion es nula
