@@ -52,15 +52,14 @@ class ci_de_licencias_por_maternidad extends toba_ci
                         . " and t_n.id_designacion=".$value['id_designacion']
                         ." and t_n.desde='".$value['desde']."'";
                 $res=toba::db('designa')->consultar($sql2);
-                print_r($res);
+                
                 if (count($res)==0){//si la designacion no tiene la licencia cargada
                     $sql3="insert into novedad (tipo_nov, desde, hasta, id_designacion, tipo_norma, 
-                    tipo_emite, norma_legal, observaciones, nro_tab10, sub_tipo) value(2,'".$datos['desde']."','".$datos['hasta']."',".$value['id_designacion'].",'NOTA',DECA','maternidad',null,10,'MATE')";
-                    print_r($sql3);exit();
+                    tipo_emite, norma_legal, observaciones, nro_tab10, sub_tipo) values(2,'".$datos['desde']."','".$datos['hasta']."',".$value['id_designacion'].",'NOTA','DECA','MATE','maternidad',10,'MATE')";
                     toba::db('designa')->consultar($sql3);
                 }
             }
-            print_r($res);
+           
 	}
 
 	//---- Formulario -------------------------------------------------------------------
