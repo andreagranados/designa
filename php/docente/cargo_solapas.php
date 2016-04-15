@@ -1072,8 +1072,10 @@ class cargo_solapas extends toba_ci
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $mensaje='';
+               
                 if ($desig['nro_540'] != null){
                     $nove=$this->controlador()->dep('datos')->tabla('novedad')->get();
+                    
                     if($datos['tipo_nov']!=$nove['tipo_nov']||$datos['desde']!=$nove['desde']){
                         $desig['nro_540']=null;
                         $desig['check_presup']=0;
