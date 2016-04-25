@@ -645,40 +645,29 @@ class cargo_solapas extends toba_ci
                         $datos = $this->controlador()->dep('datos')->tabla('norma')->get();
                         
                         //Retorna un 'file pointer' apuntando al campo binario o blob de la tabla.
+                        //$pdf = $this->controlador()->dep('datos')->tabla('norma')->get_blob('pdf',$datos['x_dbr_clave']);
                         $pdf = $this->controlador()->dep('datos')->tabla('norma')->get_blob('pdf',$datos['x_dbr_clave']);
+                        
                         if (isset($pdf)) {
-                            
                                 //-- Se necesita el path fisico y la url de una archivo temporal que va a contener la imagen
                                 //el id de la norma es unico por designacion
                                 $temp_nombre = $datos['id_norma'].'.pdf';//md5(uniqid(time()));//genero un nombre de archivo con id unico                            
-       				$s__temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);
-                                
-                                //print_r($s__temp_archivo);//Array ( [path] => C:\proyectos\toba_2.6.3/proyectos/designa/www/temp/64.pdf [url] => /designa/1.0/temp/64.pdf ) 
+       				$s__temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);//Array ( [path] => C:\proyectos\toba_2.6.3/proyectos/designa/www/temp/2762.pdf [url] => /designa/1.0/temp/2762.pdf )                               
                                  //-- Se pasa el contenido al archivo temporal
-//                                if (is_file($s__temp_archivo['path'])){//si ya existe el archivo
-//////                                    //$temp_imagen = fopen($s__temp_archivo['path'], 'r');
-////si lo borra ya despues no lo puede abrir
-//                                    //unlink ($s__temp_archivo['path']);//lo borra
-//                                     //$temp_imagen = fopen($s__temp_archivo['path'], 'w');
-//                                    //stream_copy_to_stream($pdf, $temp_imagen);//copia $pdf a $temp_imagen
-////                                
-//                                    }
-//                                else{//sino existe lo creo
+                                if (!is_file($s__temp_archivo['path'])){//si no existe el archivo, lo creo
                                     $temp_imagen = fopen($s__temp_archivo['path'], 'w');
                                     stream_copy_to_stream($pdf, $temp_imagen);//copia $pdf a $temp_imagen
-          //                      }
-                                fclose($temp_imagen);
-                               
+                                    fclose($temp_imagen);
+                                    }
+                                
 				//-- Se muestra la imagen temporal
                                 //http://localhost/designa/1.0/temp/64.pdf 
-                                $datos['pdf']="<a href='{$s__temp_archivo['url']}'>".toba_recurso::imagen_proyecto('adjunto.jpg',true)."</a>";
-                                
+                                $datos['pdf']="<a href='{$s__temp_archivo['url']}'>".toba_recurso::imagen_proyecto('adjunto.jpg',true)."</a>";  
 			}else {
                             $datos['pdf']   = null;
 				//Agrego esto para cuando no existe imagen pero si registro
                         }
-                        return $datos;
-                        
+                        return $datos;       
 		}
 		
 	}
@@ -690,17 +679,37 @@ class cargo_solapas extends toba_ci
               //si la norma existia ya fue cargada, por lo tanto la modifica
              //si no fue cargada entonces la agrega
              $this->controlador()->dep('datos')->tabla('norma')->set($datos); 
-             if (is_array($datos['pdf'])) {//si adjunto un pdf
+             if (is_array($datos['pdf'])) {//si adjunto un pdf entonces "pdf" viene con los datos del archivo adjuntado
                     //print_r($datos['pdf']['tmp_name']); //C:\Windows\Temp\phpD505.tmp
                     //se genera temporalmente un archivo en  C:\Windows\Temp
-                    $fp=fopen($datos['pdf']['tmp_name'],'rb');
+                    $s__temp_archivo = $datos['pdf']['tmp_name'];
                     // Almacena un 'file pointer' en un campo binario o blob de la tabla.
+                    $fp=fopen($s__temp_archivo,'rb');
                     $this->controlador()->dep('datos')->tabla('norma')->set_blob('pdf',$fp);
-                
-              }
+                    
+                }
               $this->controlador()->dep('datos')->tabla('norma')->sincronizar(); 
-              
-              
+              //------------------------esto lo agregue pero no me funciono. Lo agregue para generar el archivo
+//              $datos=$this->controlador()->dep('datos')->tabla('norma')->get();
+//              $this->controlador()->dep('datos')->tabla('norma')->resetear();
+//              $datos2=array();
+//              $datos2['id_norma']=$datos['id_norma'];
+//              $this->controlador()->dep('datos')->tabla('norma')->cargar($datos2);
+//              //$pdf = $this->controlador()->dep('datos')->tabla('norma')->get_blob('pdf');
+//              $pdf = $this->controlador()->dep('datos')->tabla('norma')->get_blob('pdf',$datos['x_dbr_clave']);
+//              $datos= $this->controlador()->dep('datos')->tabla('norma')->get();
+//              if (isset($pdf)) {
+//                    $temp_nombre = $datos['id_norma'].'.pdf';//md5(uniqid(time()));//genero un nombre de archivo con id unico                            
+//       		    $s__temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);
+//                    
+//                    if (!is_file($s__temp_archivo['path'])){//si no existe el archivo
+//                        $temp_imagen = fopen($s__temp_archivo['path'], 'w');
+//                        stream_copy_to_stream($pdf, $temp_imagen);//copia $pdf a $temp_imagen      
+//                        fclose($temp_imagen);            
+//                       }
+//              }
+              //------------------------
+
              //ver si entra
               if(!$this->controlador()->dep('datos')->tabla('norma')->esta_cargada()){//si no esta cargada entonces hay que asociarla a la designacion
                     $norma=$this->controlador()->dep('datos')->tabla('norma')->get();
@@ -708,11 +717,7 @@ class cargo_solapas extends toba_ci
                     $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$norma['id_norma'],1);
                     $this->controlador()->dep('datos')->tabla('norma')->cargar($datos);
               }
-              //si no borro el archivo temporal?
-              //$this->disparar_limpieza_memoria();//Para borrar el archivo temporal creado
-              //vuelvo a cargar para actualizar los datos en memoria
-             
-         
+              
 	}
         function conf__form_normacs(toba_ei_formulario $form)
         {

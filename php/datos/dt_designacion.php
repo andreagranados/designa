@@ -247,7 +247,7 @@ class dt_designacion extends toba_datos_tabla
             return $resul[0]['fecha_fin'];
         }
  
-        /** Ultimo dia del periodo actual**/
+        /** Primer dia del periodo actual**/
         function primer_dia_periodo_anio($anio) {
 
             $sql="select fecha_inicio from mocovi_periodo_presupuestario where anio=".$anio;
@@ -530,8 +530,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         }
         function get_listado_540($filtro=array())
 	{
-                $udia=$this->ultimo_dia_periodo();
-                $pdia=$this->primer_dia_periodo();
+                $udia=$this->ultimo_dia_periodo_anio($filtro['anio']);
+                $pdia=$this->primer_dia_periodo_anio($filtro['anio']);
 		
                 //que sea una designacion vigente, dentro del periodo actual
 		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";

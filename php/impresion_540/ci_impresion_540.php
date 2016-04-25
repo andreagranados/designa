@@ -3,6 +3,7 @@
 class ci_impresion_540 extends toba_ci
 {
 	protected $s__datos_filtro;
+        protected $s__anio;
         protected $s__listado;
         protected $s__seleccionadas;
         protected $s__seleccionar_todos;
@@ -36,6 +37,7 @@ class ci_impresion_540 extends toba_ci
 	function evt__filtro__cancelar()
 	{
 		unset($this->s__datos_filtro);
+                unset($this->s__anio);
                 $this->s__seleccionar_todos=0;
                 $this->s__deseleccionar_todos=0;
 	}
@@ -50,6 +52,7 @@ class ci_impresion_540 extends toba_ci
             //y que no tengan el check de presupuesto
                 
                if (isset($this->s__datos_filtro)) {
+                   $this->s__anio=$this->s__datos_filtro['anio'];
                    $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro); 
                    $cuadro->set_datos($this->s__listado);
 		} //hasta que no presiona filtrar no aparece nada
@@ -77,13 +80,18 @@ class ci_impresion_540 extends toba_ci
             if (isset($this->s__seleccionadas)){//si selecciono para imprimir
                             
                 //genero un nuevo numero de 540
-                $sql="insert into impresion_540(id,fecha_impresion,expediente) values (nextval('impresion_540_id_seq'),current_date,'')";
-                toba::db('designa')->consultar($sql);
+             
+                toba::db()->abrir_transaccion();
                 
-                $sql="select currval('impresion_540_id_seq') as numero";//para recuperar el ultimo valor insertado, lo trae de la misma sesion por lo tanto no hay problema si hay otros usuarios ingresando al mismo tiempo
-                $resul=toba::db('designa')->consultar($sql);
-                $numero=$resul[0]['numero'];
+                try {
+                $dato=array();
+                $dato['expediente']='';
+                $this->dep('datos')->tabla('impresion_540')->set($dato);
+                $this->dep('datos')->tabla('impresion_540')->sincronizar();
+                $resul=$this->dep('datos')->tabla('impresion_540')->get();
+                $numero=$resul['id'];
                 
+
                 $sele=array();
                 foreach ($this->s__seleccionadas as $key => $value) {
                     $sele[]=$value['id_designacion']; 
@@ -107,8 +115,7 @@ class ci_impresion_540 extends toba_ci
                 //Luego definimos la ubicación de la fecha en el pie de página.
                 $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
                 //Configuración de Título.
-                $salida->titulo(utf8_d_seguro("Informe TKD #".$numero));
-                
+                $salida->titulo(utf8_d_seguro("Informe TKD #".$numero."/".$this->s__anio));
                
                 $titulo=" ";
                 //-- Cuadro con datos
@@ -166,17 +173,21 @@ class ci_impresion_540 extends toba_ci
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
                 //Encabezado: Logo Organización - Nombre 
                 //Recorremos cada una de las hojas del documento para agregar el encabezado
-//                 foreach ($pdf->ezPages as $pageNum=>$id){ 
-//                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
-//                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
-//                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_sti.jpg', 10, 525, 70, 66); 
-//                    $pdf->addJpegFromFile('C:/proyectos/toba_2.6.3/proyectos/designa/www/img/logo_designa.jpg', 680, 535, 130, 40);
-//                    $pdf->closeObject(); 
-//                 
-//                }
-                
-        }
-
+                 foreach ($pdf->ezPages as $pageNum=>$id){ 
+                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+                    $imagen = toba::proyecto()->get_path().'/www/img/logo_sti.jpg';
+                    $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
+                    $pdf->addJpegFromFile($imagen, 10, 525, 70, 66); 
+                    $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
+                    $pdf->closeObject(); 
+                }    
+        toba::db()->cerrar_transaccion();
+                } catch (toba_error_db $e) {
+                    toba::db()->abortar_transaccion();
+                    throw $e;
+                    }
+                }
         }
 	
        
