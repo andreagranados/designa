@@ -51,7 +51,7 @@ class ci_proyectos_extension extends toba_ci
                     $cuadro->set_datos($this->dep('datos')->tabla('pextension')->get_listado($this->s__datos_filtro));
 		} 
 	}
-
+       
 	function evt__cuadro__seleccion($datos)
 	{
             $this->s__mostrar=1;
@@ -77,6 +77,8 @@ class ci_proyectos_extension extends toba_ci
                 $form->ef('fecha_resol')->set_obligatorio('true');
                 $form->ef('fec_desde')->set_obligatorio('true');   
                 $form->ef('fec_hasta')->set_obligatorio('true');
+                $form->ef('palabras_clave')->set_obligatorio('true');
+                $form->ef('objetivo')->set_obligatorio('true');
                 
             }
             else{
@@ -98,6 +100,7 @@ class ci_proyectos_extension extends toba_ci
             //
             $perfil=toba::usuario()->get_perfil_datos();   
             if($perfil!=null){//si esta asociado a un perfil de datos entonces no permito que toquen los sig campos
+                $form->ef('codigo')->set_solo_lectura(true);   
                 $form->ef('nro_ord_cs')->set_solo_lectura(true);   
                 $form->ef('res_rect')->set_solo_lectura(true);   
                 $form->ef('expediente')->set_solo_lectura(true);   
@@ -108,6 +111,9 @@ class ci_proyectos_extension extends toba_ci
                 $form->ef('rendicion_monto')->set_solo_lectura(true);   
                 $form->ef('fecha_prorroga1')->set_solo_lectura(true);   
                 $form->ef('fecha_prorroga2')->set_solo_lectura(true);   
+                $form->ef('observacion')->set_solo_lectura(true);   
+                $form->ef('estado_informe_a')->set_solo_lectura(true);   
+                $form->ef('estado_informe_f')->set_solo_lectura(true);   
             }
              //print_r($perfil);
 	}

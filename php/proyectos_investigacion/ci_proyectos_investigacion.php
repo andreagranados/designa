@@ -6,6 +6,19 @@ class ci_proyectos_investigacion extends toba_ci
         protected $s__pantalla;
         protected $s__mostrar_e;
 
+        
+        function fecha_desde_proyecto(){
+            $datos=$this->dep('datos')->tabla('pinvestigacion')->get();
+            return date("d/m/Y",strtotime($datos['fec_desde']));
+        }
+        function fecha_hasta_proyecto(){
+            $datos=$this->dep('datos')->tabla('pinvestigacion')->get();
+            return date("d/m/Y",strtotime($datos['fec_hasta']));
+        }
+        function resolucion_proyecto(){
+            $datos=$this->dep('datos')->tabla('pinvestigacion')->get();
+            return $datos['nro_resol'];
+        }
 
 	//---- Filtro -----------------------------------------------------------------------
 
@@ -58,11 +71,10 @@ class ci_proyectos_investigacion extends toba_ci
 
             if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('formulario')->descolapsar();
-                $form->ef('codigo')->set_obligatorio('true');
+                $form->ef('denominacion')->set_obligatorio('true');
                 $form->ef('nro_resol')->set_obligatorio('true');
                 $form->ef('fec_resol')->set_obligatorio('true');
-                $form->ef('tipo_emite')->set_obligatorio('true');
-                
+                               
             }
             else{$this->dep('formulario')->colapsar();
               }
@@ -135,8 +147,7 @@ class ci_proyectos_investigacion extends toba_ci
                     $res[$key]['id_docente']=$doc;
                     //autocompleto con blanco hasta 5
                     $res[$key]['funcion_p']=str_pad($res[$key]['funcion_p'], 4); 
-                    $res[$key]['ua']=str_pad($res[$key]['ua'], 5); 
-                    
+                   // $res[$key]['ua']=str_pad($res[$key]['ua'], 5); 
                 }
                 
             }
@@ -230,6 +241,8 @@ class ci_proyectos_investigacion extends toba_ci
                 $form->ef('nro_docum')->set_obligatorio('true');
                 $form->ef('funcion_p')->set_obligatorio('true');
                 $form->ef('carga_horaria')->set_obligatorio('true');
+                $form->ef('desde')->set_obligatorio('true');
+                $form->ef('hasta')->set_obligatorio('true');
             }else{
                 $this->dep('form_integrante_e')->colapsar();
             }

@@ -2,10 +2,24 @@
 class dt_unidad_acad extends toba_datos_tabla
 {
        //trae todas las dependencias 
-	function get_descripciones()	{
+	function get_descripciones()
+	{
 		$sql = "SELECT sigla, descripcion FROM unidad_acad ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
         function get_descripciones_ua($id_des=null)	{
             if(!is_null($id_des)){
                 $where=" LEFT JOIN unidad_acad t_u ON (t_d.uni_acad=t_u.sigla) WHERE t_d.id_designacion= ".$id_des;
