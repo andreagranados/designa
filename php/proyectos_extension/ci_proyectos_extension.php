@@ -302,6 +302,7 @@ class ci_proyectos_extension extends toba_ci
             $datos['id_pext']=$pe['id_pext'];
             //print_r($datos);exit();
             $this->dep('datos')->tabla('integrante_externo_pe')->cargar($datos);
+                    
 	}
 
 	//-----------------------------------------------------------------------------------
@@ -355,8 +356,7 @@ class ci_proyectos_extension extends toba_ci
         {
             $this->dep('datos')->tabla('integrante_externo_pe')->set($datos);
             $this->dep('datos')->tabla('integrante_externo_pe')->sincronizar();
-            
-             
+                         
         }
         function evt__form_integrante_e__cancelar()
 	{
