@@ -23,7 +23,7 @@ class dt_departamento extends toba_datos_tabla
                 $con = toba::perfil_de_datos()->filtrar($con);
                 $resul=toba::db('designa')->consultar($con);
                 
-                if((trim($resul[0]['sigla'])<>'CRUB') && (trim($resul[0]['sigla'])<>'FACA') && (trim($resul[0]['sigla'])<>'ASMA') && (trim($resul[0]['sigla'])<>'CUZA')){
+                if((trim($resul[0]['sigla'])<>'CRUB') && (trim($resul[0]['sigla'])<>'FACA') && (trim($resul[0]['sigla'])<>'ASMA') && (trim($resul[0]['sigla'])<>'CUZA')&& (trim($resul[0]['sigla'])<>'FAAS')){
                     $sql = toba::perfil_de_datos()->filtrar($sql);
                 }
                 

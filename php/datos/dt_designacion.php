@@ -30,6 +30,7 @@ class dt_designacion extends toba_datos_tabla
                 . " where t_d.id_docente=t_do.id_docente"
                 . " and t_a.nro_legaj=t_do.legajo"
                 . " and t_d.desde<='".$udia."' and (t_d.hasta>='".$pdia."' or t_d.hasta is null)"
+                . " and t_d.uni_acad='".$filtro['uni_acad']."'"
                 . " order by agente";  
         
         $res=toba::db('designa')->consultar($sql);
