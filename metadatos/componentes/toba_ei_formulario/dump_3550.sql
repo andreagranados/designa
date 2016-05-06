@@ -314,7 +314,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'2', --orden
-	'Denominacion', --etiqueta
+	'Denominación', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
 	'0', --colapsado
@@ -1116,7 +1116,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'11', --orden
 	'Palabras Clave', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Ingresar 5 palabras claves separadas por guión (-)', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -1276,7 +1276,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'13', --orden
 	'Estado', --etiqueta
 	NULL, --etiqueta_estilo
-	'V (Vigente)
+	'V (Vigente)<br>
 F (Finalizado)', --descripcion
 	'0', --colapsado
 	'0', --desactivado
@@ -1917,7 +1917,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'21', --orden
 	'Informe de Avance', --etiqueta
 	NULL, --etiqueta_estilo
-	'A (Aprobado)
+	'A (Aprobado)<br>
 D (Desaprobado)', --descripcion
 	'0', --colapsado
 	'0', --desactivado
@@ -1998,7 +1998,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'22', --orden
 	'Informe Final', --etiqueta
 	NULL, --etiqueta_estilo
-	'A (Aprobado)
+	'A (Aprobado)<br>
 D (Desaprobado)', --descripcion
 	'0', --colapsado
 	'0', --desactivado

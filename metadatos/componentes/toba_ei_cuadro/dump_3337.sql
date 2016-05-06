@@ -97,7 +97,7 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	'100%', --ancho
 	'0', --ordenar
 	'0', --paginar
-	NULL, --tamano_pagina
+	'8', --tamano_pagina
 	'P', --tipo_paginado
 	'0', --mostrar_total_registros
 	'1', --eof_invisible

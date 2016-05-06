@@ -3,6 +3,11 @@ require_once 'consultas_mapuche.php';
 
 class dt_docente extends toba_datos_tabla
 {
+        function get_nombre($id_desig){
+            $sql="select apellido||', '||nombre as nombre from docente t_do,designacion t_d where t_do.id_docente=t_d.id_docente and t_d.id_designacion=".$id_desig;
+            $res = toba::db('designa')->consultar($sql);
+            return $res[0]['nombre'];  
+        }
         function get_agente($id_doc){
             $sql="select apellido||', '||nombre as nombre from docente where id_docente=".$id_doc;
             $res = toba::db('designa')->consultar($sql);

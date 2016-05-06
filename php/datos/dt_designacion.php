@@ -1656,8 +1656,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             }else{
                 $where='';
             }
-            
-             
+                         
             $sql =   "select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
             t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza
             from designacion t_d 

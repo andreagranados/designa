@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3636]--  Docente 
+--[3728]--  Personas 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -10,20 +10,20 @@
 INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre, carpeta, nivel_acceso, solicitud_tipo, pagina_tipo_proyecto, pagina_tipo, actividad_buffer_proyecto, actividad_buffer, actividad_patron_proyecto, actividad_patron, nombre, descripcion, punto_montaje, actividad_accion, menu, orden, solicitud_registrar, solicitud_obs_tipo_proyecto, solicitud_obs_tipo, solicitud_observacion, solicitud_registrar_cron, prueba_directorios, zona_proyecto, zona, zona_orden, zona_listar, imagen_recurso_origen, imagen, parametro_a, parametro_b, parametro_c, publico, redirecciona, usuario, exportable, creacion, retrasar_headers) VALUES (
 	NULL, --item_id
 	'designa', --proyecto
-	'3636', --item
+	'3728', --item
 	NULL, --padre_id
 	'designa', --padre_proyecto
-	'3635', --padre
+	'3652', --padre
 	'0', --carpeta
 	'0', --nivel_acceso
 	'web', --solicitud_tipo
 	'toba', --pagina_tipo_proyecto
-	'normal', --pagina_tipo
+	'titulo', --pagina_tipo
 	NULL, --actividad_buffer_proyecto
 	NULL, --actividad_buffer
 	NULL, --actividad_patron_proyecto
 	NULL, --actividad_patron
-	'Docente', --nombre
+	'Personas', --nombre
 	NULL, --descripcion
 	'23', --punto_montaje
 	NULL, --actividad_accion
@@ -48,7 +48,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --redirecciona
 	NULL, --usuario
 	'0', --exportable
-	'2015-08-04 19:21:09', --creacion
+	'2016-05-05 11:33:02', --creacion
 	'0'  --retrasar_headers
 );
 --- FIN Grupo de desarrollo 0
@@ -59,8 +59,8 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 INSERT INTO apex_item_objeto (item_id, proyecto, item, objeto, orden, inicializar) VALUES (
 	NULL, --item_id
 	'designa', --proyecto
-	'3636', --item
-	'3216', --objeto
-	'1', --orden
+	'3728', --item
+	'3718', --objeto
+	'0', --orden
 	NULL  --inicializar
 );
