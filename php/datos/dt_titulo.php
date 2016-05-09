@@ -16,10 +16,10 @@ class dt_titulo extends toba_datos_tabla
 			t_t.desc_titul
 		FROM
 			titulo as t_t
-		ORDER BY codc_nivel";
+		ORDER BY codc_nivel,desc_titul";
 		return toba::db('designa')->consultar($sql);
 	}
-
+        
 
 }
 ?>

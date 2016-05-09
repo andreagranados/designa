@@ -6,7 +6,11 @@ class ci_proyectos_investigacion extends toba_ci
         protected $s__pantalla;
         protected $s__mostrar_e;
 
-        
+        //este metodo permite mostrar en el popup la persona que selecciona o la que ya tenia
+        //recibe como argumento el id 
+        function get_persona($id){
+            return $this->dep('datos')->tabla('persona')->get_persona($id); 
+        }
         function fecha_desde_proyecto(){
             $datos=$this->dep('datos')->tabla('pinvestigacion')->get();
             return date("d/m/Y",strtotime($datos['fec_desde']));
@@ -137,9 +141,20 @@ class ci_proyectos_investigacion extends toba_ci
 	{
             //muestra los integrantes internos del p de inv
             $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
-            
             $ar=array('pinvest' => $pi['id_pinv']);
             $res = $this->dep('datos')->tabla('integrante_interno_pi')->get_filas($ar);
+            //le agrego el nombre del docente 
+            foreach ($res as $key => $row) {
+                $nom=$this->dep('datos')->tabla('docente')->get_nombre($res[$key]['id_designacion']);
+                $res[$key]['nombre']=$nom;
+            }
+            //ordenamos el arreglo
+           //$aux tiene la información que queremos ordenar
+           foreach ($res as $key => $row) {
+                $aux[$key] = $row['nombre'].$row['desde'];
+            }
+            array_multisort($aux, SORT_ASC, $res);
+            
             if(isset($res)){//si hay integrantes
                 
                 foreach ($res as $key => $value) {
@@ -234,20 +249,22 @@ class ci_proyectos_investigacion extends toba_ci
 
             if($this->s__mostrar_e==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('form_integrante_e')->descolapsar();
-                $form->ef('apellido')->set_obligatorio('true');
-                $form->ef('nombre')->set_obligatorio('true');
-                $form->ef('tipo_sexo')->set_obligatorio('true');
-                $form->ef('tipo_docum')->set_obligatorio('true');
-                $form->ef('nro_docum')->set_obligatorio('true');
+                $form->ef('integrante')->set_obligatorio('true');
                 $form->ef('funcion_p')->set_obligatorio('true');
                 $form->ef('carga_horaria')->set_obligatorio('true');
                 $form->ef('desde')->set_obligatorio('true');
                 $form->ef('hasta')->set_obligatorio('true');
+                $form->ef('rescd')->set_obligatorio('true');
             }else{
                 $this->dep('form_integrante_e')->colapsar();
             }
             if ($this->dep('datos')->tabla('integrante_externo_pi')->esta_cargada()) {
-		$form->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get());
+                $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get();
+		$persona=$this->dep('datos')->tabla('persona')->get_datos($datos['tipo_docum'],$datos['nro_docum']);             
+                if(count($persona)>0){
+                    $datos['integrante']=$persona[0]['nombre'];
+                }
+                $form->set_datos($datos);
 		}
         }
         //da de alta un nuevo integrante dentro del proyecto 
@@ -256,6 +273,10 @@ class ci_proyectos_investigacion extends toba_ci
             $pe=$this->dep('datos')->tabla('pinvestigacion')->get();
             $datos['pinvest']=$pe['id_pinv'];
             $datos['nro_tabla']=1;
+            //recupero todas las personas, Las recupero igual que como aparecen en operacion Configuracion->Personas
+            $personas=$this->dep('datos')->tabla('persona')->get_listado();           
+            $datos['tipo_docum']=$personas[$datos['integrante']]['tipo_docum'];
+            $datos['nro_docum']=$personas[$datos['integrante']]['nro_docum'];
             $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
             $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
             $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
@@ -292,6 +313,7 @@ class ci_proyectos_investigacion extends toba_ci
             $this->s__mostrar_e=1;
             $pe=$this->dep('datos')->tabla('pinvestigacion')->get();
             $datos['pinvest']=$pe['id_pinv'];
+           //print_r($datos);exit();
             $this->dep('datos')->tabla('integrante_externo_pi')->cargar($datos);
 	}
         function conf__cuadro_plantilla(toba_ei_cuadro $cuadro)

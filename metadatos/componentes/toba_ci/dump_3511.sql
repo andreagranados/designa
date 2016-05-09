@@ -323,7 +323,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1531', --pantalla
 	'pant_planilla', --identificador
 	'4', --orden
-	'4-Planilla de Personal Afectado', --etiqueta
+	'4-Planilla de Personal Afectado (Estado Actual)', --etiqueta
 	'Muestra todos los integrantes cuya fecha "HASTA" coincide con la fecha hasta del proyecto correspondiente. <br>
 Los integrantes que no tienen esa fecha se han dado de baja previo a la finalización del mismo.', --descripcion
 	NULL, --tip

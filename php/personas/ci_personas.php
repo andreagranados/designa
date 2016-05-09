@@ -1,7 +1,9 @@
 <?php
 class ci_personas extends toba_ci
 {
-    protected $s__mostrar;
+        protected $s__mostrar;
+        
+        
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
@@ -37,9 +39,10 @@ class ci_personas extends toba_ci
 
 	function evt__formulario__alta($datos)
 	{
-		$this->dep('datos')->tabla('persona')->set($datos);
+                $this->dep('datos')->tabla('persona')->set($datos);
 		$this->dep('datos')->sincronizar();
 		$this->resetear();
+                $this->s__mostrar=0;
 	}
 
 	function evt__formulario__modificacion($datos)

@@ -96,18 +96,6 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	NULL, --inicializar
 	NULL  --orden
 );
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
-	'2554', --dep_id
-	'3722', --objeto_consumidor
-	'3721', --objeto_proveedor
-	'formulario', --identificador
-	NULL, --parametros_a
-	NULL, --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
-	NULL  --orden
-);
 --- FIN Grupo de desarrollo 0
 
 ------------------------------------------------------------
@@ -145,11 +133,4 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'3722', --objeto_ci
 	'0', --orden
 	'2553'  --dep_id
-);
-INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
-	'designa', --proyecto
-	'1572', --pantalla
-	'3722', --objeto_ci
-	'1', --orden
-	'2554'  --dep_id
 );
