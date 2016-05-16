@@ -176,7 +176,6 @@ class ci_proyectos_investigacion extends toba_ci
             foreach ($datos as $clave => $elem){
                  $datos[$clave]['pinvest']=$pi['id_pinv'];      
             }
-            
             $this->dep('datos')->tabla('integrante_interno_pi')->procesar_filas($datos);
             $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
             

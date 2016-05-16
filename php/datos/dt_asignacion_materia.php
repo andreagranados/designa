@@ -409,8 +409,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 
             }
         }
-        
-        return $auxiliar;
+       return $auxiliar;
         
     }
      function get_dictado_conjunto($where=null){

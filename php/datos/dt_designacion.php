@@ -398,15 +398,16 @@ class dt_designacion extends toba_datos_tabla
                 $udia=$this->ultimo_dia_periodo();
                 $pdia=$this->primer_dia_periodo();
 		$where = array();
-                 //[activo] => Array ( [condicion] => es_igual_a [valor] => 0 )
+                //[activo] => Array ( [condicion] => es_igual_a [valor] => 0 )
 		if (isset($filtro['activo'])) {
                     if($filtro['activo']['valor']==1){//activo
                         $where[]="t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)";
                     }else{//no activo
                         $where[]="not (t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null))";
-                    }
-			
-		}
+                    }	
+                }else{//por defecto lo ordena por fecha de inicio
+                    $where[]="t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)";
+                }
 		
                 // [desde] => Array ( [condicion] => es_igual_a [valor] => 2015-08-18 )
                 if (isset($filtro['desde'])) {
@@ -500,7 +501,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 			AND  t_d.carac = t_c.id_car
 			AND  t_d.uni_acad = t_ua.sigla".
                   " AND t_d.id_docente=".$agente.      
-		" ORDER BY ord_gestion";
+		" ORDER BY desde";
                 
                 $sql = toba::perfil_de_datos()->filtrar($sql);
                 

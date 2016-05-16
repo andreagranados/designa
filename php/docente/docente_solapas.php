@@ -47,6 +47,13 @@ class docente_solapas extends toba_ci
         $this->controlador()->dep('datos')->tabla('titulos_docente')->cargar($datos);
         
     }
+    //---pantalla categorizacion
+    //
+    function conf__cuadro_categorizacion(toba_ei_cuadro $cuadro)
+    {
+       $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
+       $cuadro->set_datos($this->controlador()->dep('datos')->tabla('categorizacion')->sus_categorizaciones($doc['id_docente'])); 
+    }
     //-----------------------------------------------------------------------------------
     //---- form_porc ------------------------------------------------------------------
     //-----------------------------------------------------------------------------------
