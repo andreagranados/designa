@@ -136,7 +136,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3432', --objeto_cuadro_col
 	'codigo', --clave
 	'1', --orden
-	'Codigo', --titulo
+	'Código', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

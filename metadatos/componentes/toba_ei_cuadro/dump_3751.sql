@@ -21,7 +21,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'P Investigacion - CI - ci_pinv_otros - cuadro_subsidio', --nombre
-	NULL, --titulo
+	'Listado de Subsidios del Proyecto', --titulo
 	'0', --colapsable
 	NULL, --descripcion
 	NULL, --fuente_datos_proyecto
@@ -99,9 +99,9 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	'0', --paginar
 	NULL, --tamano_pagina
 	'P', --tipo_paginado
-	'0', --mostrar_total_registros
+	'1', --mostrar_total_registros
 	'0', --eof_invisible
-	NULL, --eof_customizado
+	'Este proyecto no tiene subsidios cargados', --eof_customizado
 	'0', --siempre_con_titulo
 	'0', --exportar_paginado
 	'1', --exportar
@@ -136,7 +136,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3471', --objeto_cuadro_col
 	'fecha_pago', --clave
 	'2', --orden
-	'Fecha Pago', --titulo
+	'Fecha de Pago', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

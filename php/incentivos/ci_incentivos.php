@@ -24,6 +24,7 @@ class ci_incentivos extends toba_ci
 	function evt__filtros__cancelar()
 	{
 		unset($this->s__datos_filtro);
+                unset($this->s__where);
 	}
 
 	//---- Cuadro -----------------------------------------------------------------------
@@ -31,13 +32,12 @@ class ci_incentivos extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-                    //print_r($this->s__where); 
-			//$cuadro->set_datos($this->dep('datos')->tabla('cobro_incentivo')->get_listado($this->s__where));
+                    $cuadro->set_datos($this->dep('datos')->tabla('cobro_incentivo')->get_listado($this->s__where));
 		} else {
-			$cuadro->set_datos($this->dep('datos')->tabla('cobro_incentivo')->get_listado());
+                    $cuadro->set_datos($this->dep('datos')->tabla('cobro_incentivo')->get_listado());
 		}
 	}
-//
+
 	function evt__cuadro__seleccion($datos)
 	{
 		$this->dep('datos')->tabla('cobro_incentivo')->cargar($datos);
@@ -73,19 +73,21 @@ class ci_incentivos extends toba_ci
 		$this->dep('datos')->tabla('cobro_incentivo')->set($datos);
 		$this->dep('datos')->tabla('cobro_incentivo')->sincronizar();
 		$this->resetear();
+                $this->s__mostrar=0;
 	}
 
 	function evt__formulario__modificacion($datos)
 	{
 		$this->dep('datos')->tabla('cobro_incentivo')->set($datos);
 		$this->dep('datos')->tabla('cobro_incentivo')->sincronizar();
-		$this->resetear();
+		
 	}
 
 	function evt__formulario__baja()
 	{
 		$this->dep('datos')->eliminar_todo();
 		$this->resetear();
+                $this->s__mostrar=0;
 	}
 
 	function evt__formulario__cancelar()
@@ -120,7 +122,9 @@ class ci_incentivos extends toba_ci
 
 	function evt__alta()
 	{
+            $this->resetear();
             $this->s__mostrar=1;
+            
 	}
 
 }

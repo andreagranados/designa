@@ -15,7 +15,6 @@ class dt_cobro_incentivo extends toba_datos_tabla
                         LEFT OUTER JOIN docente t_do ON (t_ci.id_docente=t_do.id_docente) 
                         LEFT OUTER JOIN pinvestigacion t_i ON (t_i.id_pinv=t_ci.id_proyecto)
                         $where";
-		
 		return toba::db('designa')->consultar($sql);
 	}
 

@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3733]--  P Investigacion - DR 
+--[3772]--  Estímulos - DR 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -9,7 +9,7 @@
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, clase_proyecto, clase, punto_montaje, subclase, subclase_archivo, objeto_categoria_proyecto, objeto_categoria, nombre, titulo, colapsable, descripcion, fuente_datos_proyecto, fuente_datos, solicitud_registrar, solicitud_obj_obs_tipo, solicitud_obj_observacion, parametro_a, parametro_b, parametro_c, parametro_d, parametro_e, parametro_f, usuario, creacion, posicion_botonera) VALUES (
 	'designa', --proyecto
-	'3733', --objeto
+	'3772', --objeto
 	NULL, --anterior
 	NULL, --identificador
 	NULL, --reflexivo
@@ -20,7 +20,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
-	'P Investigacion - DR', --nombre
+	'Estímulos - DR', --nombre
 	NULL, --titulo
 	NULL, --colapsable
 	NULL, --descripcion
@@ -36,7 +36,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --parametro_e
 	NULL, --parametro_f
 	NULL, --usuario
-	'2016-05-11 12:54:28', --creacion
+	'2016-05-17 13:42:35', --creacion
 	NULL  --posicion_botonera
 );
 --- FIN Grupo de desarrollo 0
@@ -46,7 +46,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 ------------------------------------------------------------
 INSERT INTO apex_objeto_datos_rel (proyecto, objeto, debug, clave, ap, punto_montaje, ap_clase, ap_archivo, sinc_susp_constraints, sinc_orden_automatico, sinc_lock_optimista) VALUES (
 	'designa', --proyecto
-	'3733', --objeto
+	'3772', --objeto
 	'0', --debug
 	NULL, --clave
 	'2', --ap
@@ -65,22 +65,10 @@ INSERT INTO apex_objeto_datos_rel (proyecto, objeto, debug, clave, ap, punto_mon
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2610', --dep_id
-	'3733', --objeto_consumidor
+	'2614', --dep_id
+	'3772', --objeto_consumidor
 	'3761', --objeto_proveedor
 	'estimulo', --identificador
-	'1', --parametros_a
-	'1', --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
-	'5'  --orden
-);
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
-	'2570', --dep_id
-	'3733', --objeto_consumidor
-	'3506', --objeto_proveedor
-	'pinvestigacion', --identificador
 	'1', --parametros_a
 	'1', --parametros_b
 	NULL, --parametros_c
@@ -89,50 +77,14 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2594', --dep_id
-	'3733', --objeto_consumidor
-	'3750', --objeto_proveedor
-	'subsidio', --identificador
-	'1', --parametros_a
-	'1', --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
-	'3'  --orden
-);
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
-	'2613', --dep_id
-	'3733', --objeto_consumidor
+	'2618', --dep_id
+	'3772', --objeto_consumidor
 	'3769', --objeto_proveedor
 	'tiene_estimulo', --identificador
 	'1', --parametros_a
 	'1', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
-	'6'  --orden
-);
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
-	'2591', --dep_id
-	'3733', --objeto_consumidor
-	'3227', --objeto_proveedor
-	'unidad_acad', --identificador
-	'1', --parametros_a
-	'1', --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
 	'2'  --orden
-);
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
-	'2597', --dep_id
-	'3733', --objeto_consumidor
-	'3753', --objeto_proveedor
-	'winsip', --identificador
-	'1', --parametros_a
-	'1', --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
-	'4'  --orden
 );
 --- FIN Grupo de desarrollo 0

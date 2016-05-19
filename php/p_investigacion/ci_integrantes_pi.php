@@ -122,6 +122,7 @@ class ci_integrantes_pi extends designa_ci
         {
             $this->dep('datos')->tabla('integrante_externo_pi')->eliminar_todo();
 	    $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+            $this->s__mostrar_e=0;
              
         }
         function evt__form_integrante_e__modificacion($datos)

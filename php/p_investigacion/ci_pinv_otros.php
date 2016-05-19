@@ -4,7 +4,31 @@ class ci_pinv_otros extends designa_ci
         protected $s__mostrar;
         protected $s__mostrar_s;
         protected $s__pantalla;
+        protected $s__mostrar_form_est;
+        protected $s__mostrar_form_tiene;
         
+        //este metodo permite mostrar en el popup la persona que selecciona o la que ya tenia
+        //recibe como argumento el id 
+        function get_estimulo($id){
+            return $this->controlador()->dep('datos')->tabla('estimulo')->get_estimulo($id); 
+        }
+        //recibe la resolucion. El $id me da el indice del estimulo ordenado por anio, fecha_pagado, y resol
+        function get_expediente($id){
+            if($this->controlador()->dep('datos')->tabla('tiene_estimulo')->esta_cargada()){
+                $te=$this->controlador()->dep('datos')->tabla('tiene_estimulo')->get();
+                if($te['resolucion']==$id){
+                    return $id;
+                }else{
+                    $est = $this->controlador()->dep('datos')->tabla('estimulo')->get_listado(); 
+                    return $est[$id]['expediente'];
+                }
+            }else{//sino esta cargada es porque va a ingresar un nuevo tiene_estimulo
+                //el $id es el indice del estimulo
+                $est = $this->controlador()->dep('datos')->tabla('estimulo')->get_listado(); 
+                return $est[$id]['expediente'];
+            }
+              
+        }
 	//-----------------------------------------------------------------------------------
 	//---- formulario -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -100,7 +124,7 @@ class ci_pinv_otros extends designa_ci
 	function evt__form_subsidio__baja()
 	{
             $this->controlador()->dep('datos')->tabla('subsidio')->eliminar_todo();
-            $this->resetear();
+            $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
 	}
 
 	function evt__form_subsidio__modificacion($datos)
@@ -160,7 +184,7 @@ class ci_pinv_otros extends designa_ci
 	function evt__form_winsip__baja()
 	{
             $this->controlador()->dep('datos')->tabla('winsip')->eliminar_todo();
-            $this->resetear();
+            $this->controlador()->dep('datos')->tabla('winsip')->resetear();
 	}
 
 	function evt__form_winsip__modificacion($datos)
@@ -184,14 +208,89 @@ class ci_pinv_otros extends designa_ci
 	{
             $this->s__pantalla = "pant_subsidios";
 	}
+        
+        function conf__pant_estimulos(toba_ei_pantalla $pantalla)
+	{
+            $this->s__pantalla = "pant_estimulos";
+	}
+        //-----------------------------------------------------------------------------------
+	//---- Eventos --------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
         function evt__agregar(){
             switch ($this->s__pantalla) {
                 case "pant_winsip":$this->s__mostrar_s=1; $this->controlador()->dep('datos')->tabla('winsip')->resetear();break;
                 case "pant_subsidios":$this->s__mostrar=1; $this->controlador()->dep('datos')->tabla('subsidio')->resetear();break;   
+                case "pant_estimulos":$this->s__mostrar_form_tiene=1; $this->controlador()->dep('datos')->tabla('tiene_estimulo')->resetear();break;   
             }
         }
-        
-        
+       
+        //-----------------------------------------------------------------------------------
+	//---- cuadro_tiene_estimulo --------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__cuadro_tiene_estimulo(toba_ei_cuadro $cuadro)
+	{
+            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('tiene_estimulo')->get_listado($pi['id_pinv']));
+	}
+        function evt__cuadro_tiene_estimulo__seleccion($datos)
+        {
+            $this->s__mostrar_form_tiene=1;
+            $this->controlador()->dep('datos')->tabla('tiene_estimulo')->cargar($datos);
+        }
+        //-----------------------------------------------------------------------------------
+        function conf__form_estimulo(toba_ei_formulario $form)
+	{
+            if($this->s__mostrar_form_tiene==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
+                $this->dep('form_estimulo')->descolapsar();
+                $form->ef('expediente')->set_solo_lectura(true);   
+            }
+            else{$this->dep('form_estimulo')->colapsar();
+              }
+            if ($this->controlador()->dep('datos')->tabla('tiene_estimulo')->esta_cargada()) {   
+              $form->set_datos($this->controlador()->dep('datos')->tabla('tiene_estimulo')->get());
+            }
+        }
+        //crea un nuevo registro en tiene_estimulo
+        function evt__form_estimulo__alta($datos)
+        {
+            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $datos['id_proyecto']=$pi['id_pinv'];
+            $indice=$datos['resolucion'];//si o si elige del popup
+            //recupero todas los estimulos, Los recupero igual que como aparecen en operacion Configuracion->Estimulos
+            $estimulos=$this->controlador()->dep('datos')->tabla('estimulo')->get_listado();           
+            $datos['resolucion']=$estimulos[$indice]['resolucion'];
+            $datos['expediente']=$estimulos[$indice]['expediente'];
+         
+            $this->controlador()->dep('datos')->tabla('tiene_estimulo')->set($datos);
+            $this->controlador()->dep('datos')->tabla('tiene_estimulo')->sincronizar();
+            $this->controlador()->dep('datos')->tabla('tiene_estimulo')->resetear();
+            $this->s__mostrar_form_tiene=0;
+            
+        }
+        function evt__form_estimulo__baja($datos)
+        {
+            $this->controlador()->dep('datos')->tabla('tiene_estimulo')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('tiene_estimulo')->resetear();
+            $this->s__mostrar_form_tiene=0;
+            
+        }
+        function evt__form_estimulo__modificacion($datos)
+        {
+            //recupero el tiene_estimulo
+            $te=$this->controlador()->dep('datos')->tabla('tiene_estimulo')->get();
+            if($te['resolucion']!=$datos['resolucion']){//porque eligio del popup, entonces datos['resolucion'] es el indice
+                $indice=$datos['resolucion'];//si o si elige del popup
+                $estimulos=$this->controlador()->dep('datos')->tabla('estimulo')->get_listado();           
+                $datos['resolucion']=$estimulos[$indice]['resolucion'];
+                $datos['expediente']=$estimulos[$indice]['expediente'];
+            }
+            
+            $this->controlador()->dep('datos')->tabla('tiene_estimulo')->set($datos);
+            $this->controlador()->dep('datos')->tabla('tiene_estimulo')->sincronizar();
+            
+        }
 	
 }
 ?>
