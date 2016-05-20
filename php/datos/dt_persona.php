@@ -1,7 +1,37 @@
 <?php
 class dt_persona extends toba_datos_tabla
 {
-	
+	function get_cuil($sexo,$doc)
+        {
+            switch ($sexo) {
+                case 'F': $xy=27;break;
+
+                case 'M': $xy=20;break;
+            }
+             $arreglo=array(
+                1    => 5,
+                2    => 4,
+                3    => 3,
+                4    => 2,
+                5    => 7,
+                6    => 6,
+                7    => 5,
+                8    => 4,
+                9    => 3,
+                10    => 2,
+                );
+            $suma=0;
+            $cadena=$xy.$doc;
+            $long= strlen($cadena);
+            $i=1;
+            while ($i<=$long) {
+                $suma=$suma+(substr($cadena, $i, 1)*$arreglo[$i]); 
+                $i++;
+            }
+           
+            
+            
+        }
 	function get_descripciones()
 	{
 		$sql = "SELECT * FROM persona ORDER BY apellido";
