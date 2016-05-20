@@ -181,6 +181,8 @@ class ci_pinv_otros extends designa_ci
             $datos['id_proyecto']=$pi['id_pinv'];
             $this->controlador()->dep('datos')->tabla('winsip')->set($datos);
             $this->controlador()->dep('datos')->tabla('winsip')->sincronizar();
+            $this->controlador()->dep('datos')->tabla('winsip')->resetear();
+            $this->s__mostrar_s=0;
 	}
 
 	function evt__form_winsip__baja()
