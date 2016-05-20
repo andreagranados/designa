@@ -119,6 +119,8 @@ class ci_pinv_otros extends designa_ci
             $datos['id_proyecto']=$pi['id_pinv'];
             $this->controlador()->dep('datos')->tabla('subsidio')->set($datos);
             $this->controlador()->dep('datos')->tabla('subsidio')->sincronizar();
+            $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
+            $this->s__mostrar=0;
 	}
 
 	function evt__form_subsidio__baja()

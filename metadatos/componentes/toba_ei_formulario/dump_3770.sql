@@ -354,8 +354,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'4', --orden
 	'Estado', --etiqueta
 	NULL, --etiqueta_estilo
-	'A (Aprobado) <br>
-D (Desaprobado)', --descripcion
+	'P (Pendiente) <br>
+R (Rendido)', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -373,7 +373,7 @@ D (Desaprobado)', --descripcion
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'A,D', --carga_lista
+	'P,R', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	NULL, --carga_maestros
