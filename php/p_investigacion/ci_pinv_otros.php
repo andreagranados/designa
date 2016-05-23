@@ -171,7 +171,15 @@ class ci_pinv_otros extends designa_ci
                 $this->dep('form_winsip')->colapsar();
              }
              if ($this->controlador()->dep('datos')->tabla('winsip')->esta_cargada()) {
-                $form->set_datos($this->controlador()->dep('datos')->tabla('winsip')->get());
+                 $datos=$this->controlador()->dep('datos')->tabla('winsip')->get();
+                 switch ($datos['resultado']) {
+                     case 'S':$datos['resultado']='Satisfatorio';break;
+                     case 'N':$datos['resultado']='No Satisfactorio';break;
+                     default:
+                         break;
+                 }
+                 
+                $form->set_datos($datos);
             }
 	}
 
@@ -179,6 +187,7 @@ class ci_pinv_otros extends designa_ci
 	{
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $datos['id_proyecto']=$pi['id_pinv'];
+            $datos['resultado']=substr($datos['resultado'],0,1);
             $this->controlador()->dep('datos')->tabla('winsip')->set($datos);
             $this->controlador()->dep('datos')->tabla('winsip')->sincronizar();
             $this->controlador()->dep('datos')->tabla('winsip')->resetear();
@@ -193,6 +202,7 @@ class ci_pinv_otros extends designa_ci
 
 	function evt__form_winsip__modificacion($datos)
 	{
+            $datos['resultado']=substr($datos['resultado'],0,1);
             $this->controlador()->dep('datos')->tabla('winsip')->set($datos);
             $this->controlador()->dep('datos')->tabla('winsip')->sincronizar();
 	}

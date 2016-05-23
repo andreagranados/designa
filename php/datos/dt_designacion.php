@@ -157,6 +157,11 @@ class dt_designacion extends toba_datos_tabla
                     . " order by t_n.desde";
             return toba::db('designa')->consultar($sql); 
         }
+        function get_ua($id_des){
+            $sql="select uni_acad from designacion where id_designacion=".$id_des;
+            $res= toba::db('designa')->consultar($sql); 
+            return $res[0]['uni_acad'];
+        }
         function chequear_presup($id_des){
             $sql="update designacion set check_presup=1 where id_designacion=".$id_des;
             toba::db('designa')->consultar($sql); 

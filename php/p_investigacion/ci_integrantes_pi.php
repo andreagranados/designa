@@ -71,8 +71,12 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             foreach ($datos as $clave => $elem){
                  $datos[$clave]['pinvest']=$pi['id_pinv'];      
+                 if(isset($datos[$clave]['id_designacion'])){
+                    $uni=$this->dep('datos')->tabla('designacion')->get_ua($datos[$clave]['id_designacion']);      
+                    $datos[$clave]['ua']=$uni;
+                 }
+                 
             }
-            
             $this->dep('datos')->tabla('integrante_interno_pi')->procesar_filas($datos);
             $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
             
@@ -172,6 +176,19 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $form->set_titulo($pi['denominacion']);
 	}
+        function conf__cuadro_bajas(toba_ei_cuadro $cuadro)
+        {
+            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_bajas($pi['id_pinv']);   
+            $cuadro->set_datos($datos);
+            
+        }
+        function conf__cuadro_mov(toba_ei_cuadro $cuadro)
+        {
+            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_movi($pi['id_pinv']);   
+            $cuadro->set_datos($datos); 
+        }
 
 }
 ?>
