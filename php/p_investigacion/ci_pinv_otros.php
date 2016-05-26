@@ -28,7 +28,7 @@ class ci_pinv_otros extends designa_ci
                  $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_resol($id);
                  return $cod;
              }else{//si el $id es 0 significa que No es programa
-                 return " ";
+                 return "01/01/1999";
              }
          }
          function su_fec_desde($id){
@@ -36,7 +36,7 @@ class ci_pinv_otros extends designa_ci
                  $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_desde($id);
                  return $cod;
              }else{//si el $id es 0 significa que No es programa
-                 return " ";
+                 return "01/01/1999";
              }
          }
          function su_fec_hasta($id){
@@ -44,7 +44,7 @@ class ci_pinv_otros extends designa_ci
                  $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_hasta($id);
                  return $cod;
              }else{//si el $id es 0 significa que No es programa
-                 return " ";
+                 return "01/01/1999";
              }
          }
          function su_nro_ord_cs($id){
@@ -60,7 +60,7 @@ class ci_pinv_otros extends designa_ci
                  $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fecha_ord_cs($id);
                  return $cod;
              }else{//si el $id es 0 significa que No es programa
-                 return " ";
+                 return "01/01/1999";
              }
          
          }
@@ -181,7 +181,8 @@ class ci_pinv_otros extends designa_ci
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($datosp);
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if(isset($datos['programa'])){//si el proyecto pertenece a un programa entonces lo asocio
+            
+            if($datos['programa']!=0){//si el proyecto pertenece a un programa entonces lo asocio
                 $datos2['id_programa']=$datos['programa'];
                 $datos2['id_proyecto']=$pi['id_pinv'];
                 $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
