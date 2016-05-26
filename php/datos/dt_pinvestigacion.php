@@ -29,7 +29,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $con = toba::perfil_de_datos()->filtrar($con);
                 $resul=toba::db('designa')->consultar($con);
                 
-                $sql="select id_pinv,denominacion from pinvestigacion where es_programa=1 and uni_acad='".trim($resul[0]['sigla'])."'";
+                $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,denominacion from pinvestigacion where es_programa=1 and uni_acad='".trim($resul[0]['sigla'])."'";
                 $res=toba::db('designa')->consultar($sql);
                 return toba::db('designa')->consultar($sql);
             }

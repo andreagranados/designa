@@ -119,6 +119,7 @@ class ci_pinv_otros extends designa_ci
                 $this->pantalla()->tab("pant_subsidios")->desactivar();	 
                 $this->pantalla()->tab("pant_estimulos")->desactivar();	 
                 $this->pantalla()->tab("pant_winsip")->desactivar();	 
+                $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
                 }
 	}
         function evt__formulario__modificacion($datos)
