@@ -7,6 +7,64 @@ class ci_pinv_otros extends designa_ci
         protected $s__mostrar_form_est;
         protected $s__mostrar_form_tiene;
         
+        function get_codigo($id){//recibe el programa
+             if($id!=0){//pertenece a un programa entonces el codigo es el del programa
+                 $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_codigo($id);
+                 return $cod;
+             }else{//si el $id es 0 significa que No es programa
+                 return " ";
+             }
+         }
+        function su_nro_resol($id){//recibe el programa
+             if($id!=0){//pertenece a un programa 
+                 $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_nro_resol($id);
+                 return $cod;
+             }else{//si el $id es 0 significa que No es programa
+                 return " ";
+             }
+         }
+         function su_fec_resol($id){
+             if($id!=0){//pertenece a un programa 
+                 $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_resol($id);
+                 return $cod;
+             }else{//si el $id es 0 significa que No es programa
+                 return " ";
+             }
+         }
+         function su_fec_desde($id){
+             if($id!=0){//pertenece a un programa 
+                 $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_desde($id);
+                 return $cod;
+             }else{//si el $id es 0 significa que No es programa
+                 return " ";
+             }
+         }
+         function su_fec_hasta($id){
+             if($id!=0){//pertenece a un programa 
+                 $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_hasta($id);
+                 return $cod;
+             }else{//si el $id es 0 significa que No es programa
+                 return " ";
+             }
+         }
+         function su_nro_ord_cs($id){
+             if($id!=0){//pertenece a un programa 
+                 $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_nro_ord_cs($id);
+                 return $cod;
+             }else{//si el $id es 0 significa que No es programa
+                 return " ";
+             }
+         }
+         function su_fecha_ord_cs($id){
+             if($id!=0){//pertenece a un programa 
+                 $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fecha_ord_cs($id);
+                 return $cod;
+             }else{//si el $id es 0 significa que No es programa
+                 return " ";
+             }
+         
+         }
+         
         //este metodo permite mostrar en el popup la persona que selecciona o la que ya tenia
         //recibe como argumento el id 
         function get_estimulo($id){
@@ -36,7 +94,25 @@ class ci_pinv_otros extends designa_ci
 	function conf__formulario(designa_ei_formulario $form)
 	{
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $form->set_datos($this->controlador()->dep('datos')->tabla('pinvestigacion')->get());
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                if($pi['es_programa']==1){
+                    $pi['es_programa']='SI';
+                    //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                }else{//no es programa
+                    $pi['es_programa']='NO';
+                    $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                    if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->pantalla()->tab("pant_subsidios")->desactivar();	 
+                    }
+                }
+                if($pertenece!=0){
+                    $pi['programa']=$pertenece;
+                }
+                
+                $form->set_datos($pi);
 		}
             else{//si el proyecto no esta cargado no habilito la pantalla
                 $this->pantalla()->tab("pant_integrantes")->desactivar();	 
@@ -47,8 +123,24 @@ class ci_pinv_otros extends designa_ci
 	}
         function evt__formulario__modificacion($datos)
 	{
-		$this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
-                $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+	
+          $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+          switch ($datos['es_programa']) {
+            case 'SI':$datos['es_programa']=1;
+                    $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
+            case 'NO':$datos['es_programa']=0;break;
+            }
+            if(isset($datos['programa'])){
+                $datos2['id_programa']=$datos['programa'];
+                $datos2['id_proyecto']=$pi['id_pinv'];
+                $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
+                $this->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
+                $this->controlador()->dep('datos')->tabla('subproyecto')->resetear();
+            }else{//no pertenece a ningun programa
+                $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
+            }
+            $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
+            $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
 	}
     //elimina un proyecto de investigacion
         function evt__formulario__baja()
@@ -68,10 +160,34 @@ class ci_pinv_otros extends designa_ci
         function evt__formulario__alta($datos)
 	{
             $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
-            $datos['uni_acad']= $ua[0]['sigla'];
-            $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
+            $datosp['uni_acad']= $ua[0]['sigla'];
+            
+            if($datos['es_programa']=='SI'){
+                $datosp['es_programa']=1;
+            }else{
+                $datosp['es_programa']=0;
+            }
+            $datosp['codigo']=$datos['codigo'];
+            $datosp['denominacion']=$datos['denominacion'];
+            $datosp['nro_ord_cs']=$datos['nro_ord_cs'];
+            $datosp['fecha_ord_cs']=$datos['fecha_ord_cs'];
+            $datosp['duracion']=$datos['duracion'];
+            $datosp['fec_desde']=$datos['fec_desde'];
+            $datosp['fec_hasta']=$datos['fec_hasta'];
+            $datosp['nro_resol']=$datos['nro_resol'];
+            $datosp['fec_resol']=$datos['fec_resol'];
+            $datosp['objetivo']=$datos['objetivo'];         
+            $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datosp);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-            $this->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($datos);
+            $this->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($datosp);
+            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            if(isset($datos['programa'])){//si el proyecto pertenece a un programa entonces lo asocio
+                $datos2['id_programa']=$datos['programa'];
+                $datos2['id_proyecto']=$pi['id_pinv'];
+                $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
+                $this->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
+                $this->controlador()->dep('datos')->tabla('subproyecto')->resetear();
+            }
 	}
         function evt__formulario__cancelar()
         {
@@ -305,6 +421,11 @@ class ci_pinv_otros extends designa_ci
             $this->controlador()->dep('datos')->tabla('tiene_estimulo')->sincronizar();
             
         }
-	
+        function conf__cuadro_subp(toba_ei_cuadro $cuadro)
+	{
+            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('pinvestigacion')->sus_subproyectos($pi['id_pinv']));
+            
+        }
 }
 ?>

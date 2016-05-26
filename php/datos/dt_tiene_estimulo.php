@@ -2,7 +2,8 @@
 class dt_tiene_estimulo extends toba_datos_tabla
 {
      function get_listado($id_p){
-        $sql="select * from tiene_estimulo where id_proyecto=".$id_p;
+        $sql="select * from tiene_estimulo a LEFT OUTER JOIN estimulo b ON (a.resolucion=b.resolucion and a.expediente=b.expediente) "
+                . " where a.id_proyecto=".$id_p;
         return toba::db('designa')->consultar($sql);
     }
     //devuelve 1 si existen objetos referenciando a este estimulo 
