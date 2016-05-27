@@ -32,7 +32,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             where t_i.pinvest=$id_p)a
             group by pinvest,tipo_docum,nro_docum;";
         toba::db('designa')->consultar($sql);  
-        $sql="select * from (select t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd 
+        $sql="select * from (select t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd ,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as categoria
             from movi a
             LEFT OUTER JOIN docente t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
             LEFT OUTER JOIN designacion t_d ON (t_d.id_docente=t_do.id_docente)
@@ -43,7 +43,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             and funcion_p is not null
             and a.cont>1
             UNION           
-            select t_do.apellido||', '||t_do.nombre as agente,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd
+            select t_do.apellido||', '||t_do.nombre as agente,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd,'' as categoria
             from movi a
             LEFT OUTER JOIN persona t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
             LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.nro_docum=t_do.nro_docum and t_i.tipo_docum=t_do.tipo_docum)
@@ -78,6 +78,11 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                        and t_dd.id_docente=t_doc.id_docente
                                        and t_doc.id_docente=t_do.id_docente
                                        and t_o.hasta=t_p.fec_hasta)
+                                and not exists( select * from integrante_externo_pi t_o, persona t_doc
+                                       where t_o.pinvest=t_p.id_pinv
+                                       and t_o.nro_docum=t_doc.nro_docum
+                                       and t_o.tipo_docum=t_do.tipo_docum
+                                       and t_o.hasta=t_p.fec_hasta)       
         UNION
         select t_d.tipo_docum,t_d.nro_docum,t_i.pinvest,t_i.hasta                                       
         from pinvestigacion t_p
@@ -89,7 +94,14 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                        and t_dd.tipo_docum=t_o.tipo_docum
                                        and t_dd.nro_docum=t_d.nro_docum
                                        and t_dd.tipo_docum=t_d.tipo_docum
-                                       and t_o.hasta=t_p.fec_hasta)                                    
+                                       and t_o.hasta=t_p.fec_hasta) 
+                                and not exists( select * from integrante_interno_pi t_o, designacion t_dd , docente t_doc
+                                       where t_o.pinvest=t_p.id_pinv
+                                      and t_dd.id_designacion=t_o.id_designacion
+                                       and t_dd.id_docente=t_doc.id_docente
+                                       and t_doc.nro_docum=t_d.nro_docum
+                                       and t_doc.tipo_docum=t_d.tipo_docum
+                                       and t_o.hasta=t_p.fec_hasta)        
         )      a                                 
         group by tipo_docum,nro_docum,pinvest
         ";
