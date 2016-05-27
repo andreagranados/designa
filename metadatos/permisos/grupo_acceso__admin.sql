@@ -370,4 +370,28 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	NULL, --item_id
 	'3734'  --item
 );
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'admin', --usuario_grupo_acc
+	NULL, --item_id
+	'3735'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'admin', --usuario_grupo_acc
+	NULL, --item_id
+	'3736'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'admin', --usuario_grupo_acc
+	NULL, --item_id
+	'3737'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'admin', --usuario_grupo_acc
+	NULL, --item_id
+	'3738'  --item
+);
 --- FIN Grupo de desarrollo 0

@@ -9,7 +9,7 @@ class ci_ver_pe extends toba_ci
         function conf__filtros(toba_ei_filtro $filtro)
 	{
             if (isset($this->s__datos_filtro)) {
-			$filtro->set_datos($this->s__datos_filtro);
+                $filtro->set_datos($this->s__datos_filtro);
 		}
            
 	}

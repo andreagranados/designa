@@ -32,6 +32,16 @@ class ci_integrantes_pi extends designa_ci
            
             //muestra los integrantes internos del p de inv
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            if($pi['es_programa']==1){
+                $this->controlador()->pantalla()->tab("pant_estimulos")->desactivar();	     
+            }else{
+                $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                $this->controlador()->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                 if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
+                    }
+            }
             $ar=array('pinvest' => $pi['id_pinv']);
             $this->dep('datos')->tabla('integrante_interno_pi')->cargar($ar);
             
@@ -87,7 +97,19 @@ class ci_integrantes_pi extends designa_ci
 	//-----------------------------------------------------------------------------------
         function conf__form_integrante_e(toba_ei_formulario $form)
 	{
-
+            if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if($pi['es_programa']==1){
+                    $this->controlador()->pantalla()->tab("pant_estimulos")->desactivar();	     
+                }else{
+                    $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                    $this->controlador()->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                    if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
+                    }
+                }
+            }
             if($this->s__mostrar_e==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('form_integrante_e')->descolapsar();
                 $form->ef('integrante')->set_obligatorio('true');
@@ -147,6 +169,14 @@ class ci_integrantes_pi extends designa_ci
 	//-----------------------------------------------------------------------------------
         function conf__cuadro_int(toba_ei_cuadro $cuadro)
 	{
+            if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if($pi['es_programa']==1){
+                    //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
+                    $this->controlador()->pantalla()->tab("pant_estimulos")->desactivar();	 
+                    }
+ 
+                }
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $cuadro->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get_listado($pi['id_pinv']));
 	}
@@ -167,9 +197,22 @@ class ci_integrantes_pi extends designa_ci
         }
         function conf__cuadro_plantilla(toba_ei_cuadro $cuadro)
 	{
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+           if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if($pi['es_programa']==1){
+                    $this->controlador()->pantalla()->tab("pant_estimulos")->desactivar();	     
+                }else{
+                    $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                    $this->controlador()->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                    if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
+                    }
+                }
             $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
             $cuadro->set_datos($datos);
+            }
+                       
 	}
 	function conf__form_encabezado(toba_ei_formulario $form)
 	{
@@ -185,9 +228,23 @@ class ci_integrantes_pi extends designa_ci
         }
         function conf__cuadro_mov(toba_ei_cuadro $cuadro)
         {
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_movi($pi['id_pinv']);   
-            $cuadro->set_datos($datos); 
+             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if($pi['es_programa']==1){
+                    $this->controlador()->pantalla()->tab("pant_estimulos")->desactivar();	     
+                }else{
+                    $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                    $this->controlador()->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                    if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
+                    }
+                }
+                $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_movi($pi['id_pinv']);   
+                $cuadro->set_datos($datos); 
+             }
+            
+            
         }
 
 }

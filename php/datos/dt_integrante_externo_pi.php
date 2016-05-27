@@ -138,6 +138,28 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         //union con los integrantes externos
         return toba::db('designa')->consultar($sql);  
     }
+    function get_proyectos_de($where=null){
+        if(!is_null($where)){
+                    $where=' WHERE '.$where;
+                }else{
+                    $where='';
+                }
+        $sql="select * from (
+                select t_do.nro_docum,t_do.tipo_docum,t_do.apellido,t_do.nombre ,p.codigo,p.denominacion,p.id_pinv,t_i.desde,t_i.hasta,t_i.rescd,t_i.funcion_p,t_i.carga_horaria,nro_ord_cs,t_i.ua
+                from integrante_interno_pi t_i
+                LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)
+                LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) 
+                LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) 
+            UNION
+                select t_d.nro_docum,t_d.tipo_docum,t_d.apellido,t_d.nombre ,p.codigo,p.denominacion,p.id_pinv,t_i.desde,t_i.hasta,t_i.rescd,t_i.funcion_p,t_i.carga_horaria,nro_ord_cs,'' as ua
+                from integrante_externo_pi t_i
+                LEFT OUTER JOIN persona t_d ON (t_i.nro_docum=t_d.nro_docum and t_i.tipo_docum=t_d.tipo_docum)
+                LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) 
+                )a
+               $where"
+                . " order by apellido,nombre,id_pinv,desde";
+        return toba::db('designa')->consultar($sql);  
+    }
 }
 
 ?>

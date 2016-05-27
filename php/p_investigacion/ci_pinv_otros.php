@@ -207,8 +207,25 @@ class ci_pinv_otros extends designa_ci
 
 	function conf__cuadro_subsidio(toba_ei_cuadro $cuadro)
 	{
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('subsidio')->get_listado($pi['id_pinv']));
+            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                if($pi['es_programa']==1){
+                    $pi['es_programa']='SI';
+                    //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                }else{//no es programa
+                    $pi['es_programa']='NO';
+                    $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                    if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->pantalla()->tab("pant_subsidios")->desactivar();	 
+                    }
+                }
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('subsidio')->get_subsidios_de($pi['id_pinv']));
+            }
+            
+            
 	}
         function evt__cuadro_subsidio__seleccion($datos)
         {
@@ -267,8 +284,23 @@ class ci_pinv_otros extends designa_ci
 
 	function conf__cuadro_winsip(toba_ei_cuadro $cuadro)
 	{
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('winsip')->get_listado($pi['id_pinv']));
+            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                if($pi['es_programa']==1){
+                    $pi['es_programa']='SI';
+                    //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                }else{//no es programa
+                    $pi['es_programa']='NO';
+                    $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                    if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->pantalla()->tab("pant_subsidios")->desactivar();	 
+                    }
+                    }
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('winsip')->get_listado($pi['id_pinv']));
+            }
 	}
 
 	function evt__cuadro_winsip__seleccion($datos)
@@ -363,8 +395,23 @@ class ci_pinv_otros extends designa_ci
 
 	function conf__cuadro_tiene_estimulo(toba_ei_cuadro $cuadro)
 	{
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('tiene_estimulo')->get_listado($pi['id_pinv']));
+            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                if($pi['es_programa']==1){
+                    $pi['es_programa']='SI';
+                    //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                }else{//no es programa
+                    $pi['es_programa']='NO';
+                    $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                    if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->pantalla()->tab("pant_subsidios")->desactivar();	 
+                    }
+                }
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('tiene_estimulo')->get_estimulos_de($pi['id_pinv']));
+                }
 	}
         function evt__cuadro_tiene_estimulo__seleccion($datos)
         {
@@ -425,8 +472,25 @@ class ci_pinv_otros extends designa_ci
         }
         function conf__cuadro_subp(toba_ei_cuadro $cuadro)
 	{
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('pinvestigacion')->sus_subproyectos($pi['id_pinv']));
+             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                if($pi['es_programa']==1){
+                    $pi['es_programa']='SI';
+                    //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                }else{//no es programa
+                    $pi['es_programa']='NO';
+                    $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                    if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->pantalla()->tab("pant_subsidios")->desactivar();	 
+                    }
+                    }
+                    $cuadro->set_datos($this->controlador()->dep('datos')->tabla('pinvestigacion')->sus_subproyectos($pi['id_pinv']));
+                    }
+            
+            
             
         }
 }
