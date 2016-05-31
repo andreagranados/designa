@@ -621,7 +621,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                             AND t_d.uni_acad = t_ua.sigla 
                             AND t_d.tipo_desig=1 
                             AND t_no.id_designacion=t_d.id_designacion
-                            AND (((t_no.tipo_nov=2 ) AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
+                            AND (((t_no.tipo_nov=2 or t_no.tipo_nov=5) AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
                                   OR (t_no.tipo_nov=1 or t_no.tipo_nov=4))
                              )
                         UNION
@@ -1124,7 +1124,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                             AND t_d.uni_acad = t_ua.sigla 
                             AND t_d.tipo_desig=1 
                             AND t_no.id_designacion=t_d.id_designacion
-                            AND (((t_no.tipo_nov=2 ) AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
+                            AND (((t_no.tipo_nov=2 or t_no.tipo_nov=5 ) AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
                                   OR (t_no.tipo_nov=1 or t_no.tipo_nov=4))
                              )
                         UNION
@@ -1207,8 +1207,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                             . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
                             . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                     
-               
-                               
+                                              
                     return toba::db('designa')->consultar($sql);
     
 	}
