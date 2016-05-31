@@ -208,7 +208,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'A,D', --carga_lista
+	'P,R', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	'1', --carga_permite_no_seteado

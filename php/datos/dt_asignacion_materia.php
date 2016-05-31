@@ -237,9 +237,9 @@ class dt_asignacion_materia extends toba_datos_tabla
         $auxiliar=array();
         $i=0; 
         $j=0;
-        $sql="select a.id_designacion,a.id_docente,a.anio,a.uni_acad,a.agente,a.legajo,a.cat_mapuche,a.cat_estat,n.nro_norma||'/'||extract(year from n.fecha) as norma,a.id_materia,a.modulo,d.descripcion as id_departamento,ar.descripcion as id_area,o.descripcion as id_orientacion,gestion  from (".
+        $sql="select a.id_designacion,a.id_docente,a.carac,a.anio,a.uni_acad,a.agente,a.legajo,a.cat_mapuche,a.cat_estat,n.nro_norma||'/'||extract(year from n.fecha) as norma,a.id_materia,a.modulo,d.descripcion as id_departamento,ar.descripcion as id_area,o.descripcion as id_orientacion,gestion  from (".
                 "select * from (".
-                 "select  distinct b.id_designacion,b.id_docente,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.id_periodo, a.id_materia,a.modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
+                 "select  distinct b.id_designacion,b.id_docente,b.carac,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.id_periodo, a.id_materia,a.modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
                     from asignacion_materia a, designacion b, docente c
                     where a.id_designacion=b.id_designacion
                     and b.id_docente=c.id_docente
@@ -249,7 +249,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                                     and t_per.anio=$anio
                                     and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))
                     UNION
-                 select  distinct b.id_designacion,b.id_docente,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.periodo, a.id_tutoria,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
+                 select  distinct b.id_designacion,b.id_docente,b.carac,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.periodo, a.id_tutoria,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
                     from asignacion_tutoria a, designacion b, docente c
                     where a.id_designacion=b.id_designacion
                     and b.id_docente=c.id_docente
@@ -261,7 +261,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                                     and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))".
                     " UNION "
                 //designaciones asociadas a pi que no tienen licencia y no tienen materias ni tutorias
-                . " select  distinct b.id_designacion,b.id_docente,$anio as anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,0,0,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
+                . " select  distinct b.id_designacion,b.id_docente,b.carac,$anio as anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,0,0,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
                     from integrante_interno_pi a, designacion b, docente c, mocovi_periodo_presupuestario t_per
                     where a.id_designacion=b.id_designacion
                     and b.id_docente=c.id_docente
@@ -306,6 +306,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                     $auxiliar[$i]['id_area']=$value['id_area'];
                     $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
                     $auxiliar[$i]['gestion']=$value['gestion'];
+                    $auxiliar[$i]['carac']=$value['carac'];
                 
                     $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.modulo=".$value['modulo']." and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
                     
@@ -371,6 +372,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 $auxiliar[$i]['id_area']=$value['id_area'];
                 $auxiliar[$i]['id_orientacion']=$value['id_orientacion'];
                 $auxiliar[$i]['gestion']=$value['gestion'];
+                $auxiliar[$i]['carac']=$value['carac'];
                 
                 $sql="select p.cod_carrera||'-'||a.desc_materia||'('||a.cod_siu||')'||'-'||r.descripcion||'-'||'m'||e.modulo as mat from materia a, plan_estudio p, asignacion_materia e, periodo r where a.id_plan=p.id_plan and e.id_materia=a.id_materia and e.modulo=".$value['modulo']." and e.id_designacion=".$value['id_designacion']. " and e.anio=".$value['anio']." and e.id_periodo=r.id_periodo and a.id_materia=".$value['id_materia'];
                 $resul=toba::db('designa')->consultar($sql);

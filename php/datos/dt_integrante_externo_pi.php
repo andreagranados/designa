@@ -81,7 +81,9 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                 and not exists( select * from integrante_externo_pi t_o, persona t_doc
                                        where t_o.pinvest=t_p.id_pinv
                                        and t_o.nro_docum=t_doc.nro_docum
-                                       and t_o.tipo_docum=t_do.tipo_docum
+                                       and t_o.tipo_docum=t_doc.tipo_docum
+                                       and t_doc.nro_docum=t_do.nro_docum
+                                       and t_doc.tipo_docum=t_do.tipo_docum
                                        and t_o.hasta=t_p.fec_hasta)       
         UNION
         select t_d.tipo_docum,t_d.nro_docum,t_i.pinvest,t_i.hasta                                       
@@ -97,7 +99,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                        and t_o.hasta=t_p.fec_hasta) 
                                 and not exists( select * from integrante_interno_pi t_o, designacion t_dd , docente t_doc
                                        where t_o.pinvest=t_p.id_pinv
-                                      and t_dd.id_designacion=t_o.id_designacion
+                                       and t_dd.id_designacion=t_o.id_designacion
                                        and t_dd.id_docente=t_doc.id_docente
                                        and t_doc.nro_docum=t_d.nro_docum
                                        and t_doc.tipo_docum=t_d.tipo_docum
@@ -137,7 +139,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
                 . " LEFT OUTER JOIN titulos_docente t_t ON (t_t.id_docente=t_do.id_docente)"
                 . " LEFT OUTER JOIN titulo t_u ON (t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD')"
-                . "where t_i.pinvest=".$id_p." and t_i.hasta=p.fec_hasta)"
+                . " where t_i.pinvest=".$id_p." and t_i.hasta=p.fec_hasta)"
                 ." UNION"
                 . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,t_p.institucion as ua,t_e.carga_horaria,t_f.descripcion as funcion_p,t_c.descripcion as cat_invest,calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) as cuil,identificador_personal,'' as titulo,t_e.cat_invest_conicet,t_f.orden"
                 . " from integrante_externo_pi t_e"
@@ -157,13 +159,13 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                     $where='';
                 }
         $sql="select * from (
-                select t_do.nro_docum,t_do.tipo_docum,t_do.apellido,t_do.nombre ,p.codigo,p.denominacion,p.id_pinv,t_i.desde,t_i.hasta,t_i.rescd,t_i.funcion_p,t_i.carga_horaria,nro_ord_cs,t_i.ua
+                select t_do.nro_docum,t_do.tipo_docum,t_do.apellido,t_do.nombre ,p.codigo,p.denominacion,p.id_pinv,t_i.desde,t_i.hasta,t_i.rescd,t_i.funcion_p,t_i.carga_horaria,nro_ord_cs,t_i.ua,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as categoria
                 from integrante_interno_pi t_i
                 LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)
                 LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) 
                 LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) 
             UNION
-                select t_d.nro_docum,t_d.tipo_docum,t_d.apellido,t_d.nombre ,p.codigo,p.denominacion,p.id_pinv,t_i.desde,t_i.hasta,t_i.rescd,t_i.funcion_p,t_i.carga_horaria,nro_ord_cs,'' as ua
+                select t_d.nro_docum,t_d.tipo_docum,t_d.apellido,t_d.nombre ,p.codigo,p.denominacion,p.id_pinv,t_i.desde,t_i.hasta,t_i.rescd,t_i.funcion_p,t_i.carga_horaria,nro_ord_cs,'' as ua,'' as categoria
                 from integrante_externo_pi t_i
                 LEFT OUTER JOIN persona t_d ON (t_i.nro_docum=t_d.nro_docum and t_i.tipo_docum=t_d.tipo_docum)
                 LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) 
