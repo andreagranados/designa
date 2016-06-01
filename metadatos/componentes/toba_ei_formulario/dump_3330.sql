@@ -138,7 +138,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cargo_gestion', --identificador
 	'ef_combo', --elemento_formulario
 	'cargo_gestion', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'1', --orden
 	'Categoría Cargo de Gestión', --etiqueta
@@ -218,7 +218,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ord_gestion', --identificador
 	'ef_editable', --elemento_formulario
 	'ord_gestion', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'3', --orden
 	'Ordenanza/Resolución', --etiqueta
@@ -298,7 +298,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'emite_cargo_gestion', --identificador
 	'ef_combo', --elemento_formulario
 	'emite_cargo_gestion', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'2', --orden
 	'Emite', --etiqueta

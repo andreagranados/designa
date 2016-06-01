@@ -160,7 +160,8 @@ class dt_docente extends toba_datos_tabla
                 }else{
                     $where='';
                 }
-		$sql = "SELECT
+		$sql = "select * from 
+                    (SELECT
 			t_d.id_docente,
 			t_d.legajo,
 			t_d.apellido,
@@ -182,7 +183,7 @@ class dt_docente extends toba_datos_tabla
 			t_d.fec_ingreso
 		FROM
 			docente as t_d	LEFT OUTER JOIN pais as t_p ON (t_d.pais_nacim = t_p.codigo_pais)
-			LEFT OUTER JOIN provincia as t_p1 ON (t_d.pcia_nacim = t_p1.codigo_pcia)
+			LEFT OUTER JOIN provincia as t_p1 ON (t_d.pcia_nacim = t_p1.codigo_pcia))a
 		$where ORDER BY nombre";
 		
 		return toba::db('designa')->consultar($sql);
