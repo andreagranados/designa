@@ -111,11 +111,17 @@ class ci_asignacion_tutorias extends toba_ci
 
 	function evt__formulario__baja()
 	{
-            //cuando elimina una tutoria tambien elimina todas las asignaciones que tenga
-		
-                $this->dep('datos')->tabla('asignacion_tutoria')->eliminar_todo();
+            $tut=$this->dep('datos')->tabla('tutoria')->get();
+            $band=$this->dep('datos')->tabla('tutoria')->tiene_integrantes($tut['id_tutoria']);
+            if($band){
+                toba::notificacion()->agregar(utf8_decode('Tiene integrantes asociados'),'error');
+            }else{
                 $this->dep('datos')->tabla('tutoria')->eliminar_todo();
-		$this->dep('datos')->tabla('tutoria')->resetear();
+                $this->dep('datos')->tabla('tutoria')->resetear();
+                toba::notificacion()->agregar(utf8_decode('Los actividad ha sido eliminada'),'info');    
+                }
+            $this->s__mostrar=0;
+            
 	}
 
 	function evt__formulario__cancelar()

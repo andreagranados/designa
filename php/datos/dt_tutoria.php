@@ -1,7 +1,22 @@
 <?php
 class dt_tutoria extends toba_datos_tabla
 {
-	function get_listado($where=null)
+	function tiene_integrantes($id_tut)
+        {
+             $sql = "SELECT *
+                    FROM
+			asignacion_tutoria
+                    WHERE  id_tutoria=$id_tut
+		";
+             $res = toba::db('designa')->consultar($sql);
+             if(count($res)>0){
+                 return true;
+             }else{
+                 return false;
+             }
+             
+        }
+        function get_listado($where=null)
 	{
             if(!is_null($where)){
                 $where=' and '.$where;
