@@ -56,6 +56,7 @@ class ci_incentivos extends toba_ci
                 $form->ef('cuota')->set_obligatorio('true');
                 $form->ef('fecha')->set_obligatorio('true');
                 $form->ef('monto')->set_obligatorio('true');
+                $form->ef('anio')->set_obligatorio('true');
             }else{
                 $this->dep('formulario')->colapsar();
             }
