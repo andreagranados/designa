@@ -252,7 +252,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1578', --pantalla
 	'pant_integrantes', --identificador
 	'2', --orden
-	'Integrantes', --etiqueta
+	'Participantes', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen

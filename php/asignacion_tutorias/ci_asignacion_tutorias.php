@@ -178,12 +178,11 @@ class ci_asignacion_tutorias extends toba_ci
              if($this->s__mostrar_ml==1){$form->eliminar_evento('modificacion');}
 	}
         
-        //evento implicito, boton mostrar
+        //evento implicito, boton mostrar. 
         function evt__form_tutoria__modificacion($datos)
 	{
             $this->s__anio=$datos['anio'];
-            $this->s__mostrar_ml=1;
-                      
+            $this->s__mostrar_ml=1;           
 	}
         
 	//-----------------------------------------------------------------------------------
@@ -201,12 +200,10 @@ class ci_asignacion_tutorias extends toba_ci
                 $this->dep('form_asigna')->colapsar();
             }
 
-            
             if (isset($this->s__anio)) {
                 $tu=$this->dep('datos')->tabla('tutoria')->get();
                 $ar=array('id_tutoria' => $tu['id_tutoria'],'anio'=>$this->s__anio);
                 $res = $this->dep('datos')->tabla('asignacion_tutoria')->get_filas($ar);
-                
             }else{//no muestro nada
                 $res=array();
             }
@@ -229,8 +226,6 @@ class ci_asignacion_tutorias extends toba_ci
 
 	function evt__volver()
 	{
-            $this->dep('datos')->tabla('asignacion_tutoria')->resetear();
-            $this->dep('datos')->tabla('tutoria')->resetear();
             unset($this->s__anio);
             $this->s__mostrar_ml=0;
             $this->set_pantalla('pant_edicion');

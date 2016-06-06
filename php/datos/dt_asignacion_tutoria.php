@@ -50,7 +50,8 @@ class dt_asignacion_tutoria extends toba_datos_tabla
                 . " where t_a.id_designacion=".$des;
         
 	return toba::db('designa')->consultar($sql);
-    }
+       }
+     
  
 }
 

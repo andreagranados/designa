@@ -7,7 +7,6 @@ class dt_pinvestigacion extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
 
-
         function pertenece_programa($id_proy)
         {
             $sql="select * from subproyecto where id_proyecto=$id_proy";
@@ -23,7 +22,45 @@ class dt_pinvestigacion extends toba_datos_tabla
                     . " where a.id_proyecto=b.id_pinv and a.id_programa=$id_proy";
             return toba::db('designa')->consultar($sql);
         }
-        
+        function get_tipos($es_prog,$prog=null)
+        {
+            $res=array();
+            if($es_prog=='SI'){//se es un programa de investigacion
+              $ar['id_tipo']=0;
+              $ar['descripcion']='PROIN';
+              $res[]=$ar;
+            }else{
+                if($prog==0){//eligio SIN/PROGRAMA--es un proyecto de investigacion
+                    $ar['id_tipo']=1;
+                    $ar['descripcion']='PIN1 ';
+                    $res[]=$ar;
+                    $ar['id_tipo']=2;
+                    $ar['descripcion']='PIN2 ';
+                    $res[]=$ar;
+                }else{//es un sub-proyecto
+                    $ar['id_tipo']=1;
+                    $ar['descripcion']='PIN1 ';
+                    $res[]=$ar;
+                }
+              
+            };
+            
+            return $res;
+
+        }
+        function get_duracion($tipo)
+        {
+            
+            switch ($tipo) {
+                case 0:return 4;break;//son PROIN 0
+                case 1:return 4;break;//son PIN1 1
+                case 2:return 3;break;//son PIN2 2
+//                case 'PROIN':return 4;break;
+                case 'PIN1 ':return 4;break;
+//                case 'PIN2 ':return 3;break;
+            }
+             
+        }
         function get_programas($es_prog=null)
         {
             if($es_prog=='NO'){//trae todos los programas de la unidad academica que se logueo
@@ -31,7 +68,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $con="select sigla,descripcion from unidad_acad ";
                 $con = toba::perfil_de_datos()->filtrar($con);
                 $resul=toba::db('designa')->consultar($con);
-                
+                //le agrego al desplegable la opcion 0 sin programa
                 $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,denominacion from pinvestigacion where es_programa=1 and uni_acad='".trim($resul[0]['sigla'])."'";
                 $res=toba::db('designa')->consultar($sql);
                 return toba::db('designa')->consultar($sql);

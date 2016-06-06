@@ -106,12 +106,19 @@ class ci_pinv_otros extends designa_ci
                     if($pertenece!=0){// pertenece a un programa   
                         //si pertenece a un programa entonces el subsidio lo recibe el programa
                         $this->pantalla()->tab("pant_subsidios")->desactivar();	 
+                        $this->pantalla()->tab("pant_winsip")->desactivar();
                     }
+                }
+                
+                switch ($pi['tipo']) {
+                    case 'PIN1 ':$pi['tipo']=1;break;
+                    case 'PIN2 ':$pi['tipo']=2;break;
+                    case 'PROIN':$pi['tipo']=0;break;
                 }
                 if($pertenece!=0){
                     $pi['programa']=$pertenece;
-                }
-                
+                }else{$pi['programa']=0;}
+              
                 $form->set_datos($pi);
 		}
             else{//si el proyecto no esta cargado no habilito la pantalla
@@ -123,20 +130,29 @@ class ci_pinv_otros extends designa_ci
                 }
 	}
         function evt__formulario__modificacion($datos)
-	{
-	
+	{     
           $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
           switch ($datos['es_programa']) {
             case 'SI':$datos['es_programa']=1;
                     $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
             case 'NO':$datos['es_programa']=0;break;
             }
-            if(isset($datos['programa'])){
-                $datos2['id_programa']=$datos['programa'];
-                $datos2['id_proyecto']=$pi['id_pinv'];
-                $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
-                $this->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
-                $this->controlador()->dep('datos')->tabla('subproyecto')->resetear();
+          switch ($datos['tipo']) {
+              case 0:$datos['tipo']='PROIN';break;
+              case 1:$datos['tipo']='PIN1 ';break;
+              case 2:$datos['tipo']='PIN2 ';break;
+          }  
+           //print_r($datos);exit();
+          if($datos['programa']!=0){
+                $band=$this->controlador()->dep('datos')->tabla('subproyecto')->esta($datos['programa'],$pi['id_pinv']);
+                if(!$band){
+                    $datos2['id_programa']=$datos['programa'];
+                    $datos2['id_proyecto']=$pi['id_pinv'];
+                    $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
+                    $this->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
+                    $this->controlador()->dep('datos')->tabla('subproyecto')->resetear();
+                }
+                
             }else{//no pertenece a ningun programa
                 $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
             }
@@ -177,7 +193,13 @@ class ci_pinv_otros extends designa_ci
             $datosp['fec_hasta']=$datos['fec_hasta'];
             $datosp['nro_resol']=$datos['nro_resol'];
             $datosp['fec_resol']=$datos['fec_resol'];
-            $datosp['objetivo']=$datos['objetivo'];         
+            $datosp['objetivo']=$datos['objetivo']; 
+            switch ($datos['tipo']) {
+                case 0:$datosp['tipo']='PROIN'; break;
+                case 1:$datosp['tipo']='PIN1';break;
+                case 2:$datosp['tipo']='PIN2';break;
+            }
+            
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datosp);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($datosp);
@@ -220,6 +242,7 @@ class ci_pinv_otros extends designa_ci
                     if($pertenece!=0){// pertenece a un programa   
                         //si pertenece a un programa entonces el subsidio lo recibe el programa
                         $this->pantalla()->tab("pant_subsidios")->desactivar();	 
+                        $this->pantalla()->tab("pant_winsip")->desactivar();
                     }
                 }
                 $cuadro->set_datos($this->controlador()->dep('datos')->tabla('subsidio')->get_subsidios_de($pi['id_pinv']));
@@ -407,7 +430,8 @@ class ci_pinv_otros extends designa_ci
                     $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
                     if($pertenece!=0){// pertenece a un programa   
                         //si pertenece a un programa entonces el subsidio lo recibe el programa
-                        $this->pantalla()->tab("pant_subsidios")->desactivar();	 
+                        $this->pantalla()->tab("pant_subsidios")->desactivar();	
+                        $this->pantalla()->tab("pant_winsip")->desactivar();
                     }
                 }
                 $cuadro->set_datos($this->controlador()->dep('datos')->tabla('tiene_estimulo')->get_estimulos_de($pi['id_pinv']));

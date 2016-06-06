@@ -62,22 +62,10 @@ class ci_p_investigacion extends toba_ci
                 $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
                  $form->set_titulo($pi['denominacion']);
                 
-            }
-
-        
+            }        
         }
 
-//	function evt__eliminar()
-//	{
-//		$this->dep('datos')->eliminar_todo();
-//		$this->resetear();
-//	}
-//
-//	function evt__guardar()
-//	{
-//		$this->dep('datos')->sincronizar();
-//		$this->resetear();
-//	}
+
 
 }
 

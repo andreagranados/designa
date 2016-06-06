@@ -209,7 +209,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1579', --pantalla
 	'pant_integrantes_i', --identificador
 	'1', --orden
-	'Integrantes Docentes', --etiqueta
+	'Participantes Docentes', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
@@ -228,7 +228,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1580', --pantalla
 	'pant_integrantes_e', --identificador
 	'2', --orden
-	'Otros Integrantes', --etiqueta
+	'Otros Participantes', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen

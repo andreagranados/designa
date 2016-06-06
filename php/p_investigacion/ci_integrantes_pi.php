@@ -21,6 +21,7 @@ class ci_integrantes_pi extends designa_ci
             $datos=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             return $datos['nro_resol'];
         }
+       
 
 	//-----------------------------------------------------------------------------------
 	//---- form_integrantes -------------------------------------------------------------
@@ -40,6 +41,7 @@ class ci_integrantes_pi extends designa_ci
                  if($pertenece!=0){// pertenece a un programa   
                         //si pertenece a un programa entonces el subsidio lo recibe el programa
                         $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
+                        $this->controlador()->pantalla()->tab("pant_winsip")->desactivar();	 
                     }
             }
             $ar=array('pinvest' => $pi['id_pinv']);
@@ -68,7 +70,7 @@ class ci_integrantes_pi extends designa_ci
                     $res[$key]['id_docente']=$doc;
                     //autocompleto con blanco hasta 5
                     $res[$key]['funcion_p']=str_pad($res[$key]['funcion_p'], 4); 
-                   // $res[$key]['ua']=str_pad($res[$key]['ua'], 5); 
+                    $res[$key]['cat_invest_conicet']=trim($res[$key]['cat_invest_conicet']); 
                 }
                 
             }
@@ -87,6 +89,7 @@ class ci_integrantes_pi extends designa_ci
                  }
                  
             }
+            
             $this->dep('datos')->tabla('integrante_interno_pi')->procesar_filas($datos);
             $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
             
@@ -106,7 +109,8 @@ class ci_integrantes_pi extends designa_ci
                     $this->controlador()->pantalla()->tab("pant_subproyectos")->desactivar();	 
                     if($pertenece!=0){// pertenece a un programa   
                         //si pertenece a un programa entonces el subsidio lo recibe el programa
-                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
+                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();
+                        $this->controlador()->pantalla()->tab("pant_winsip")->desactivar();
                     }
                 }
             }
@@ -207,6 +211,7 @@ class ci_integrantes_pi extends designa_ci
                     if($pertenece!=0){// pertenece a un programa   
                         //si pertenece a un programa entonces el subsidio lo recibe el programa
                         $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
+                        $this->controlador()->pantalla()->tab("pant_winsip")->desactivar();
                     }
                 }
             $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
@@ -237,7 +242,8 @@ class ci_integrantes_pi extends designa_ci
                     $this->controlador()->pantalla()->tab("pant_subproyectos")->desactivar();	 
                     if($pertenece!=0){// pertenece a un programa   
                         //si pertenece a un programa entonces el subsidio lo recibe el programa
-                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
+                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();
+                        $this->controlador()->pantalla()->tab("pant_winsip")->desactivar();
                     }
                 }
                 $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_movi($pi['id_pinv']);   
