@@ -388,6 +388,13 @@ class ci_proyectos_extension extends toba_ci
 	{
             $pe=$this->dep('datos')->tabla('pextension')->get();
             $datos=$this->dep('datos')->tabla('integrante_externo_pe')->get_plantilla($pe['id_pext']);   
+            $duracion='';
+            $fecha= date('d-m-Y',strtotime($pe['fecha_resol']));
+            
+            if(isset($pe['duracion'])){
+                $duracion= $pe['duracion'].utf8_decode(' años');
+            }
+            $cuadro->set_titulo($pe['denominacion'].'('.$pe['nro_resol'].$fecha.')'.$duracion);
             $cuadro->set_datos($datos);
 	}
 
