@@ -394,7 +394,7 @@ class ci_proyectos_extension extends toba_ci
             if(isset($pe['duracion'])){
                 $duracion= $pe['duracion'].utf8_decode(' años');
             }
-            $cuadro->set_titulo($pe['denominacion'].'('.$pe['nro_resol'].$fecha.')'.$duracion);
+            $cuadro->set_titulo($pe['denominacion'].'(ResCD: '.$pe['nro_resol'].$fecha.')'.$duracion);
             $cuadro->set_datos($datos);
 	}
 
