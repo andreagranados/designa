@@ -60,25 +60,28 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 }        
             $fechahasta=date('d-m-Y',strtotime($filtro['anio'].'-'.$desde.'-'.$dias));
             if ($primera){
-                //$sql="select  a$desde".".id_docente$desde,a$desde".".pinvest$desde,a$desde".".cat_investigador$desde,dedic_doc$desde from (
-                $sql="select * from (".
-                        "select d.id_docente as id_docente$desde,pinvest as pinvest$desde,i.cat_investigador as cat_investigador$desde,min(case when t_d.dedic is not null then t_d.dedic else d.dedic end )as dedic_doc$desde,min((case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
-else case when t_d.dedic is not null then
-	(case when t_d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
- else case when t_d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
-      else case when i.carga_horaria>=20 then 0 else case when i.carga_horaria<20 and i.carga_horaria>=10 then 0 else 3 end end
-      end
- end)
-     else
- 	(case when d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
- else case when d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
-      else case when i.carga_horaria>=20 then 0 else case when i.carga_horaria<20 and i.carga_horaria>=10 then 0 else 3 end end
-      end
- end)
-     end
+                //$sql="select  a$desde".".id_docente$desde,a$desde".".pinvest$desde,a$desde".".cat_investigador$desde,dedic_doc$desde,dedic_inv$desde from ("
+                $sql="select * from ("
+                        . " select d.id_docente as id_docente$desde,pinvest as pinvest$desde,i.cat_investigador as cat_investigador$desde,min(case when t_d.dedic is not null then t_d.dedic else d.dedic end )as dedic_doc$desde,"
+                        . "max(case when t_d.dedic is not null then
+case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
+else (case when t_d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
+      else case when t_d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
+           else case when i.carga_horaria>=20 then 0 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 0 else 3 end end
+           end
+     end)
 end
-)) as dedic_inv$desde
-                        from integrante_interno_pi i
+
+else 
+case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
+else (case when d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
+      else case when d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
+           else case when i.carga_horaria>=20 then 0 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 0 else 3 end end
+           end
+     end)
+end
+end ) as dedic_inv$desde"
+                        ." from integrante_interno_pi i
                         LEFT OUTER JOIN designacion d ON (d.id_designacion=i.id_designacion)
                         LEFT OUTER JOIN designacion t_d ON (d.id_docente=t_d.id_docente and t_d.uni_acad='".trim($filtro['ua'])."' and t_d.desde <= '".$fechahasta."' and (t_d.hasta >= '".$fechadesde."' or t_d.hasta is null))
                         where ua='".trim($filtro['ua'])."'"
@@ -90,22 +93,25 @@ end
                 $primera=false;
             }else{
                 $sql=$sql." LEFT OUTER JOIN (
-                            select d.id_docente as id_docente$desde,pinvest as pinvest$desde,cat_investigador as cat_investigador$desde,min(case when t_d.dedic is not null then t_d.dedic else d.dedic end )as dedic_doc$desde,min(case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
-else case when t_d.dedic is not null then
-	(case when t_d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
- else case when t_d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
-      else case when i.carga_horaria>=20 then 0 else case when i.carga_horaria<20 and i.carga_horaria>=10 then 0 else 3 end end
-      end
- end)
-     else
- 	(case when d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
- else case when d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 3 else 0 end end) 
-      else case when i.carga_horaria>=20 then 0 else case when i.carga_horaria<20 and i.carga_horaria>=10 then 0 else 3 end end
-      end
- end)
-     end
+                            select d.id_docente as id_docente$desde,pinvest as pinvest$desde,cat_investigador as cat_investigador$desde,min(case when t_d.dedic is not null then t_d.dedic else d.dedic end )as dedic_doc$desde,
+                                max(case when t_d.dedic is not null then
+case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
+else (case when t_d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
+      else case when t_d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
+           else case when i.carga_horaria>=20 then 0 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 0 else 3 end end
+           end
+     end)
 end
-) as dedic_inv$desde
+
+else 
+case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
+else (case when d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
+      else case when d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
+           else case when i.carga_horaria>=20 then 0 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 0 else 3 end end
+           end
+     end)
+end
+end ) as dedic_inv$desde
                             from integrante_interno_pi i
                             LEFT OUTER JOIN designacion d ON (d.id_designacion=i.id_designacion)
                             LEFT OUTER JOIN designacion t_d ON (d.id_docente=t_d.id_docente and t_d.uni_acad='".trim($filtro['ua'])."' and t_d.desde <= '".$fechahasta."' and (t_d.hasta >= '".$fechadesde."' or t_d.hasta is null))
@@ -116,6 +122,7 @@ end
                             group by d.id_docente,pinvest,cat_investigador)a$desde ON (a$desde.id_docente$desde=a".($desde-1).".id_docente".($desde-1)." and a$desde.pinvest$desde=a".($desde-1).".pinvest".($desde-1)." and a$desde.cat_investigador$desde=a".($desde-1).".cat_investigador".($desde-1).")";
             }
             $concat=$concat."dedic_doc$desde".","."dedic_inv$desde".",";
+            //$concat=$concat."dedic_doc$desde".",";
             $desde++;
     }
     $sql="select t_do.apellido,t_do.nombre,".$inicio." as mesdesde,".($desde-1)." as meshasta,t_do.id_docente,pi.codigo,pi.id_pinv,".$concat."t_c.descripcion as cod_cati  "
