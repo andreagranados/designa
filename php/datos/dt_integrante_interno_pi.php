@@ -39,7 +39,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
             LEFT OUTER JOIN pinvestigacion p ON (a.id_proy=p.id_pinv)
             LEFT OUTER JOIN categoria_invest c ON (a.categoria=c.cod_cati)";
         return toba::db('designa')->consultar($sql);
-        print_r($res);
+        
         //mesdesde siempre es menor a meshasta
 //        $desde=$filtro['mesdesde'];
 //        $inicio=$filtro['mesdesde'];
