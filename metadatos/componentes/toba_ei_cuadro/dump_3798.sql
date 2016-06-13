@@ -95,7 +95,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3798', --objeto_cuadro
 	'3571', --objeto_cuadro_col
 	'nombre', --clave
-	'1', --orden
+	'2', --orden
 	'Nombre', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -126,7 +126,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3798', --objeto_cuadro
 	'3572', --objeto_cuadro_col
 	'apellido', --clave
-	'2', --orden
+	'1', --orden
 	'Apellido', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
