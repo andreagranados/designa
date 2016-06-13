@@ -24,29 +24,18 @@ class ci_pre_liquidacion_incentivos extends toba_ci
     function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
             if (isset($this->s__datos_filtro)) {
-                if($this->s__datos_filtro['meshasta']<$this->s__datos_filtro['mesdesde']){
-                 toba::notificacion()->agregar('El mes desde tiene que ser menor al mes hasta.','error');
-                }else{
-                    $i=$this->s__datos_filtro['mesdesde'];
-                    $columnas=array();
-                    while ($i<=$this->s__datos_filtro['meshasta']) {
-                        $dato['clave']='dedic_doc'.$i;
-                        $dato['titulo']='dedic_doc'.$i;
-                        $columnas[]=$dato;
-                        $i++;
-                    }
-                    $cuadro->agregar_columnas($columnas);  
-                    $i=$this->s__datos_filtro['mesdesde'];
-                    $columnas=array();
-                    while ($i<=$this->s__datos_filtro['meshasta']) {
-                        $dato['clave']='dedic_inv'.$i;
-                        $dato['titulo']='dedic_inv'.$i;
-                        $columnas[]=$dato;
-                        $i++;
-                    }
-                  $cuadro->agregar_columnas($columnas);  
+//                    $i=$this->s__datos_filtro['mesdesde'];
+//                    $columnas=array();
+//                    while ($i<=$this->s__datos_filtro['meshasta']) {
+//                        $dato['clave']='dedic_doc'.$i;
+//                        $dato['titulo']='dedic_doc'.$i;
+//                        $columnas[]=$dato;
+//                        $i++;
+//                    }
+//                    $cuadro->agregar_columnas($columnas);  
+                    
                   $cuadro->set_datos($this->dep('datos')->tabla('integrante_interno_pi')->pre_inceptivos($this->s__datos_filtro));
-                }
+                
             } 
 	}
 }
