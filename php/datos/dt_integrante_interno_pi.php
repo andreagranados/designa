@@ -37,7 +37,8 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         $sql="select t_do.apellido,t_do.nombre,p.codigo,c.descripcion as cod_cati,a.*,".$filtro['mesdesde']." as mesdesde,".($filtro['mesdesde']+3)."as meshasta "." from auxiliar a 
             LEFT OUTER JOIN docente t_do ON (a.id_docente=t_do.id_docente)
             LEFT OUTER JOIN pinvestigacion p ON (a.id_proy=p.id_pinv)
-            LEFT OUTER JOIN categoria_invest c ON (a.categoria=c.cod_cati)";
+            LEFT OUTER JOIN categoria_invest c ON (a.categoria=c.cod_cati)
+            order by apellido,nombre";
         return toba::db('designa')->consultar($sql);
         
         //mesdesde siempre es menor a meshasta
