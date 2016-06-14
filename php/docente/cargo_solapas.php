@@ -971,9 +971,13 @@ class cargo_solapas extends toba_ci
                         if($datos['tipo_nov']!=3){//afecta credito
                             $pierde=1;
                         }
-                    }else{
+                    }else{//si modifica tipo de la licencia o los periodos
                         if($datos['tipo_nov']!=$nove['tipo_nov']||$datos['desde']!=$nove['desde']||$datos['hasta']!=$nove['hasta']){//efecta credito
                             $pierde=1;
+                        }else{//no tenia norma y le coloca o al reves la tenia y le saca algo
+                            if((($nove['tipo_norma']==null || $nove['tipo_emite']==null || $nove['norma_legal']==null) && $datos['tipo_norma']!=null && $datos['tipo_emite']!=null && $datos['norma_legal']!=null) or ($nove['tipo_norma']!=null && $nove['tipo_emite']!=null && $nove['norma_legal']!=null && ($datos['tipo_norma']==null || $datos['tipo_emite']==null || $datos['norma_legal']==null)))  {
+                                $pierde=1;
+                            }
                         }
                     }
                     if($pierde==1){
