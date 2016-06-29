@@ -55,29 +55,29 @@ class ci_articulo73 extends toba_ci
                 }else{
                     $this->dep('formulario')->colapsar();
                 }
-//                if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()) {
-//                    $datos=$this->dep('datos')->tabla('articulo_73')->get();
-//                    //$fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta',$datos['x_dbr_clave']);
-//                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
-//                    //print_r($fp_imagen);//Resource id #115
-//                    if (isset($fp_imagen)) {
-//                        $temp_nombre = $datos['id_designacion'].'acta'.'.pdf';
-//                        $temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);      
-//                        print_r($temp_archivo['path']);
-//                         //-- Se pasa el contenido al archivo temporal
-//                        $temp_fp = fopen($temp_archivo['path'], 'w');
-//                        stream_copy_to_stream($fp_imagen, $temp_fp);
-//                        fclose($temp_fp);
-//                         //-- Se muestra la imagen temporal
-//                        $tamaño = round(filesize($temp_archivo['path']) / 1024);
-//                        $datos['acta'] = "<a href='{$temp_archivo['url']}' >acta</a>";
-//                        //$datos['acta'] = 'Tamaño: '.$tamaño. ' KB';
-//                      } else {
-//                        $datos['acta'] = null;  
-//                    }
-//                    $form->set_datos($datos);
-//                  
-//		}
+                if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()) {
+                    $datos=$this->dep('datos')->tabla('articulo_73')->get();
+                    //$fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta',$datos['x_dbr_clave']);
+                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
+                    //print_r($fp_imagen);//Resource id #115
+                    if (isset($fp_imagen)) {
+                        $temp_nombre = $datos['id_designacion'].'acta'.'.pdf';
+                        $temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);      
+                        //print_r($temp_archivo['path']);
+                         //-- Se pasa el contenido al archivo temporal
+                        $temp_fp = fopen($temp_archivo['path'], 'w');
+                        stream_copy_to_stream($fp_imagen, $temp_fp);
+                        fclose($temp_fp);
+                         //-- Se muestra la imagen temporal
+                        $tamaño = round(filesize($temp_archivo['path']) / 1024);
+                        $datos['acta'] = "<a href='{$temp_archivo['url']}' >acta</a>";
+                        //$datos['acta'] = 'Tamaño: '.$tamaño. ' KB';
+                      } else {
+                        $datos['acta'] = null;  
+                    }
+                    $form->set_datos($datos);
+                  
+		}
 	}
 
 	function evt__formulario__alta($datos)
