@@ -41,6 +41,13 @@ class dt_tipo extends toba_datos_tabla
             $sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=10 ORDER BY desc_item";
             return toba::db('designa')->consultar($sql);
         }
-       
+        function get_modo_ingreso(){
+            $sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=11 ORDER BY desc_item";
+            return toba::db('designa')->consultar($sql);
+        }
+        function get_continuidad(){
+            $sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=12 ORDER BY desc_item";
+            return toba::db('designa')->consultar($sql);
+        }
 }
 ?>

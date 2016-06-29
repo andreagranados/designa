@@ -129,14 +129,13 @@ class dt_designacion extends toba_datos_tabla
         function get_renuncias_sin_consumo($filtro=array()){
                 if (isset($filtro['anio_acad'])) {
                 	$pdia=$this->primer_dia_periodo_anio($filtro['anio_acad']);
+                        $udia=$this->ultimo_dia_periodo_anio($filtro['anio_acad']);
 		}       
-            
-	
-                 
-		$where=" WHERE a.desde >= '".$pdia."' and a.desde <= '".$pdia."'";
+                
+		$where=" WHERE a.desde >= '".$pdia."' and a.desde <= '".$udia."'";
                 
 		if (isset($filtro['uni_acad'])) {
-			$where.= "AND uni_acad = ".quote($filtro['uni_acad']);
+			$where.= " AND uni_acad = ".quote($filtro['uni_acad']);
 		}
             
                 $sql="select a.id_designacion,a.desde,a.hasta,a.cat_mapuche,a.cat_estat,a.uni_acad,a.dedic,a.carac,b.apellido||', '||b.nombre as docente, 0 as costo "
@@ -145,8 +144,8 @@ class dt_designacion extends toba_datos_tabla
                         ." and a.hasta=a.desde-1
                         and a.id_docente=b.id_docente
                         and a.id_designacion=c.id_designacion
-                        and c.tipo_nov in (1,4)";
-                       
+                        and c.tipo_nov in (1,4)";//tiene una baja o una renuncia
+                                       
                 return toba::db('designa')->consultar($sql);
         }
         function get_licencias($id_desig){
@@ -188,7 +187,7 @@ class dt_designacion extends toba_datos_tabla
             return $res; 
              
         }
-        
+       
         function tiene_materias($desig){
             $sql="select * from asignacion_materia where id_designacion=".$desig;
             $resul=toba::db('designa')->consultar($sql);
