@@ -186,6 +186,25 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	NULL, --template_impresion
 	'23'  --punto_montaje
 );
+INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, identificador, orden, etiqueta, descripcion, tip, imagen_recurso_origen, imagen, objetos, eventos, subclase, subclase_archivo, template, template_impresion, punto_montaje) VALUES (
+	'designa', --objeto_ci_proyecto
+	'3812', --objeto_ci
+	'1597', --pantalla
+	'pant_visualizacion', --identificador
+	'2', --orden
+	'Pantalla2', --etiqueta
+	NULL, --descripcion
+	NULL, --tip
+	'apex', --imagen_recurso_origen
+	NULL, --imagen
+	NULL, --objetos
+	NULL, --eventos
+	'pant_visualizacion', --subclase
+	'articulo73/pant_visualizacion.php', --subclase_archivo
+	NULL, --template
+	NULL, --template_impresion
+	'23'  --punto_montaje
+);
 --- FIN Grupo de desarrollo 0
 
 ------------------------------------------------------------
