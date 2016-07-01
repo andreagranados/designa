@@ -15,16 +15,20 @@ class dt_categ_estatuto extends toba_datos_tabla
                 $cat_mapu=$res[0]['cat_mapuche'];
             
                 //toma el valor del periodo 2016
-                $sql="select distinct d.catest||d.id_ded as catest
-                    from mocovi_costo_categoria c,macheo_categ d
+                $sql="select distinct trim(d.catest)||d.id_ded as catest
+                    from mocovi_costo_categoria c,macheo_categ d,categ_estatuto e
                     where c.id_periodo=2
                     and c.codigo_siu=d.catsiu
                     and c.costo_diario<= (select costo_diario from mocovi_costo_categoria c
-                      where c.codigo_siu='".trim($cat_mapu)."' and id_periodo=2)"
+                                           where c.codigo_siu='".trim($cat_mapu)."' and id_periodo=2)
+                    and d.catest=e.codigo_est                                           
+                    and e.orden<=(select c.orden from macheo_categ b, categ_estatuto c
+                                  where b.catsiu='".trim($cat_mapu)."' and b.catest=c.codigo_est)"
                         . " order by catest";
-            
+           
                 $res= toba::db('designa')->consultar($sql);
                 return $res;
+                
             }
                 
         }

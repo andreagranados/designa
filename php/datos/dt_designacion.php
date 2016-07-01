@@ -4,6 +4,16 @@ require_once 'consultas_mapuche.php';
 
 class dt_designacion extends toba_datos_tabla
 {
+    //retorna 1 si tiene completos el departamento, area y orientacion
+    function tiene_dao($id_desig){
+        $sql="select * from designacion where id_designacion=$id_desig and id_departamento is not null and id_area is not null and id_orientacion is not null";
+        $res=toba::db('designa')->consultar($sql);
+        if(count($res)>0){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
     function get_lic_maternidad($filtro){
         $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
         $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
