@@ -47,6 +47,7 @@ class dt_articulo_73 extends designa_datos_tabla
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '2016-06-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
                         and b.carac='I'
+                        and b.cat_estat<>'AYS'
                         and b.uni_acad='".$ua."'";
                     
             $legajos=toba::db('designa')->consultar($sql);
@@ -77,6 +78,7 @@ class dt_articulo_73 extends designa_datos_tabla
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '2016-06-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
                         and b.carac='I'
+                        and b.cat_estat<>'AYS'
                         and c.codigo_siu=b.cat_mapuche
                         and c.id_periodo=2--periodo 2016
                         and c.costo_diario<=751.12 

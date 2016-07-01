@@ -183,18 +183,6 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2659', --dep_id
-	'3812', --objeto_consumidor
-	'3818', --objeto_proveedor
-	'form_visualizacion', --identificador
-	NULL, --parametros_a
-	NULL, --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
-	NULL  --orden
-);
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
 	'2654', --dep_id
 	'3812', --objeto_consumidor
 	'3814', --objeto_proveedor
@@ -244,8 +232,8 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	NULL, --imagen
 	NULL, --objetos
 	NULL, --eventos
-	'pant_visualizacion', --subclase
-	'articulo73/pant_visualizacion.php', --subclase_archivo
+	NULL, --subclase
+	NULL, --subclase_archivo
 	NULL, --template
 	NULL, --template_impresion
 	'23'  --punto_montaje
@@ -255,13 +243,6 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 ------------------------------------------------------------
 -- apex_objetos_pantalla
 ------------------------------------------------------------
-INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
-	'designa', --proyecto
-	'1596', --pantalla
-	'3812', --objeto_ci
-	'2', --orden
-	'2654'  --dep_id
-);
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
 	'designa', --proyecto
 	'1596', --pantalla
@@ -281,7 +262,7 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'1597', --pantalla
 	'3812', --objeto_ci
 	'0', --orden
-	'2659'  --dep_id
+	'2654'  --dep_id
 );
 
 ------------------------------------------------------------
