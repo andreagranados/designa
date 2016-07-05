@@ -14,9 +14,9 @@ class dt_articulo_73 extends designa_datos_tabla
                 . " LEFT OUTER JOIN docente t_doc ON (t_d.id_docente=t_doc.id_docente)"
                 . " LEFT OUTER JOIN tipo t_t ON (t_t.nro_tabla=t_a.nro_tab11 and t_t.desc_abrev=t_a.modo_ingreso)"
                 . " LEFT OUTER JOIN tipo t_ti ON (t_ti.nro_tabla=t_a.nro_tab12 and t_ti.desc_abrev=t_a.continuidad)"
-                . " LEFT OUTER JOIN departamento t_dep ON (t_d.id_departamento=t_dep.iddepto)"
-                . " LEFT OUTER JOIN area t_an ON (t_d.id_area=t_an.idarea)"
-                . " LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_d.id_area=t_o.idarea)"
+                . " LEFT OUTER JOIN departamento t_dep ON (t_a.id_departamento=t_dep.iddepto)"
+                . " LEFT OUTER JOIN area t_an ON (t_a.id_area=t_an.idarea)"
+                . " LEFT OUTER JOIN orientacion t_o ON (t_a.id_orientacion=t_o.idorient and t_a.id_area=t_o.idarea)"
                  . " $where ";
         
         return toba::db('designa')->consultar($sql);    

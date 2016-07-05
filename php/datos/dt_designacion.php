@@ -14,6 +14,10 @@ class dt_designacion extends toba_datos_tabla
             return 0;
         }
     }
+    function get_dao($id_desig){
+        $sql="select id_departamento,id_area,id_orientacion from designacion where id_designacion=$id_desig";
+        return toba::db('designa')->consultar($sql);
+    }
     function get_lic_maternidad($filtro){
         $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
         $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
