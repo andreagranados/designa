@@ -3,6 +3,7 @@ class ci_articulo73 extends toba_ci
 {
         protected $s__datos_filtro;
         protected $s__nombre_archivo;
+        protected $s__pdf;
         
         
 	//-----------------------------------------------------------------------------------
@@ -34,7 +35,9 @@ class ci_articulo73 extends toba_ci
             if (isset($this->s__datos_filtro)) {
                     $cuadro->set_datos($this->dep('datos')->tabla('articulo_73')->get_listado($this->s__datos_filtro));            
                     }
-        	
+//            $ar['id_designacion']=3347;
+//            $this->dep('cuadro')->seleccionar($ar);
+            
 	}
 
 	function evt__cuadro__seleccion($datos)
@@ -42,38 +45,68 @@ class ci_articulo73 extends toba_ci
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
             $this->set_pantalla('pant_visualizacion');
         }
-        function evt__cuadro__seleccion_oc($datos)
+        function evt__cuadro__ver_acta($datos)
 	{
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
-            
+            $desig=$this->dep('datos')->tabla('articulo_73')->get();
+            $this->dep('cuadro')->evento('pdf_acta')->set_nivel_de_fila( 1 );
+            $this->dep('cuadro')->evento('pdf_acta')->set_etiqueta ('Acta'.$desig['id_designacion']);
+            $this->s__pdf='acta';
+            //$this->dep('cuadro')->evento('pdf_acta')->ocultar();
+            //$ar['id_designacion']=3347;
+           //$this->dep('cuadro')->evento('pdf_acta')->set_parametros($ar)      ;
+          
+        }
+
+        function evt__cuadro__ver_resol($datos)
+	{
+            $this->dep('datos')->tabla('articulo_73')->cargar($datos);
+            $desig=$this->dep('datos')->tabla('articulo_73')->get();
+            $this->dep('cuadro')->evento('pdf_resol')->set_nivel_de_fila( 1 );
+            $this->dep('cuadro')->evento('pdf_resol')->set_etiqueta ('Resol'.$desig['id_designacion']);
+            $this->s__pdf='resol';
         }
         
-        //queremos previsualizar el pdf. Vamos a previsualizar en otra pantalla y no en la misma
+         
+//        //queremos previsualizar el pdf. Vamos a previsualizar en otra pantalla y no en la misma
 //        function evt__cuadro__pdf_acta($datos)
 //	{//esto no ocurre orque el evento es un vinculo
 //            $this->dep('datos')->tabla('articulo_73')->cargar($datos);
-//            $datos=$this->dep('datos')->tabla('articulo_73')->get();
+//            //$datos=$this->dep('datos')->tabla('articulo_73')->get();
 //                       
 //           // $parametros['id_designacion']=$datos['id_designacion'];
 //            //$parametros['tipo']='acta';
 //            //toba::vinculador()->navegar_a('designa',3742,$parametros);                       
 //	}
-        
+      
+
         function vista_pdf(toba_vista_pdf $salida){
-           echo(toba::memoria()->get_parametro('id_designacion'));exit;
+                       
+//            $vinculo_cuadro = $this->dep('cuadro')->evento('pdf_acta')->vinculo();
+//            print_r($vinculo_cuadro);exit();
+           //echo($this->dep('cuadro')->evento('pdf_acta')->esta_sobre_fila());exit();
            if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()){
                $artic = $this->dep('datos')->tabla('articulo_73')->get();
-               $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
-               if (isset($fp_imagen)) {
-                    header("Content-type:applicattion/pdf");
-                    header("Content-Disposition:attachment;filename='acta.pdf'");
-                    echo(stream_get_contents($fp_imagen)) ;exit;
-                    readfile($temp_fp);
-                    $this->dep('datos')->tabla('articulo_73')->resetear();
-                    exit;
+               if($this->s__pdf=='acta'){
+                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
+                    if (isset($fp_imagen)) {
+                        header("Content-type:applicattion/pdf");
+                        header("Content-Disposition:attachment;filename='acta.pdf'");
+                        echo(stream_get_contents($fp_imagen)) ;exit;
                     }
+               }else{
+                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('resolucion');
+                    if (isset($fp_imagen)) {
+                        header("Content-type:applicattion/pdf");
+                        header("Content-Disposition:attachment;filename='resolucion.pdf'");
+                        echo(stream_get_contents($fp_imagen)) ;exit;
+                    }
+               }
+               
            }
+           
         }
+       
 	function evt__cuadro__check($datos)
 	{
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
@@ -248,5 +281,7 @@ class ci_articulo73 extends toba_ci
 	}
 
 	
+	
+
 }
 ?>
