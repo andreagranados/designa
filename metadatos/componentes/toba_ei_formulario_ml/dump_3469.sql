@@ -561,7 +561,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'1,2,3,4,5,6,7,8,9,10', --carga_lista
+	'1,2,3,4,5,6,7,8,9,10,11,12,13,14,15', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	NULL, --carga_maestros

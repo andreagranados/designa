@@ -41,7 +41,7 @@ class consultas_mapuche
  	}
  function get_lic_maternidad($ua,$udia,$pdia){
  	//recupero las licencias por maternidad del periodo y ua ingresadas
- 	$sql="select distinct b.nro_licencia,b.nro_legaj,b.nro_cargo,fec_desde,fec_hasta,codn_tipo_lic as tipo_lic
+ 	$sql="select distinct b.nro_licencia,case when b.nro_legaj is null then a.nro_legaj else b.nro_legaj end as nro_legaj,b.nro_cargo,fec_desde,fec_hasta,codn_tipo_lic as tipo_lic
 		from  mapuche.dh05 b, mapuche.dl02 c, mapuche.dh03 a
 		where b.nrovarlicencia=c.nrovarlicencia
 		and (c.codn_tipo_lic='MATE' or c.codn_tipo_lic='MAT2' or c.codn_tipo_lic='MAT3' or c.codn_tipo_lic='MAT4')

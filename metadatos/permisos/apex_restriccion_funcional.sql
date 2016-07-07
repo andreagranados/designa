@@ -24,7 +24,7 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 );
 INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
 	'designa', --proyecto
-	'5', --restriccion_funcional
+	'6', --restriccion_funcional
 	'no_ver_tilde_articulo73', --descripcion
 	'0'  --permite_edicion
 );

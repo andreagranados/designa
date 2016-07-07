@@ -276,5 +276,5 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
 	'designa', --proyecto
 	'dependencias', --usuario_grupo_acc
-	'5'  --restriccion_funcional
+	'6'  --restriccion_funcional
 );

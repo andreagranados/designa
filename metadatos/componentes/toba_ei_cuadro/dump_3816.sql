@@ -132,7 +132,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --defecto
 	NULL, --display_datos_cargados
 	NULL, --grupo
-	'V', --accion
+	NULL, --accion
 	NULL, --accion_imphtml_debug
 	NULL, --accion_vinculo_carpeta
 	NULL, --accion_vinculo_item

@@ -67,19 +67,6 @@ class ci_articulo73 extends toba_ci
             $this->s__pdf='resol';
         }
         
-         
-//        //queremos previsualizar el pdf. Vamos a previsualizar en otra pantalla y no en la misma
-//        function evt__cuadro__pdf_acta($datos)
-//	{//esto no ocurre orque el evento es un vinculo
-//            $this->dep('datos')->tabla('articulo_73')->cargar($datos);
-//            //$datos=$this->dep('datos')->tabla('articulo_73')->get();
-//                       
-//           // $parametros['id_designacion']=$datos['id_designacion'];
-//            //$parametros['tipo']='acta';
-//            //toba::vinculador()->navegar_a('designa',3742,$parametros);                       
-//	}
-      
-
         function vista_pdf(toba_vista_pdf $salida){
                        
 //            $vinculo_cuadro = $this->dep('cuadro')->evento('pdf_acta')->vinculo();
@@ -101,9 +88,8 @@ class ci_articulo73 extends toba_ci
                         header("Content-Disposition:attachment;filename='resolucion.pdf'");
                         echo(stream_get_contents($fp_imagen)) ;exit;
                     }
-               }
-               
-           }
+               }   
+             }
            
         }
        
@@ -279,7 +265,24 @@ class ci_articulo73 extends toba_ci
             $this->resetear();
             $this->set_pantalla('pant_inicial');
 	}
-
+        function conf__pant_inicial()
+        {
+            echo "<tr height='20'>".
+		"<td align='left' valign='botton' colspan='3'>".
+				"<table>".
+				"<tr>".
+					"<td></td>".
+					"<td lign='right'>";
+                                                $ruta='http://localhost/designa/1.0/AP_Articulo73.pdf';
+						echo "<a target='_blank' href='$ruta' title='Descargar Acta Paritaria - Articulo 73'>".toba_recurso::imagen_proyecto('Down.png', true)."</a>";
+						
+				echo "</td>".
+					"<td style='font-size:20px;'>Presionando el &iacute;cono se obtendr&aacute el Acta de Paritaria - Art&iacuteculo 73. </td>".
+				"</tr>".
+			"</table>".
+		"</td>".
+	"</tr>";
+        }
 	
 	
 

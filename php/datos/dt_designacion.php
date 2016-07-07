@@ -32,9 +32,9 @@ class dt_designacion extends toba_datos_tabla
         toba::db('designa')->consultar($sql);
         foreach ($datos_lic as $valor) {
                 if(!isset($valor['nro_cargo'])){
-                    $valor['nro_cargo']='null';
-                    
+                    $valor['nro_cargo']='null';  
                 }
+                
                 $sql=" insert into auxi values (".$valor['nro_legaj'].",".$valor['nro_cargo'].",'".$valor['fec_desde']."','".$valor['fec_hasta']."','".$valor['tipo_lic']. "')";           
                 toba::db('designa')->consultar($sql);
             }
