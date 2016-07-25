@@ -96,10 +96,19 @@ class ci_articulo73 extends toba_ci
 	function evt__cuadro__check($datos)
 	{
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
-            $datos['check_academica']=true;
+            $art=$this->dep('datos')->tabla('articulo_73')->get();
+            
+            if($art['check_academica']==1){
+                $datos['check_academica']=false;
+                $mensaje="Ha sido deschequeado correctamente";
+            }else{
+                $datos['check_academica']=true;
+                $mensaje="Ha sido chequeado correctamente";
+            }
+            
             $this->dep('datos')->tabla('articulo_73')->set($datos);
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
-            toba::notificacion()->agregar('Ha sido checkeado correctamente', 'info');
+            toba::notificacion()->agregar($mensaje, 'info');
 	}
 	//-----------------------------------------------------------------------------------
 	//---- formulario -------------------------------------------------------------------

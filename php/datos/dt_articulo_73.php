@@ -74,7 +74,7 @@ class dt_articulo_73 extends designa_datos_tabla
                     }
                     $sql = "SELECT a.*,b.antiguedad from ("
                     . " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||')' as descripcion "
-                    . " from docente a, designacion b,mocovi_costo_categoria c"
+                    . " from docente a, designacion b,mocovi_costo_categoria c, imputacion d, mocovi_programa e"
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '2016-06-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
                         and b.carac='I'
@@ -82,7 +82,11 @@ class dt_articulo_73 extends designa_datos_tabla
                         and c.codigo_siu=b.cat_mapuche
                         and c.id_periodo=2--periodo 2016
                         and c.costo_diario<=751.12 
-                        and b.uni_acad='".$ua."'". ") a INNER JOIN auxi b "
+                        and b.uni_acad='".$ua."'"
+                      . " and b.id_designacion=d.id_designacion"
+                            . " and e.id_programa=d.id_programa"
+                            . " and e.id_tipo_programa=1 "//solo considero designaciones imputadas al programa por defecto (dinero del tesoro nacional)
+                            . ") a INNER JOIN auxi b "
                     .                   " ON (a.legajo=b.nro_legaj)"
                             . " order by descripcion";
                             
