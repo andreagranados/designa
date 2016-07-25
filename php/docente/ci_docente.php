@@ -377,7 +377,6 @@ class ci_docente extends toba_ci
 	}
 	function evt__cuadro_cargos__seleccion($datos)
 	{
-            
             $this->dep('datos')->tabla('designacion')->cargar($datos);
             $desig = $this->dep('datos')->tabla('designacion')->get();//obtengo la designacion recien cargada
             

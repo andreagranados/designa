@@ -208,7 +208,7 @@ class ci_articulo73 extends toba_ci
 
 	function evt__formulario__modificacion($datos)
 	{
-          $tiene=$this->dep('datos')->tabla('designacion')->tiene_dao($datos['id_designacion']);
+         $tiene=$this->dep('datos')->tabla('designacion')->tiene_dao($datos['id_designacion']);
          if($tiene==1){
             $auxi=$datos['cat_est_reg'];
             $datos['cat_est_reg']=substr($auxi, 0,strlen($auxi)-1 );

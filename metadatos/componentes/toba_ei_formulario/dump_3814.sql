@@ -369,7 +369,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'4', --orden
 	'Continuidad', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'<b>Sin cont: 2cuat = ayo </b>(Sin continuidad: tiene 2 cargos con distintas categorias en la misma area y orientacion)<br>
+<b>Sin cont: 2cuat <> ayo</b> (Sin continuidad: tiene 2 cargos con distintas categorias con distinta area y orientacion)<br>
+<b>Sin cont: 1er cuat parcial</b> (Sin continuidad:Tiene un cargo parcial en el 1er cuat sin cargo en el siguiente cuatrimestre)<br>
+<b>Sin cont:=categ en un cuat</b>(Sin continuidad: tiene 2 cargos de igual categoria en un cuat sin continuidad al siguiente cuatrimestre)', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
