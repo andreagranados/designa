@@ -282,7 +282,7 @@ class ci_articulo73 extends toba_ci
 				"<tr>".
 					"<td></td>".
 					"<td lign='right'>";
-                                                $ruta='http://localhost/designa/1.0/AP_Articulo73.pdf';
+                                                $ruta='AP_Articulo73.pdf';
 						echo "<a target='_blank' href='$ruta' title='Descargar Acta Paritaria - Articulo 73'>".toba_recurso::imagen_proyecto('Down.png', true)."</a>";
 						
 				echo "</td>".
