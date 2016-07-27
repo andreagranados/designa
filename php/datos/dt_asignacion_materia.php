@@ -247,19 +247,19 @@ class dt_asignacion_materia extends toba_datos_tabla
                                     where b.id_designacion=t_nov.id_designacion
                                     and t_nov.tipo_nov in (1,2,4,5)
                                     and t_per.anio=$anio
-                                    and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))
-                    UNION
-                 select  distinct b.id_designacion,b.id_docente,b.carac,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.periodo, a.id_tutoria,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
-                    from asignacion_tutoria a, designacion b, docente c
-                    where a.id_designacion=b.id_designacion
-                    and b.id_docente=c.id_docente
-                    and (rol='TUTO' or rol='COOR' or rol='POST' or rol='OTRO')
-                    and not exists (select * from novedad t_nov, mocovi_periodo_presupuestario t_per
-                                    where b.id_designacion=t_nov.id_designacion
-                                    and t_nov.tipo_nov in (1,2,4,5)
-                                    and t_per.anio=$anio
-                                    and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))".
-                    " UNION "
+                                    and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))"
+//                    UNION
+//                 select  distinct b.id_designacion,b.id_docente,b.carac,a.anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,a.periodo, a.id_tutoria,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
+//                    from asignacion_tutoria a, designacion b, docente c
+//                    where a.id_designacion=b.id_designacion
+//                    and b.id_docente=c.id_docente
+//                    and (rol='TUTO' or rol='COOR' or rol='POST' or rol='OTRO')
+//                    and not exists (select * from novedad t_nov, mocovi_periodo_presupuestario t_per
+//                                    where b.id_designacion=t_nov.id_designacion
+//                                    and t_nov.tipo_nov in (1,2,4,5)
+//                                    and t_per.anio=$anio
+//                                    and t_nov.desde<=t_per.fecha_fin and (t_nov.hasta>=t_per.fecha_inicio or t_nov.hasta is null))".
+                    ." UNION "
                 //designaciones asociadas a pi que no tienen licencia y no tienen materias ni tutorias
                 . " select  distinct b.id_designacion,b.id_docente,b.carac,$anio as anio,b.uni_acad,c.apellido||', '||c.nombre as agente,c.legajo,b.cat_mapuche,b.cat_estat||'-'||b.dedic as cat_estat,b.id_norma,0,0,0 as modulo, b.id_departamento,b.id_area,b.id_orientacion,b.cargo_gestion as gestion
                     from integrante_interno_pi a, designacion b, docente c, mocovi_periodo_presupuestario t_per
@@ -411,6 +411,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 
             }
         }
+       
        return $auxiliar;
         
     }
