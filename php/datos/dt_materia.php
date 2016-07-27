@@ -24,16 +24,16 @@ class dt_materia extends toba_datos_tabla
             $esta=false;
             $i=0;
             $long=count($resul);
-            while ($esta && $i<$long) {
+            while (!$esta && $i<$long) {
                 if($resul[$i]['id_materia']==$id_mat){
                     $esta=true;    
                 }else{$i++;
                 }   
             }
-            if ($esta){
-                return true;
-            }else{
+            if ($esta){//no es externa
                 return false;
+            }else{//es externa
+                return true;
             }
         }
         //combo de materias para asociar a una designacion 

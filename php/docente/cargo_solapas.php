@@ -539,12 +539,7 @@ class cargo_solapas extends toba_ci
                     $x['cod_carrera']=$car;
                     //$x['cod_carrera']=2;//funciona
                     $maes=$form->ef('id_materia')->get_maestros();  
-                    $form->ef('id_materia')-> quitar_maestro($maes[0]);
-                                        
-                    $es_ext=$this->controlador()->es_externa($x['id_materia']);
-                    if($es_ext){$x['externa']=1;}
-                    else{$x['externa']=0;}
-                                       
+                    $form->ef('id_materia')-> quitar_maestro($maes[0]);                                     
                     $form->set_datos($x);
                     
                  }
