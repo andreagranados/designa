@@ -19,7 +19,7 @@ class dt_cobro_incentivo extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
      function get_listado_ua(){//solo filtra por el perfil asociado al usuario
-        
+       
         $sql="select sigla,descripcion from unidad_acad ";
         $sql = toba::perfil_de_datos()->filtrar($sql);
         $perfil=toba::db('designa')->consultar($sql);
