@@ -4,6 +4,7 @@ class docente_solapas extends toba_ci
     protected $s__agente;
     protected $s__pantalla;
     protected $s__mostrar_fcurri;
+    protected $s__mostrar_categ;
    
     
     function ini()
@@ -24,6 +25,10 @@ class docente_solapas extends toba_ci
     function conf__pant_porcentajes(toba_ei_pantalla $pantalla)
     {
         $this->s__pantalla='pant_porcentajes';
+    }
+    function conf__pant_categorizacion(toba_ei_pantalla $pantalla)
+    {
+        $this->s__pantalla='pant_categorizacion';
     }
     
     //-------PANTALLA pant_curriculum
@@ -54,6 +59,67 @@ class docente_solapas extends toba_ci
        $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
        $cuadro->set_datos($this->controlador()->dep('datos')->tabla('categorizacion')->sus_categorizaciones($doc['id_docente'])); 
     }
+    function evt__cuadro_categorizacion__seleccion($datos)
+    {
+        $this->s__mostrar_categ=1;
+        $this->controlador()->dep('datos')->tabla('categorizacion')->cargar($datos); 
+    }
+    function conf__form_categ(toba_ei_formulario $form)
+        {
+            if($this->s__mostrar_categ==1){// si presiono el boton alta entonces muestra el formulario de alta
+                $this->dep('form_categ')->descolapsar();
+                $form->ef('anio_categ')->set_obligatorio(true);
+                $form->ef('id_cat')->set_obligatorio(true);
+            }
+            else{
+                $this->dep('form_categ')->colapsar();
+              } 
+            if($this->controlador()->dep('datos')->tabla('categorizacion')->esta_cargada()){
+                $form->set_datos($this->controlador()->dep('datos')->tabla('categorizacion')->get());
+            }  else{
+                $form->eliminar_evento('modificacion');
+                $form->eliminar_evento('eliminar');
+                $form->eliminar_evento('cancelar');
+            }      
+            
+        }
+    function evt__form_categ__eliminar()
+        {
+            $this->controlador()->dep('datos')->tabla('categorizacion')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('categorizacion')->resetear();
+            $this->s__mostrar_categ=0;//descolapsa el formulario 
+             
+        }
+    function evt__form_categ__cancelar($datos)
+        {
+            $this->controlador()->dep('datos')->tabla('categorizacion')->resetear();
+	    $this->s__mostrar_categ=0;
+              
+        }
+     function evt__form_categ__modificacion($datos)
+	{
+            $this->controlador()->dep('datos')->tabla('categorizacion')->set($datos);
+            $this->controlador()->dep('datos')->tabla('categorizacion')->sincronizar();
+            $mensaje='La modificación se ha realizado correctamente';
+            toba::notificacion()->agregar(utf8_decode($mensaje), "info");
+            $this->s__mostrar_categ=0;
+        }
+    //se da de alta una nueva categorizacion para el docente
+     function evt__form_categ__guardar($datos)
+	{
+            $existe=$this->controlador()->dep('datos')->tabla('categorizacion')->esta_categorizado($datos['anio_categ'],$this->s__agente['id_docente']);
+            if($existe){
+                toba::notificacion()->agregar(utf8_decode('El docente ya esta categorizado para este año'),'error');   
+            }else{
+                $datos['id_docente']=$this->s__agente['id_docente'];
+                $this->controlador()->dep('datos')->tabla('categorizacion')->set($datos);
+                $this->controlador()->dep('datos')->tabla('categorizacion')->sincronizar();
+                $this->s__mostrar_categ=0; 
+                $mensaje='Se ha ingresado correctamente la categorización';
+                toba::notificacion()->agregar(utf8_decode($mensaje), "info");
+            }
+	}
+        
     //-----------------------------------------------------------------------------------
     //---- form_porc ------------------------------------------------------------------
     //-----------------------------------------------------------------------------------
@@ -61,6 +127,7 @@ class docente_solapas extends toba_ci
     {
          if ($this->controlador()->dep('datos')->tabla('docente')->esta_cargada()){
             $datos=$this->controlador()->dep('datos')->tabla('docente')->get();
+            //ultimo dia del periodo actual
             $udia=$this->controlador()->dep('datos')->tabla('mocovi_periodo_presupuestario')->ultimo_dia_periodo();
             $pdia=$this->controlador()->dep('datos')->tabla('mocovi_periodo_presupuestario')->primer_dia_periodo();
             $hd=$this->controlador()->get_horas_docencia($datos['id_docente'],$udia,$pdia);
@@ -112,9 +179,7 @@ class docente_solapas extends toba_ci
                 $form->eliminar_evento('eliminar');
                 $form->eliminar_evento('cancelar');
             }    
-            
-              
-                       
+    
 	}
 
 	function evt__form_curric__eliminar()
@@ -133,7 +198,6 @@ class docente_solapas extends toba_ci
         //se modifica un titulo 
         function evt__form_curric__modificacion($datos)
 	{
-            
             $this->controlador()->dep('datos')->tabla('titulos_docente')->set($datos);
             $this->controlador()->dep('datos')->tabla('titulos_docente')->sincronizar();
             $this->s__mostrar_fcurri=0;
@@ -142,7 +206,6 @@ class docente_solapas extends toba_ci
        //se da de alta un nuevo titulo
         function evt__form_curric__guardar($datos)
 	{
-            
             $datos['id_docente']=$this->s__agente['id_docente'];
             $this->controlador()->dep('datos')->tabla('titulos_docente')->set($datos);
             $this->controlador()->dep('datos')->tabla('titulos_docente')->sincronizar();
@@ -178,7 +241,7 @@ class docente_solapas extends toba_ci
             }
             
         }
-         function get_pais_eo($id){//recibe el id de la entidad otorgante seleccionada en el popup
+        function get_pais_eo($id){//recibe el id de la entidad otorgante seleccionada en el popup
             if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
                 $sql="SELECT
 			cod_entidad,
@@ -359,9 +422,17 @@ class docente_solapas extends toba_ci
 
 	function evt__agregar()
 	{
-            //solo aparece en la solapa de curriculum
-            $this->s__mostrar_fcurri=1;
-            $this->controlador()->dep('datos')->tabla('titulos_docente')->resetear();
+            //el boton agregar aparece en la pantalla curriculum y en la pantalla categorizacion
+            switch ($this->s__pantalla) {
+                case 'pant_curriculum': $this->s__mostrar_fcurri=1;
+                                        $this->controlador()->dep('datos')->tabla('titulos_docente')->resetear();
+                                        break;
+                case 'pant_categorizacion':$this->s__mostrar_categ=1;
+                                        $this->controlador()->dep('datos')->tabla('categorizacion')->resetear();
+                                        break;
+                
+            }
+            
 	}
 
 

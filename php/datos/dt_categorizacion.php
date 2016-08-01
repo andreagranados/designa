@@ -11,11 +11,11 @@ class dt_categorizacion extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
     function sus_categorizaciones($id_doc){
-        $sql="select t_c.anio_categ, t_a.descripcion as categ,t_d.cat_mapuche "
-                . " from categorizacion t_c"
+        $sql="select t_c.*, t_a.descripcion as categ "
+                . " from categorizacion t_c  "
                 . " LEFT OUTER JOIN categoria_invest t_a ON (t_c.id_cat=t_a.cod_cati)"
-                . " LEFT OUTER JOIN designacion t_d ON (t_c.id_designacion=t_d.id_designacion)"
-                . " LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente)";
+                . " where t_c.id_docente=$id_doc";
+        
         return toba::db('designa')->consultar($sql);
     }
     function esta_categorizado($anio,$id_docente){

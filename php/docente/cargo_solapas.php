@@ -8,8 +8,7 @@ class cargo_solapas extends toba_ci
     protected $s__alta_nov;
     protected $s__alta_novb;
     protected $s__volver;
-    protected $s__alta_categ;
-    
+       
         function conf()
         {
             $id = toba::memoria()->get_parametro('id_designacion');
@@ -471,9 +470,7 @@ class cargo_solapas extends toba_ci
                 case 'pant_novedad_b':$this->controlador()->dep('datos')->tabla('novedad_baja')->resetear();//para deseleccionar la novedad que esta cargada
                                     $this->s__alta_novb = 1;
                                break;           
-                case 'pant_investigacion':$this->controlador()->dep('datos')->tabla('categorizacion')->resetear();//para deseleccionar la categorizacion que estaba cargada
-                                    $this->s__alta_categ = 1;
-                               break;           
+                
                 
                 default:
                     break;
@@ -766,68 +763,7 @@ class cargo_solapas extends toba_ci
             }
             
 	}
-        //--------cuadro_inv
-        //----------------
-        function conf__cuadro_inv(toba_ei_cuadro $cuadro)
-        {
-             if($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
-                  $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                  $cuadro->set_datos($this->controlador()->dep('datos')->tabla('categorizacion')->get_listado_desig($designacion['id_designacion']));
-             } 
-        }
-        function evt__cuadro_inv__seleccion($datos)
-        {
-            $this->s__alta_categ=1;
-            $this->controlador()->dep('datos')->tabla('categorizacion')->cargar($datos);
-        }
-        //-----------------------------------------------------------------------------------
-	//---- form_inv -------------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-        function conf__form_inv(toba_ei_formulario $form)
-        {
-            if($this->s__alta_categ==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
-                $this->dep('form_inv')->descolapsar();
-                $form->ef('anio_categ')->set_obligatorio(true);
-                $form->ef('id_cat')->set_obligatorio(true);
-            }
-            else{
-                $this->dep('form_inv')->colapsar();
-              } 
-            if($this->controlador()->dep('datos')->tabla('categorizacion')->esta_cargada()){
-                $form->set_datos($this->controlador()->dep('datos')->tabla('categorizacion')->get());
-            }    
-            
-        }
-        //ingresa una nueva categorizacion
-        function evt__form_inv__guardar($datos)
-        {
-            $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $existe=$this->controlador()->dep('datos')->tabla('categorizacion')->esta_categorizado($datos['anio_categ'],$designacion['id_docente']);
-            if($existe){
-                toba::notificacion()->agregar(utf8_decode('El docente ya esta categorizado para este año'),'error');   
-            }else{
-                $datos['id_designacion']=$designacion['id_designacion'];
-                $datos['id_docente']=$designacion['id_docente'];
-                $this->controlador()->dep('datos')->tabla('categorizacion')->set($datos);
-                $this->controlador()->dep('datos')->tabla('categorizacion')->sincronizar();  
-            }
-        }
-        function evt__form_inv__modificacion($datos)
-        {
-           $this->controlador()->dep('datos')->tabla('categorizacion')->set($datos);  
-           $this->controlador()->dep('datos')->tabla('categorizacion')->sincronizar();
-        }
-        function evt__form_inv__baja()
-        {
-            $this->controlador()->dep('datos')->tabla('categorizacion')->eliminar_todo();
-            $this->controlador()->dep('datos')->tabla('categorizacion')->resetear();
-             
-        }
-        function evt__form_inv__cancelar($datos)
-        {
-            $this->controlador()->dep('datos')->tabla('categorizacion')->resetear();
-            $this->s__alta_categ=0;
-        }
+
          //-----------------------------------------------------------------------------------
 	//---- cuadro_licencia -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------

@@ -41,6 +41,7 @@ class dt_docente extends toba_datos_tabla
             $sql="select sum (case when dedic=1 then 10  else case when dedic=2 then 20 else 40 end end ) as hd from designacion t_d 
                     where id_docente=".$id_doc.       
                     " and desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)      ";
+            print_r($sql);
             $res=toba::db('designa')->consultar($sql);
             if($res[0]['hd'] != null){
                 $hd=$res[0]['hd'];

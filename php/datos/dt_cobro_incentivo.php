@@ -10,11 +10,12 @@ class dt_cobro_incentivo extends toba_datos_tabla
                     $where='';
                 }
 		
-		$sql = "SELECT t_ci.id_docente,t_ci.id_proyecto,t_ci.anio,t_do.apellido||', '||t_do.nombre as nombre_docente,t_ci.fecha,t_ci.monto,t_ci.cuota, t_i.denominacion as nombre_proyecto
+		$sql = "SELECT t_ci.id_docente,t_ci.id_proyecto,t_ci.anio,t_do.apellido||', '||t_do.nombre as nombre_docente,t_ci.fecha,t_ci.monto,t_ci.cuota, t_i.denominacion as nombre_proyecto, t_i.uni_acad
                         FROM cobro_incentivo as t_ci 
                         LEFT OUTER JOIN docente t_do ON (t_ci.id_docente=t_do.id_docente) 
                         LEFT OUTER JOIN pinvestigacion t_i ON (t_i.id_pinv=t_ci.id_proyecto)
                         $where";
+                
 		return toba::db('designa')->consultar($sql);
 	}
 
