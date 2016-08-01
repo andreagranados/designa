@@ -33,7 +33,9 @@ class ci_incentivos extends toba_ci
 	{
 		if (isset($this->s__datos_filtro)) {
                     $cuadro->set_datos($this->dep('datos')->tabla('cobro_incentivo')->get_listado($this->s__where));
-		} 
+                } else{
+                    $cuadro->set_datos($this->dep('datos')->tabla('cobro_incentivo')->get_listado_ua());
+                }
 	}
 
 	function evt__cuadro__seleccion($datos)
