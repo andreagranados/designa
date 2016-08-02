@@ -66,8 +66,7 @@ class cargo_solapas extends toba_ci
                 $this->pantalla()->tab("pant_gestion")->desactivar();
                 $this->pantalla()->tab("pant_novedad")->desactivar();
                 $this->pantalla()->tab("pant_novedad_b")->desactivar();
-                $this->pantalla()->tab("pant_investigacion")->desactivar();
-                
+                              
 		}
         } 
 
@@ -317,10 +316,7 @@ class cargo_solapas extends toba_ci
         {
             $this->s__pantalla = "pant_novedad_b";
         }
-        function conf__pant_investigacion()
-        {
-            $this->s__pantalla = "pant_investigacion";
-        }
+        
         //-----------------------------------------------------------------------------------
 	//---- cuadro_imputacion ------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
