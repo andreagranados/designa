@@ -28,4 +28,10 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'no_ver_tilde_articulo73', --descripcion
 	'0'  --permite_edicion
 );
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'7', --restriccion_funcional
+	'no_agrega_articulo73', --descripcion
+	'0'  --permite_edicion
+);
 --- FIN Grupo de desarrollo 0
