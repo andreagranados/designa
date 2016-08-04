@@ -35,7 +35,7 @@ class ci_informar_norma_legal extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {//muestra las designaciones de esa ua, dentro del periodo y que 
+		if (isset($this->s__datos_filtro)) {//muestra las designaciones de esa ua, dentro del periodo y que no tienen check de presupuesto
 			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_norma($this->s__datos_filtro));
                         $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_norma($this->s__datos_filtro);
 		} 
@@ -52,10 +52,7 @@ class ci_informar_norma_legal extends toba_ci
              }else{
                $this->dep('formulario')->colapsar();      
              }
-                
 	}
-
-
 
 	function evt__formulario__modificacion($datos)
 	{
@@ -85,8 +82,7 @@ class ci_informar_norma_legal extends toba_ci
                     $this->resetear();    
                     
                     $cont++;
-                    
-                   
+
                 }
                 
                 toba::notificacion()->agregar('Se han actualizado '.$cont.' designaciones.', 'info');

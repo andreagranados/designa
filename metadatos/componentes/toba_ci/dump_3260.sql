@@ -476,3 +476,9 @@ INSERT INTO apex_eventos_pantalla (pantalla, objeto_ci, evento_id, proyecto) VAL
 	'2364', --evento_id
 	'designa'  --proyecto
 );
+INSERT INTO apex_eventos_pantalla (pantalla, objeto_ci, evento_id, proyecto) VALUES (
+	'1573', --pantalla
+	'3260', --objeto_ci
+	'2365', --evento_id
+	'designa'  --proyecto
+);

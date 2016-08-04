@@ -225,6 +225,21 @@ class dt_docente extends toba_datos_tabla
             $sql = toba::perfil_de_datos()->filtrar($sql);
             return toba::db('designa')->consultar($sql);
         }
+        function puede_cargar_categorizacion($id_docente){
+            $sql="select * from (select * from docente t_doc,designacion t_de"
+                    . " where t_doc.id_docente=$id_docente and t_doc.id_docente=t_de.id_docente"
+                    . ")a, unidad_acad b where a.uni_acad=b.sigla";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $res = toba::db('designa')->consultar($sql);
+            
+            if (count($res)>0){
+                $respuesta=true;
+            }else{
+                $respuesta=false;
+            }
+            
+            return $respuesta;
+        }
 
 	function get_descripciones()
 	{

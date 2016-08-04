@@ -21,7 +21,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Informar Norma Legal - CI - formulario', --nombre
-	'Datos de la Norma a Informar', --titulo
+	'Datos de la Norma de Alta a Informar', --titulo
 	'0', --colapsable
 	NULL, --descripcion
 	'designa', --fuente_datos_proyecto

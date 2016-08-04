@@ -883,8 +883,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 			AND  t_d.tipo_desig=2
                         )          "; 
                 $sql="select * from (".$sql.") a".$where ;
-		    
-                return toba::db('designa')->consultar($sql);
+		return toba::db('designa')->consultar($sql);
                
 	}
         

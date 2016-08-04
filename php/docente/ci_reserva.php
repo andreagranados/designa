@@ -1,7 +1,6 @@
 <?php
 class ci_reserva extends designa_ci
 {
-    protected $s__mostrar;
     protected $s__reserva;
     protected $s__desig;
     protected $s__volver;
@@ -21,8 +20,8 @@ class ci_reserva extends designa_ci
             $this->controlador()->dep('datos')->tabla('reserva')->cargar($datosr);//busca la reserva con ese id y la carga
             $this->controlador()->dep('datos')->tabla('designacion')->cargar($datos);
             $this->controlador()->dep('datos')->tabla('imputacion')->cargar($datosi);
-            $this->s__mostrar=1;
-		
+            $this->set_pantalla('pant_edicion');
+            	
 	}
         function evt__cuadro_reserva__asignar($datos)
 	{
@@ -42,47 +41,20 @@ class ci_reserva extends designa_ci
 	{
            //esto por el boton atajo del listado de estado actual
             if($this->controlador()->dep('datos')->tabla('reserva')->esta_cargada()){
-                $this->dep('form_reserva')->descolapsar();
                 $this->dep('form_reserva')->ef('desde')->set_obligatorio(true);
                 $this->dep('form_reserva')->ef('descripcion')->set_obligatorio(true);
                 $this->dep('form_reserva')->ef('cat_mapuche')->set_obligatorio(true);  
                 $this->dep('form_reserva')->ef('carac')->set_obligatorio(true); 
                 $this->dep('form_reserva')->ef('id_imp')->set_obligatorio(true); 
-            }
-               
-            if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario form_reserva 
-                $this->dep('form_reserva')->descolapsar();
-                $this->dep('form_reserva')->ef('desde')->set_obligatorio(true);
-                $this->dep('form_reserva')->ef('descripcion')->set_obligatorio(true);
-                $this->dep('form_reserva')->ef('cat_mapuche')->set_obligatorio(true);  
-                $this->dep('form_reserva')->ef('carac')->set_obligatorio(true);  
-                $this->dep('form_reserva')->ef('id_imp')->set_obligatorio(true); 
-            }
-            else{
-                $this->dep('form_reserva')->colapsar();
-            }	
-            if ($this->controlador()->dep('datos')->tabla('reserva')->esta_cargada()) {
                 $form->set_datos($this->controlador()->dep('datos')->tabla('reserva')->get());
-		} 
-            if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()) {
-                $datos=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                if($datos['id_orientacion']<>null){//si tiene orientacion
-                    $sql=" select t_d.descripcion as id_departamento,t_a.descripcion as id_area,t_o.descripcion as id_orientacion from departamento t_d 
-                    LEFT OUTER JOIN area t_a ON (t_a.iddepto=t_d.iddepto) 
-                    LEFT OUTER JOIN orientacion t_o ON (t_o.idarea=t_a.idarea )
-                    where t_o.idorient=".$datos['id_orientacion'];
-                    $resul=toba::db('designa')->consultar($sql);
-                    $datosd['id_departamento']=utf8_decode($resul[0]['id_departamento']);
-                    $datosd['id_area']=utf8_decode($resul[0]['id_area']);
-                    $datosd['id_orientacion']=  utf8_decode($resul[0]['id_orientacion']);
-                   
-                }            
+            }
+                
+            if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()) {     
                 $datosd=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                $datosd['desc_categ']=$this->controlador()->get_descripcion_categoria($datosd['cat_mapuche']);
                 $datosi=$this->controlador()->dep('datos')->tabla('imputacion')->get();
                 $datosd['id_imp']=$datosi['id_programa'];
                 
-                if ($datos['cat_estat']='ASDEnc'){
+                if ($datosd['cat_estat']=='ASDEnc'){
                     $datosd['ec']=1;
                 }      
 		$form->set_datos($datosd);
@@ -193,8 +165,7 @@ class ci_reserva extends designa_ci
               $mensaje='LA RESERVA DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
               toba::notificacion()->agregar(utf8_decode($mensaje), "error");
           } 
-            
-            
+          $this->set_pantalla('pant_reservas');
 	}
         //modifico la reserva
         //modifica el estado a R (rectificada) cuando tenia nro de 540 
@@ -285,8 +256,7 @@ class ci_reserva extends designa_ci
                         toba::notificacion()->agregar($mensaje.' Los datos se guardaron correctamente', 'info');
                     }
         
-            $this->s__mostrar=0;
-            
+            $this->set_pantalla('pant_reservas');
 	}
 
 	function evt__form_reserva__baja()
@@ -308,9 +278,8 @@ class ci_reserva extends designa_ci
             }else{
                     toba::notificacion()->agregar("NO SE PUEDE ELIMINAR UNA DESIGNACION QUE TIENE NUMERO DE TKD", 'error');
                 }
-            
-            $this->s__mostrar=0;
-	}
+            $this->set_pantalla('pant_reservas');
+         }
 
 	function evt__form_reserva__cancelar()
 	{
@@ -342,10 +311,10 @@ class ci_reserva extends designa_ci
 
 	function evt__agregar()
 	{
+            $this->set_pantalla('pant_edicion');
             //para que muestre el formulario vacio, apto para ingresar una nueva reserva
             $this->resetear();
-            $this->s__mostrar=1;
-	}
+        }
 
 	//-----------------------------------------------------------------------------------
 	//---- form_encabezado --------------------------------------------------------------
@@ -361,7 +330,6 @@ class ci_reserva extends designa_ci
             $datos['carac']=$this->s__desig['carac'];
             $datos['desde']=$this->s__desig['desde'];
             $datos['hasta']=$this->s__desig['hasta'];
-            
             $form->set_datos($datos);
 	}
 
@@ -405,6 +373,11 @@ class ci_reserva extends designa_ci
                 toba::vinculador()->navegar_a('designa',3658);
             } 
         }
+        function evt__atras()
+	{
+            $this->set_pantalla('pant_reservas');
+        }
+        
         
         function conf()
         {
