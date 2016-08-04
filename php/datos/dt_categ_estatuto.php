@@ -22,7 +22,7 @@ class dt_categ_estatuto extends toba_datos_tabla
                     and c.costo_diario<= (select costo_diario from mocovi_costo_categoria c
                                            where c.codigo_siu='".trim($cat_mapu)."' and id_periodo=2)
                     and d.catest=e.codigo_est                                           
-                    and e.orden<=(select c.orden from macheo_categ b, categ_estatuto c
+                    and e.orden<=(select distinct c.orden from macheo_categ b, categ_estatuto c
                                   where b.catsiu='".trim($cat_mapu)."' and b.catest=c.codigo_est)"
                         . " order by catest";
            
