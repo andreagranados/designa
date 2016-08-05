@@ -28,6 +28,27 @@ class dt_categorizacion extends toba_datos_tabla
         }
         
     }
+    function get_categorizaciones($where=null){
+        if(!is_null($where)){
+            $where=' WHERE '.$where;
+        }else{
+            $where='';
+        }
+        $sql="select * from (select distinct a.*,t_de.uni_acad from "
+                . "(select t_do.id_docente,t_do.apellido,t_do.nombre,t_do.legajo,t_c.anio_categ,t_c.id_cat,t_ci.descripcion as categoria"
+                . " from categorizacion t_c"
+                . " LEFT OUTER JOIN docente t_do ON (t_c.id_docente=t_do.id_docente)"
+                . " LEFT OUTER JOIN categoria_invest t_ci ON (t_c.id_cat=t_ci.cod_cati)"
+                . ")a"
+                . " LEFT OUTER JOIN designacion t_de ON (a.id_docente=t_de.id_docente)"
+                .$where.")b, unidad_acad c"
+                . " where b.uni_acad=c.sigla" 
+        
+                ." order by id_docente,anio_categ";
+        $sql = toba::perfil_de_datos()->filtrar($sql);
+        
+        return toba::db('designa')->consultar($sql);
+    }
     
 }
 ?>

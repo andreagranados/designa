@@ -13,7 +13,7 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
 	'designa', --proyecto
 	'3', --restriccion_funcional
-	'solo consulta docente', --descripcion
+	'solo_consulta_docente', --descripcion
 	'0'  --permite_edicion
 );
 INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (

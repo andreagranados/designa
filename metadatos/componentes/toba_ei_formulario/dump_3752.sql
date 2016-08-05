@@ -722,8 +722,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'8', --orden
 	'Estado', --etiqueta
 	NULL, --etiqueta_estilo
-	'P(Pendiente)<br>
-Rindió (Rindió)', --descripcion
+	'P (Pendiente)<br>
+R (Rindió)', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo

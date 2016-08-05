@@ -994,7 +994,6 @@ class cargo_solapas extends toba_ci
             $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
             
             $desig['estado']='B';
-            $desig['hasta']=$datos['desde'];//setea la fecha de baja de la designacion
             //si la designacion tiene tkd entonces pasa a historico y pierde el tkd
             $mensaje='';
             
@@ -1010,6 +1009,8 @@ class cargo_solapas extends toba_ci
             }else{//la fecha hasta de la designacion es nula (cargo regular)
                 $udia=$this->controlador()->ultimo_dia_periodo(1);
             }
+            //verifico que este dentro del periodo de la designacion
+            //permito ingresar como fecha de baja un dia antes de la fecha desde. Esto para anular designaciones
             if( $datos['desde']>=($desig['desde']-1) && $datos['desde']<=$udia ){
                     $this->controlador()->dep('datos')->tabla('novedad')->setear_baja($desig['id_designacion'],$datos['desde']);
                     if($mensaje!=''){
@@ -1018,6 +1019,7 @@ class cargo_solapas extends toba_ci
                         $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar(); 
                     }
                     //borra el tkd de la designacion (si lo tenia),setea la fecha de baja y el estado de la designacion
+                    $desig['hasta']=$datos['desde'];
                     $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                       //guarda la novedad  
@@ -1028,7 +1030,7 @@ class cargo_solapas extends toba_ci
                     toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente.','info');
   
             }else{
-                toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
+                toba::notificacion()->agregar(utf8_decode('La fecha de BAJA/RENUNCIA debe estar dentro del período de la designación'),'error');
             }
  
         }
@@ -1086,7 +1088,7 @@ class cargo_solapas extends toba_ci
                 }else{//fecha hasta de la designacion es nula
                     $udia=$this->controlador()->ultimo_dia_periodo(1);
                 }
-                if( $datos['desde']>=$desig['desde']-1 && $datos['desde']<=$udia){
+                if( $datos['desde']>=($desig['desde']-1) && $datos['desde']<=$udia){
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
                         if($mensaje!=''){//agrego historico
@@ -1099,7 +1101,7 @@ class cargo_solapas extends toba_ci
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                         toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
                 }else{
-                        toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
+                        toba::notificacion()->agregar(utf8_decode('La fecha de la BAJA/RENUNCIA debe estar dentro del período de la designación'),'error');
                     }
                 
         }
