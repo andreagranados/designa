@@ -187,10 +187,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --estado_defecto
 	'0', --solo_lectura
 	'0', --solo_lectura_modificacion
-	'get_descripciones_ua', --carga_metodo
+	'get_tkd_ua', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
-	'3220', --carga_dt
+	'3397', --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
