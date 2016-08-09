@@ -30,7 +30,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
 		$sql = "SELECT distinct anio,id_periodo  FROM mocovi_periodo_presupuestario ORDER BY anio";
 		return toba::db('designa')->consultar($sql);
 	}
-        
+                
         function primer_dia_periodo_anio($anio) {
             $sql="select fecha_inicio from mocovi_periodo_presupuestario where anio=".$anio;
             $resul=toba::db('designa')->consultar($sql);

@@ -36,7 +36,7 @@ class dt_designacionh extends toba_datos_tabla
             if (isset($filtro['nro_tkd'])) {
 			$nro=$filtro['nro_tkd'];
 		} 
-
+            //lo saco del log de designaciones por si por algun motivo el registro no se guardo en designacionh cuando pierde el tkd
             //las designaciones que estan en el log que no estan en designacion son historico
             //si busco la minima fecha con ese numero de ticket entonces obtengo el momento en el que genero el tkd
             $sql="select distinct c.*,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_i.porc,t_p.nombre as programa,t_dep.descripcion as id_departamento,t_a.descripcion as id_area,t_o.descripcion as id_orientacion

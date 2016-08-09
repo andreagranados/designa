@@ -50,7 +50,7 @@ INSERT INTO apex_objeto_datos_rel (proyecto, objeto, debug, clave, ap, punto_mon
 	'0', --debug
 	NULL, --clave
 	'2', --ap
-	NULL, --punto_montaje
+	'23', --punto_montaje
 	NULL, --ap_clase
 	NULL, --ap_archivo
 	'0', --sinc_susp_constraints
@@ -73,6 +73,6 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'1', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
-	NULL  --orden
+	'1'  --orden
 );
 --- FIN Grupo de desarrollo 0
