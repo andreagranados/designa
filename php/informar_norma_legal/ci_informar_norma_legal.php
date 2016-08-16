@@ -3,7 +3,6 @@ class ci_informar_norma_legal extends toba_ci
 {
 	protected $s__datos_filtro;
         protected $s__listado;
-        protected $s__datos;
         protected $s__mostrar;
 
        
@@ -41,67 +40,72 @@ class ci_informar_norma_legal extends toba_ci
 		} 
 	}
 
-	
+	//----------------------------------------------------------------------------------
+        function get_nro_norma($id){
+            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
+            return $normas[$id]['nro_norma'];
+        }
+        function get_tipo_norma($id){
+            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
+            return $normas[$id]['nombre_tipo'];
+        }
+        function get_emite_norma($id){
+            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
+            return $normas[$id]['quien_emite_norma'];
+        }
+        function get_fecha_norma($id){
+            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
+            $date=date_create($normas[$id]['fecha']);
+            return date_format($date, 'd-m-Y');
+         }
 
 	//---- Formulario -------------------------------------------------------------------
 
 	function conf__formulario(toba_ei_formulario $form)
 	{
             if($this->s__mostrar==1){
-               $this->dep('formulario')->descolapsar();      
+               $this->dep('formulario')->descolapsar(); 
+                $form->ef('norma')->set_obligatorio('true');
+                $form->ef('nro_norma')->set_obligatorio('true');
+                $form->ef('tipo_norma')->set_obligatorio('true');
+                $form->ef('emite_norma')->set_obligatorio('true');
+                $form->ef('fecha')->set_obligatorio('true');
              }else{
                $this->dep('formulario')->colapsar();      
              }
 	}
-
+//boton Informar Norma
 	function evt__formulario__modificacion($datos)
 	{
-            
-            $this->s__datos=$datos; 
+            //en datos[norma][id_norma] se encuentra la norma seleccionada
+            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
+           
             //toma todas las designaciones que se filtraron y les agrega la norma
              if (isset($this->s__listado)){//si la variable tiene valor
-                 $cont=0;
-                foreach ($this->s__listado as $desig) {
-                    $sql="select id_norma from designacion where id_designacion=".$desig['id_designacion'];
-                    $resul=toba::db('designa')->consultar($sql);
-                    $datos_desig['id_designacion']=$desig['id_designacion'];
-                    $this->dep('datos')->tabla('designacion')->cargar($datos_desig);
-                    $d=$this->dep('datos')->tabla('designacion')->get();
-                    $datos_norma['id_norma']=$d['id_norma'];
-                    if ($d['id_norma']<>null){//si la designacion tiene norma, entonces la cargo
-                        $this->dep('datos')->tabla('norma')->cargar($datos_norma);
-                    }
-                    
-                    $this->dep('datos')->tabla('norma')->set($datos);//la modifica o la agrega
-                    $this->dep('datos')->tabla('norma')->sincronizar();
-                    $norma=$this->dep('datos')->tabla('norma')->get();
-                    
-                    //asocio la norma a la designacion
-                    $sql="update designacion set id_norma=".$norma['id_norma']." where id_designacion=".$desig['id_designacion'];
-                    toba::db('designa')->consultar($sql);
-                    $this->resetear();    
-                    
+                $cont=0;
+                foreach ($this->s__listado as $desig) {   
+                    //asocia la designacion a la norma
+                    $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$normas[$datos['norma']]['id_norma'],1);
                     $cont++;
-
                 }
                 
                 toba::notificacion()->agregar('Se han actualizado '.$cont.' designaciones.', 'info');
              }
             
-            
+           $this->s__mostrar=0; 
 	}
 
 
 
 	function evt__formulario__cancelar()
 	{
-		$this->resetear();
+	    $this->resetear(); 
+            $this->s__mostrar=0;
 	}
 
 	function resetear()
 	{
 		$this->dep('datos')->resetear();
-               
 	}
 
 	

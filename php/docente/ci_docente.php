@@ -388,10 +388,7 @@ class ci_docente extends toba_ci
                 $mostrarcs['id_norma']=$desig['id_norma_cs']    ;
                 $this->dep('datos')->tabla('normacs')->cargar($mostrarcs);
              } 
-            
-            $this->s__designacion=$this->dep('datos')->tabla('designacion')->get();//guardo la designacion seleccionada en una variable
-            $this->set_pantalla('pant_cargo');
-               
+            $this->set_pantalla('pant_cargo');      
 	}
         
         
@@ -421,9 +418,7 @@ class ci_docente extends toba_ci
                     $mostrarcs['id_norma']=$desig['id_norma_cs']    ;
                     $this->dep('datos')->tabla('normacs')->cargar($mostrarcs);
                 } 
-            
-                $this->s__designacion=$this->dep('datos')->tabla('designacion')->get();//guardo la designacion seleccionada en una variable
-                
+                            
                 if($tipo==1){
                     $this->set_pantalla('pant_cargo');
                 }else{//es una reserva
