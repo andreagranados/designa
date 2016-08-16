@@ -1715,9 +1715,11 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     . " GROUP BY id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,programa,dias_des"
                     .")a group by uni_acad,id_programa,programa"
                     . ")b, unidad_acad c where b.uni_acad=c.sigla";
-            
-            $con = toba::perfil_de_datos()->filtrar($con);  
+           
+            //$con = toba::perfil_de_datos()->filtrar($con);  daba error!!
+             
             toba::db('designa')->consultar($con);
+            
             //obtengo el credito de cada programa para cada facultad
             $cp="select a.id_unidad,a.id_programa,d.nombre as programa,sum(a.credito) as credito  "
                     . " from mocovi_credito a, mocovi_periodo_presupuestario b,  mocovi_programa d , unidad_acad e"
