@@ -26,7 +26,7 @@ class dt_norma extends toba_datos_tabla
            return $id; 
         }
        function get_detalle_norma($id_norma){
-           $sql="select * from norma t_n"
+           $sql="select t_n.id_norma,t_n.nro_norma, t_n.tipo_norma, t_n.emite_norma, t_n.fecha,t_e.quien_emite_norma,c.nombre_tipo from norma t_n"
                    . " LEFT OUTER JOIN tipo_emite t_e ON (t_n.emite_norma=t_e.cod_emite)
                         LEFT OUTER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo)
                         where id_norma=$id_norma";
@@ -69,14 +69,14 @@ class dt_norma extends toba_datos_tabla
                 }
             
            $sql="select distinct * from ("
-                   . "select t_n.*,quien_emite_norma,nombre_tipo,uni_acad
+                   . "select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,quien_emite_norma,nombre_tipo,uni_acad
                         from norma t_n
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma=t_n.id_norma)
                         LEFT OUTER JOIN tipo_emite b ON (t_n.emite_norma=b.cod_emite)
                         LEFT OUTER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo)
                         where t_d.id_designacion is not null
                         UNION
-                       select t_n.*,quien_emite_norma,nombre_tipo,uni_acad
+                       select  t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,quien_emite_norma,nombre_tipo,uni_acad
                         from norma t_n
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma_cs=t_n.id_norma)
                         LEFT OUTER JOIN tipo_emite b ON (t_n.emite_norma=b.cod_emite)
@@ -132,8 +132,8 @@ class dt_norma extends toba_datos_tabla
 			t_n.nro_norma,
 			t_tne.nombre_tipo as tipo_norma_nombre,
 			t_te.quien_emite_norma as emite_norma_nombre,
-			t_n.fecha,
-			t_n.pdf
+			t_n.fecha
+			
 		FROM
 			norma as t_n	LEFT OUTER JOIN tipo_norma_exp as t_tne ON (t_n.tipo_norma = t_tne.cod_tipo)
 			LEFT OUTER JOIN tipo_emite as t_te ON (t_n.emite_norma = t_te.cod_emite)";
