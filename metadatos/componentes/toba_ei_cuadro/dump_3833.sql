@@ -150,8 +150,8 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	NULL, --dao_parametros
 	NULL, --desplegable
 	NULL, --desplegable_activo
-	'0', --scroll
-	NULL, --scroll_alto
+	'1', --scroll
+	'300px', --scroll_alto
 	NULL, --cc_modo
 	NULL, --cc_modo_anidado_colap
 	NULL, --cc_modo_anidado_totcol
