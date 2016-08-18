@@ -6,15 +6,16 @@ class dt_norma extends toba_datos_tabla
             $sql = "SELECT id_norma, tipo_norma FROM norma ORDER BY tipo_norma";
             return toba::db('designa')->consultar($sql);
         }
+        
         function get_norma($id_norma)
         {
+            print_r($id_norma);
             $sql = "SELECT
 			t_n.id_norma,
 			t_n.nro_norma,
                         t_n.tipo_norma,
 			t_n.emite_norma,
-			t_n.fecha,
-			t_n.pdf
+			t_n.fecha
 		FROM
 			norma as t_n 
                 where id_norma=".$id_norma;
@@ -23,7 +24,8 @@ class dt_norma extends toba_datos_tabla
         }
         
        function get_idnorma($id){
-           return $id; 
+           //return $id; 
+           return 20;
         }
        function get_detalle_norma($id_norma){
            $sql="select t_n.id_norma,t_n.nro_norma, t_n.tipo_norma, t_n.emite_norma, t_n.fecha,t_e.quien_emite_norma,c.nombre_tipo from norma t_n"
@@ -88,35 +90,46 @@ class dt_norma extends toba_datos_tabla
        }
     //filtra las normas por el perfil de datos asociado al usuario
         function get_listado_perfil(){
-            $sql="select id_norma,nro_norma,tipo_norma,emite_norma,fecha,uni_acad from "
-                    . " (select n.id_norma,nro_norma,tipo_norma,emite_norma,fecha,uni_acad "
-                    . " from norma n"
-                    . " LEFT OUTER JOIN designacion d ON (n.id_norma=d.id_norma))b"
-                    . ", unidad_acad u "
-                    . " WHERE b.uni_acad=u.sigla";
-            $sql.=" UNION "
-                    . "select id_norma,nro_norma,tipo_norma,emite_norma,fecha,uni_acad from "
-                    . " (select n.id_norma,nro_norma,tipo_norma,emite_norma,fecha,uni_acad "
-                    . " from norma n"
-                    . " LEFT OUTER JOIN designacion d ON (n.id_norma=d.id_norma_cs))b"
-                    . ", unidad_acad u "
-                    . " WHERE b.uni_acad=u.sigla";        
-            $sql = toba::perfil_de_datos()->filtrar($sql);
+           
+            //obtengo el perfil de datos del usuario logueado
+            $con="select sigla,descripcion from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            $salida=array();
+            if ($resul[0]['sigla']!=null){
+                $sql="select distinct n.id_norma,nro_norma,tipo_norma,emite_norma,fecha,b.quien_emite_norma,c.nombre_tipo,uni_acad "
+                    . " from norma n "
+                    . "INNER JOIN tipo_emite b ON (n.emite_norma=b.cod_emite)
+                       INNER JOIN tipo_norma_exp c ON (n.tipo_norma=c.cod_tipo)"
+                    . " INNER JOIN designacion d ON (n.id_norma=d.id_norma and d.uni_acad='".trim($resul[0]['sigla'])."')"
+                     
+                    ." UNION "
+                    . "select distinct n.id_norma,nro_norma,tipo_norma,emite_norma,fecha,b.quien_emite_norma,c.nombre_tipo,uni_acad "                 
+                    . " from norma n "
+                    . " INNER JOIN tipo_emite b ON (n.emite_norma=b.cod_emite)
+                        INNER JOIN tipo_norma_exp c ON (n.tipo_norma=c.cod_tipo)"
+                    . " INNER JOIN designacion d ON (n.id_norma=d.id_norma_cs and d.uni_acad='".trim($resul[0]['sigla'])."')"
+                        ;
+                    
             //agrego todas las normas que no estan asociadas a ninguna designacion
-            $sql.="UNION
-                    select id_norma,nro_norma,tipo_norma,emite_norma,fecha,'' from norma a
-                    where not exists (select * from designacion b
-                                      where a.id_norma=b.id_norma)
+                $sql.="UNION
+                    select distinct n.id_norma,nro_norma,tipo_norma,emite_norma,fecha,b.quien_emite_norma,c.nombre_tipo,''
+                    from norma n
+                    INNER JOIN tipo_emite b ON (n.emite_norma=b.cod_emite)
+                    INNER JOIN tipo_norma_exp c ON (n.tipo_norma=c.cod_tipo)
+                    where  not exists (select * from designacion b
+                                      where n.id_norma=b.id_norma)
                           and not exists (select * from designacion c
-                                      where a.id_norma=c.id_norma_cs)      
-                    order by tipo_norma,emite_norma,nro_norma,fecha
-                    ";
-           // print_r($sql);
-            $sql="select * from (".$sql.")a ".
-                    " LEFT OUTER JOIN tipo_emite b ON (a.emite_norma=b.cod_emite)"
-                    . "LEFT OUTER JOIN tipo_norma_exp c ON (a.tipo_norma=c.cod_tipo) ";
-            
-            return toba::db('designa')->consultar($sql);
+                                      where n.id_norma=c.id_norma_cs)      
+                    
+                    "; 
+               
+                $salida=toba::db('designa')->consultar($sql);
+            }
+           
+            //order by tipo_norma,emite_norma,nro_norma,fecha
+                       
+            return $salida;
         }
 	function get_listado($filtro=array())
 	{

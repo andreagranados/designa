@@ -4,9 +4,12 @@ class ci_articulo73 extends toba_ci
         protected $s__datos_filtro;
         protected $s__nombre_archivo;
         protected $s__pdf;
-        
-        
-	//-----------------------------------------------------------------------------------
+        protected $tamano_byte=6292456;
+        protected $tamano_mega=6;
+
+
+
+        //-----------------------------------------------------------------------------------
 	//---- filtro -----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
@@ -206,16 +209,26 @@ class ci_articulo73 extends toba_ci
                 //$s__temp_archivo = $datos['acta']['tmp_name'];//C:\Windows\Temp\php9A45.tmp
                  // Almacena un 'file pointer' en un campo binario o blob de la tabla.
                 //print_r($datos['acta']);//Array ( [name] => TC051168.pdf [type] => application/pdf [tmp_name] => C:\Windows\Temp\phpE148.tmp [error] => 0 [size] => 656209 )
-                $fp = fopen($datos['acta']['tmp_name'], 'rb');
-                $this->dep('datos')->tabla('articulo_73')->set_blob('acta',$fp);
-               // fclose($fp); esto borra el archivo!!!!
+                if($datos['acta']['size']>$this->tamano_byte){
+                    toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');
+                    $fp=null;
+                }else{
+                    $fp = fopen($datos['acta']['tmp_name'], 'rb');
+                    $this->dep('datos')->tabla('articulo_73')->set_blob('acta',$fp);
+                }
+              
             }else{
                 $this->dep('datos')->tabla('articulo_73')->set_blob('acta',null);
             }
             //-----------resolucion-----------------------
             if (is_array($datos['resolucion'])) {
-                $fp = fopen($datos['resolucion']['tmp_name'], 'rb');
-                $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',$fp);
+                 if($datos['resolucion']['size']>$this->tamano_byte){
+                    toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');
+                    $fp=null;
+                }else{
+                    $fp = fopen($datos['resolucion']['tmp_name'], 'rb');
+                    $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',$fp);
+                }
             }else{
                 $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',null);
             }
@@ -250,8 +263,12 @@ class ci_articulo73 extends toba_ci
                 //$s__temp_archivo = $datos['acta']['tmp_name'];//C:\Windows\Temp\php9A45.tmp
                  // Almacena un 'file pointer' en un campo binario o blob de la tabla.
                 //print_r($datos['acta']);//Array ( [name] => TC051168.pdf [type] => application/pdf [tmp_name] => C:\Windows\Temp\phpE148.tmp [error] => 0 [size] => 656209 )
-                if($datos['acta']['size']>0){
-                    $fp = fopen($datos['acta']['tmp_name'], 'rb');
+                if($datos['acta']['size']>0 ){
+                    if($datos['acta']['size']>$this->tamano_byte ){
+                        toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');  
+                        $fp=null;
+                    }
+                    else{$fp = fopen($datos['acta']['tmp_name'], 'rb');}
                 }else{
                     $fp=null;
                 }
@@ -261,7 +278,13 @@ class ci_articulo73 extends toba_ci
             }
             if (is_array($datos['resolucion'])) {
                 if($datos['resolucion']['size']>0){
-                    $fp = fopen($datos['resolucion']['tmp_name'], 'rb');
+                    if($datos['resolucion']['size']>$this->tamano_byte ){
+                        toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');  
+                        $fp=null;
+                    }
+                    else{
+                        $fp = fopen($datos['resolucion']['tmp_name'], 'rb');
+                    }
                 }else{
                     $fp=null;
                 }

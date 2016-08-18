@@ -2,16 +2,27 @@
 class ci_normas extends toba_ci
 {
     protected $s__mostrar;
+   //protected $s__parametro;
 //este metodo permite mostrar en el popup la persona que selecciona o la que ya tenia
         //recibe como argumento el id 
-        function get_idnorma($id){
-            return $this->dep('datos')->tabla('norma')->get_idnorma($id); 
-        }
-//---- Cuadro -----------------------------------------------------------------------
+//        function get_idnorma($id){
+//            return $this->dep('datos')->tabla('norma')->get_idnorma($id); 
+//        }
+        
+//        function ini()
+//        {
+//            $parametro = toba::memoria()->get_parametro('parametro_nuevo');
+//            if (isset($parametro)) {
+//		$this->s__parametro=$parametro;
+//            }
+//        }
+
+        //---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-            $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_perfil());
+           $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_perfil());
+ 
 	}
 
 	function evt__cuadro__seleccion($datos)

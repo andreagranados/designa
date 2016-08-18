@@ -81,7 +81,7 @@ class dt_articulo_73 extends designa_datos_tabla
                         and (b.cat_estat<>'AYS' or b.cat_estat<>'PTR' or b.cat_estat<>'PAS')
                         and c.codigo_siu=b.cat_mapuche
                         and c.id_periodo=2--periodo 2016
-                        and c.costo_diario<=751.12 
+                        and c.costo_diario<=751.13
                         and b.uni_acad='".$ua."'"
                       . " and b.id_designacion=d.id_designacion"
                             . " and e.id_programa=d.id_programa"

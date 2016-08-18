@@ -8,7 +8,8 @@ class cargo_solapas extends toba_ci
     protected $s__alta_nov;
     protected $s__alta_novb;
     protected $s__volver;
-       
+        
+    
         function conf()
         {
             $id = toba::memoria()->get_parametro('id_designacion');
@@ -655,7 +656,10 @@ class cargo_solapas extends toba_ci
 //                return $datos;       
 //		}
 //	}
+        
+        
         function conf__form_norma(toba_ei_formulario $form){
+            
             if ($this->controlador()->dep('datos')->tabla('norma')->esta_cargada()) {
                 $datos = $this->controlador()->dep('datos')->tabla('norma')->get();
                 $d=$this->controlador()->dep('datos')->tabla('norma')->get_detalle_norma($datos['id_norma']);
@@ -673,10 +677,15 @@ class cargo_solapas extends toba_ci
                 }
                 return $datos;
             }
+            $parametros = array('parametro_nuevo' => 79);
+            $form->ef('norma')->vinculo()->set_parametros($parametros);
+
         }
+       
         function get_nro_norma($id){
-            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
-            return $normas[$id]['nro_norma'];
+           $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
+           return $normas[0]['nro_norma'];
+            
         }
         function get_tipo_norma($id){
             $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
@@ -691,6 +700,7 @@ class cargo_solapas extends toba_ci
             $date=date_create($normas[$id]['fecha']);
             return date_format($date, 'd-m-Y');
          }
+         
          //se muestra como boton Guardar. Sirve para asociar la norma legal de alta a la designacion. O para modificarla si ya tenia asociada
         function evt__form_norma__modificacion($datos){
             
@@ -706,9 +716,10 @@ class cargo_solapas extends toba_ci
                        $this->controlador()->dep('datos')->tabla('norma')->cargar($mostrar);
                    } 
                 }else{//la designacion no tiene norma
-                    if($datos['norma']==null){
+                   if($datos['norma']==null){
                        toba::notificacion()->agregar('Debe seleccionar una norma desde..','info');
                    }else{//si el popup tiene datos entonces es porque ha seleccionado una norma
+                       //$datos['norma'] tiene la respuesta del popup, que es el indice
                         $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
                         $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                         $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$normas[$datos['norma']]['id_norma'],1);                       
