@@ -151,7 +151,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'3717', --objeto
 	'cancelar', --identificador
 	'Cancelar', --etiqueta
-	'1', --maneja_datos
+	'0', --maneja_datos
 	'0', --sobre_fila
 	NULL, --confirmacion
 	NULL, --estilo
@@ -164,7 +164,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'0', --implicito
 	'0', --defecto
 	NULL, --display_datos_cargados
-	'no_cargado', --grupo
+	'no_cargado,cargado', --grupo
 	NULL, --accion
 	NULL, --accion_imphtml_debug
 	NULL, --accion_vinculo_carpeta

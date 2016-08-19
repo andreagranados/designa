@@ -3,12 +3,9 @@ class ci_integrantes_pi extends designa_ci
 {
         protected $s__mostrar_e;
         
-    
-        //este metodo permite mostrar en el popup la persona que selecciona o la que ya tenia
-        //recibe como argumento el id 
-        function get_persona($id){
-            return $this->dep('datos')->tabla('persona')->get_persona($id); 
+        function get_persona($id){   
         }
+    
         function fecha_desde_proyecto(){
             $datos=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             return date("d/m/Y",strtotime($datos['fec_desde']));
@@ -140,10 +137,8 @@ class ci_integrantes_pi extends designa_ci
             $pe=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $datos['pinvest']=$pe['id_pinv'];
             $datos['nro_tabla']=1;
-            //recupero todas las personas, Las recupero igual que como aparecen en operacion Configuracion->Personas
-            $personas=$this->dep('datos')->tabla('persona')->get_listado();           
-            $datos['tipo_docum']=$personas[$datos['integrante']]['tipo_docum'];
-            $datos['nro_docum']=$personas[$datos['integrante']]['nro_docum'];
+            $datos['tipo_docum']=$datos['integrante'][0];
+            $datos['nro_docum']=$datos['integrante'][1];
             $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
             $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
             $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
@@ -187,12 +182,9 @@ class ci_integrantes_pi extends designa_ci
         function evt__cuadro_int__seleccion($datos)
 	{
             $this->s__mostrar_e=1;
-            $pe=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $datos['pinvest']=$pe['id_pinv'];
-           //print_r($datos);exit();
             $this->dep('datos')->tabla('integrante_externo_pi')->cargar($datos);
 	}
-
+        
         //--Eventos
         function evt__agregar()
 	{

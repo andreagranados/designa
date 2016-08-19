@@ -8,10 +8,9 @@ class ci_proyectos_extension extends toba_ci
         protected $s__integrantes;
         protected $s__pantalla;
         
-        //este metodo permite mostrar en el popup la persona que selecciona o la que ya tenia
-        //recibe como argumento el id 
+        
         function get_persona($id){
-            return $this->dep('datos')->tabla('persona')->get_persona($id); 
+            
         }
         
         function fecha_desde_proyecto(){
@@ -355,9 +354,9 @@ class ci_proyectos_extension extends toba_ci
             $datos['id_pext']=$pe['id_pext'];
             $datos['nro_tabla']=1;
             //recupero todas las personas, Las recupero igual que como aparecen en operacion Configuracion->Personas
-            $personas=$this->dep('datos')->tabla('persona')->get_listado();           
-            $datos['tipo_docum']=$personas[$datos['integrante']]['tipo_docum'];
-            $datos['nro_docum']=$personas[$datos['integrante']]['nro_docum'];
+            //$personas=$this->dep('datos')->tabla('persona')->get_listado();           
+            $datos['tipo_docum']=$datos['integrante'][0];
+            $datos['nro_docum']=$datos['integrante'][1];
             $this->dep('datos')->tabla('integrante_externo_pe')->set($datos);
             $this->dep('datos')->tabla('integrante_externo_pe')->sincronizar();
             $this->dep('datos')->tabla('integrante_externo_pe')->resetear();
@@ -367,6 +366,8 @@ class ci_proyectos_extension extends toba_ci
         {
             $this->dep('datos')->tabla('integrante_externo_pe')->eliminar_todo();
 	    $this->dep('datos')->tabla('integrante_externo_pe')->resetear();
+            toba::notificacion()->agregar('El integrante se ha eliminado  correctamente.','info');
+            $this->s__mostrar_e=0;
              
         }
         function evt__form_integrante_e__modificacion($datos)

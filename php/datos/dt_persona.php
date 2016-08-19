@@ -39,8 +39,13 @@ class dt_persona extends toba_datos_tabla
 	}
         //metodo utilizado para mostrar las personas
         //ordenado por apellido y nombre
-	function get_listado()
+	function get_listado($where=null)
 	{
+            if(!is_null($where)){
+                    $where=' WHERE '.$where;
+                }else{
+                    $where='';
+                }
 		$sql = "SELECT
 			t_p.apellido,
 			t_p.nombre,
@@ -56,13 +61,11 @@ class dt_persona extends toba_datos_tabla
 		FROM
 			persona as t_p	LEFT OUTER JOIN pais as t_p1 ON (t_p.pais_nacim = t_p1.codigo_pais)
 			LEFT OUTER JOIN provincia as t_p2 ON (t_p.pcia_nacim = t_p2.codigo_pcia)
+                        $where
 		ORDER BY apellido,nombre";
 		return toba::db('designa')->consultar($sql);
 	}
-        function get_persona($id){
-            return $id;
-            
-        }
+       
         function get_datos($tipo,$nro){
             $sql="select trim(apellido)||', '||trim(nombre) as nombre from persona"
                     . " where tipo_docum='".$tipo."'"." and nro_docum=".$nro;
