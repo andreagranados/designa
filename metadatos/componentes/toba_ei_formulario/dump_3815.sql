@@ -21,7 +21,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Articulo73 - filtro', --nombre
-	NULL, --titulo
+	'Opciones de Búsqueda', --titulo
 	'0', --colapsable
 	NULL, --descripcion
 	'designa', --fuente_datos_proyecto

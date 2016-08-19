@@ -315,24 +315,24 @@ class ci_articulo73 extends toba_ci
             $this->resetear();
             $this->set_pantalla('pant_inicial');
 	}
-        function conf__pant_inicial()
-        {
-            echo "<tr height='20'>".
-		"<td align='left' valign='botton' colspan='3'>".
-				"<table>".
-				"<tr>".
-					"<td></td>".
-					"<td lign='right'>";
-                                                $ruta='AP_Articulo73.pdf';
-						echo "<a target='_blank' href='$ruta' title='Descargar Acta Paritaria - Articulo 73'>".toba_recurso::imagen_proyecto('Down.png', true)."</a>";
-						
-				echo "</td>".
-					"<td style='font-size:20px;'>Presionando el &iacute;cono se obtendr&aacute el Acta de Paritaria - Art&iacuteculo 73. </td>".
-				"</tr>".
-			"</table>".
-		"</td>".
-	"</tr>";
-        }
+//        function conf__pant_inicial()
+//        {
+//            echo "<tr height='20'>".
+//		"<td align='left' valign='botton' colspan='3'>".
+//				"<table>".
+//				"<tr>".
+//					"<td></td>".
+//					"<td lign='right'>";
+//                                                $ruta='AP_Articulo73.pdf';
+//						echo "<a target='_blank' href='$ruta' title='Descargar Acta Paritaria - Articulo 73'>".toba_recurso::imagen_proyecto('Down.png', true)."</a>";
+//						
+//				echo "</td>".
+//					"<td style='font-size:20px;'>Presionando el &iacute;cono se obtendr&aacute el Acta de Paritaria - Art&iacuteculo 73. </td>".
+//				"</tr>".
+//			"</table>".
+//		"</td>".
+//	"</tr>";
+//        }
 	
 	
 
