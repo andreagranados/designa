@@ -2,27 +2,41 @@
 class ci_normas extends toba_ci
 {
     protected $s__mostrar;
-   //protected $s__parametro;
-//este metodo permite mostrar en el popup la persona que selecciona o la que ya tenia
-        //recibe como argumento el id 
-//        function get_idnorma($id){
-//            return $this->dep('datos')->tabla('norma')->get_idnorma($id); 
-//        }
+    protected $s__datos_filtro;
+    protected $s__where;
+        //----Filtros ----------------------------------------------------------------------
         
-//        function ini()
-//        {
-//            $parametro = toba::memoria()->get_parametro('parametro_nuevo');
-//            if (isset($parametro)) {
-//		$this->s__parametro=$parametro;
-//            }
-//        }
+        function conf__filtros(toba_ei_filtro $filtro)
+	{
+            if (isset($this->s__datos_filtro)) {
+                $filtro->set_datos($this->s__datos_filtro);
+		}
+           
+	}
+
+	function evt__filtros__filtrar($datos)
+	{
+	    $this->s__datos_filtro = $datos;
+            $this->s__where = $this->dep('filtros')->get_sql_where();
+            
+         }
+
+	function evt__filtros__cancelar()
+	{
+		unset($this->s__datos_filtro);
+                unset($this->s__where);
+	}
 
         //---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-           $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_perfil());
- 
+           $cuadro->desactivar_modo_clave_segura();
+           if (isset($this->s__where)) {
+                $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_perfil($this->s__where));
+           }else{
+                $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_perfil());
+           }
 	}
 
 	function evt__cuadro__seleccion($datos)
@@ -34,6 +48,7 @@ class ci_normas extends toba_ci
 	{
 		$this->dep('datos')->cargar($datos);  
                 $this->dep('cuadro')->colapsar();
+                $this->dep('filtros')->colapsar();
                 $this->s__mostrar=1;
 	}
       //---- Formulario -------------------------------------------------------------------
@@ -134,6 +149,7 @@ class ci_normas extends toba_ci
 	{
             $this->s__mostrar=1;
             $this->dep('cuadro')->colapsar();
+            $this->dep('filtros')->colapsar();
 	}
 
 }

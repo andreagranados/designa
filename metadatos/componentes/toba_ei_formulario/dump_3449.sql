@@ -138,10 +138,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'nro_norma', --identificador
 	'ef_editable_numero', --elemento_formulario
 	'nro_norma', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'2', --orden
-	'Nro norma', --etiqueta
+	'Número', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
 	'0', --colapsado
@@ -218,10 +218,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'tipo_norma', --identificador
 	'ef_editable', --elemento_formulario
 	'tipo_norma', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'3', --orden
-	'Tipo norma', --etiqueta
+	'Tipo de Norma', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
 	'0', --colapsado
@@ -298,10 +298,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'emite_norma', --identificador
 	'ef_editable', --elemento_formulario
 	'emite_norma', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'4', --orden
-	'Emite norma', --etiqueta
+	'Emisor de la Norma', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
 	'0', --colapsado
@@ -378,7 +378,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'fecha', --identificador
 	'ef_editable_fecha', --elemento_formulario
 	'fecha', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'5', --orden
 	'Fecha', --etiqueta
@@ -541,7 +541,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'1', --orden
-	'Seleccionar Norma', --etiqueta
+	'Seleccionar Norma:', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
 	'0', --colapsado

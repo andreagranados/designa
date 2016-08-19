@@ -539,7 +539,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'designa', --popup_proyecto
 	'0', --popup_editable
 	NULL, --popup_ventana
-	'get_idnorma', --popup_carga_desc_metodo
+	'get_xxx', --popup_carga_desc_metodo
 	NULL, --popup_carga_desc_clase
 	NULL, --popup_carga_desc_include
 	'1', --popup_puede_borrar_estado

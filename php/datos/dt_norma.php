@@ -9,24 +9,24 @@ class dt_norma extends toba_datos_tabla
         
         function get_norma($id_norma)
         {
-            print_r($id_norma);
             $sql = "SELECT
 			t_n.id_norma,
 			t_n.nro_norma,
                         t_n.tipo_norma,
 			t_n.emite_norma,
-			t_n.fecha
+			t_n.fecha,
+                        b.quien_emite_norma,
+                        c.nombre_tipo
 		FROM
-			norma as t_n 
+			norma as t_n
+                INNER JOIN tipo_emite b ON (t_n.emite_norma=b.cod_emite)
+                INNER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo)
                 where id_norma=".$id_norma;
             return toba::db('designa')->consultar($sql);
     
         }
         
-       function get_idnorma($id){
-           //return $id; 
-           return 20;
-        }
+      
        function get_detalle_norma($id_norma){
            $sql="select t_n.id_norma,t_n.nro_norma, t_n.tipo_norma, t_n.emite_norma, t_n.fecha,t_e.quien_emite_norma,c.nombre_tipo from norma t_n"
                    . " LEFT OUTER JOIN tipo_emite t_e ON (t_n.emite_norma=t_e.cod_emite)
@@ -89,8 +89,14 @@ class dt_norma extends toba_datos_tabla
            return toba::db('designa')->consultar($sql);
        }
     //filtra las normas por el perfil de datos asociado al usuario
-        function get_listado_perfil(){
-           
+        function get_listado_perfil($where=null){
+           if(!is_null($where)){
+                    $where1=' WHERE '.$where;
+                    $where2=' and '.$where;
+                }else{
+                    $where1='';
+                    $where2='';
+                }
             //obtengo el perfil de datos del usuario logueado
             $con="select sigla,descripcion from unidad_acad ";
             $con = toba::perfil_de_datos()->filtrar($con);
@@ -102,17 +108,18 @@ class dt_norma extends toba_datos_tabla
                     . "INNER JOIN tipo_emite b ON (n.emite_norma=b.cod_emite)
                        INNER JOIN tipo_norma_exp c ON (n.tipo_norma=c.cod_tipo)"
                     . " INNER JOIN designacion d ON (n.id_norma=d.id_norma and d.uni_acad='".trim($resul[0]['sigla'])."')"
-                     
+                    . $where1
                     ." UNION "
                     . "select distinct n.id_norma,nro_norma,tipo_norma,emite_norma,fecha,b.quien_emite_norma,c.nombre_tipo,uni_acad "                 
                     . " from norma n "
                     . " INNER JOIN tipo_emite b ON (n.emite_norma=b.cod_emite)
                         INNER JOIN tipo_norma_exp c ON (n.tipo_norma=c.cod_tipo)"
                     . " INNER JOIN designacion d ON (n.id_norma=d.id_norma_cs and d.uni_acad='".trim($resul[0]['sigla'])."')"
+                    .$where1    
                         ;
                     
             //agrego todas las normas que no estan asociadas a ninguna designacion
-                $sql.="UNION
+                $sql.=" UNION
                     select distinct n.id_norma,nro_norma,tipo_norma,emite_norma,fecha,b.quien_emite_norma,c.nombre_tipo,''
                     from norma n
                     INNER JOIN tipo_emite b ON (n.emite_norma=b.cod_emite)
@@ -121,14 +128,12 @@ class dt_norma extends toba_datos_tabla
                                       where n.id_norma=b.id_norma)
                           and not exists (select * from designacion c
                                       where n.id_norma=c.id_norma_cs)      
-                    
+                    $where2
                     "; 
                
                 $salida=toba::db('designa')->consultar($sql);
             }
-           
-            //order by tipo_norma,emite_norma,nro_norma,fecha
-                       
+                               
             return $salida;
         }
 	function get_listado($filtro=array())

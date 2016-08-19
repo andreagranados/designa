@@ -42,20 +42,20 @@ class ci_informar_norma_legal extends toba_ci
 
 	//----------------------------------------------------------------------------------
         function get_nro_norma($id){
-            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
-            return $normas[$id]['nro_norma'];
+            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_norma($id);
+            return $normas[0]['nro_norma'];
         }
         function get_tipo_norma($id){
-            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
-            return $normas[$id]['nombre_tipo'];
+            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_norma($id);
+            return $normas[0]['nombre_tipo'];
         }
         function get_emite_norma($id){
-            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
-            return $normas[$id]['quien_emite_norma'];
+            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_norma($id);
+            return $normas[0]['quien_emite_norma'];
         }
         function get_fecha_norma($id){
-            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
-            $date=date_create($normas[$id]['fecha']);
+            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_norma($id);
+            $date=date_create($normas[0]['fecha']);
             return date_format($date, 'd-m-Y');
          }
 
@@ -77,15 +77,13 @@ class ci_informar_norma_legal extends toba_ci
 //boton Informar Norma
 	function evt__formulario__modificacion($datos)
 	{
-            //en datos[norma][id_norma] se encuentra la norma seleccionada
-            $normas=$this->controlador()->dep('datos')->tabla('norma')->get_listado_perfil();
-           
+            //en datos[norma] se encuentra la norma seleccionada      
             //toma todas las designaciones que se filtraron y les agrega la norma
              if (isset($this->s__listado)){//si la variable tiene valor
                 $cont=0;
                 foreach ($this->s__listado as $desig) {   
                     //asocia la designacion a la norma
-                    $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$normas[$datos['norma']]['id_norma'],1);
+                    $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$datos['norma'],1);
                     $cont++;
                 }
                 
