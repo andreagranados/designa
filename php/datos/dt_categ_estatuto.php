@@ -24,6 +24,7 @@ class dt_categ_estatuto extends toba_datos_tabla
                     and d.catest=e.codigo_est                                           
                     and e.orden<=(select distinct c.orden from macheo_categ b, categ_estatuto c
                                   where b.catsiu='".trim($cat_mapu)."' and b.catest=c.codigo_est)"
+                        . " and d.catest<>'ASDEnc' "
                         . " order by catest";
            
                 $res= toba::db('designa')->consultar($sql);
