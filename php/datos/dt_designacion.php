@@ -1259,12 +1259,10 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 //                           	AND t_d.id_reserva = t_r.id_reserva                            	
 //                             )";
                 $sql=$this->armar_consulta($pdia,$udia,$filtro['anio']);
-		
+		//si el estado de la designacion es  B entonces le pone estado B, si es <>B se fija si tiene licencia sin goce o cese
                    //$sql="select *,((dias_des-dias_lic)*costo_diario*porc/100)as costo  from (".$sql.") a ". $where." order by docente_nombre,id_designacion";
-                $sql=  "select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo,"
-                            . " case when ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=1 or t_no.tipo_nov=4 )) then 'B' else
-                            case when  ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=2 or t_no.tipo_nov=5)) then 'L'  else b.estado end 
-                            end as estado "//si tiene una baja o renuncia coloca B. Si tiene una licencia sin goce o cese coloca L
+                $sql=  "select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
+                            .",case when b.estado<>'B' then case when  ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=2 or t_no.tipo_nov=5)) then 'L'  else b.estado end else 'B' end as estado "
                             . " from ("
                             ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
                             " from (".$sql.") a"

@@ -233,6 +233,7 @@ class ci_articulo73 extends toba_ci
                 $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',null);
             }
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
+            $this->resetear();
             $this->set_pantalla('pant_inicial');
          }else{
              toba::notificacion()->agregar('La designacion debe tener departamento, area y orientacion', 'error');
@@ -291,6 +292,7 @@ class ci_articulo73 extends toba_ci
                 $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',$fp);
             }
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
+            $this->resetear();
             $this->set_pantalla('pant_inicial');
          }else{
              toba::notificacion()->agregar('La designacion debe tener departamento, area y orientacion', 'error');
