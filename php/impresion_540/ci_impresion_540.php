@@ -189,67 +189,7 @@ class ci_impresion_540 extends toba_ci
                     }
                 }
         }
-	
-       
-        //funcion que se ejecuta cuando se presiona el boton imprimir 
-//        function vista_excel(toba_vista_excel $salida){
-//            // la variable $this->s__seleccionadas no tiene valor hasta que no presiona el boton filtrar
-//            if(isset($this->s__seleccionadas)){print_r('si');exit();}else{print_r('no');exit();}
-//            //ya tiene valor, filtrar y solo mostrar la que estan seleccionadas
-//           // print_r($this->s__listado);exit();
-//            if (isset($this->s__seleccionadas)){//si selecciono para imprimir
-//                //genero un nuevo numero de 540
-//                $sql="insert into impresion_540(id,fecha_impresion) values (nextval('impresion_540_id_seq'),current_date)";
-//                toba::db('designa')->consultar($sql);
-//                
-//                $sql="select currval('impresion_540_id_seq') as numero";//para recuperar el ultimo valor insertado, lo trae de la misma sesion por lo tanto no hay problema si hay otros usuarios ingresando al mismo tiempo
-//                $resul=toba::db('designa')->consultar($sql);
-//                $numero=$resul[0]['numero'];
-//                
-//                $sele=array();
-//                foreach ($this->s__seleccionadas as $key => $value) {
-//                    $sele[]=$value['id_designacion']; 
-//                }
-//                $salida->set_nombre_archivo("Impresion_540.xls");
-//                $excel=$salida->get_excel();//recuperamos el objeto
-//                $salida->titulo("Impresion 540");
-//                $salida->set_hoja_nombre("Hoja 1");
-//                $titulo='Formulario 540 - Número: '.$numero;
-//                $excel->setActiveSheetIndex(0)->setCellValue('A1', $titulo);
-//                $excel->setActiveSheetIndex(0)->setCellValue('A2', 'UA');
-//                $excel->setActiveSheetIndex(0)->setCellValue('B2', 'Programa');
-//                $excel->setActiveSheetIndex(0)->setCellValue('C2', 'Apellido y Nombre');
-//                $excel->setActiveSheetIndex(0)->setCellValue('D2', 'Categ Mapuche');
-//                $excel->setActiveSheetIndex(0)->setCellValue('E2', 'Categ Estatuto');
-//                $excel->setActiveSheetIndex(0)->setCellValue('F2', 'Dedicación');
-//                $excel->setActiveSheetIndex(0)->setCellValue('G2', 'Desde');
-//                $excel->setActiveSheetIndex(0)->setCellValue('H2', 'Hasta');
-//                $excel->setActiveSheetIndex(0)->setCellValue('I2', 'Costo');
-//                $fila=3;
-//                foreach ($this->s__listado as $des) {//recorro cada designacion del listado
-//                    if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
-//                        $sql="update designacion set nro_540=".$numero." where id_designacion=".$des['id_designacion'];
-//                        toba::db('designa')->consultar($sql);
-//                        $ayn=$des['docente_nombre'];
-//                        $excel->setActiveSheetIndex(0)->setCellValue('A'.$fila, $des['uni_acad']);  
-//                        $excel->setActiveSheetIndex(0)->setCellValue('B'.$fila, $des['programa']);  
-//                        $excel->setActiveSheetIndex(0)->setCellValue('C'.$fila, $ayn);   
-//                        $excel->setActiveSheetIndex(0)->setCellValue('D'.$fila, $des['cat_mapuche']);   
-//                        $excel->setActiveSheetIndex(0)->setCellValue('E'.$fila, $des['cat_estat']); 
-//                        $excel->setActiveSheetIndex(0)->setCellValue('F'.$fila, $des['dedic']); 
-//                        $excel->setActiveSheetIndex(0)->setCellValue('G'.$fila, $des['desde']);   
-//                        $excel->setActiveSheetIndex(0)->setCellValue('H'.$fila, $des['hasta']); 
-//                         $excel->setActiveSheetIndex(0)->setCellValue('I'.$fila, $des['costo']); 
-//                        $fila=$fila+1;
-//                    }
-//                    
-//                }
-//               
-//            }
 
-// }
-
-	
 
          /**
 	 * Atrapa la interacci�n del usuario con el cuadro mediante los checks
@@ -314,6 +254,24 @@ class ci_impresion_540 extends toba_ci
                 }
             
 	}
+        function conf__pant_edicion()
+        {
+           
+            echo "<tr height='20'>".
+		"<td align='left' valign='botton' colspan='3'>".
+				"<table>".
+				"<tr>".
+					"<td></td>".
+					"<td lign='right' >";
+                                            echo toba_recurso::imagen_proyecto('qr2.png', true);
+						
+				echo "</td>".
+					"<td style='font-size:20px;'>Es de suma importancia que los datos informados en el TKD sean correctos.<br> Previo a imprimir verifique la correctitud de los mismos desde Informes->Presupuestarios->Designaciones<br>El TKD debe constar en los considerandos y como Anexo de la Resoluci&oacuten u Ordenanza de Aprobaci&oacuten. </td>".
+				"</tr>".
+			"</table>".
+		"</td>".
+	"</tr>";
+        }
 
 }
 ?>
