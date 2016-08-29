@@ -47,11 +47,13 @@ class dt_norma extends toba_datos_tabla
        //designaciones asociadas a id_norma por id_norma o por id_norma_cs
        function get_detalle($id_norma){
            $sql="select b.*,quien_emite_norma,nombre_tipo,t_do.apellido||', '||t_do.nombre as docente from (
-                    select t_n.*,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,uni_acad from  norma t_n
+                    select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,uni_acad from 
+                       norma t_n
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma=t_n.id_norma)
                         where t_n.id_norma=$id_norma"
                    . " UNION "
-                   . "select t_n.*,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,uni_acad from  norma t_n
+                   . "select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,uni_acad from 
+                       norma t_n
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma_cs=t_n.id_norma)
                         where t_n.id_norma=$id_norma"
                    . ")b"
