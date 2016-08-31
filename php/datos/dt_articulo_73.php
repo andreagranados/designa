@@ -2,6 +2,17 @@
 require_once 'consultas_mapuche.php';
 class dt_articulo_73 extends designa_datos_tabla
 {
+    function tiene_acta($id_designacion){
+        $sql="select case when acta is not null then 1 else 0 end as tiene from articulo_73 where id_designacion=$id_designacion";
+        $res=toba::db('designa')->consultar($sql); 
+        return $res[0]['tiene'];
+    }
+    //si tiene resolucion retorna 1 sino 0
+    function tiene_resolucion($id_designacion){
+        $sql="select case when resolucion is not null then 1 else 0 end as tiene from articulo_73 where id_designacion=$id_designacion";
+        $res=toba::db('designa')->consultar($sql); 
+        return $res[0]['tiene'];
+    }
     function get_listado($filtro=array()){
         $where = "";
         if (isset($filtro['uni_acad'])) {

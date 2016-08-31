@@ -18,19 +18,22 @@ class dt_designacion extends toba_datos_tabla
 	}       
         
         $sql="select uni_acad,cat_mapuche,
-            count(case when cat_mapuche='AY11' then id_designacion else null end) as ay11,
-            count(case when cat_mapuche='AY1S' then id_designacion else null end) as ay1s,
-            count(case when cat_mapuche='AY1E' then id_designacion else null end) as ay1e,
-            count(case when cat_mapuche='AY21' then id_designacion else null end) as ay21,
-            count(case when cat_mapuche='ADJ1' then id_designacion else null end) as adj1,
-            count(case when cat_mapuche='ADJS' then id_designacion else null end) as adjs,
-            count(case when cat_mapuche='ADJE' then id_designacion else null end) as adje,
-            count(case when cat_mapuche='ASO1' then id_designacion else null end) as aso1,
-            count(case when cat_mapuche='ASOE' then id_designacion else null end) as asoe,
-            count(case when cat_mapuche='ASOS' then id_designacion else null end) as asos,
-            count(case when cat_mapuche='JTP1' then id_designacion else null end) as jtp1,
-            count(case when cat_mapuche='JTPS' then id_designacion else null end) as jtps,
-            count(case when cat_mapuche='JTPE' then id_designacion else null end) as jtpe
+            count(case when cat_mapuche='AY11' then id_designacion else null end) as AY11,
+            count(case when cat_mapuche='AY1S' then id_designacion else null end) as AY1S,
+            count(case when cat_mapuche='AY1E' then id_designacion else null end) as AY1E,
+            count(case when cat_mapuche='AY21' then id_designacion else null end) as AY21,
+            count(case when cat_mapuche='ADJ1' then id_designacion else null end) as ADJ1,
+            count(case when cat_mapuche='ADJS' then id_designacion else null end) as ADJS,
+            count(case when cat_mapuche='ADJE' then id_designacion else null end) as ADJE,
+            count(case when cat_mapuche='ASO1' then id_designacion else null end) as ASO1,
+            count(case when cat_mapuche='ASOE' then id_designacion else null end) as ASOE,
+            count(case when cat_mapuche='ASOS' then id_designacion else null end) as ASOS,
+            count(case when cat_mapuche='JTP1' then id_designacion else null end) as JTP1,
+            count(case when cat_mapuche='JTPS' then id_designacion else null end) as JTPS,
+            count(case when cat_mapuche='JTPE' then id_designacion else null end) as JTPE,
+            count(case when cat_mapuche='TIT1' then id_designacion else null end) as TIT1,
+            count(case when cat_mapuche='TITS' then id_designacion else null end) as TITS,
+            count(case when cat_mapuche='TITE' then id_designacion else null end) as TITE
             from designacion".$where
                 ." group by uni_acad,cat_mapuche";
         
@@ -2022,31 +2025,53 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             }else{
                 $where='';
             }
-            
+           
             $x=toba::usuario()->get_id();           
             $z=toba::usuario()->get_perfil_datos($x);
+            //si el usuario esta asociado a un perfil de datos
             if(isset($z)){//si una variable está definida y no es NULL
                 $sql="select sigla,descripcion from unidad_acad ";
                 $sql = toba::perfil_de_datos()->filtrar($sql);
                 $resul=toba::db('designa')->consultar($sql);
-                print_r($resul[0]['sigla']);exit();
-                $sql =  "select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
-                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza
+                $sql =  "select * from(" 
+               ."select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo
                         from designacion t_d 
                         LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
                         LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
                         LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
-                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, unidad_acad t_u
+                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo
                         where t_a.id_designacion=t_d.id_designacion
                         and t_a.id_materia=t_m.id_materia
                         and t_m.id_plan=t_e.id_plan
                         and t_d.id_docente=t_do.id_docente
-                        and t_d.uni_acad=t_u.sigla
+                        and t_a.modulo=t_mo.id_modulo
                         and t_e.uni_acad<>t_d.uni_acad
-                        and ";
-                    return toba::db('designa')->consultar($sql);
+                        and t_d.uni_acad<>'".$resul[0]['sigla']."'"
+                        . " and t_e.uni_acad='".$resul[0]['sigla']."'"
+                            .")b $where"
+                        . " order by docente_nombre";
+                    
+              }else{//el usuario no esta asociado a ningun perfil de datos
+                 $sql =  "select * from(" 
+                          ." select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo
+                        from designacion t_d 
+                        LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+                        LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+                        LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
+                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo
+                        where t_a.id_designacion=t_d.id_designacion
+                        and t_a.id_materia=t_m.id_materia
+                        and t_m.id_plan=t_e.id_plan
+                        and t_d.id_docente=t_do.id_docente
+                        and t_a.modulo=t_mo.id_modulo
+                        and t_e.uni_acad<>t_d.uni_acad
+                        )b $where";
+                        
+                        
               }
-            
+            return toba::db('designa')->consultar($sql);
             
         }
 }

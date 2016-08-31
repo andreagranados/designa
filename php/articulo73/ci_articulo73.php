@@ -6,6 +6,8 @@ class ci_articulo73 extends toba_ci
         protected $s__pdf;
         protected $tamano_byte=6292456;
         protected $tamano_mega=6;
+        protected $s__designacion;
+        protected $s__datos;
 
 
 
@@ -22,6 +24,7 @@ class ci_articulo73 extends toba_ci
 
 	function evt__filtro__filtrar($datos)
 	{
+            unset($this->s__datos);//antes de llenar el cuadro limpiar la variable
             $this->s__datos_filtro = $datos;
 	}
         function evt__filtro__cancelar($datos)
@@ -36,11 +39,10 @@ class ci_articulo73 extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
             if (isset($this->s__datos_filtro)) {
-                    $cuadro->set_datos($this->dep('datos')->tabla('articulo_73')->get_listado($this->s__datos_filtro));            
-                    }
-//            $ar['id_designacion']=3347;
-//            $this->dep('cuadro')->seleccionar($ar);
-            
+                //cuando muestro el cuadro recupero todos los registros en una variabla
+                $this->s__datos=$this->dep('datos')->tabla('articulo_73')->get_listado($this->s__datos_filtro);
+                $cuadro->set_datos($this->s__datos);            
+                }
 	}
 
 	function evt__cuadro__seleccion($datos)
@@ -48,53 +50,45 @@ class ci_articulo73 extends toba_ci
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
             $this->set_pantalla('pant_visualizacion');
         }
-        function evt__cuadro__ver_acta($datos)
-	{
-            $this->dep('datos')->tabla('articulo_73')->resetear();//limpia
-            $this->dep('datos')->tabla('articulo_73')->cargar($datos);
-            $desig=$this->dep('datos')->tabla('articulo_73')->get();
-            //----
-            $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
-            if (isset($fp_imagen)) {//tiene un adjunto
-                $this->dep('cuadro')->evento('pdf_acta')->set_nivel_de_fila( 1 );//permite que el boton pdf_acta aparezca
-                $this->dep('cuadro')->evento('pdf_acta')->set_etiqueta ('Acta'.$desig['id_designacion']);
-                $this->s__pdf='acta';
-            }else{//no tiene adjunto
-                toba::notificacion()->agregar('no tiene adjunto', "info");
+        //esta funcion es invocada desde javascript
+        //cuando se presiona el boton pdf_acta
+        function ajax__cargar_designacion($id_fila,toba_ajax_respuesta $respuesta){
+            
+            if($id_fila!=0){$id_fila=$id_fila/2;}
+            $this->s__designacion=$this->s__datos[$id_fila]['id_designacion'];   
+            $this->s__pdf='acta';
+            $tiene=$this->dep('datos')->tabla('articulo_73')->tiene_acta($this->s__designacion);
+            if($tiene==1){
+                $respuesta->set($id_fila);
+            }else{
+                $respuesta->set(-1);
             }
+        }//esta funcion es llamada desde javascript
+        function ajax__cargar_designacion_r($id_fila,toba_ajax_respuesta $respuesta){
             
-            //---
-            
-            //$this->dep('cuadro')->evento('pdf_acta')->ocultar();
-            //$ar['id_designacion']=3347;
-           //$this->dep('cuadro')->evento('pdf_acta')->set_parametros($ar)      ;
-          
-        }
-
-        function evt__cuadro__ver_resol($datos)
-	{
-            $this->dep('datos')->tabla('articulo_73')->resetear();//limpia
-            $this->dep('datos')->tabla('articulo_73')->cargar($datos);
-            $desig=$this->dep('datos')->tabla('articulo_73')->get();
-            $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
-            if (isset($fp_imagen)) {//tiene un adjunto
-                $this->dep('cuadro')->evento('pdf_resol')->set_nivel_de_fila( 1 );//1 o 0
-                $this->dep('cuadro')->evento('pdf_resol')->set_etiqueta ('Resol'.$desig['id_designacion']);
-                $this->s__pdf='resol';    
-            }else{//no tiene adjunto
-                toba::notificacion()->agregar('no tiene adjunto', "info");
+            if($id_fila!=1){
+                $id_fila=floor($id_fila/2);//la parte entera de la division
+            }else{
+                $id_fila=0;
             }
-            
+          //recupero de s__datos el registro correspondiente a la fila
+            $this->s__designacion=$this->s__datos[$id_fila]['id_designacion'];   
+            $this->s__pdf='resolucion';
+            $tiene=$this->dep('datos')->tabla('articulo_73')->tiene_resolucion($this->s__designacion);
+            if($tiene==1){
+                $respuesta->set($id_fila);
+            }else{
+                $respuesta->set(-1);
+            }
         }
-        
         function vista_pdf(toba_vista_pdf $salida){
                        
-//            $vinculo_cuadro = $this->dep('cuadro')->evento('pdf_acta')->vinculo();
-//            print_r($vinculo_cuadro);exit();
-           //echo($this->dep('cuadro')->evento('pdf_acta')->esta_sobre_fila());exit();
-           if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()){
-               $artic = $this->dep('datos')->tabla('articulo_73')->get();
-               if($this->s__pdf=='acta'){
+            if(isset($this->s__designacion)){
+                $ar['id_designacion']=$this->s__designacion;
+                $this->dep('datos')->tabla('articulo_73')->resetear();//limpia
+                $this->dep('datos')->tabla('articulo_73')->cargar($ar);//carga el articulo que se selecciono
+                $artic=$this->dep('datos')->tabla('articulo_73')->get();   
+                if($this->s__pdf=='acta'){
                     $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
                     if (isset($fp_imagen)) {
                         header("Content-type:applicattion/pdf");
@@ -102,16 +96,18 @@ class ci_articulo73 extends toba_ci
                         echo(stream_get_contents($fp_imagen)) ;exit;
                     }
                }else{
-                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('resolucion');
+                   $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('resolucion');
                     if (isset($fp_imagen)) {
                         header("Content-type:applicattion/pdf");
-                        header("Content-Disposition:attachment;filename='resolucion.pdf'");
+                        header("Content-Disposition:attachment;filename='resol.pdf'");
                         echo(stream_get_contents($fp_imagen)) ;exit;
-                    }
+                    } 
                }
-                
-             }
-                     
+               //limpio las variables
+               unset($this->s__designacion);
+               unset($this->s__pdf);
+            }
+                    
         }
        
 	function evt__cuadro__check($datos)
@@ -317,25 +313,7 @@ class ci_articulo73 extends toba_ci
             $this->resetear();
             $this->set_pantalla('pant_inicial');
 	}
-//        function conf__pant_inicial()
-//        {
-//            echo "<tr height='20'>".
-//		"<td align='left' valign='botton' colspan='3'>".
-//				"<table>".
-//				"<tr>".
-//					"<td></td>".
-//					"<td lign='right'>";
-//                                                $ruta='AP_Articulo73.pdf';
-//						echo "<a target='_blank' href='$ruta' title='Descargar Acta Paritaria - Articulo 73'>".toba_recurso::imagen_proyecto('Down.png', true)."</a>";
-//						
-//				echo "</td>".
-//					"<td style='font-size:20px;'>Presionando el &iacute;cono se obtendr&aacute el Acta de Paritaria - Art&iacuteculo 73. </td>".
-//				"</tr>".
-//			"</table>".
-//		"</td>".
-//	"</tr>";
-//        }
-	
+
 	
 
 }
