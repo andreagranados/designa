@@ -8,6 +8,7 @@ class ci_articulo73 extends toba_ci
         protected $tamano_mega=6;
         protected $s__designacion;
         protected $s__datos;
+        protected $s__nombre;
 
 
 
@@ -55,6 +56,7 @@ class ci_articulo73 extends toba_ci
             
             if($id_fila!=0){$id_fila=$id_fila/2;}
             $this->s__designacion=$this->s__datos[$id_fila]['id_designacion'];   
+            $this->s__nombre="acta_".$this->s__datos[$id_fila]['apellido'].'_'.$this->s__datos[$id_fila]['cat_estat'].".pdf";   
             $this->s__pdf='acta';
             $tiene=$this->dep('datos')->tabla('articulo_73')->tiene_acta($this->s__designacion);
             if($tiene==1){
@@ -72,6 +74,7 @@ class ci_articulo73 extends toba_ci
             }
           //recupero de s__datos el registro correspondiente a la fila
             $this->s__designacion=$this->s__datos[$id_fila]['id_designacion'];   
+            $this->s__nombre="res_".$this->s__datos[$id_fila]['apellido'].'_'.$this->s__datos[$id_fila]['cat_estat'].".pdf";   
             $this->s__pdf='resolucion';
             $tiene=$this->dep('datos')->tabla('articulo_73')->tiene_resolucion($this->s__designacion);
             if($tiene==1){
@@ -91,14 +94,16 @@ class ci_articulo73 extends toba_ci
                     $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
                     if (isset($fp_imagen)) {
                         header("Content-type:applicattion/pdf");
-                        header("Content-Disposition:attachment;filename=acta.pdf");
+                        //header("Content-Disposition:attachment;filename=acta.pdf");
+                        header("Content-Disposition:attachment;filename=".$this->s__nombre);
                         echo(stream_get_contents($fp_imagen)) ;exit;
                     }
                }else{
                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('resolucion');
                     if (isset($fp_imagen)) {
                         header("Content-type:applicattion/pdf");
-                        header("Content-Disposition:attachment;filename=resol.pdf");
+                        //header("Content-Disposition:attachment;filename=resol.pdf");
+                        header("Content-Disposition:attachment;filename=".$this->s__nombre);
                         echo(stream_get_contents($fp_imagen)) ;exit;
                     } 
                }
