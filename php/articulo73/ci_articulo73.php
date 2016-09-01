@@ -24,7 +24,6 @@ class ci_articulo73 extends toba_ci
 
 	function evt__filtro__filtrar($datos)
 	{
-            unset($this->s__datos);//antes de llenar el cuadro limpiar la variable
             $this->s__datos_filtro = $datos;
 	}
         function evt__filtro__cancelar($datos)
@@ -92,14 +91,14 @@ class ci_articulo73 extends toba_ci
                     $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
                     if (isset($fp_imagen)) {
                         header("Content-type:applicattion/pdf");
-                        header("Content-Disposition:attachment;filename='acta.pdf'");
+                        header("Content-Disposition:attachment;filename=acta.pdf");
                         echo(stream_get_contents($fp_imagen)) ;exit;
                     }
                }else{
                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('resolucion');
                     if (isset($fp_imagen)) {
                         header("Content-type:applicattion/pdf");
-                        header("Content-Disposition:attachment;filename='resol.pdf'");
+                        header("Content-Disposition:attachment;filename=resol.pdf");
                         echo(stream_get_contents($fp_imagen)) ;exit;
                     } 
                }

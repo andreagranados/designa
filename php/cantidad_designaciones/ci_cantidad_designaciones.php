@@ -2,6 +2,7 @@
 class ci_cantidad_designaciones extends toba_ci
 {
     protected $s__datos_filtro;
+    protected $s__datos;
     
     function conf__filtro(toba_ei_formulario $filtro)
 	{
@@ -21,65 +22,66 @@ class ci_cantidad_designaciones extends toba_ci
         }
     function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-        
-        //$cuadro->set_datos();
-            if (isset($this->s__datos_filtro)) {
-                $datos=$this->dep('datos')->tabla('designacion')->cantidad_x_categ($this->s__datos_filtro);
-                //print_r($datos);
-               
-                //agrego las columnas
-                $columnas=array();
-                $dato['clave']=$this->s__datos_filtro['uni_acad'];
-                $dato['titulo']=$this->s__datos_filtro['uni_acad'];
-                $columnas[]=$dato;
-                $cuadro->agregar_columnas($columnas); 
-                //
-                $y=array();
-                $y[0]['dato']='xx';
-                $y[0][$this->s__datos_filtro['uni_acad']]=2;
-                //$cuadro->set_datos($y);
-                
-                $salida=array();
-                foreach ($datos as $key => $value) {
-                   $salida[$key]['dato']=$value['cat_mapuche'];
-                   $indice="'".strtolower($value['cat_mapuche'])."'";
-                   switch ($value['cat_mapuche']) {
-                       case 'AY11':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['ay11'];    break;
-                       case 'AY1S':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['ay1s'];    break;
-                       case 'AY1E':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['ay1e'];    break;
-                       case 'AY21':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['ay21'];    break;
-                       case 'ADJ1':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['adj1'];    break;
-                       case 'ADJS':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['adjs'];    break;
-                       case 'ADJE':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['adje'];    break;
-                       case 'ASO1':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['aso1'];    break;
-                       case 'ASOE':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['asoe'];    break;
-                       case 'ASOS':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['asos'];    break;
-                       case 'JTP1':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['jtp1'];    break;
-                       case 'JTPS':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['jtps'];    break;
-                       case 'JTPE':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['jtpe'];    break;
-                       case 'TIT1':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['tit1'];    break;
-                       case 'TITS':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['tits'];    break;
-                       case 'TITE':$salida[$key][$this->s__datos_filtro['uni_acad']]=$value['tite'];    break;
-                       default:
-                           break;
-                   }
-                   
-                }
-                $cuadro->set_datos($salida);
-                print_r($salida);
-//                    $i=$this->s__datos_filtro['mesdesde'];
-//                    $columnas=array();
-//                    while ($i<=$this->s__datos_filtro['meshasta']) {
-//                        $dato['clave']='dedic_doc'.$i;
-//                        $dato['titulo']='dedic_doc'.$i;
-//                        $columnas[]=$dato;
-//                        $i++;
-//                    }
-//                    $cuadro->agregar_columnas($columnas);  
+        if (isset($this->s__datos_filtro)) {
+            
+            $sql="select codigo_siu from categ_siu where escalafon='D' order by codigo_siu";
+            $datos=toba::db('designa')->consultar($sql);
+            $where="";
+            if (isset($this->s__datos_filtro['uni_acad'])) {
+                $where.= " where sigla = ".quote($this->s__datos_filtro['uni_acad']);
+            }
+            //recupero las uniacad
+            $sql="select sigla from unidad_acad $where order by sigla";
+            $ua=toba::db('designa')->consultar($sql);
+            //le agrego las columnas
+            $columnas=array();
+            foreach ($ua as $key => $value) {
+                    $dato['clave']=$value['sigla'];
+                    $dato['titulo']=$value['sigla'];
+                    $columnas[]=$dato;
                     
-                
-            } 
+                }
+            $cuadro->agregar_columnas($columnas); 
+            //print_r($ua);
+            $salida=array();
+            $i=0;
+            foreach ($datos as $key => $value) {
+                 $salida[$i]['dato']=$value['codigo_siu'];
+                foreach ($ua as $keyua => $valueua) {
+                    $cant=$this->dep('datos')->tabla('designacion')->cantidad_x_categoria($this->s__datos_filtro,$value['codigo_siu'],$valueua['sigla']);                 
+                    $salida[$i][$valueua['sigla']]=$cant; 
+                }
+                $i++;
+                }
+            
+            $cuadro->set_datos($salida);
+        }     
 	}
-}
+	//-----------------------------------------------------------------------------------
+	//---- cuadro -----------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
 
+	function evt__cuadro__seleccion($datos)
+	{
+           // print_r($this->s__datos_filtro);exit();
+            if(isset($this->s__datos_filtro['uni_acad'])){//si filtro por ua
+                $this->s__datos=$this->dep('datos')->tabla('designacion')->cantidad_x_categoria_det($datos['dato'],$this->s__datos_filtro);
+                $this->set_pantalla('pant_detalle');
+            }
+            
+	}
+
+	//-----------------------------------------------------------------------------------
+	//---- cuadro_detalle ---------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__cuadro_detalle(toba_ei_cuadro $cuadro)
+	{
+            if(isset($this->s__datos)){
+                $cuadro->set_datos($this->s__datos);
+                
+            }
+	}
+
+}
 ?>

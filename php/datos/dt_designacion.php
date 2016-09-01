@@ -4,42 +4,55 @@ require_once 'consultas_mapuche.php';
 
 class dt_designacion extends toba_datos_tabla
 {
-    function cantidad_x_categ($filtro=array()){
+    function cantidad_x_categoria_det($categ,$filtro=array()){
         $where='';
+        //el filtro tiene ua y anio
         if (isset($filtro['uni_acad'])) {
-            $where= " WHERE uni_acad = ".quote($filtro['uni_acad']);
-	}
-             
+            $where.= " and uni_acad = ".quote($filtro['uni_acad']);
+         }
         if (isset($filtro['anio'])) {
             $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
             $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
             $where.=" and desde <='".$udia."' and (hasta>='".$pdia."' or hasta is null)"
-                    . " and ((hasta is not null and desde<hasta) or hasta is null) ";//esto para descartar las designaciones con desde=hasta o desde>hasta;
-	}       
-        
-        $sql="select uni_acad,cat_mapuche,
-            count(case when cat_mapuche='AY11' then id_designacion else null end) as AY11,
-            count(case when cat_mapuche='AY1S' then id_designacion else null end) as AY1S,
-            count(case when cat_mapuche='AY1E' then id_designacion else null end) as AY1E,
-            count(case when cat_mapuche='AY21' then id_designacion else null end) as AY21,
-            count(case when cat_mapuche='ADJ1' then id_designacion else null end) as ADJ1,
-            count(case when cat_mapuche='ADJS' then id_designacion else null end) as ADJS,
-            count(case when cat_mapuche='ADJE' then id_designacion else null end) as ADJE,
-            count(case when cat_mapuche='ASO1' then id_designacion else null end) as ASO1,
-            count(case when cat_mapuche='ASOE' then id_designacion else null end) as ASOE,
-            count(case when cat_mapuche='ASOS' then id_designacion else null end) as ASOS,
-            count(case when cat_mapuche='JTP1' then id_designacion else null end) as JTP1,
-            count(case when cat_mapuche='JTPS' then id_designacion else null end) as JTPS,
-            count(case when cat_mapuche='JTPE' then id_designacion else null end) as JTPE,
-            count(case when cat_mapuche='TIT1' then id_designacion else null end) as TIT1,
-            count(case when cat_mapuche='TITS' then id_designacion else null end) as TITS,
-            count(case when cat_mapuche='TITE' then id_designacion else null end) as TITE
-            from designacion".$where
-                ." group by uni_acad,cat_mapuche";
-        
-        return toba::db('designa')->consultar($sql);
+                    . " and ((hasta is not null and desde < hasta) or hasta is null) ";//esto para descartar las designaciones con desde=hasta o desde>hasta;
+	}     
+        $sql="select t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.cat_mapuche,t_d.desde,t_d.hasta,t_d.carac "
+                 . " from designacion t_d, docente t_do"
+                 . " where  t_d.id_docente=t_do.id_docente and cat_mapuche='".$categ."'"
+                 .  $where
+                ." UNION "
+                ."select 'RESERVA' as docente,0 as legajo,t_d.cat_mapuche,t_d.desde,t_d.hasta,t_d.carac "
+                 . " from designacion t_d"
+                 . " where  cat_mapuche='".$categ."'"
+                 .  $where
+               ;
        
+        return toba::db('designa')->consultar($sql);
     }
+    function cantidad_x_categoria($filtro=array(),$categ,$ua){
+        $where="";
+        if (isset($filtro['uni_acad'])) {
+            $where.= " and uni_acad = ".quote($filtro['uni_acad']);
+         }
+        if (isset($filtro['anio'])) {
+            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+            $where.=" and desde <='".$udia."' and (hasta>='".$pdia."' or hasta is null)"
+                    . " and ((hasta is not null and desde < hasta) or hasta is null) ";//esto para descartar las designaciones con desde=hasta o desde>hasta;
+	}       
+         $sql="select count(distinct id_designacion) as canti "
+                 . " from designacion "
+                 . " where cat_mapuche='".$categ."' and uni_acad='".$ua."'"
+                 . " $where"
+                 . " group by uni_acad,cat_mapuche";
+         $res = toba::db('designa')->consultar($sql);
+         if (count($res)>0){
+             return $res[0]['canti'];
+         }else{
+             return 0;
+         }
+     }
+    
     //retorna 1 si tiene completos el departamento, area y orientacion
     function tiene_dao($id_desig){
         $sql="select * from designacion where id_designacion=$id_desig and id_departamento is not null and id_area is not null and id_orientacion is not null";
