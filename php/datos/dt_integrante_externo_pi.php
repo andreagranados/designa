@@ -130,15 +130,19 @@ class dt_integrante_externo_pi extends toba_datos_tabla
     }
     function get_plantilla($id_p){
         
-        $sql="(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_f.descripcion as funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,t_u.desc_titul as titulo,t_i.cat_invest_conicet,t_f.orden"
+        $sql="(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_f.descripcion as funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,b.desc_titul as titulo,t_i.cat_invest_conicet,t_f.orden"
                 . " from  integrante_interno_pi t_i"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_i.cat_investigador)"
                 . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
                 ."  LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
                 . " LEFT OUTER JOIN funcion_investigador t_f ON (t_i.funcion_p=t_f.id_funcion) "
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
-                . " LEFT OUTER JOIN titulos_docente t_t ON (t_t.id_docente=t_do.id_docente)"
-                . " LEFT OUTER JOIN titulo t_u ON (t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD')"
+                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+                                    from titulos_docente t_t , titulo t_u 
+                                    where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD'
+                                    group by id_docente)  b
+                    ON (b.id_docente=t_do.id_docente)              "
+              
                 . " where t_i.pinvest=".$id_p." and t_i.hasta=p.fec_hasta)"
                 ." UNION"
                 . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,t_p.institucion as ua,t_e.carga_horaria,t_f.descripcion as funcion_p,t_c.descripcion as cat_invest,calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) as cuil,identificador_personal,'' as titulo,t_e.cat_invest_conicet,t_f.orden"

@@ -201,14 +201,14 @@ class dt_designacion extends toba_datos_tabla
 			$where.= " AND uni_acad = ".quote($filtro['uni_acad']);
 		}
             
-                $sql="select a.id_designacion,a.desde,a.hasta,a.cat_mapuche,a.cat_estat,a.uni_acad,a.dedic,a.carac,b.apellido||', '||b.nombre as docente, 0 as costo "
-                        . "from designacion a, docente b, novedad c"
+                $sql="select a.id_designacion,a.desde,a.hasta,a.cat_mapuche,a.cat_estat,a.uni_acad,a.dedic,a.carac,case when a.tipo_desig=1 then b.apellido||', '||b.nombre else 'RESERVA: '||a.observaciones end as docente, 0 as costo "
+                        . " from designacion a"
+                        . " LEFT OUTER JOIN docente b ON (a.id_docente=b.id_docente)"
+                        
                         .$where
-                        ." and a.hasta=a.desde-1
-                        and a.id_docente=b.id_docente
-                        and a.id_designacion=c.id_designacion
-                        and c.tipo_nov in (1,4)";//tiene una baja o una renuncia
-                                       
+                        ." and a.hasta=a.desde-1 "
+                        . " order by docente";
+                  
                 return toba::db('designa')->consultar($sql);
         }
         function get_licencias($id_desig){

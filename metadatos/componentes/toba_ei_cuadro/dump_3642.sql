@@ -21,10 +21,10 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Renuncias sin consumo - Cuadro.', --nombre
-	'Listado', --titulo
+	'Listado de designaciones/reservas anuladas', --titulo
 	'0', --colapsable
-	'Listado de las designaciones que tienen una renuncia o baja con fecha igual al día anterior a la fecha desde. 
-Estas designaciones no estan dentro de ningún período presupuestario', --descripcion
+	'Listado de las designaciones/reservas con fecha de baja igual al día anterior a la fecha desde.
+Se lee ANULADA', --descripcion
 	NULL, --fuente_datos_proyecto
 	NULL, --fuente_datos
 	NULL, --solicitud_registrar
