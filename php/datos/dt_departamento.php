@@ -85,10 +85,9 @@ class dt_departamento extends toba_datos_tabla
                 }
                 
             $sql="select a.descripcion as departamento,b.descripcion as area,c.descripcion as orientacion"
-                    . " from (select * from departamento".$where.")a ,"
-                    ."area b, orientacion c"
-                    ." where a.iddepto=b.iddepto "
-                    . " and b.idarea=c.idarea "
+                    . " from (select * from departamento".$where.")a "
+                    ." LEFT OUTER JOIN area b ON (a.iddepto=b.iddepto)"
+                    . "LEFT OUTER JOIN orientacion c ON (b.idarea=c.idarea)"
                     . " order by a.descripcion,b.descripcion,c.descripcion";
             
             $sql2=" CREATE LOCAL TEMP TABLE auxi(
