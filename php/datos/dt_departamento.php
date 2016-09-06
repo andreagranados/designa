@@ -118,13 +118,13 @@ class dt_departamento extends toba_datos_tabla
                     $area=$res[$i]['area'];
                     $areai=$res[$i]['area'];
                 }
-                if($res[$i]['orientacion']==$orien){
-                    $orieni="";
-                }else{
+//                if($res[$i]['orientacion']==$orien){
+//                    $orieni="";
+//                }else{//LA ORIENTACION SIEMPRE CAMBIA RESPECTO A LA ANTERIOR
                     $orien=$res[$i]['orientacion'];
                     $orieni=$res[$i]['orientacion'];
-                }
-                //$sql3=" insert into auxi values ('".$depi."','".$areai."','".$orieni."')";
+               // }
+                
                 $sql3=" insert into auxi values ('".$depi."','".$areai."','".$orieni."')";
                 toba::db('designa')->consultar($sql3);
                 $i=$i+1;

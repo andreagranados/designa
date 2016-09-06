@@ -401,21 +401,44 @@ class ci_ver_normas extends toba_ci
         }
         function evt__cuadro__procesar($datos)
         {
-            $this->dep('datos')->tabla('norma')->cargar($datos);
-            $datos2=$this->dep('datos')->tabla('norma')->get();
-            $fp_imagen = $this->dep('datos')->tabla('norma')->get_blob('pdf');
+            //$this->dep('datos')->tabla('norma')->cargar($datos);
+            //$datos2=$this->dep('datos')->tabla('norma')->get();
+            //$fp_imagen = $this->dep('datos')->tabla('norma')->get_blob('pdf');
             $a = new PDF2Text();
             $path = $_SERVER['DOCUMENT_ROOT']."/68.pdf";
             $a->setFilename($path);
             $a->decodePDF();
-            $texto= (string) $a->output();
+            $texto= $a->output();
+           //  $z=strlen($texto);
+             $prueba=var_export($texto,true).PHP_EOL;
+             $prueba=str_replace(".","",$prueba);
+             $prueba=str_replace('“',"",$prueba);
+             $prueba=str_replace('\á',"a",$prueba);
+             
             
+             echo (substr($prueba, 0,1000));exit();
+            //$sql="update norma  set palabras_clave='".$prueba."' where id_norma=211";
+            print_r($sql);
+            toba::db('designa')->consultar($sql);
+            //print_r($z);exit();
+
+            $z=strlen($texto);
+            //echo (substr($texto,0,10));
+            //echo strrchr($texto,"a");
+            //exit;
+            print_r($z);exit();
+            
+            //$sql="update norma  set palabras_clave='".$a->output()."' where id_norma=211";
+            //toba::db('designa')->consultar($sql);
+            $texto2=str_replace("ó","o",$texto);
+            exit();
+            
+            print_r($z);exit();
             $texto=str_replace("\'","",$texto);//eliminamos las comillas simples
             $texto=str_replace('\"',"",$texto);//eliminamos las comillas dobles
             $texto=str_replace('\“',"",$texto);
             $texto2=str_replace("ó","o",$texto);
             
-            print_r(htmlentities($texto2));exit();
             $texto = str_replace(
                 array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'),
                 array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A'),
@@ -427,12 +450,7 @@ class ci_ver_normas extends toba_ci
         array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O'),
         $texto
     );
-            print_r($texto);exit();
-            $sql="update norma  set palabras_clave='".$texto."' where id_norma=211";
-            
-            toba::db('designa')->consultar($sql);
-            
-          print_r($path);
+         
              if (isset($fp_imagen)) {
                     $temp_nombre = md5(uniqid(time())).'.pdf';
                     $temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);   
