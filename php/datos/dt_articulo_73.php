@@ -28,7 +28,8 @@ class dt_articulo_73 extends designa_datos_tabla
                 . " LEFT OUTER JOIN departamento t_dep ON (t_a.id_departamento=t_dep.iddepto)"
                 . " LEFT OUTER JOIN area t_an ON (t_a.id_area=t_an.idarea)"
                 . " LEFT OUTER JOIN orientacion t_o ON (t_a.id_orientacion=t_o.idorient and t_a.id_area=t_o.idarea)"
-                 . " $where ";
+                 . " $where
+                order by t_dep.descripcion,t_an.descripcion,t_o.descripcion,t_doc.apellido,t_doc.nombre";
         
         return toba::db('designa')->consultar($sql);    
     }

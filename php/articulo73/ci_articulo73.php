@@ -258,7 +258,13 @@ class ci_articulo73 extends toba_ci
             $datos['nro_tab11']=11;
             $datos['check_academica']=false;
             $datos['pase_superior']=false;
-            
+            $dao=$this->dep('datos')->tabla('designacion')->get_dao($datos['id_designacion']);
+            if(count($dao)>0){//guardo departamento, area y orientacion de la designacion previamente seleccionada
+                $datos['id_departamento']=$dao[0]['id_departamento'];    
+                $datos['id_area']=$dao[0]['id_area'];    
+                $datos['id_orientacion']=$dao[0]['id_orientacion'];    
+            }
+             
             $this->dep('datos')->tabla('articulo_73')->set($datos);
             if (is_array($datos['acta'])) {//si adjunto un pdf entonces "pdf" viene con los datos del archivo adjuntado
                 //$s__temp_archivo = $datos['acta']['tmp_name'];//C:\Windows\Temp\php9A45.tmp
