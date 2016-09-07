@@ -300,7 +300,7 @@ class ci_departamentos extends toba_ci
             $datos['idarea']=$area['idarea'];
             $this->controlador()->dep('datos')->tabla('orientacion')->set($datos);
             $this->controlador()->dep('datos')->tabla('orientacion')->sincronizar();
-             
+            $this->controlador()->dep('datos')->tabla('orientacion')->resetear();   
         }
         
         //--encabezados

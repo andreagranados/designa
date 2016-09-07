@@ -411,12 +411,31 @@ class ci_ver_normas extends toba_ci
             $texto= $a->output();
            //  $z=strlen($texto);
              $prueba=var_export($texto,true).PHP_EOL;
-             $prueba=str_replace(".","",$prueba);
-             $prueba=str_replace('“',"",$prueba);
-             $prueba=str_replace('\á',"a",$prueba);
+//             $prueba=str_replace(".","",$prueba);
+//             $prueba=str_replace(":","",$prueba);
+//             $prueba=str_replace('\"',"",$prueba);
+//             $prueba=str_replace('ó',"",$prueba);
              
+             $buscar = array('á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü');
+             $remplzr = array('a', 'e', 'i', 'o', 'u', 'n','u');
+             $prueba2 = str_replace ($buscar, $remplzr, $prueba);
+             //echo (substr($prueba2, 1000,2000));exit();
+            $buscar = array('/[^A-z0-9-<>]/', '/[-]+/', '/<[^>]*>/');
+            //$buscar = array('/[a-zA-Z0-9]/', '/[-]+/', '/<[^>]*>/');
+            $remplzr = array(' ', '-', '');
+            $prueba2 = preg_replace ($buscar, $remplzr, $prueba);
+            echo(substr($prueba2, 0,1000));exit();
+             echo (substr($prueba3, 0,1000));exit();
+             //$prueba=str_replace('\á',"a",$prueba);
+             //$prueba=str_replace('ó',"o",$prueba);
+             
+//            $a = array('.','á','ó');
+//            $b = array('','a','o'); 
+//            echo str_replace($a,$b,$prueba)  ;
             
-             echo (substr($prueba, 0,1000));exit();
+            
+            //$prueba=ereg_replace("[óòôõºö]","o",$prueba);
+             echo (substr($prueba3, 1000,2000));exit();
             //$sql="update norma  set palabras_clave='".$prueba."' where id_norma=211";
             print_r($sql);
             toba::db('designa')->consultar($sql);

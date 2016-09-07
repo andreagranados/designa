@@ -56,7 +56,7 @@ class dt_articulo_73 extends designa_datos_tabla
             $sql=" SELECT distinct a.legajo"
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente"
-                    . " and b.desde <= '2016-06-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
+                    . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
                         and ((b.carac='I' and b.cat_estat<>'AYS' and b.cat_estat<>'PTR' and b.cat_estat<>'PAS') or (b.carac='R' and b.cat_estat='ASDEnc' ))
                         and b.uni_acad='".$ua."'";
                     
@@ -86,7 +86,7 @@ class dt_articulo_73 extends designa_datos_tabla
                     . " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||')' as descripcion "
                     . " from docente a, designacion b,mocovi_costo_categoria c, imputacion d, mocovi_programa e"
                     . " where a.id_docente=b.id_docente"
-                    . " and b.desde <= '2016-06-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
+                    . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
                         and (b.carac='I' and (b.cat_estat<>'AYS' and b.cat_estat<>'PTR' and b.cat_estat<>'PAS')
                            or
                            (b.carac='R' and b.cat_estat='ASDEnc')
