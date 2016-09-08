@@ -171,10 +171,10 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2655', --dep_id
+	'2695', --dep_id
 	'3812', --objeto_consumidor
-	'3815', --objeto_proveedor
-	'filtro', --identificador
+	'3852', --objeto_proveedor
+	'filtros', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
 	NULL, --parametros_c
@@ -247,15 +247,15 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'designa', --proyecto
 	'1596', --pantalla
 	'3812', --objeto_ci
-	'0', --orden
-	'2655'  --dep_id
+	'1', --orden
+	'2656'  --dep_id
 );
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
 	'designa', --proyecto
 	'1596', --pantalla
 	'3812', --objeto_ci
-	'1', --orden
-	'2656'  --dep_id
+	'0', --orden
+	'2695'  --dep_id
 );
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
 	'designa', --proyecto

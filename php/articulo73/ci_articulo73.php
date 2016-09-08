@@ -9,29 +9,26 @@ class ci_articulo73 extends toba_ci
         protected $s__designacion;
         protected $s__datos;
         protected $s__nombre;
-
-
-
-        //-----------------------------------------------------------------------------------
-	//---- filtro -----------------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function conf__filtro(toba_ei_formulario $form)
+        protected $s__where;
+    
+	function conf__filtros(toba_ei_filtro $filtro)
 	{
-        	if (isset($this->s__datos_filtro)) {
-			$form->set_datos($this->s__datos_filtro);
-                }
+            if (isset($this->s__datos_filtro)) {
+                $filtro->set_datos($this->s__datos_filtro);
+		}
 	}
 
-	function evt__filtro__filtrar($datos)
+	function evt__filtros__filtrar($datos)
 	{
             $this->s__datos_filtro = $datos;
-	}
-        function evt__filtro__cancelar($datos)
-	{
-            unset($this->s__datos_filtro);
+            $this->s__where = $this->dep('filtros')->get_sql_where();
 	}
 
+	function evt__filtros__cancelar()
+	{
+            unset($this->s__datos_filtro);
+            unset($this->s__where);
+	}
 	//-----------------------------------------------------------------------------------
 	//---- cuadro -----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -40,7 +37,7 @@ class ci_articulo73 extends toba_ci
 	{
             if (isset($this->s__datos_filtro)) {
                 //cuando muestro el cuadro recupero todos los registros en una variabla
-                $this->s__datos=$this->dep('datos')->tabla('articulo_73')->get_listado($this->s__datos_filtro);
+                $this->s__datos=$this->dep('datos')->tabla('articulo_73')->get_listado($this->s__where);
                 $cuadro->set_datos($this->s__datos);            
                 }
 	}
