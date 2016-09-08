@@ -84,7 +84,7 @@ class dt_articulo_73 extends designa_datos_tabla
                         toba::db('designa')->consultar($sql);
                     }
                     $sql = "SELECT a.*,b.antiguedad from ("
-                    . " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||')' as descripcion "
+                    . " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
                     . " from docente a, designacion b,mocovi_costo_categoria c, imputacion d, mocovi_programa e"
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)

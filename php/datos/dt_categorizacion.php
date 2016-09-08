@@ -28,6 +28,7 @@ class dt_categorizacion extends toba_datos_tabla
         }
         
     }
+    //muestra las categorizaciones de los docentes que tienen designacion en su facultad (si el usuario esta asociado a perfil de datos)
     function get_categorizaciones($where=null){
         if(!is_null($where)){
             $where=' WHERE '.$where;

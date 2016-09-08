@@ -4,7 +4,7 @@ class consultas_mapuche
 {
 	
   function get_antiguedad_del_docente($legajo){
-  	$sql="select a.nro_legaj,max(impp_conce) as antig
+  	$sql="select a.nro_legaj,trunc(max(impp_conce)) as antig
 		from mapuche.dh21h a, mapuche.dh03 b
 		where (a.nro_liqui>=465 and a.nro_liqui<=473)
 		and a.codn_conce=413
@@ -22,7 +22,7 @@ class consultas_mapuche
  	
  }
  function get_antiguedad_docente($legajos){
-	$sql="select a.nro_legaj,max(impp_conce) as antig
+	$sql="select a.nro_legaj,trunc(max(impp_conce)) as antig
 		from mapuche.dh21h a, mapuche.dh03 b
 		where (a.nro_liqui>=465 and a.nro_liqui<=473)
 		and a.codn_conce=413
