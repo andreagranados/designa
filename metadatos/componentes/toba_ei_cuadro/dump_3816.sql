@@ -611,7 +611,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3616', --objeto_cuadro_col
 	'cat_estat2', --clave
 	'12', --orden
-	'Categoría E que Regulariza', --titulo
+	'Categoría Estatuto que Regulariza', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -735,7 +735,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3686', --objeto_cuadro_col
 	'catsiu', --clave
 	'13', --orden
-	'Categoría M que Regulariza', --titulo
+	'Categoría Mapuche que Regulariza', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
