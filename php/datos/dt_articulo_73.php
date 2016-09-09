@@ -25,8 +25,9 @@ class dt_articulo_73 extends designa_datos_tabla
      
         $sql = 
                 "SELECT * FROM ("
-                ." SELECT t_a.id_designacion,t_a.observacion,t_d.uni_acad,t_a.id_departamento,t_dep.descripcion as departamento,t_an.descripcion as area,t_o.descripcion as orientacion,t_a.antiguedad,case when t_a.pase_superior=true then 'SI' else 'NO' end as pase_superior,t_a.check_academica as check_acad,case when t_a.check_academica=true then 'SI' else 'NO' end as check_academica,t_a.nro_resolucion,t_t.desc_item as modo_ingreso ,t_ti.desc_item as continuidad,t_doc.apellido,t_doc.nombre,t_doc.legajo,t_d.cat_estat||t_d.dedic as cat_estat,t_a.cat_est_reg ||t_a.dedic_reg as cat_estat2 "
+                ." SELECT t_a.id_designacion,t_a.observacion,t_m.catsiu,t_d.uni_acad,t_a.id_departamento,t_dep.descripcion as departamento,t_an.descripcion as area,t_o.descripcion as orientacion,t_a.antiguedad,case when t_a.pase_superior=true then 'SI' else 'NO' end as pase_superior,t_a.check_academica as check_acad,case when t_a.check_academica=true then 'SI' else 'NO' end as check_academica,t_a.nro_resolucion,t_t.desc_item as modo_ingreso ,t_ti.desc_item as continuidad,t_doc.apellido,t_doc.nombre,t_doc.legajo,t_d.cat_estat||t_d.dedic as cat_estat,t_a.cat_est_reg ||t_a.dedic_reg as cat_estat2 "
                 . " FROM articulo_73 t_a "
+                . " LEFT OUTER JOIN macheo_categ t_m ON (t_m.catest=t_a.cat_est_reg and t_m.id_ded=t_a.dedic_reg)"
                  . " LEFT OUTER JOIN designacion t_d ON (t_a.id_designacion=t_d.id_designacion)"
                 . " LEFT OUTER JOIN docente t_doc ON (t_d.id_docente=t_doc.id_docente)"
                 . " LEFT OUTER JOIN tipo t_t ON (t_t.nro_tabla=t_a.nro_tab11 and t_t.desc_abrev=t_a.modo_ingreso)"

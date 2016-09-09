@@ -191,8 +191,8 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'3852', --objeto_ei_filtro
 	'designa', --objeto_ei_filtro_proyecto
 	'cadena', --tipo
-	'observaciones', --nombre
-	'observaciones', --expresion
+	'observacion', --nombre
+	'observacion', --expresion
 	'Observaciones', --etiqueta
 	NULL, --descripcion
 	'0', --obligatorio

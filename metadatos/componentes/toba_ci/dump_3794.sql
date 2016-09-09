@@ -122,7 +122,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_edicion', --identificador
 	'1', --orden
 	'Pantalla', --etiqueta
-	NULL, --descripcion
+	'Permite buscar los proyectos de investigación en los que participa un docente', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen
