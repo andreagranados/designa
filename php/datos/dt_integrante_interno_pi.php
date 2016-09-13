@@ -1,6 +1,25 @@
 <?php
 class dt_integrante_interno_pi extends toba_datos_tabla
 {
+    //trae todos los proyectos de investigacion en los que haya participado
+    function sus_proyectos_inv_filtro($where=null){
+        if(!is_null($where)){
+                    $where=' WHERE '.$where;
+            }else{
+                    $where='';
+            }
+        $sql="SELECT a.*,t_do.apellido,t_do.nombre,t_do.tipo_docum,t_do.nro_docum from ("
+                ." select t_d.id_docente,t_d.cat_estat||t_d.dedic as categoria, t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_p.nro_ord_cs,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd "
+                . " from integrante_interno_pi t_i"
+                . " LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv)"
+                . " LEFT OUTER JOIN designacion t_d  ON (t_i.id_designacion=t_d.id_designacion)"
+                .$where 
+                . ")a"
+                . " LEFT OUTER JOIN docente t_do ON (a.id_docente=t_do.id_docente) "
+                ." order by desde";
+       
+        return toba::db('designa')->consultar($sql);
+    }
     //dado un docente, trae todos los proyectos de investigacion en los que haya participado
     function sus_proyectos_inv($id_doc){
         $sql="select t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd "

@@ -278,12 +278,6 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	'designa', --proyecto
 	'dependencias', --usuario_grupo_acc
 	NULL, --item_id
-	'3741'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'dependencias', --usuario_grupo_acc
-	NULL, --item_id
 	'3745'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
@@ -296,27 +290,6 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	'designa', --proyecto
 	'dependencias', --usuario_grupo_acc
 	NULL, --item_id
-	'3748'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'dependencias', --usuario_grupo_acc
-	NULL, --item_id
-	'3749'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'dependencias', --usuario_grupo_acc
-	NULL, --item_id
 	'3750'  --item
 );
 --- FIN Grupo de desarrollo 0
-
-------------------------------------------------------------
--- apex_grupo_acc_restriccion_funcional
-------------------------------------------------------------
-INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
-	'designa', --proyecto
-	'dependencias', --usuario_grupo_acc
-	'6'  --restriccion_funcional
-);

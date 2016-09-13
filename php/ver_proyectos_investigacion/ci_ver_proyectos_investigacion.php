@@ -37,10 +37,12 @@ class ci_ver_proyectos_investigacion extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
             if (isset($this->s__where)) {
-                if($this->s__where!='1=1'){
-                    $cuadro->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get_proyectos_de($this->s__where));
+                //muestra en que proyectos de investg ha participado el docente que se filtra
+                $resultado = strpos($this->s__where, '!=');
+                if (!($resultado==true)){//
+                        $cuadro->set_datos($this->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv_filtro($this->s__where));
+                         //  $cuadro->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get_proyectos_de($this->s__where));
                 }
-                
             }
 	}
 

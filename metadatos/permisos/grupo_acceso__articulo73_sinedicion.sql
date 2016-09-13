@@ -4,10 +4,10 @@
 ------------------------------------------------------------
 INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_acceso, descripcion, vencimiento, dias, hora_entrada, hora_salida, listar, permite_edicion, menu_usuario) VALUES (
 	'designa', --proyecto
-	'articulo73', --usuario_grupo_acc
-	'Articulo73', --nombre
+	'articulo73_sinedicion', --usuario_grupo_acc
+	'Articulo73_sinedicion', --nombre
 	NULL, --nivel_acceso
-	'Accede a la operacion de Articulo 73 facultades', --descripcion
+	'Accede a la operacion de Articulo 73 pero no edita', --descripcion
 	NULL, --vencimiento
 	NULL, --dias
 	NULL, --hora_entrada
@@ -24,25 +24,25 @@ INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_a
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'articulo73', --usuario_grupo_acc
+	'articulo73_sinedicion', --usuario_grupo_acc
 	NULL, --item_id
 	'1'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'articulo73', --usuario_grupo_acc
+	'articulo73_sinedicion', --usuario_grupo_acc
 	NULL, --item_id
 	'3741'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'articulo73', --usuario_grupo_acc
+	'articulo73_sinedicion', --usuario_grupo_acc
 	NULL, --item_id
 	'3748'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'articulo73', --usuario_grupo_acc
+	'articulo73_sinedicion', --usuario_grupo_acc
 	NULL, --item_id
 	'3749'  --item
 );
@@ -53,6 +53,6 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 ------------------------------------------------------------
 INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
 	'designa', --proyecto
-	'articulo73', --usuario_grupo_acc
-	'6'  --restriccion_funcional
+	'articulo73_sinedicion', --usuario_grupo_acc
+	'8'  --restriccion_funcional
 );
