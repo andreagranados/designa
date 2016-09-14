@@ -8,11 +8,12 @@ class dt_integrante_interno_pi extends toba_datos_tabla
             }else{
                     $where='';
             }
-        $sql="SELECT a.*,t_do.apellido,t_do.nombre,t_do.tipo_docum,t_do.nro_docum from ("
-                ." select t_d.id_docente,t_d.cat_estat||t_d.dedic as categoria, t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_p.nro_ord_cs,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd "
+        $sql="SELECT a.*,t_do.apellido,t_do.nombre,t_do.tipo_docum,t_do.nro_docum,t_do.legajo from ("
+                ." select t_d.id_docente,t_d.cat_estat||t_d.dedic as categoria, t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_p.nro_ord_cs,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd ,t_c.descripcion as cat_inv"
                 . " from integrante_interno_pi t_i"
                 . " LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv)"
                 . " LEFT OUTER JOIN designacion t_d  ON (t_i.id_designacion=t_d.id_designacion)"
+                . " LEFT OUTER JOIN categoria_invest t_c ON (t_i.cat_investigador=t_c.cod_cati) "
                 .$where 
                 . ")a"
                 . " LEFT OUTER JOIN docente t_do ON (a.id_docente=t_do.id_docente) "

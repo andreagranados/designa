@@ -154,7 +154,14 @@ class ci_impresion_540 extends toba_ci
                         $ayn=$des['docente_nombre'];
                         $sum=$sum+$des['costo'];
                         $sub=$sub+$des['costo'];
-                        $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => $des['programa'],'col4' => $des['porc'].'%','col5' => $ayn,'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'],'col9' => $des['dedic'],'col10' => $des['carac'],'col11' => $des['desde'],'col12' => $des['hasta'],'col13' => $des['id_departamento'],'col14' => $des['id_area'],'col15' => $des['id_orientacion'],'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
+                        $desde=date("d/m/Y",strtotime($des['desde']));
+                        if(isset($des['hasta'])){
+                            $hasta=date("d/m/Y",strtotime($des['hasta']));
+                        }else{
+                            $hasta='';
+                        }
+                        
+                        $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => $des['programa'],'col4' => $des['porc'].'%','col5' => $ayn,'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'],'col9' => $des['dedic'],'col10' => $des['carac'],'col11' => $desde,'col12' => $hasta,'col13' => $des['id_departamento'],'col14' => $des['id_area'],'col15' => $des['id_orientacion'],'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
                         $i++;  
                     }
                 }
