@@ -26,9 +26,10 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
             where t_i.pinvest=$id_p
             UNION
-            select t_i.pinvest,t_d.apellido||', '||t_d.nombre as nombre,t_d.tipo_docum,t_d.nro_docum,funcion_p,carga_horaria,institucion as ua,t_i.desde,t_i.hasta,rescd 
+            select t_i.pinvest,t_d.apellido||', '||t_d.nombre as nombre,t_d.tipo_docum,t_d.nro_docum,funcion_p,carga_horaria,t_n.nombre_institucion as ua,t_i.desde,t_i.hasta,rescd 
             from integrante_externo_pi t_i
             LEFT OUTER JOIN persona t_d ON (t_d.nro_docum=t_i.nro_docum and t_d.tipo_docum=t_i.tipo_docum)
+            LEFT OUTER JOIN institucion t_n ON (t_i.id_institucion=t_n.id_institucion)
             where t_i.pinvest=$id_p)a
             group by pinvest,tipo_docum,nro_docum;";
         toba::db('designa')->consultar($sql);  
@@ -145,12 +146,13 @@ class dt_integrante_externo_pi extends toba_datos_tabla
               
                 . " where t_i.pinvest=".$id_p." and t_i.hasta=p.fec_hasta)"
                 ." UNION"
-                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,t_p.institucion as ua,t_e.carga_horaria,t_f.descripcion as funcion_p,t_c.descripcion as cat_invest,calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) as cuil,identificador_personal,'' as titulo,t_e.cat_invest_conicet,t_f.orden"
+                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,t_i.nombre_institucion as ua,t_e.carga_horaria,t_f.descripcion as funcion_p,t_c.descripcion as cat_invest,calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) as cuil,identificador_personal,'' as titulo,t_e.cat_invest_conicet,t_f.orden"
                 . " from integrante_externo_pi t_e"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_e.cat_invest)"
                 . " LEFT OUTER JOIN persona t_p ON (t_e.tipo_docum=t_p.tipo_docum and t_e.nro_docum=t_p.nro_docum)"
                 . " LEFT OUTER JOIN funcion_investigador t_f ON (t_e.funcion_p=t_f.id_funcion) "
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_e.pinvest=p.id_pinv) "
+                . " LEFT OUTER JOIN institucion t_i ON (t_e.id_institucion=t_i.id_institucion) "
                 . " where t_e.pinvest=".$id_p." and t_e.hasta=p.fec_hasta)"
                 . " order by orden";
         //union con los integrantes externos

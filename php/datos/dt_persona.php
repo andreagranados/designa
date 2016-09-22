@@ -56,8 +56,7 @@ class dt_persona extends toba_datos_tabla
 			t_p1.nombre as pais_nacim_nombre,
 			t_p2.descripcion_pcia as pcia_nacim_nombre,
 			t_p.fec_nacim,
-			t_p.titulo,
-			t_p.institucion
+			t_p.titulo
 		FROM
 			persona as t_p	LEFT OUTER JOIN pais as t_p1 ON (t_p.pais_nacim = t_p1.codigo_pais)
 			LEFT OUTER JOIN provincia as t_p2 ON (t_p.pcia_nacim = t_p2.codigo_pcia)
