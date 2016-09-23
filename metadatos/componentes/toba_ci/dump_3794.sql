@@ -51,7 +51,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'3063', --evento_id
 	'3794', --objeto
 	'imprimir', --identificador
-	'Imprimir', --etiqueta
+	'Imprimir Historial', --etiqueta
 	'0', --maneja_datos
 	NULL, --sobre_fila
 	NULL, --confirmacion

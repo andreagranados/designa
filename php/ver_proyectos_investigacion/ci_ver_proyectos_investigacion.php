@@ -105,8 +105,20 @@ class ci_ver_proyectos_investigacion extends toba_ci
                     $datos[$i]=array('col1' => $des['codigo'].':'.$des['denominacion'],'col2' => $des['nro_ord_cs'],'col3' => $desde,'col4' => $hasta,'col5' => $des['funcion_p'],'col6' => $des['carga_horaria'],'col7' => $des['cat_inv'],'col8' => $des['ua']);
                     $i++;  
                 }
-                
-                $pdf->ezTable($datos, array('col1'=>'Denominacion','col2'=>'Ord','col3'=>'Desde','col4'=>'Hasta','col5'=>'Funcion','col6'=>'Hs','col7'=>'Cat_Inv','col8'=>'UA'),$titulo,$opciones);
+                //Encabezado: Logo Organización - Nombre 
+                //Recorremos cada una de las hojas del documento para agregar el encabezado
+                 foreach ($pdf->ezPages as $pageNum=>$id){ 
+                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+                    $imagen = toba::proyecto()->get_path().'/www/img/logo-unc.jpg';
+                    $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
+                    $pdf->addJpegFromFile($imagen, 10, 525, 70, 66); 
+                    $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
+                    $pdf->closeObject(); 
+                }
+                $denom=utf8_decode("Denominación");
+                $funcion=utf8_decode("Función");
+                $pdf->ezTable($datos, array('col1'=>$denom,'col2'=>'Ord','col3'=>'Desde','col4'=>'Hasta','col5'=>$funcion,'col6'=>'Hs','col7'=>'Cat_Inv','col8'=>'UA'),$titulo,$opciones);
                }
         }
 }
