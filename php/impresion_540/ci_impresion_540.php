@@ -76,7 +76,8 @@ class ci_impresion_540 extends toba_ci
             // la variable $this->s__seleccionadas no tiene valor hasta que no presiona el boton filtrar
             //if(isset($this->s__seleccionadas)){print_r('si');exit();}else{print_r('no');exit();}
             //ya tiene valor, filtrar y solo mostrar la que estan seleccionadas
-            
+            //$datos_novedad=$this->dep('datos')->tabla('designacion')->get_novedad(3338,$this->s__anio);
+           // print_r($datos_novedad);exit;
             if (isset($this->s__seleccionadas)){//si selecciono para imprimir
                             
                 //genero un nuevo numero de 540
@@ -149,6 +150,7 @@ class ci_impresion_540 extends toba_ci
                             $sub=0; 
                             $programa=$des['programa'];
                             $i++;
+                            
                         }
                         
                         $ayn=$des['docente_nombre'];
@@ -163,6 +165,23 @@ class ci_impresion_540 extends toba_ci
                         
                         $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => $des['programa'],'col4' => $des['porc'].'%','col5' => $ayn,'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'],'col9' => $des['dedic'],'col10' => $des['carac'],'col11' => $desde,'col12' => $hasta,'col13' => $des['id_departamento'],'col14' => $des['id_area'],'col15' => $des['id_orientacion'],'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
                         $i++;  
+                        //aqui agregar nueva linea
+                        if($des['dias_lic']!=0){//si tiene dias de licencia 
+                          $datos_novedad=$this->dep('datos')->tabla('designacion')->get_novedad($des['id_designacion'],$this->s__anio,1);
+                          $desden=date("d/m/Y",strtotime($datos_novedad[0]['desde']));
+                          $hastan=date("d/m/Y",strtotime($datos_novedad[0]['hasta']));
+                          $nove='L'.'- Desde: '.$desden.' Hasta:'.$hastan;
+                         
+                        }
+                        $baja="";
+                        if($des['estado']=='B'){
+                            $datos_novedad2=$this->dep('datos')->tabla('designacion')->get_novedad($des['id_designacion'],$this->s__anio,2);
+                            $baja='B'.'-'.' Desde:'.date("d/m/Y",strtotime($datos_novedad2[0]['desde'])).'('.$datos_novedad2[0]['tipo_emite'].' '.$datos_novedad2[0]['tipo_norma'].' '.trim($datos_novedad2[0]['norma_legal']).')';
+ 
+                        }
+                        $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' => '','col7' => '','col8' => '','col9' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => $nove,'col17' =>$baja ,'col18' =>'');    
+                        $i++;
+                        ///
                     }
                 }
               

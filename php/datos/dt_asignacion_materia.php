@@ -1,7 +1,42 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
-	function modificar($datos){//recibe los valores nuevos
+    //retorna true si la designacion tiene asociada materias durante su licencia
+        function materias_durante_licencia($id_designacion,$anio){
+            $sql="select fecha_inicio,fecha_fin from mocovi_periodo_presupuestario where anio=".$anio;
+            $resul=toba::db('designa')->consultar($sql);
+            $inicio= $resul[0]['fecha_inicio'];
+            $fin= $resul[0]['fecha_fin'];
+            $medio="2016-07-01";
+            $sql="select * from designacion t_d
+                LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
+                LEFT OUTER JOIN asignacion_materia t_m ON (t_d.id_designacion=t_m.id_designacion)
+                LEFT OUTER JOIN novedad t_n ON (t_n.id_designacion=t_d.id_designacion and t_n.tipo_nov in (2,3,5))--licencia
+
+                where 
+                t_m.anio=$anio
+                and t_d.id_designacion=$id_designacion
+                and (
+                ( t_m.id_periodo=1 --1CUAT
+                and t_n.desde<='".$fin."' and (t_n.hasta is null or t_n.hasta>='".$medio."') --la novedad esta entre enero y junio
+                )
+                or  
+                (t_m.id_periodo=2 --1CUAT
+                and t_n.desde<='".$fin."' and (t_n.hasta is null or t_n.hasta>='".$medio."') --la novedad esta entre enero y junio
+                )
+                or
+                ((t_m.id_periodo=3 or t_m.id_periodo=4)-- ANUAL o AMBOS
+                and t_n.desde<='".$fin."' and (t_n.hasta is null or t_n.hasta>='".$inicio."') --la novedad esta entre enero y diciembre
+                )
+                )";
+            $resul=toba::db('designa')->consultar($sql);
+            if(count($resul)>0){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        function modificar($datos){//recibe los valores nuevos
             
             if(!isset($datos['carga_horaria'])){
                 $con="null";

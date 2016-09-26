@@ -33,17 +33,11 @@ class dt_impresion_540 extends toba_datos_tabla
                     
                 }	
             
-            $sql = "(SELECT
+           $sql = "SELECT
 			distinct nro_540
 		FROM
-			designacion as t_d $where and nro_540 is not null
-		order by nro_540 )"
-                    . " UNION "
-                    ."(SELECT
-			distinct nro_540
-		FROM
-			designacionh as t_d $where and nro_540 is not null
-		order by nro_540 )";
+			public_auditoria.logs_designacion $where and nro_540 is not null
+		order by nro_540 ";		
             
             return toba::db('designa')->consultar($sql);
             
@@ -55,17 +49,14 @@ class dt_impresion_540 extends toba_datos_tabla
             }else{
                 $where='';
             }
-            
-            $sql="select t_i.id,fecha_impresion,expediente from impresion_540 t_i RIGHT JOIN"
-                    . " (select distinct nro_540 from designacion t_d $where) b"
-                    . " ON (t_i.id=b.nro_540)";
+            $sql="select t_i.id,fecha_impresion,expediente from impresion_540 t_i RIGHT JOIN
+                    (select distinct nro_540
+                            from public_auditoria.logs_designacion a 
+                            $where ) b
+                ON (t_i.id=b.nro_540)
+                where id is not null
+                order by id";
             $res= toba::db('designa')->consultar($sql);
-            if(count($res)==0){
-                $sql="select t_i.id,fecha_impresion,expediente from impresion_540 t_i RIGHT JOIN"
-                    . " (select distinct nro_540 from designacionh t_d $where) b"
-                    . " ON (t_i.id=b.nro_540)";
-                $res= toba::db('designa')->consultar($sql);
-            }
             return $res;
         }
 
