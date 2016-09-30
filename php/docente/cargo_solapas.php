@@ -482,9 +482,13 @@ class cargo_solapas extends toba_ci
             //trae la designacion que fue cargada
             if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();     
-                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('asignacion_materia')->get_listado_desig($desig['id_designacion']));
+                $datos=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get_listado_desig($desig['id_designacion']);
+                $cuadro->set_datos($datos);
                 //--aqui agregar
-                
+                $band=$this->controlador()->dep('datos')->tabla('asignacion_materia')->materias_durante_licencia($desig['id_designacion']);
+                if($band){
+                    $this->pantalla('pant_materias')->agregar_notificacion('Tiene materias asignadas durante su licencia','error');    
+                }
             }
             
 	}

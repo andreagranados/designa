@@ -1,13 +1,39 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
+        function get_comparacion ($where=null){
+             if(!is_null($where)){
+               $where=' WHERE '.$where;
+            }else{
+                $where='';
+            }
+           
+            $sql="select d.*,t_m.desc_materia,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad,t_pe.descripcion as periodo from (
+                select a.id_materia,anio_acad,a.id_periodo,cant_inscriptos,cant_desig from 
+                (select t_i.id_materia,anio_acad,id_periodo,sum(inscriptos) as cant_inscriptos
+                from inscriptos t_i
+                group by t_i.id_materia, anio_acad,id_periodo)a
+                ,
+                (select c.id_materia,anio,id_periodo,count(distinct id_designacion) as cant_desig
+                from asignacion_materia c 
+                group by c.id_materia,anio,id_periodo) b 
+                WHERE (a.id_materia=b.id_materia and a.anio_acad=b.anio and a.id_periodo=b.id_periodo)
+                )d
+                LEFT OUTER JOIN materia t_m ON (d.id_materia=t_m.id_materia) 
+                LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)
+                LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=d.id_periodo)
+                $where";
+            return toba::db('designa')->consultar($sql);
+        }
     //retorna true si la designacion tiene asociada materias durante su licencia
-        function materias_durante_licencia($id_designacion,$anio){
-            $sql="select fecha_inicio,fecha_fin from mocovi_periodo_presupuestario where anio=".$anio;
+        //toma en cuenta el periodo actual
+        function materias_durante_licencia($id_designacion){
+            $sql="select anio,fecha_inicio,fecha_fin from mocovi_periodo_presupuestario where actual ";
             $resul=toba::db('designa')->consultar($sql);
             $inicio= $resul[0]['fecha_inicio'];
             $fin= $resul[0]['fecha_fin'];
-            $medio="2016-07-01";
+            $anio=$resul[0]['anio'];
+            $medio=$anio."-07-01";
             $sql="select * from designacion t_d
                 LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
                 LEFT OUTER JOIN asignacion_materia t_m ON (t_d.id_designacion=t_m.id_designacion)
@@ -22,7 +48,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 )
                 or  
                 (t_m.id_periodo=2 --1CUAT
-                and t_n.desde<='".$fin."' and (t_n.hasta is null or t_n.hasta>='".$medio."') --la novedad esta entre enero y junio
+                and t_n.desde<='".$fin."' and (t_n.hasta is null or t_n.hasta>='".$medio."') --la novedad esta entre junio y diciembre
                 )
                 or
                 ((t_m.id_periodo=3 or t_m.id_periodo=4)-- ANUAL o AMBOS

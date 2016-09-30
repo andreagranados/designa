@@ -352,62 +352,82 @@ class dt_designacion extends toba_datos_tabla
         }
         function get_dedicacion_horas($where=null,$filtro=array())
 	{
-                if(!is_null($where)){
-                    $where=' WHERE desde<>hasta and hasta>desde and '.$where;
-                }else{
-                    $where='';
-                }
+               
+                $anio=$filtro['anio']['valor'];
+                $pdia=$this->primer_dia_periodo_anio($filtro['anio']['valor']);
+                $udia=$this->ultimo_dia_periodo_anio($filtro['anio']['valor']);
                 //si el where trae en la condicion: "estado=" entonces lo saco
                 $p=null;
                 $p=strpos(trim($where),'estado');
-                $where3="";
+                $where3=" WHERE 1=1";
+                if (isset($filtro['legajo'])) {
+			$where3.= " and legajo = ".$filtro['legajo']['valor'];
+		}
                 if($p!= null){//tiene en la condicion "estado="
                      $z=strlen($where)-16;     
                      $where2=substr($where , 0,$z);
                      if (isset($filtro['estado'])) {//si tiene valor
                         switch ($filtro['estado']['valor']) {
-                            case 1:     $where3=" where hs_total<hs_desig ";    break;
-                            case 2:     $where3=" where hs_total>hs_desig ";    break;
-                            case 3:     $where3=" where hs_total=hs_desig ";    break;
+                            case 1:     $where3=" and hs_total<hs_desig ";    break;
+                            case 2:     $where3=" and hs_total>hs_desig ";    break;
+                            case 3:     $where3=" and hs_total=hs_desig ";    break;
                             default:
                                 break;
                             }
                         }
-                }else{
-                    $where2=$where;
                 }
-
-                $sql="select distinct * from (select c.id_designacion,t_dep.descripcion as depart,t_o.descripcion as orientacion,t_a.descripcion as area,c.id_departamento,c.id_area,c.id_orientacion,c.uni_acad,c.agente,c.legajo,c.carac,c.cat_mapuche,case when c.dedic=1 then 'EXC' else case when c.dedic=2 then 'SEMI' else case when c.dedic=3 then 'SIMPLE' else 'AD-H' end end end as dedic,c.desde,c.hasta,case when (c.desde <= t_no.hasta and (c.hasta >= t_no.desde or c.hasta is null)) then 'L' else estado end as estado,c.hs_mat,c.hs_pe,c.hs_pi,c.hs_pos,c.hs_tut,c.hs_otros,c.hs_desig,((case when c.hs_mat is not null then c.hs_mat else 0 end) + (case when c.hs_pi is not null then c.hs_pi else 0 end)+(case when c.hs_pe is not null then c.hs_pe else 0 end)+(case when c.hs_pos is not null then c.hs_pos else 0 end)+(case when c.hs_tut is not null then c.hs_tut else 0 end)+(case when c.hs_otros is not null then c.hs_otros else 0 end))as hs_total 
-                     from(
-                       select b.*, sum(t_i.carga_horaria) as hs_pi ,sum(t_e.carga_horaria) as hs_pe,sum(t_t.carga_horaria) as hs_pos,sum(t_tu.carga_horaria) as hs_tut,sum(t_ot.carga_horaria) as hs_otros from (
-                        select a.*,((case when hasta is null then fecha_fin else hasta end )-(case when desde<fecha_inicio then fecha_inicio else desde end))*32/365 as semanas,sum(t_a.carga_horaria*case when (t_a.id_periodo=1 or t_a.id_periodo=2) then 16 else case when (t_a.id_periodo=3 or t_a.id_periodo=4) then 32 else case when (t_a.id_periodo=5) then 8 else case when (t_a.id_periodo=6) then 4 else case when (t_a.id_periodo=8 or t_a.id_periodo=9) then 24 end end end end end )/case when (((case when hasta is null then fecha_fin else hasta end )-(case when desde<fecha_inicio then fecha_inicio else desde end))*32/365)=0 then 1 else (((case when hasta is null then fecha_fin else hasta end )-(case when desde<fecha_inicio then fecha_inicio else desde end))*32/365) end as hs_mat, case when dedic=1 then 40 else case when dedic=2 then 20 else case when dedic=3 then 10 else 0 end end end  as hs_desig
-                        from
-                        (   select * from (
-                            select t_pe.anio,t_pe.fecha_inicio,t_pe.fecha_fin,t_d.id_designacion,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_do.apellido||', '||t_do.nombre as agente,t_do.legajo,t_d.carac,t_d.cat_mapuche,t_d.dedic,t_d.desde,t_d.hasta,t_d.estado   
-                            from designacion t_d , docente t_do, mocovi_periodo_presupuestario t_pe
-                            where t_d.id_docente=t_do.id_docente
-                            and (t_d.desde <=t_pe.fecha_fin and (t_d.hasta>=t_pe.fecha_inicio or t_d.hasta is null))
-                            )b $where2
-                        
-                        )a 
-                        LEFT OUTER JOIN asignacion_materia t_a ON (a.id_designacion=t_a.id_designacion and t_a.anio=a.anio)
-                        group by a.anio,fecha_fin,fecha_inicio,a.id_designacion,a.id_departamento,a.id_area,a.id_orientacion,a.uni_acad,a.agente,a.legajo,a.carac,a.cat_mapuche,a.dedic,a.desde,a.hasta,a.estado
-                        )b
-                        LEFT OUTER JOIN integrante_interno_pi t_i ON (b.id_designacion=t_i.id_designacion)
-                        LEFT OUTER JOIN integrante_interno_pe t_e ON (b.id_designacion=t_e.id_designacion)
-                        LEFT OUTER JOIN asignacion_tutoria t_t ON (b.id_designacion=t_t.id_designacion and t_t.rol='POST')
-                        LEFT OUTER JOIN asignacion_tutoria t_ot ON (b.id_designacion=t_ot.id_designacion and t_t.rol='OTRO')
-                        LEFT OUTER JOIN asignacion_tutoria t_tu ON (b.id_designacion=t_tu.id_designacion and (t_tu.rol='COOR' or t_tu.rol='TUTO'))
-
-                        group by b.anio,fecha_fin,fecha_inicio,b.id_designacion,b.id_departamento,b.id_area,b.id_orientacion,b.uni_acad,b.agente,b.legajo,b.carac,b.cat_mapuche,b.dedic,b.desde,b.hasta,b.estado,b.semanas,b.hs_mat,b.hs_desig
-                        )c
-                        LEFT OUTER JOIN novedad t_no ON (t_no.id_designacion=c.id_designacion and t_no.tipo_nov in (2,5))
-                        LEFT OUTER JOIN departamento t_dep ON (c.id_departamento=t_dep.iddepto)
-                        LEFT OUTER JOIN area t_a ON (c.id_area=t_a.idarea)
-                        LEFT OUTER JOIN orientacion t_o ON (t_o.idorient=c.id_orientacion and t_o.idarea=t_a.idarea)
-                    )d $where3 order by agente";
+                
+                $sql="select dedicacion_horas(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
+                toba::db('designa')->consultar($sql);
+                //,sum((case when a.hs_mat is not null then a.hs_mat else 0 end) + (case when a.hs_pi is not null then a.hs_pi else 0 end)+(case when a.hs_pe is not null then a.hs_pe else 0 end)+(case when a.hs_post is not null then a.hs_post else 0 end)+(case when a.hs_tut is not null then a.hs_tut else 0 end)+(case when a.hs_otros is not null then a.hs_otros else 0 end)) as hs_total 
+                $sql="select * from("
+                        . "select a.*,sum((case when a.hs_mat is not null then a.hs_mat else 0 end) + (case when a.hs_pi is not null then a.hs_pi else 0 end)+(case when a.hs_pe is not null then a.hs_pe else 0 end)+(case when a.hs_post is not null then a.hs_post else 0 end)+(case when a.hs_tut is not null then a.hs_tut else 0 end)+(case when a.hs_otros is not null then a.hs_otros else 0 end)) as hs_total from ("
+                        . " select distinct case when t_b.id_novedad is not null then 'B' else (case when t_n.id_novedad is null then 'A' else 'L' end) end as estado,t_d.uni_acad,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.carac,t_de.descripcion as depart,t_a.descripcion as area,t_o.descripcion as orientacion,a.* "
+                        . "from auxiliar a "
+                        . " LEFT OUTER JOIN designacion t_d ON (a.id_designacion=t_d.id_designacion)"
+                        . " LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)"
+                        . " LEFT OUTER JOIN area t_a ON (t_d.id_area=t_a.idarea)"
+                        . " LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient) "
+                        . " LEFT OUTER JOIN novedad t_n ON (t_n.id_designacion=t_d.id_designacion and t_n.tipo_nov in (2,3,5) and  t_n.desde <= '2017-01-30' and (t_n.hasta >= '2016-02-01' or t_n.hasta is null)) "
+                        . " LEFT OUTER JOIN novedad t_b ON (t_b.id_designacion=t_d.id_designacion and t_b.tipo_nov in (1,4) and  (t_b.desde >= '2016-02-01' and t_b.desde<='2017-01-31')) "
+                        .")a "
+                        . " group by agente,uni_acad,cat_mapuche,cat_estat,dedic,carac,depart,area,orientacion,legajo,id_designacion,estado,desde,hasta,hs_desig,hs_mat,hs_pi,hs_pe,hs_post,hs_otros ,hs_tut"
+                        . ")c $where3";
+                $res=toba::db('designa')->consultar($sql);
                
-                return toba::db('designa')->consultar($sql);
+                return $res;
+
+//                $sql="select distinct * from (select c.id_designacion,t_dep.descripcion as depart,t_o.descripcion as orientacion,t_a.descripcion as area,c.id_departamento,c.id_area,c.id_orientacion,c.uni_acad,c.agente,c.legajo,c.carac,c.cat_mapuche,case when c.dedic=1 then 'EXC' else case when c.dedic=2 then 'SEMI' else case when c.dedic=3 then 'SIMPLE' else 'AD-H' end end end as dedic,c.desde,c.hasta,case when (c.desde <= t_no.hasta and (c.hasta >= t_no.desde or c.hasta is null)) then 'L' else estado end as estado,c.hs_mat,c.hs_pe,c.hs_pi,c.hs_pos,c.hs_tut,c.hs_otros,c.hs_desig,((case when c.hs_mat is not null then c.hs_mat else 0 end) + (case when c.hs_pi is not null then c.hs_pi else 0 end)+(case when c.hs_pe is not null then c.hs_pe else 0 end)+(case when c.hs_pos is not null then c.hs_pos else 0 end)+(case when c.hs_tut is not null then c.hs_tut else 0 end)+(case when c.hs_otros is not null then c.hs_otros else 0 end))as hs_total 
+//                     from(
+//                       select b.*, sum(t_i.carga_horaria) as hs_pi ,sum(t_e.carga_horaria) as hs_pe,sum(t_t.carga_horaria) as hs_pos,sum(t_tu.carga_horaria) as hs_tut,sum(t_ot.carga_horaria) as hs_otros from (
+//                        select a.*,((case when hasta is null then fecha_fin else hasta end )-(case when desde<fecha_inicio then fecha_inicio else desde end))*32/365 as semanas,sum(t_a.carga_horaria*case when (t_a.id_periodo=1 or t_a.id_periodo=2) then 16 else case when (t_a.id_periodo=3 or t_a.id_periodo=4) then 32 else case when (t_a.id_periodo=5) then 8 else case when (t_a.id_periodo=6) then 4 else case when (t_a.id_periodo=8 or t_a.id_periodo=9) then 24 end end end end end )/case when (((case when hasta is null then fecha_fin else hasta end )-(case when desde<fecha_inicio then fecha_inicio else desde end))*32/365)=0 then 1 else (((case when hasta is null then fecha_fin else hasta end )-(case when desde<fecha_inicio then fecha_inicio else desde end))*32/365) end as hs_mat, case when dedic=1 then 40 else case when dedic=2 then 20 else case when dedic=3 then 10 else 0 end end end  as hs_desig
+//                        from
+//                        (   select * from (
+//                            select t_pe.anio,t_pe.fecha_inicio,t_pe.fecha_fin,t_d.id_designacion,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_do.apellido||', '||t_do.nombre as agente,t_do.legajo,t_d.carac,t_d.cat_mapuche,t_d.dedic,t_d.desde,t_d.hasta,t_d.estado   
+//                            from designacion t_d , docente t_do, mocovi_periodo_presupuestario t_pe
+//                            where t_d.id_docente=t_do.id_docente
+//                            and (t_d.desde <=t_pe.fecha_fin and (t_d.hasta>=t_pe.fecha_inicio or t_d.hasta is null))
+//                            )b $where2
+//                        
+//                        )a 
+//                        LEFT OUTER JOIN asignacion_materia t_a ON (a.id_designacion=t_a.id_designacion and t_a.anio=a.anio)
+//                        group by a.anio,fecha_fin,fecha_inicio,a.id_designacion,a.id_departamento,a.id_area,a.id_orientacion,a.uni_acad,a.agente,a.legajo,a.carac,a.cat_mapuche,a.dedic,a.desde,a.hasta,a.estado
+//                        )b
+//                        LEFT OUTER JOIN integrante_interno_pi t_i ON (b.id_designacion=t_i.id_designacion and t_i.desde <='".$udia."' and t_i.hasta>='".$pdia."')
+//                        LEFT OUTER JOIN integrante_interno_pe t_e ON (b.id_designacion=t_e.id_designacion and t_e.desde <='".$udia."' and t_e.hasta>='".$pdia."')
+//                        LEFT OUTER JOIN asignacion_tutoria t_t ON (b.id_designacion=t_t.id_designacion and t_t.rol='POST' and t_t.anio=$anio)
+//                        LEFT OUTER JOIN asignacion_tutoria t_ot ON (b.id_designacion=t_ot.id_designacion and t_t.rol='OTRO' and t_ot.anio=$anio)
+//                        LEFT OUTER JOIN asignacion_tutoria t_tu ON (b.id_designacion=t_tu.id_designacion and (t_tu.rol='COOR' or t_tu.rol='TUTO') and t_tu.anio=$anio)
+//
+//                        group by b.anio,fecha_fin,fecha_inicio,b.id_designacion,b.id_departamento,b.id_area,b.id_orientacion,b.uni_acad,b.agente,b.legajo,b.carac,b.cat_mapuche,b.dedic,b.desde,b.hasta,b.estado,b.semanas,b.hs_mat,b.hs_desig
+//                        )c
+//                        LEFT OUTER JOIN novedad t_no ON (t_no.id_designacion=c.id_designacion and t_no.tipo_nov in (2,5))
+//                        LEFT OUTER JOIN departamento t_dep ON (c.id_departamento=t_dep.iddepto)
+//                        LEFT OUTER JOIN area t_a ON (c.id_area=t_a.idarea)
+//                        LEFT OUTER JOIN orientacion t_o ON (t_o.idorient=c.id_orientacion and t_o.idarea=t_a.idarea)
+//                    )d $where3 order by agente";
+               
+                //return toba::db('designa')->consultar($sql);
         }
         
 	function get_listado($filtro=array())
