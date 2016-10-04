@@ -122,7 +122,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_inicial', --identificador
 	'1', --orden
 	'Pantalla Inicial', --etiqueta
-	NULL, --descripcion
+	'Agrupa la cantidad de inscriptos por materia, año y período (suma inscriptos de todas las comisiones)', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen

@@ -110,7 +110,11 @@ class ci_articulo73 extends toba_ci
             }
                     
         }
-       
+        function evt__cuadro__editar($datos)
+        {
+           $this->dep('datos')->tabla('articulo_73')->cargar($datos);
+           $this->set_pantalla('pant_academica');
+        }
 	function evt__cuadro__check($datos)
 	{
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
@@ -128,6 +132,27 @@ class ci_articulo73 extends toba_ci
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
             toba::notificacion()->agregar($mensaje, 'info');
 	}
+        function conf__form_acad(toba_ei_formulario $form)
+        {
+            if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()) {
+                 $datos=$this->dep('datos')->tabla('articulo_73')->get();
+                 
+                 $x=$this->dep('datos')->tabla('articulo_73')->get_datos($datos['id_designacion']);
+                
+                 return $x[0];
+                  
+            }
+        }
+        function evt__form_acad__modificacion($datos)
+        {
+            //solo modifica check de academica y observ de academica
+            $datos2['check_academica']=$datos['check_academica'];
+            $datos2['observacion_acad']=$datos['observacion_acad'];
+            $this->dep('datos')->tabla('articulo_73')->set($datos2);
+            $this->dep('datos')->tabla('articulo_73')->sincronizar();
+            $this->resetear();
+            $this->set_pantalla('pant_inicial');   
+        }
 	//-----------------------------------------------------------------------------------
 	//---- formulario -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------

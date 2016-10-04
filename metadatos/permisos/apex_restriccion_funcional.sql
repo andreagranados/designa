@@ -34,4 +34,10 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'no_editar_articulo73', --descripcion
 	'0'  --permite_edicion
 );
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'9', --restriccion_funcional
+	'no_edita_articulo_acad', --descripcion
+	'0'  --permite_edicion
+);
 --- FIN Grupo de desarrollo 0

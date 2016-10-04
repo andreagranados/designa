@@ -188,3 +188,8 @@ INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, r
 	'academica', --usuario_grupo_acc
 	'2'  --restriccion_funcional
 );
+INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
+	'designa', --proyecto
+	'academica', --usuario_grupo_acc
+	'9'  --restriccion_funcional
+);
