@@ -10,6 +10,7 @@ class ci_articulo73 extends toba_ci
         protected $s__datos;
         protected $s__nombre;
         protected $s__where;
+        protected $s__imprimir;
     
 	function conf__filtros(toba_ei_filtro $filtro)
 	{
@@ -81,7 +82,54 @@ class ci_articulo73 extends toba_ci
             }
         }
         function vista_pdf(toba_vista_pdf $salida){
-                       
+          if($this->s__imprimir==1){
+                    $salida->set_nombre_archivo("Informe.pdf");
+                    $salida->set_papel_orientacion('landscape');
+                    $salida->inicializar();
+                    $pdf = $salida->get_pdf();
+                    $pdf->ezSetMargins(80, 50, 5, 5);
+                    //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
+                    //Primero definimos la plantilla para el número de página.
+                    $formato = 'Página {PAGENUM} de {TOTALPAGENUM}';
+                    //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
+                    $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+                    //Luego definimos la ubicación de la fecha en el pie de página.
+                    $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
+                    $salida->titulo("");
+                    $opciones = array(
+                    'splitRows'=>0,
+                    'rowGap' => 1,
+                    'showHeadings' => true,
+                    'titleFontSize' => 9,
+                    'fontSize' => 12,
+                    'shadeCol' => array(0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
+                    'outerLineThickness' => 0.7,
+                    'innerLineThickness' => 0.7,
+                    'xOrientation' => 'center',
+                    'width' => 700
+                    );
+                    $art=$this->dep('datos')->tabla('articulo_73')->get();
+                    
+                    $dat=$this->dep('datos')->tabla('articulo_73')->get_datos($art['id_designacion']);
+                    //print_r($dat);exit;
+                    //print_r($dat['designacion']);exit();
+                    $i=0;
+                    $datos[0]=array('col1' => utf8_decode('<b>DESIGNACIÓN:</b> ') .$dat[0]['designacion']);
+                    $datos[1]=array('col1' => utf8_decode('<b>ANTIGÜEDAD: </b> ').$dat[0]['antiguedad']);
+                    $datos[2]=array('col1' => '<b>CONTINUIDAD:</b> '.$dat[0]['desc_continuidad']);
+                    $datos[3]=array('col1' => '<b>MODO DE INGRESO:</b> '.$dat[0]['desc_modo_ingreso']);
+                    $datos[4]=array('col1' => utf8_decode('<b>OBSERVACIÓN:</b> ').$dat[0]['observacion']);
+                    $datos[5]=array('col1' => utf8_decode('<b>RESOLUCIÓN:</b> ').$dat[0]['nro_resolucion']);
+                    $datos[6]=array('col1' => '<b>CATEGORIA QUE REGULARIZA:</b> '.$dat[0]['cat_est_reg']);
+                    $datos[7]=array('col1' => '<b>DEPARTAMENTO:</b> '.$dat[0]['departamento']);
+                    $datos[8]=array('col1' => utf8_decode('<b>ÁREA: </b>').$dat[0]['area']);
+                    $datos[9]=array('col1' => utf8_decode('<b>ORIENTACIÓN: </b>').$dat[0]['orientacion']);
+                    $datos[10]=array('col1' => utf8_decode('<b>OBSERVACIÓN ACADÉMICA:</b> ').$dat[0]['observacion_acad']);
+                    
+                    
+                    $pdf->ezTable($datos, array('col1'=>'<b>Legajo: '.$dat[0]['legajo'].'</b>'), $titulo, $opciones);
+                    
+           }else{           
             if(isset($this->s__designacion)){
                 $ar['id_designacion']=$this->s__designacion;
                 $this->dep('datos')->tabla('articulo_73')->resetear();//limpia
@@ -108,12 +156,15 @@ class ci_articulo73 extends toba_ci
                unset($this->s__designacion);
                unset($this->s__pdf);
             }
-                    
+            }
+                
         }
+        
         function evt__cuadro__editar($datos)
         {
            $this->dep('datos')->tabla('articulo_73')->cargar($datos);
            $this->set_pantalla('pant_academica');
+           $this->s__imprimir=1;
         }
 	function evt__cuadro__check($datos)
 	{
@@ -152,6 +203,7 @@ class ci_articulo73 extends toba_ci
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
             $this->resetear();
             $this->set_pantalla('pant_inicial');   
+            $this->s__imprimir=0;
         }
 	//-----------------------------------------------------------------------------------
 	//---- formulario -------------------------------------------------------------------
@@ -343,6 +395,7 @@ class ci_articulo73 extends toba_ci
 	function evt__volver()
 	{
             $this->resetear();
+            $this->s__imprimir=0;
             $this->set_pantalla('pant_inicial');
 	}
 

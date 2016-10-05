@@ -17,7 +17,8 @@ class cuadro_descargar extends designa_ei_cuadro
                     if(vista=='pdf_acta'){
                             this.controlador.ajax('cargar_designacion',id_vinculo,this,this.retorno);
                         }else{
-                            this.controlador.ajax('cargar_designacion_r',id_vinculo,this,this.retorno_r);
+                               this.controlador.ajax('cargar_designacion_r',id_vinculo,this,this.retorno_r);
+                              
                         }
                     
                     
