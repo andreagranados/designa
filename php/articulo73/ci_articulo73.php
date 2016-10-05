@@ -95,12 +95,13 @@ class ci_articulo73 extends toba_ci
                     $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
                     //Luego definimos la ubicación de la fecha en el pie de página.
                     $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
-                    $salida->titulo("");
+                    $salida->titulo(utf8_decode("Informe Artículo 73"));
+                    $titulo=" ";
                     $opciones = array(
                     'splitRows'=>0,
                     'rowGap' => 1,
                     'showHeadings' => true,
-                    'titleFontSize' => 9,
+                    'titleFontSize' => 12,
                     'fontSize' => 12,
                     'shadeCol' => array(0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
                     'outerLineThickness' => 0.7,
@@ -111,8 +112,7 @@ class ci_articulo73 extends toba_ci
                     $art=$this->dep('datos')->tabla('articulo_73')->get();
                     
                     $dat=$this->dep('datos')->tabla('articulo_73')->get_datos($art['id_designacion']);
-                    //print_r($dat);exit;
-                    //print_r($dat['designacion']);exit();
+                    
                     $i=0;
                     $datos[0]=array('col1' => utf8_decode('<b>DESIGNACIÓN:</b> ') .$dat[0]['designacion']);
                     $datos[1]=array('col1' => utf8_decode('<b>ANTIGÜEDAD: </b> ').$dat[0]['antiguedad']);
@@ -125,10 +125,20 @@ class ci_articulo73 extends toba_ci
                     $datos[8]=array('col1' => utf8_decode('<b>ÁREA: </b>').$dat[0]['area']);
                     $datos[9]=array('col1' => utf8_decode('<b>ORIENTACIÓN: </b>').$dat[0]['orientacion']);
                     $datos[10]=array('col1' => utf8_decode('<b>OBSERVACIÓN ACADÉMICA:</b> ').$dat[0]['observacion_acad']);
+                    $datos[11]=array('col1' => utf8_decode('<b>CHECK ACADÉMICA:</b> ').$dat[0]['ca']);
                     
                     
                     $pdf->ezTable($datos, array('col1'=>'<b>Legajo: '.$dat[0]['legajo'].'</b>'), $titulo, $opciones);
+                    foreach ($pdf->ezPages as $pageNum=>$id){ 
+                        $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                        //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+                        $imagen = toba::proyecto()->get_path().'/www/img/logo_sti.jpg';
+                        $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
+                        $pdf->addJpegFromFile($imagen, 10, 525, 70, 66); 
+                        $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
+                        $pdf->closeObject(); 
                     
+                    }
            }else{           
             if(isset($this->s__designacion)){
                 $ar['id_designacion']=$this->s__designacion;
