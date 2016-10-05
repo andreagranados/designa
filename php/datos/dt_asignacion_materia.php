@@ -1,14 +1,42 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
+        function get_comisiones ($materia,$anio,$periodo){
+            $sql="select t_m.desc_materia||'('||t_p.cod_carrera||')' as materia,t_i.id_materia,t_i.anio_acad,t_i.id_periodo,t_pe.descripcion as periodo,t_c.descripcion as comision,t_i.inscriptos,t_p.cod_carrera,t_p.ordenanza"
+                    . " from inscriptos t_i"
+                    . " LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=t_i.id_periodo)"
+                    . " LEFT OUTER JOIN comision t_c ON (t_i.id_comision=t_c.id_comision)"
+                    . " LEFT OUTER JOIN materia t_m ON (t_i.id_materia=t_m.id_materia)"
+                    . " LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)"
+                    . " where t_i.id_materia=$materia"
+                    . " and t_i.anio_acad=$anio"
+                    . " and t_i.id_periodo=$periodo";
+            
+            return toba::db('designa')->consultar($sql);
+        }
+        function get_docentes($materia,$anio,$periodo){
+            $sql="select t_a.anio,t_doc.apellido||', '||t_doc.nombre as docente,t_doc.legajo, t_pe.descripcion as periodo,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as designacion,t_ti.desc_item as rol,t_a.carga_horaria,t_mod.descripcion as modulo
+                    from asignacion_materia t_a
+                    LEFT OUTER JOIN designacion t_d ON (t_a.id_designacion=t_d.id_designacion)
+                    LEFT OUTER JOIN docente t_doc ON (t_doc.id_docente=t_d.id_docente)
+                    LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=t_a.id_periodo)
+                    LEFT OUTER JOIN modulo t_mod ON (t_mod.id_modulo=t_a.modulo)
+                    LEFT OUTER JOIN tipo t_ti ON(t_a.nro_tab8=t_ti.nro_tabla and t_a.rol=t_ti.desc_abrev)
+                    where 
+                    t_a.id_materia=$materia
+                    and t_a.anio=$anio
+                    and t_a.id_periodo=$periodo";
+            
+            return toba::db('designa')->consultar($sql);
+        }
         function get_comparacion ($where=null){
              if(!is_null($where)){
                $where=' WHERE '.$where;
             }else{
                 $where='';
             }
-           
-            $sql="select d.*,t_m.desc_materia,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad,t_pe.descripcion as periodo from (
+           //agrupa por materia, anio y periodo
+            $sql="select d.*,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad,t_pe.descripcion as periodo from (
                 select a.id_materia,anio_acad,a.id_periodo,cant_inscriptos,cant_desig from 
                 (select t_i.id_materia,anio_acad,id_periodo,sum(inscriptos) as cant_inscriptos
                 from inscriptos t_i
