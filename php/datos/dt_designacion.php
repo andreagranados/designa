@@ -874,7 +874,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 //que sea una designacion vigente, dentro del periodo actual
 		$where=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)"
                         . " AND nro_540 is not null"
-                    ." AND check_presup='NO'";//es decir check presupuesto = 0
+                        . " AND check_presup='NO'"//es decir check presupuesto = 0
+                        . " AND id_norma is null";//solo traigo las que no tienen una norma legal
                
                 if (isset($filtro['uni_acad'])) {
 			$where.= " AND trim(uni_acad) = trim(".quote($filtro['uni_acad']).")";

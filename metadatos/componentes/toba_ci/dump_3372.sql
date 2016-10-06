@@ -134,7 +134,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_edicion', --identificador
 	'1', --orden
 	'Pantalla', --etiqueta
-	'Esta operación permite agregar o modificar la Norma de Alta de las designaciones/reservas que aparecen en el cuadro luego de filtrar', --descripcion
+	'Esta operación permite agregar la Norma de Alta de las designaciones/reservas que aparecen en el cuadro luego de filtrar', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen

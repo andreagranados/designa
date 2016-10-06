@@ -35,8 +35,9 @@ class ci_informar_norma_legal extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {//muestra las designaciones de esa ua, dentro del periodo y que no tienen check de presupuesto
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_norma($this->s__datos_filtro));
-                        $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_norma($this->s__datos_filtro);
+                    $datos=$this->dep('datos')->tabla('designacion')->get_listado_norma($this->s__datos_filtro);
+                    $cuadro->set_datos($datos);
+                    $this->s__listado=$datos;
 		} 
 	}
 

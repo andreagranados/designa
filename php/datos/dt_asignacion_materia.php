@@ -2,12 +2,13 @@
 class dt_asignacion_materia extends toba_datos_tabla
 {
         function get_comisiones ($materia,$anio,$periodo){
-            $sql="select t_m.desc_materia||'('||t_p.cod_carrera||')' as materia,t_i.id_materia,t_i.anio_acad,t_i.id_periodo,t_pe.descripcion as periodo,t_c.descripcion as comision,t_i.inscriptos,t_p.cod_carrera,t_p.ordenanza"
+            $sql="select distinct t_m.desc_materia||'('||t_p.cod_carrera||')' as materia,t_i.id_materia,t_i.anio_acad,t_i.id_periodo,t_pe.descripcion as periodo,t_c.descripcion as comision,t_i.inscriptos,t_p.cod_carrera,t_p.ordenanza"
                     . " from inscriptos t_i"
                     . " LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=t_i.id_periodo)"
                     . " LEFT OUTER JOIN comision t_c ON (t_i.id_comision=t_c.id_comision)"
                     . " LEFT OUTER JOIN materia t_m ON (t_i.id_materia=t_m.id_materia)"
                     . " LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)"
+
                     . " where t_i.id_materia=$materia"
                     . " and t_i.anio_acad=$anio"
                     . " and t_i.id_periodo=$periodo";
@@ -36,7 +37,8 @@ class dt_asignacion_materia extends toba_datos_tabla
                 $where='';
             }
            //agrupa por materia, anio y periodo
-            $sql="select d.*,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad,t_pe.descripcion as periodo from (
+            $sql=
+                    "select d.*,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad,t_pe.descripcion as periodo from (
                 select a.id_materia,anio_acad,a.id_periodo,cant_inscriptos,cant_desig from 
                 (select t_i.id_materia,anio_acad,id_periodo,sum(inscriptos) as cant_inscriptos
                 from inscriptos t_i
@@ -49,8 +51,9 @@ class dt_asignacion_materia extends toba_datos_tabla
                 )d
                 LEFT OUTER JOIN materia t_m ON (d.id_materia=t_m.id_materia) 
                 LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)
-                LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=d.id_periodo)
-                $where";
+                LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=d.id_periodo)"
+                .$where;
+                
             return toba::db('designa')->consultar($sql);
         }
     //retorna true si la designacion tiene asociada materias durante su licencia
