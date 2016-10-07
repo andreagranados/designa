@@ -90,7 +90,7 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	NULL, --titulo
 	NULL, --subtitulo
 	NULL, --sql
-	'id_materia,anio_acad,id_periodo', --columnas_clave
+	'id_materia,anio,id_periodo,conj', --columnas_clave
 	NULL, --columna_descripcion
 	'0', --clave_dbr
 	NULL, --archivos_callbacks
@@ -99,7 +99,7 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	'0', --paginar
 	NULL, --tamano_pagina
 	'P', --tipo_paginado
-	'0', --mostrar_total_registros
+	'1', --mostrar_total_registros
 	'0', --eof_invisible
 	NULL, --eof_customizado
 	'0', --siempre_con_titulo
@@ -196,7 +196,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3855', --objeto_cuadro
 	'3693', --objeto_cuadro_col
-	'anio_acad', --clave
+	'anio', --clave
 	'6', --orden
 	'Año', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo

@@ -5,34 +5,50 @@ class ci_comparacion_inscriptos_docentes extends toba_ci
         protected $s__where;
         protected $s__datos;
 
-
-	//---- Filtro -----------------------------------------------------------------------
-
-	function conf__filtros(toba_ei_filtro $filtro)
+        //---- Filtro -----------------------------------------------------------------------
+        function conf__filtro(toba_ei_formulario $filtro)
 	{
-            if (isset($this->s__datos_filtro)) {
-                $filtro->set_datos($this->s__datos_filtro);
+		if (isset($this->s__datos_filtro)) {
+			$filtro->set_datos($this->s__datos_filtro);
 		}
 	}
-
-	function evt__filtros__filtrar($datos)
+        function evt__filtro__filtrar($datos)
 	{
-	    $this->s__datos_filtro = $datos;
-            $this->s__where = $this->dep('filtros')->get_sql_where();
-         }
-
-	function evt__filtros__cancelar()
+		$this->s__datos_filtro = $datos;
+	}
+	function evt__filtro__cancelar()
 	{
 		unset($this->s__datos_filtro);
-                unset($this->s__where);
 	}
+
+
+//	//---- Filtro -----------------------------------------------------------------------
+//
+//	function conf__filtros(toba_ei_filtro $filtro)
+//	{
+//            if (isset($this->s__datos_filtro)) {
+//                $filtro->set_datos($this->s__datos_filtro);
+//		}
+//	}
+//
+//	function evt__filtros__filtrar($datos)
+//	{
+//	    $this->s__datos_filtro = $datos;
+//            $this->s__where = $this->dep('filtros')->get_sql_where();
+//         }
+//
+//	function evt__filtros__cancelar()
+//	{
+//		unset($this->s__datos_filtro);
+//                unset($this->s__where);
+//	}
 
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__where)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('asignacion_materia')->get_comparacion($this->s__where));
+		if (isset($this->s__datos_filtro)) {
+			$cuadro->set_datos($this->dep('datos')->tabla('asignacion_materia')->get_comparacion($this->s__datos_filtro));
 		} 
 	}
 
@@ -47,7 +63,9 @@ class ci_comparacion_inscriptos_docentes extends toba_ci
         {
          
             if(isset($this->s__datos)){
-                $datos=$this->dep('datos')->tabla('asignacion_materia')->get_comisiones($this->s__datos['id_materia'],$this->s__datos['anio_acad'],$this->s__datos['id_periodo']);
+               
+                //dada una materia, un anio y un periodo trae todos los inscriptos a esa materia en ese anio y periodo
+                $datos=$this->dep('datos')->tabla('asignacion_materia')->get_comisiones($this->s__datos['id_materia'],$this->s__datos['anio'],$this->s__datos['id_periodo'],$this->s__datos['conj']);
                 $cuadro->set_datos($datos);
             }
             
@@ -55,7 +73,9 @@ class ci_comparacion_inscriptos_docentes extends toba_ci
         }
         function conf__cuadro_doc(toba_ei_cuadro $cuadro)
         {
-            $datos=$this->dep('datos')->tabla('asignacion_materia')->get_docentes($this->s__datos['id_materia'],$this->s__datos['anio_acad'],$this->s__datos['id_periodo']);            
+            //dada una materia, un anio y un periodo trae todos las designaciones asociadas a esa materia en ese anio y periodo
+            //si es un conjunto el id_conjunto va en id_materia y el ultimo paramantro es 1
+            $datos=$this->dep('datos')->tabla('asignacion_materia')->get_docentes($this->s__datos['id_materia'],$this->s__datos['anio'],$this->s__datos['id_periodo'],$this->s__datos['conj']);            
             $cuadro->set_datos($datos);
         }
         function evt__volver(){

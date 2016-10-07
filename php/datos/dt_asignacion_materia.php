@@ -1,8 +1,12 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
-        function get_comisiones ($materia,$anio,$periodo){
-            $sql="select distinct t_m.desc_materia||'('||t_p.cod_carrera||')' as materia,t_i.id_materia,t_i.anio_acad,t_i.id_periodo,t_pe.descripcion as periodo,t_c.descripcion as comision,t_i.inscriptos,t_p.cod_carrera,t_p.ordenanza"
+        //trae todos los inscriptos de una determinada materia, anio y periodo
+    //muestra cuentos inscriptos hay por comision
+    //el ultimo parametro es 0 si no es conjunto
+        function get_comisiones ($materia,$anio,$periodo,$conj){
+            if ($conj==0){
+                $sql="select distinct t_m.desc_materia,t_i.id_materia,t_i.anio_acad,t_i.id_periodo,t_pe.descripcion as periodo,t_c.descripcion as comision,t_i.inscriptos,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad"
                     . " from inscriptos t_i"
                     . " LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=t_i.id_periodo)"
                     . " LEFT OUTER JOIN comision t_c ON (t_i.id_comision=t_c.id_comision)"
@@ -13,9 +17,26 @@ class dt_asignacion_materia extends toba_datos_tabla
                     . " and t_i.anio_acad=$anio"
                     . " and t_i.id_periodo=$periodo";
             
+            }else{//se trata de un conjunto
+                //lo que viene en $materia es el id_conjunto
+                $sql="select distinct t_i.*,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_co.descripcion as conjunto, t_com.descripcion as comision,t_pe.descripcion as periodo,t_p.uni_acad
+                     from inscriptos t_i
+                     LEFT OUTER JOIN comision t_com ON (t_com.id_comision=t_i.id_comision)
+                     LEFT OUTER JOIN en_conjunto t_c ON (t_c.id_materia=t_i.id_materia)
+                     LEFT OUTER JOIN conjunto t_co ON (t_c.id_conjunto=t_co.id_conjunto and t_co.id_periodo=t_i.id_periodo)
+                     LEFT OUTER JOIN mocovi_periodo_presupuestario t_r ON (t_r.id_periodo=t_co.id_periodo_pres and t_r.anio=t_i.anio_acad)
+                     LEFT OUTER JOIN materia t_m ON (t_m.id_materia=t_i.id_materia)
+                     LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)
+                     LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=t_i.id_periodo)
+                     where t_c.id_conjunto =$materia
+                     and t_i.id_periodo=$periodo
+                     and t_i.anio_acad=$anio";
+            }
+            
             return toba::db('designa')->consultar($sql);
         }
-        function get_docentes($materia,$anio,$periodo){
+        function get_docentes($materia,$anio,$periodo,$conj){
+          if ($conj==0){
             $sql="select t_a.anio,t_doc.apellido||', '||t_doc.nombre as docente,t_doc.legajo, t_pe.descripcion as periodo,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as designacion,t_ti.desc_item as rol,t_a.carga_horaria,t_mod.descripcion as modulo
                     from asignacion_materia t_a
                     LEFT OUTER JOIN designacion t_d ON (t_a.id_designacion=t_d.id_designacion)
@@ -26,35 +47,79 @@ class dt_asignacion_materia extends toba_datos_tabla
                     where 
                     t_a.id_materia=$materia
                     and t_a.anio=$anio
+            and t_a.id_periodo=$periodo";
+            
+          }else{
+             $sql="select t_a.anio,t_doc.apellido||', '||t_doc.nombre as docente,t_doc.legajo, t_pe.descripcion as periodo,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as designacion,t_ti.desc_item as rol,t_a.carga_horaria,t_mod.descripcion as modulo
+                    from asignacion_materia t_a
+                    LEFT OUTER JOIN designacion t_d ON (t_a.id_designacion=t_d.id_designacion)
+                    LEFT OUTER JOIN docente t_doc ON (t_doc.id_docente=t_d.id_docente)
+                    LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=t_a.id_periodo)
+                    LEFT OUTER JOIN modulo t_mod ON (t_mod.id_modulo=t_a.modulo)
+                    LEFT OUTER JOIN tipo t_ti ON(t_a.nro_tab8=t_ti.nro_tabla and t_a.rol=t_ti.desc_abrev)
+                    LEFT OUTER JOIN en_conjunto t_con ON (t_con.id_materia=t_a.id_materia)
+                    LEFT OUTER JOIN conjunto t_c ON (t_c.id_conjunto=t_con.id_conjunto and t_c.id_periodo=t_a.id_periodo )
+                    LEFT OUTER JOIN mocovi_periodo_presupuestario t_m ON (t_c.id_periodo_pres=t_m.id_periodo and t_m.anio=t_a.anio)
+                    where 
+                    t_c.id_conjunto=$materia
+                     and t_a.anio=$anio
                     and t_a.id_periodo=$periodo";
+              
+          }
             
             return toba::db('designa')->consultar($sql);
         }
-        function get_comparacion ($where=null){
-             if(!is_null($where)){
-               $where=' WHERE '.$where;
-            }else{
-                $where='';
+        function get_comparacion ($filtro=array()){
+            $where="";
+            if (isset($filtro['uni_acad'])) {
+                $where.= " WHERE uni_acad = ".quote($filtro['uni_acad']);
             }
            //agrupa por materia, anio y periodo
-            $sql=
-                    "select d.*,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad,t_pe.descripcion as periodo from (
-                select a.id_materia,anio_acad,a.id_periodo,cant_inscriptos,cant_desig from 
-                (select t_i.id_materia,anio_acad,id_periodo,sum(inscriptos) as cant_inscriptos
-                from inscriptos t_i
-                group by t_i.id_materia, anio_acad,id_periodo)a
-                ,
-                (select c.id_materia,anio,id_periodo,count(distinct id_designacion) as cant_desig
-                from asignacion_materia c 
-                group by c.id_materia,anio,id_periodo) b 
-                WHERE (a.id_materia=b.id_materia and a.anio_acad=b.anio and a.id_periodo=b.id_periodo)
-                )d
-                LEFT OUTER JOIN materia t_m ON (d.id_materia=t_m.id_materia) 
-                LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)
-                LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=d.id_periodo)"
-                .$where;
-                
-            return toba::db('designa')->consultar($sql);
+//            $sql=
+//                    "select d.*,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad,t_pe.descripcion as periodo from (
+//                select a.id_materia,anio_acad,a.id_periodo,cant_inscriptos,cant_desig from 
+//                (select t_i.id_materia,anio_acad,id_periodo,sum(inscriptos) as cant_inscriptos
+//                from inscriptos t_i
+//                group by t_i.id_materia, anio_acad,id_periodo)a
+//                ,
+//                (select c.id_materia,anio,id_periodo,count(distinct id_designacion) as cant_desig
+//                from asignacion_materia c 
+//                group by c.id_materia,anio,id_periodo) b 
+//                WHERE (a.id_materia=b.id_materia and a.anio_acad=b.anio and a.id_periodo=b.id_periodo)
+//                )d
+//                LEFT OUTER JOIN materia t_m ON (d.id_materia=t_m.id_materia) 
+//                LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)
+//                LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=d.id_periodo)"
+//                .$where;
+            $sql="select inscriptos_designa(".$filtro['anio'].",'".$filtro['uni_acad']."');";
+            toba::db('designa')->consultar($sql);   
+            $sql="select distinct c.* 
+                    ,case when a.cant_desig is not null then a.cant_desig else a2.cant_desig end as cant_desig
+                from(
+                    select b.*,t_pe.descripcion as periodo,case when t_m.desc_materia is null then t_co.descripcion else t_m.desc_materia end as desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad from
+                    (select id_materia,anio,id_periodo,0 as conj,sum(cant_inscriptos) as cant_inscriptos 
+                    from auxiliar
+                    where id_conjunto is null --si la materia no esta en ningun conjunto para ese anio y ese periodo 
+                    group by id_materia,anio,id_periodo
+                    UNION
+                    select  id_conjunto,anio,id_periodo,1 as conj,sum(cant_inscriptos) as cant_inscriptos 
+                    from auxiliar
+                    where id_conjunto is not null -- esta en un conjunto
+                    group by id_conjunto,anio,id_periodo
+                    
+                    )b
+                LEFT OUTER JOIN materia t_m ON (t_m.id_materia=b.id_materia and b.conj=0)	
+                LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)	
+                LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=b.id_periodo)
+                LEFT OUTER JOIN conjunto t_co ON (t_co.id_conjunto=b.id_materia and conj=1)
+                  )c              
+                 LEFT OUTER JOIN auxiliar a ON (a.id_materia=c.id_materia and a.id_periodo=c.id_periodo and a.anio=c.anio)                  
+                 LEFT OUTER JOIN auxiliar a2 ON (a2.id_conjunto=c.id_materia and a2.id_periodo=c.id_periodo and a2.anio=c.anio)
+                ";
+            $res=toba::db('designa')->consultar($sql);   
+            
+            return $res;
+            
         }
     //retorna true si la designacion tiene asociada materias durante su licencia
         //toma en cuenta el periodo actual

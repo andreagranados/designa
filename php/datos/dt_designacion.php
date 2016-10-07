@@ -653,7 +653,9 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		
                 //que sea una designacion vigente, dentro del periodo actual
 		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
-                $where.=" AND  nro_540 is null";
+                $where.=" AND  nro_540 is null"
+                          ." AND exists (select * from imputacion b
+  		            where a.id_designacion=b.id_designacion)";//obligo a que tenga imputacion, sino no puede generar tkd
                 
 		if (isset($filtro['uni_acad'])) {
 			$where.= " AND uni_acad = ".quote($filtro['uni_acad']);
