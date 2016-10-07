@@ -5,6 +5,7 @@ require_once 'consultas_mapuche.php';
 class dt_designacion extends toba_datos_tabla
 {
     function get_novedad($id_designacion,$anio,$tipo){
+        
         switch ($tipo) {
             case 1:$nove=" AND (t_no.tipo_nov=2 or t_no.tipo_nov=5) "//licencia sin goce o cese de haberes con norma legal
                        . " AND t_no.tipo_norma is not null 
@@ -25,7 +26,7 @@ class dt_designacion extends toba_datos_tabla
                         	AND m_e.anio=$anio
                         	AND t_no.id_designacion=t_d.id_designacion ".
                            	$nove;
-                           	
+                      	
        return toba::db('designa')->consultar($sql);
     }
     function cantidad_x_categoria_det($categ,$filtro=array()){

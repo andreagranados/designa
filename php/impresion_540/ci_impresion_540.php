@@ -180,7 +180,8 @@ class ci_impresion_540 extends toba_ci
                         }
                         $baja="";
                         $datos_novedad2=$this->dep('datos')->tabla('designacion')->get_novedad($des['id_designacion'],$this->s__anio,2);
-                        if(count($datos_novedad)>0){//si tiene una baja   
+                        
+                        if(count($datos_novedad2)>0){//si tiene una baja   
                             $baja='B'.':'.date("d/m/Y",strtotime($datos_novedad2[0]['desde'])).'('.$datos_novedad2[0]['tipo_emite'].' '.$datos_novedad2[0]['tipo_norma'].' '.trim($datos_novedad2[0]['norma_legal']).')';
                         }
                         
