@@ -389,7 +389,14 @@ class ci_ver_normas extends toba_ci
            
             if (isset($this->s__datos_filtro)) {
 		$this->s__datos=$this->dep('datos')->tabla('norma')->get_listado_filtro($this->s__where);
-                $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_filtro($this->s__where));
+                
+                foreach ($this->s__datos as $key => $value) {
+                    if(isset($value['link'])){
+                        $this->s__datos[$key]['link']="<a href='".$this->s__datos[$key]['link']."'target='_blank'>link</a>";
+                    }
+                }
+                //$this->s__datos[0]['link']="<a href='https://despacho.uncoma.edu.ar/archivos/ord_0646_2012_23.pdf' target='_blank'>link</a>";
+                $cuadro->set_datos($this->s__datos);
                 
             }
 	}

@@ -78,14 +78,14 @@ class dt_norma extends toba_datos_tabla
                 }
             
            $sql="select distinct * from ("
-                   . "select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,quien_emite_norma,nombre_tipo,uni_acad
+                   . "select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,quien_emite_norma,nombre_tipo,uni_acad,link
                         from norma t_n
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma=t_n.id_norma)
                         LEFT OUTER JOIN tipo_emite b ON (t_n.emite_norma=b.cod_emite)
                         LEFT OUTER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo)
                         where t_d.id_designacion is not null
                         UNION
-                       select  t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,quien_emite_norma,nombre_tipo,uni_acad
+                       select  t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,quien_emite_norma,nombre_tipo,uni_acad,link
                         from norma t_n
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma_cs=t_n.id_norma)
                         LEFT OUTER JOIN tipo_emite b ON (t_n.emite_norma=b.cod_emite)
