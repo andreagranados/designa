@@ -171,7 +171,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'nro_norma', --identificador
 	'ef_editable_numero', --elemento_formulario
 	'nro_norma', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'1', --orden
 	'Número de Norma', --etiqueta
@@ -251,7 +251,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'tipo_norma', --identificador
 	'ef_combo', --elemento_formulario
 	'tipo_norma', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'2', --orden
 	'Tipo de Norma', --etiqueta
@@ -331,7 +331,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'emite_norma', --identificador
 	'ef_combo', --elemento_formulario
 	'emite_norma', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'3', --orden
 	'Emitida por:', --etiqueta
@@ -411,7 +411,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'fecha', --identificador
 	'ef_editable_fecha', --elemento_formulario
 	'fecha', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'4', --orden
 	'Fecha', --etiqueta
@@ -496,7 +496,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'5', --orden
 	'Link Sist. Despacho', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Indicar aquí la dirección web en la que se encuentra la norma en el sistema de despacho', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
