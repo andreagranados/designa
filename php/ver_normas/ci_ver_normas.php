@@ -406,6 +406,12 @@ class ci_ver_normas extends toba_ci
             $this->set_pantalla('pant_detalle');
             
         }
+        function evt__cuadro__edicion($datos)
+	{
+            $this->dep('datos')->tabla('norma')->cargar($datos);
+            $this->set_pantalla('pant_edicion');
+            
+        }
         function evt__cuadro__procesar($datos)
         {
             //$this->dep('datos')->tabla('norma')->cargar($datos);
@@ -496,7 +502,26 @@ class ci_ver_normas extends toba_ci
             $this->set_pantalla('pant_inicial');
         }
         
-       
+       function conf__formulario(toba_ei_formulario $form)
+        {
+            if ($this->dep('datos')->tabla('norma')->esta_cargada()) {
+                 $datos=$this->dep('datos')->tabla('norma')->get();
+                 return $datos;
+                  
+            }
+        }
+        function evt__formulario__modificacion($datos)
+        {
+            $this->dep('datos')->tabla('norma')->set($datos);
+            $this->dep('datos')->tabla('norma')->sincronizar();
+            toba::notificacion()->agregar(utf8_decode('La modificación se realizó correctamente.'), 'info');
+            
+        }
+        function evt__formulario__cancelar($datos)
+        {
+            $this->dep('datos')->tabla('norma')->resetear();
+            $this->set_pantalla('pant_inicial');   
+        }
    
 }
 ?>
