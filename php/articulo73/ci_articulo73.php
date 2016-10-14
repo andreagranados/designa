@@ -124,8 +124,11 @@ class ci_articulo73 extends toba_ci
                     $datos[7]=array('col1' => '<b>DEPARTAMENTO:</b> '.$dat[0]['departamento']);
                     $datos[8]=array('col1' => utf8_decode('<b>ÁREA: </b>').$dat[0]['area']);
                     $datos[9]=array('col1' => utf8_decode('<b>ORIENTACIÓN: </b>').$dat[0]['orientacion']);
-                    $datos[10]=array('col1' => utf8_decode('<b>OBSERVACIÓN ACADÉMICA:</b> ').$dat[0]['observacion_acad']);
-                    $datos[11]=array('col1' => utf8_decode('<b>CHECK ACADÉMICA:</b> ').$dat[0]['ca']);
+                    $datos[10]=array('col1' => '<b>EXPEDIENTE:</b> '.$dat[0]['expediente']);
+                    $datos[11]=array('col1' => utf8_decode('<b>OBSERVACIÓN ACADÉMICA:</b> ').$dat[0]['observacion_acad']);
+                    $datos[12]=array('col1' => utf8_decode('<b>CHECK ACADÉMICA:</b> ').$dat[0]['ca']);
+                    $datos[13]=array('col1' => utf8_decode('<b>OBSERVACIÓN PRESUPUESTARIA:</b> ').$dat[0]['observacion_presup']);
+                    $datos[14]=array('col1' => utf8_decode('<b>CHECK PRESUPUESTARIO:</b> ').$dat[0]['cp']);
                     
                     
                     $pdf->ezTable($datos, array('col1'=>'<b>Legajo: '.$dat[0]['legajo'].'</b>'), $titulo, $opciones);
