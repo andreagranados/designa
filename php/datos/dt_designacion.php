@@ -145,7 +145,10 @@ class dt_designacion extends toba_datos_tabla
                 }
                 
             }
-            
+            $ua=$filtro['uni_acad'];
+            if($filtro['uni_acad']=='ESCM'){
+                $filtro['uni_acad']='IBMP';
+            }
             //recupero los cargos de mapuche de ese periodo y esa ua
             $datos_mapuche = consultas_mapuche::get_cargos($filtro['uni_acad'],$udia,$pdia);
             
@@ -170,7 +173,7 @@ class dt_designacion extends toba_datos_tabla
                 }else{
                     $concat="null";
                 }
-                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$valor['codc_uacad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",'".$valor['lic']."')";
+                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$ua."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",'".$valor['lic']."')";
                 
                 toba::db('designa')->consultar($sql);
             }

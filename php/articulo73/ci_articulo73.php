@@ -199,7 +199,6 @@ class ci_articulo73 extends toba_ci
                  $datos=$this->dep('datos')->tabla('articulo_73')->get();
                  
                  $x=$this->dep('datos')->tabla('articulo_73')->get_datos($datos['id_designacion']);
-                
                  return $x[0];
                   
             }
@@ -214,6 +213,19 @@ class ci_articulo73 extends toba_ci
             $this->resetear();
             $this->set_pantalla('pant_inicial');   
             $this->s__imprimir=0;
+        }
+        function evt__form_acad__modificacionp($datos)
+        {
+            //solo modifica check presupu y observ de presup
+            $datos2['check_presup']=$datos['check_presup'];
+            $datos2['expediente']=$datos['expediente'];
+            $datos2['observacion_presup']=$datos['observacion_presup'];
+            $this->dep('datos')->tabla('articulo_73')->set($datos2);
+            $this->dep('datos')->tabla('articulo_73')->sincronizar();
+            $this->resetear();
+            $this->set_pantalla('pant_inicial');   
+            $this->s__imprimir=0;
+            
         }
 	//-----------------------------------------------------------------------------------
 	//---- formulario -------------------------------------------------------------------
