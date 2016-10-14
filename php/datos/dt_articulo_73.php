@@ -40,7 +40,7 @@ class dt_articulo_73 extends designa_datos_tabla
      
         $sql = 
                 "SELECT * FROM ("
-                ." SELECT t_a.id_designacion,t_doc.nro_docum,t_a.observacion,t_a.observacion_acad,t_a.observacion_presup,t_m.catsiu,t_d.uni_acad,t_a.id_departamento,t_dep.descripcion as departamento,t_an.descripcion as area,t_o.descripcion as orientacion,t_a.antiguedad,case when t_a.pase_superior=true then 'SI' else 'NO' end as pase_superior,t_a.check_academica as check_acad,case when t_a.check_academica=true then 'SI' else 'NO' end as check_academica,t_a.check_academica as check_acad,case when t_a.check_presup=true then 'SI' else 'NO' end as check_presup,t_a.nro_resolucion,t_t.desc_item as modo_ingreso ,t_ti.desc_item as continuidad,t_doc.apellido,t_doc.nombre,t_doc.legajo,t_d.cat_estat||t_d.dedic as cat_estat,t_a.cat_est_reg ||t_a.dedic_reg as cat_estat2 "
+                ." SELECT t_a.id_designacion,t_doc.nro_docum,t_a.observacion,t_a.observacion_acad,t_a.observacion_presup,t_m.catsiu,t_d.uni_acad,t_a.id_departamento,t_dep.descripcion as departamento,t_an.descripcion as area,t_o.descripcion as orientacion,t_a.antiguedad,case when t_a.pase_superior=true then 'SI' else 'NO' end as pase_superior,t_a.check_academica as check_acad,case when t_a.check_academica=true then 'SI' else 'NO' end as check_academica,t_a.expediente,case when t_a.check_presup=true then 'SI' else 'NO' end as check_presupuesto,t_a.check_presup,t_a.nro_resolucion,t_t.desc_item as modo_ingreso ,t_ti.desc_item as continuidad,t_doc.apellido,t_doc.nombre,t_doc.legajo,t_d.cat_estat||t_d.dedic as cat_estat,t_a.cat_est_reg ||t_a.dedic_reg as cat_estat2 "
                 . " FROM articulo_73 t_a "
                 . " LEFT OUTER JOIN macheo_categ t_m ON (t_m.catest=t_a.cat_est_reg and t_m.id_ded=t_a.dedic_reg)"
                  . " LEFT OUTER JOIN designacion t_d ON (t_a.id_designacion=t_d.id_designacion)"
@@ -52,6 +52,7 @@ class dt_articulo_73 extends designa_datos_tabla
                 . " LEFT OUTER JOIN orientacion t_o ON (t_a.id_orientacion=t_o.idorient and t_a.id_area=t_o.idarea)"
                 .") a , unidad_acad t_u "
                 . " where a.uni_acad=t_u.sigla";
+        
         $sql = toba::perfil_de_datos()->filtrar($sql);
         $sql="SELECT * FROM (".$sql.")b $where ";   
         $sql=$sql." order by departamento,area,orientacion,apellido,nombre";

@@ -208,6 +208,7 @@ class ci_articulo73 extends toba_ci
             //solo modifica check de academica y observ de academica
             $datos2['check_academica']=$datos['check_academica'];
             $datos2['observacion_acad']=$datos['observacion_acad'];
+            $datos2['expediente']=$datos['expediente'];
             $this->dep('datos')->tabla('articulo_73')->set($datos2);
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
             $this->resetear();
@@ -218,7 +219,6 @@ class ci_articulo73 extends toba_ci
         {
             //solo modifica check presupu y observ de presup
             $datos2['check_presup']=$datos['check_presup'];
-            $datos2['expediente']=$datos['expediente'];
             $datos2['observacion_presup']=$datos['observacion_presup'];
             $this->dep('datos')->tabla('articulo_73')->set($datos2);
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
