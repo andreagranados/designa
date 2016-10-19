@@ -75,22 +75,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 $where.= " WHERE uni_acad = ".quote($filtro['uni_acad']);
             }
            //agrupa por materia, anio y periodo
-//            $sql=
-//                    "select d.*,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad,t_pe.descripcion as periodo from (
-//                select a.id_materia,anio_acad,a.id_periodo,cant_inscriptos,cant_desig from 
-//                (select t_i.id_materia,anio_acad,id_periodo,sum(inscriptos) as cant_inscriptos
-//                from inscriptos t_i
-//                group by t_i.id_materia, anio_acad,id_periodo)a
-//                ,
-//                (select c.id_materia,anio,id_periodo,count(distinct id_designacion) as cant_desig
-//                from asignacion_materia c 
-//                group by c.id_materia,anio,id_periodo) b 
-//                WHERE (a.id_materia=b.id_materia and a.anio_acad=b.anio and a.id_periodo=b.id_periodo)
-//                )d
-//                LEFT OUTER JOIN materia t_m ON (d.id_materia=t_m.id_materia) 
-//                LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)
-//                LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=d.id_periodo)"
-//                .$where;
+
             $sql="select inscriptos_designa(".$filtro['anio'].",'".$filtro['uni_acad']."');";
             toba::db('designa')->consultar($sql);   
             $sql="select distinct c.* 
@@ -113,8 +98,8 @@ class dt_asignacion_materia extends toba_datos_tabla
                 LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=b.id_periodo)
                 LEFT OUTER JOIN conjunto t_co ON (t_co.id_conjunto=b.id_materia and conj=1)
                   )c              
-                 LEFT OUTER JOIN auxiliar a ON (a.id_materia=c.id_materia and a.id_periodo=c.id_periodo and a.anio=c.anio)                  
-                 LEFT OUTER JOIN auxiliar a2 ON (a2.id_conjunto=c.id_materia and a2.id_periodo=c.id_periodo and a2.anio=c.anio)
+                 LEFT OUTER JOIN auxiliar a ON (c.conj=0 and a.id_materia=c.id_materia and a.id_periodo=c.id_periodo and a.anio=c.anio)                  
+                 LEFT OUTER JOIN auxiliar a2 ON (c.conj<>0 and a2.id_conjunto=c.id_materia and a2.id_periodo=c.id_periodo and a2.anio=c.anio)
                 ";
             $res=toba::db('designa')->consultar($sql);   
             

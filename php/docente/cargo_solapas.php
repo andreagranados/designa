@@ -69,6 +69,7 @@ class cargo_solapas extends toba_ci
                 $this->pantalla()->tab("pant_novedad_b")->desactivar();
                               
 		}
+                
         } 
 
          

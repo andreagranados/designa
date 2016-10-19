@@ -11,7 +11,7 @@ class dt_articulo_73 extends designa_datos_tabla
                 . " LEFT OUTER JOIN tipo  t_tip ON (t_tip.nro_tabla=t_a.nro_tab11 and t_tip.desc_abrev=t_a.modo_ingreso)"
                 . " LEFT OUTER JOIN departamento t_dep ON (t_dep.iddepto=t_a.id_departamento)"
                 . " LEFT OUTER JOIN area t_ar ON (t_ar.idarea=t_a.id_area)"
-                . " LEFT OUTER JOIN orientacion t_o ON (t_o.idorient=t_a.id_orientacion)"
+                . " LEFT OUTER JOIN orientacion t_o ON (t_o.idorient=t_a.id_orientacion and t_o.idarea=t_ar.idarea)"
                 . " where t_a.id_designacion=$id_desig";
         
         

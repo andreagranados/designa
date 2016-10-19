@@ -391,7 +391,7 @@ class dt_designacion extends toba_datos_tabla
                         . " LEFT OUTER JOIN designacion t_d ON (a.id_designacion=t_d.id_designacion)"
                         . " LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)"
                         . " LEFT OUTER JOIN area t_a ON (t_d.id_area=t_a.idarea)"
-                        . " LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient) "
+                        . " LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_o.idarea=t_a.idarea) "
                         . " LEFT OUTER JOIN novedad t_n ON (t_n.id_designacion=t_d.id_designacion and t_n.tipo_nov in (2,3,5) and  t_n.desde <= '2017-01-30' and (t_n.hasta >= '2016-02-01' or t_n.hasta is null)) "
                         . " LEFT OUTER JOIN novedad t_b ON (t_b.id_designacion=t_d.id_designacion and t_b.tipo_nov in (1,4) and  (t_b.desde >= '2016-02-01' and t_b.desde<='2017-01-31')) "
                         .")a "

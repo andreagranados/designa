@@ -56,6 +56,7 @@ class dt_impresion_540 extends toba_datos_tabla
                 ON (t_i.id=b.nro_540)
                 where id is not null
                 order by id";
+            
             $res= toba::db('designa')->consultar($sql);
             return $res;
         }
