@@ -126,7 +126,7 @@ class ci_impresion_540 extends toba_ci
                     'showHeadings' => true,
                     'titleFontSize' => 10,
                     'fontSize' => 8,
-                    'shadeCol' => array(0.9,0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
+                    'shadeCol' => array(0.9,0.9,3,0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
                     'outerLineThickness' => 2,
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
