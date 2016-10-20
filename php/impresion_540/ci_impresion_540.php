@@ -122,12 +122,12 @@ class ci_impresion_540 extends toba_ci
                 //-- Cuadro con datos
                 $opciones = array(
                     'splitRows'=>0,
-                    'rowGap' => 1,
+                    'rowGap' => 0.7,//ancho de las filas
                     'showHeadings' => true,
-                    'titleFontSize' => 9,
+                    'titleFontSize' => 10,
                     'fontSize' => 8,
-                    'shadeCol' => array(0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
-                    'outerLineThickness' => 0.7,
+                    'shadeCol' => array(0.9,0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
+                    'outerLineThickness' => 2,
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
                     'width' => 800
@@ -162,12 +162,13 @@ class ci_impresion_540 extends toba_ci
                         }else{
                             $hasta='';
                         }
-                        $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => $des['programa'],'col4' => $des['porc'].'%','col5' => $ayn,'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'].$des['dedic'],'col10' => $des['carac'],'col11' => $desde,'col12' => $hasta,'col13' => $des['id_departamento'],'col14' => $des['id_area'],'col15' => $des['id_orientacion'],'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
+                        $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => trim($des['programa']) ,'col4' => $des['porc'].'%','col5' => trim($ayn),'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'].$des['dedic'],'col10' => trim($des['carac']),'col11' => $desde,'col12' => $hasta,'col13' => trim($des['id_departamento']),'col14' => trim($des['id_area']),'col15' => trim($des['id_orientacion']),'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
                         $i++;  
+                        $nove="";
                         //aqui agregar nueva linea
                         if($des['dias_lic']!=0){//si tiene dias de licencia 
                           $datos_novedad=$this->dep('datos')->tabla('designacion')->get_novedad($des['id_designacion'],$this->s__anio,1);
-                          $nove="";
+                          
                           foreach ($datos_novedad as $key => $value) {
                             	$desden=date("d/m/Y",strtotime($datos_novedad[0]['desde']));
                           	$hastan=date("d/m/Y",strtotime($datos_novedad[0]['hasta']));
@@ -200,7 +201,7 @@ class ci_impresion_540 extends toba_ci
                 $car=utf8_decode("Carácter");
                 $area=utf8_decode("Área");
                 $orient=utf8_decode("Orientación");
-                $pdf->ezTable($datos, array('col1'=>'UA', 'col2'=>'Id','col3' => 'Programa','col4' => 'Porc','col5' => 'Ap y Nombre','col6' => 'Legajo','col7' => 'CM','col8' => 'CE','col10' => $car,'col11' => 'Desde','col12' => 'Hasta','col13' => 'Departamento','col14' => $area,'col15' => $orient,'col16' => 'Dias Lic','col17' => 'Estado','col18' => 'Costo'), $titulo, $opciones);
+                $pdf->ezTable($datos, array('col1'=>'<b>UA</b>', 'col2'=>'<b>Id</b>','col3' => '<b>Programa</b>','col4' => '<b>Porc</b>','col5' => '<b>Ap y Nombre</b>','col6' => '<b>Legajo</b>','col7' => '<b>CM</b>','col8' => '<b>CE</b>','col10' =>'<b>'.$car.'</b>','col11' => '<b>Desde</b>','col12' => '<b>Hasta</b>','col13' => '<b>Departamento</b>','col14' => '<b>'.$area.'</b>','col15' => '<b>'.$orient.'</b>','col16' => '<b>Dias Lic</b>','col17' => '<b>Estado</b>','col18' => '<b>Costo</b>'), $titulo, $opciones);
 
                 //agrega texto al pdf. Los primeros 2 parametros son las coordenadas (x,y) el tercero es el tamaño de la letra, y el cuarto el string a agregar
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
@@ -221,6 +222,7 @@ class ci_impresion_540 extends toba_ci
                     throw $e;
                     }
                 }
+               
         }
 
 

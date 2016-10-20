@@ -95,13 +95,12 @@ class ci_reserva extends designa_ci
         //la ingresa en estado A (alta)
 	function evt__form_reserva__alta($datos)
 	{
+          
           $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
           if ($vale){
-            
-            $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-            //revisar que haya credito antes de cargar
-            $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,1);
-            $band2=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,2);
+             //revisar que haya credito antes de cargar
+            $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
+            $band2=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
             if ($band && $band2){//si hay credito para ingresar la reserva
                 //--inserta la reserva
                 $this->controlador()->dep('datos')->tabla('reserva')->set($datos);
@@ -118,40 +117,18 @@ class ci_reserva extends designa_ci
                 $datos['concursado']=0;
                 $datos['estado']='A';
                 $datos['por_permuta']=0;
-                //$datos['cat_mapuche']=$cat;
-                //--------Vuelvo a calcular categorias y dedicacion independientemente de que ya esten en el formulario por si presiona el boton modificar antes de que se carguen esos valores
                 
-                if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
-                        $id=$datos['cat_mapuche'];
-                        $sql="SELECT distinct
-                                t_cs.codigo_siu,
-                                t_cs.descripcion
-                              FROM
-                                categ_siu as t_cs 
-                                where t_cs.escalafon='D'
-                        ORDER BY descripcion";
-                        $resul=toba::db('designa')->consultar($sql);
-                        if($datos['ec']==1 && (($resul[$id]['codigo_siu']=='ADJE')||($resul[$id]['codigo_siu']=='ADJS')||($resul[$id]['codigo_siu']=='ADJ1'))){
-                            $datos['cat_estat']='ASDEnc';
-                        }else{//esta otra devuelve PAD
-                            $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
-                            $resul2=toba::db('designa')->consultar($sql2);
-                            $datos['cat_estat']=$resul2[0]['catest'];
-                        }
-                        $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
-                                                
-                }
-               
-                //--------------------------
+               //calculo la dedicacion y la cat estatuto por si las dudas no se autocompletaron y quedaron vacias
+                $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
+                $datos['dedic']=$dedi;
+                $est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                $datos['cat_estat']=$est;
+               //----------------------
                 
                 $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                 $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                 //---inserta la imputacion que se selecciona
                 $des=$this->controlador()->dep('datos')->tabla('designacion')->get();//trae el que acaba de insertar
-                //$sql="select m_p.id_programa from mocovi_programa m_p ,mocovi_tipo_programa m_t,unidad_acad t_u where m_p.id_tipo_programa=m_t.id_tipo_programa and m_t.id_tipo_programa=1 and t_u.sigla=m_p.id_unidad";
-                //$sql = toba::perfil_de_datos()->filtrar($sql);
-                //$resul=toba::db('designa')->consultar($sql);
-                //$impu['id_programa']=$resul[0]['id_programa'];
                 $impu['id_programa']=$datos['id_imp'];
                 $impu['porc']=100;
                 $impu['id_designacion']=$des['id_designacion'];
@@ -182,33 +159,14 @@ class ci_reserva extends designa_ci
             
             $mensaje="";
             
-            $cat=$datos['cat_mapuche'];
-            
-            //recupero categorias y dedicacion. 
-            //esto es si seleccionan otra categoria
-            //Vuelvo a calcularlas independientemente de que ya esten en el formulario por si presiona el boton modificar antes de que se carguen esos valores daria error
-            if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='20000'){//si es un numero 
-                            $id=$datos['cat_mapuche'];
-                            $sql="SELECT
-                                t_cs.codigo_siu,
-                                t_cs.descripcion
-                                
-                             FROM
-                                categ_siu as t_cs 
-                                where escalafon='D'
-                             ORDER BY descripcion";
-                            $resul=toba::db('designa')->consultar($sql);
-                            if($datos['ec']==1 && (($resul[$id]['codigo_siu']=='ADJE')||($resul[$id]['codigo_siu']=='ADJS')||($resul[$id]['codigo_siu']=='ADJ1'))){
-                                $datos['cat_estat']='ASDEnc';
-                            }else{//esta otra devuelve PAD
-                                $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
-                                $resul2=toba::db('designa')->consultar($sql2);
-                                $datos['cat_estat']=$resul2[0]['catest'];
-                            }
-                            $cat=$resul[$id]['codigo_siu'];
-                            $datos['cat_mapuche']=  $resul[$id]['codigo_siu'];
-                           
-             }
+             //vuelvo a calcular dedicacion y cat estatuto si cambio la categoria por si las dudas no se autocompletan y quedan vacias
+            if($desig['cat_mapuche']<>$datos['cat_mapuche']){
+                $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
+                $datos['dedic']=$dedi;
+                $est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                $datos['cat_estat']=$est;    
+            }
+
                //solo si toca algo que tiene que ver con el credito pierde el tkd     
             if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche']){//si modifica algo que afecte el credito
                        if($desig['nro_540'] != null){//si tiene nro de 540
@@ -219,8 +177,8 @@ class ci_reserva extends designa_ci
                           $mensaje=utf8_decode("Ha modificado una reserva que tiene número tkd. La misma ha perdido el número tkd.");                       
                         }
                         //verifico que tenga credito
-                        $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
-                        $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
+                        $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
+                        $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
                         if ($band && $band2){//si hay credito
                             if($mensaje!=''){///PASAR AL HISTORICO SI SE MODIFICA TENIENDO NUMERO DE TKD
                                 $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();

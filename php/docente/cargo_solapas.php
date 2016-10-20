@@ -8,6 +8,7 @@ class cargo_solapas extends toba_ci
     protected $s__alta_nov;
     protected $s__alta_novb;
     protected $s__volver;
+    protected $s__datos;
         
     
         function conf()
@@ -47,15 +48,19 @@ class cargo_solapas extends toba_ci
 	//---- form_cargo -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	function conf__form_cargo(designa_ei_formulario $form)
+	//function conf__form_cargo(designa_ei_formulario $form)
+        function conf__form_cargo($componente)
 	{
-           
+            
             if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()) {
                     $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                    $sql="select distinct t_c.descripcion as cat from designacion t_d LEFT JOIN categ_siu t_c ON (t_d.cat_mapuche=t_c.codigo_siu) where t_d.cat_mapuche='".$designacion['cat_mapuche']."'";
-                    $resul=toba::db('designa')->consultar($sql);
-                    $designacion['cate_siu_nombre']=$resul[0]['cat'];
-                    $form->set_datos($designacion);
+                    $cat=$this->controlador()->get_descripcion_categoria($designacion['cat_mapuche']);
+                    $designacion['cate_siu_nombre']=$cat;
+                    if ($this->controlador()->dep('datos')->tabla('suplente')->esta_cargada()) {
+                        $suple=$this->controlador()->dep('datos')->tabla('suplente')->get($designacion['id_designacion']);
+                        $designacion['suplente']=$suple['id_desig'];
+                    }
+                    $componente->set_datos($designacion);
             } else {
 			
                 //debo deshabilitar las pantallas de norma, imputacion, materias, cargo de gestion
@@ -71,7 +76,12 @@ class cargo_solapas extends toba_ci
 		}
                 
         } 
-
+        //evento implicito que no se muestra en un boton
+        //sirve para ocultar el ef suplente
+        function evt__form_cargo__modif($datos)
+        {
+            $this->s__datos = $datos;
+        }
          
        
         function get_descripcion_categoria($id){
@@ -82,7 +92,6 @@ class cargo_solapas extends toba_ci
          //este metodo permite mostrar en el popup el codigo de la categoria
         //recibe como argumento el id 
         function get_categoria($id){
-            
              return $this->controlador()->get_categoria($id);
         }
         
@@ -107,11 +116,10 @@ class cargo_solapas extends toba_ci
             //si pertenece al periodo actual o al periodo presupuestando
             $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
             if ($vale){// si esta dentro del periodo
-                $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-                
+                               
                 //le mando la categoria, la fecha desde y la fecha hasta
-                $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,1);
-                $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$cat,2);
+                $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
+                $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
                 
                 if ($band && $bandp){//si hay credito 
                     $docente=$this->controlador()->dep('datos')->tabla('docente')->get();
@@ -125,18 +133,15 @@ class cargo_solapas extends toba_ci
                     $datos['id_reserva']=null;
                     $datos['estado']='A';
                     $datos['por_permuta']=0;
-                    
-                    if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero  
-                        $datos['cat_mapuche']=$cat;
-                        //vuelvo a calcular cat estatuto y dedicacion por si presiona guardar antes de que se autocompleten los campos
-                        //$datos['cat_estat']=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
-                        //$datos['dedic']=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
-                        }
-                    
+                    //calculo la dedicacion y la cat estatuto por si las dudas no se autocompletaron y quedaron vacias
+                    $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
+                    $datos['dedic']=$dedi;
+                    $est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                    $datos['cat_estat']=$est;
+                    //-----
                     $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                   //trae el programa por defecto de la UA correspondiente
-                                  
+                   //trae el programa por defecto de la UA correspondiente           
                     $prog=$this->controlador()->dep('datos')->tabla('mocovi_programa')->programa_defecto();
                    
                     //obtengo la designacion recien cargada
@@ -149,6 +154,15 @@ class cargo_solapas extends toba_ci
                     $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
                     $designacion['id_designacion']=$des['id_designacion'];
                     $this->controlador()->dep('datos')->tabla('designacion')->cargar($designacion);
+                    //guarda el suplente en caso de que lo tenga
+                    if($datos['carac']=='S' && isset($datos['suplente'])){
+                        $datos_sup['id_desig_suplente']=$des['id_designacion'];//la designacion suplente que se acaba de agregar
+                        $datos_sup['id_desig']=$datos['suplente'];//la designacion del docente al que van a suplir
+                        $this->controlador()->dep('datos')->tabla('suplente')->set($datos_sup);
+                        $this->controlador()->dep('datos')->tabla('suplente')->sincronizar();
+                        $datos_s['id_desig_suplente']=$des['id_designacion'];
+                        $this->controlador()->dep('datos')->tabla('suplente')->cargar($datos_s);
+                    }
                 }
                 else{
                     $mensaje='NO SE DISPONE DE CRÉDITO PARA INGRESAR LA DESIGNACIÓN';
@@ -189,6 +203,8 @@ class cargo_solapas extends toba_ci
                                     toba::db('designa')->consultar($sql);
                                     $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
                                     $this->controlador()->resetear();
+                                    //cuando elimina la designacion tambien elimina en cascada el suplente si lo tuviera
+                                    toba::notificacion()->agregar("LA DESIGNACION HA SIDO ELIMINADA", 'info');
                                 }
                             }
                         }
@@ -202,21 +218,32 @@ class cargo_solapas extends toba_ci
         //si ya tenia numero de tkd cambia su estado a R (rectificada)
 	function evt__form_cargo__modificacion($datos)
 	{
-            
+            //print_r($datos);exit;
+           
             //--recupero la designacion que se desea modificar 
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            //si estaba cargad la pissa y sino crea un nuevo registro
+            if(isset($datos['suplente'])){//suplente viene con valor
+                if($datos['carac']=='S' ){
+                    $datos_sup['id_desig_suplente']=$desig['id_designacion'];
+                    $datos_sup['id_desig']=$datos['suplente'];
+                    $this->controlador()->dep('datos')->tabla('suplente')->set($datos_sup);
+                    $this->controlador()->dep('datos')->tabla('suplente')->sincronizar();        
+                    $datos_suplente['id_desig_suplente']=$desig['id_designacion'];
+                    $this->controlador()->dep('datos')->tabla('suplente')->cargar($datos_suplente);
+                }else{
+                    $this->controlador()->dep('datos')->tabla('suplente')->eliminar_todo();
+                    $this->controlador()->dep('datos')->tabla('suplente')->resetear();
+                }
+            }
             
-            //cuando presiona el boton modificar puede que modifique  la categ mapuche
-            //o puede modificar algun otro dato
-            //por lo tanto $datos['cat_mapuche'] puede ser numero o no
-             if($datos['cat_mapuche']>='0' && $datos['cat_mapuche']<='2000'){//si es un numero  
-                 $cat=$this->controlador()->get_categoria($datos['cat_mapuche']);
-                 $datos['cat_mapuche']=$cat;
-                 //vuelvo a calcular cat estatuto y dedicacion por si presiona guardar antes de que se autocompleten los campos
-                // $datos['cat_estat']=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
-                 //$datos['dedic']=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
-                 }
-           
+            //vuelvo a calcular dedicacion y cat estatuto si cambio la categoria por si las dudas no se autocompletan y quedan vacias
+            if($desig['cat_mapuche']<>$datos['cat_mapuche']){
+                $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
+                $datos['dedic']=$dedi;
+                $est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                $datos['cat_estat']=$est;    
+            }
             
             // verifico si la designacion que se quiere modificar tiene numero de 540
            
@@ -228,9 +255,9 @@ class cargo_solapas extends toba_ci
                  $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
                  if ($vale){
                     //verifico que tenga credito
-                    $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
-                    $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,2);
+                   
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
+                    $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
                      if ($band && $band2){//si hay credito
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
@@ -264,8 +291,8 @@ class cargo_solapas extends toba_ci
                   if ($vale){
                     
                     //verifico que tenga credito
-                    $cat=$this->controlador()->get_categoria_popup($datos['cat_mapuche']);
-                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$cat,1);
+                    
+                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
                      if ($band){//si hay credito
                         //pasa a historico
                         $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
@@ -294,6 +321,9 @@ class cargo_solapas extends toba_ci
 	function evt__form_cargo__cancelar()
 	{
             $this->controlador()->dep('datos')->tabla('designacion')->resetear();//limpia para volver a seleccionar otra designacion
+            $this->controlador()->dep('datos')->tabla('suplente')->resetear();
+            $this->controlador()->dep('datos')->tabla('norma')->resetear();
+            $this->controlador()->dep('datos')->tabla('normacs')->resetear();
             $this->controlador()->set_pantalla( 'pant_cargo_seleccion');
 	}
        
@@ -758,6 +788,7 @@ class cargo_solapas extends toba_ci
                 $this->controlador()->set_pantalla('pant_cargo_seleccion');
                 $this->controlador()->dep('datos')->tabla('norma')->resetear();
                 $this->controlador()->dep('datos')->tabla('normacs')->resetear();
+                $this->controlador()->dep('datos')->tabla('suplente')->resetear();
             }
             
 	}

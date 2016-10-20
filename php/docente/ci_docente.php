@@ -57,48 +57,16 @@ class ci_docente extends toba_ci
             return $this->dep('datos')->tabla('materia')->get_materia_popup($id);
         } 
         
-        //este metodo permite mostrar en el popup el codigo de la categoria
-        //recibe como argumento el id 
+        //este metodo permite mostrar en el formulario el codigo de la categoria seleccionado en el popup
         function get_descripcion_categoria($id){
-            if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion
-		FROM
-			categ_siu as t_cs
-                        where escalafon='D'
-		ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                return $resul[$id]['descripcion'];
-            }else{//sino es un numero
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion
-		FROM
-			categ_siu as t_cs
-                        where escalafon='D'
-                        and t_cs.codigo_siu='".$id."'";
-		
-                $resul=toba::db('designa')->consultar($sql);
-                return $resul[0]['descripcion'];
-            }
-            
+             return $this->dep('datos')->tabla('categ_siu')->get_descripcion_categoria($id);
         }
+        
         function get_dedicacion_categoria($id){
-            if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion
-		FROM
-			categ_siu as t_cs
-                         where escalafon='D'
-		ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                $long=  strlen(trim($resul[$id]['codigo_siu']));
-                
-                $dedic=  substr($resul[$id]['codigo_siu'], $long-1, $long);
-                
-                switch ($dedic) {
+            $long=  strlen(trim($id));
+            $dedic=  substr($id, $long-1, $long);
+            $dedicacion=0;    
+            switch ($dedic) {
                     case '1': $dedicacion=3;   break;
                     case 'S': $dedicacion=2;   break;
                     case 'E': $dedicacion=1;   break;
@@ -106,31 +74,13 @@ class ci_docente extends toba_ci
                     default:
                         break;
                 }
-                return($dedicacion);
-            }
+            return($dedicacion);
         }
+        
 	function get_categ_estatuto($ec,$id){
-            
-            if ($id>='0' and $id<='20000'){//es un elemento seleccionado del popup
-                $sql="SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion
-		FROM
-			categ_siu as t_cs
-                         where escalafon='D'
-		ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                if($ec==1 && (($resul[$id]['codigo_siu']=='ADJE')||($resul[$id]['codigo_siu']=='ADJS')||($resul[$id]['codigo_siu']=='ADJ1'))){
-                    return('ASDEnc');
-                }else{//esta otra devuelve PAD
-                    
-                    $sql2="SELECT * from macheo_categ where catsiu='". $resul[$id]['codigo_siu']."'";
-                    $resul2=toba::db('designa')->consultar($sql2);
-                    return($resul2[0]['catest']);
-                    
-                }
-            }
+            return $this->dep('datos')->tabla('macheo_categ')->get_categ_estatuto($ec,$id);
         }
+        //esta la uso en algun lado? sino sacar
         function get_categoria_popup($id){
             if($id>='0' && $id<='20000'){//si es un numero 
                 
@@ -379,7 +329,12 @@ class ci_docente extends toba_ci
 	{
             $this->dep('datos')->tabla('designacion')->cargar($datos);
             $desig = $this->dep('datos')->tabla('designacion')->get();//obtengo la designacion recien cargada
-            
+            //veo si existe suplente para esta designacion 
+            $es_suplente=$this->dep('datos')->tabla('suplente')->existe($desig['id_designacion']);
+            if($es_suplente){
+                $datos_suplente['id_desig_suplente']=$datos['id_designacion'];
+                $this->dep('datos')->tabla('suplente')->cargar($datos_suplente);
+            }
             if ($desig['id_norma'] <> null){//si tiene la norma del cd 
                 $mostrar['id_norma']=$desig['id_norma']    ;
                 $this->dep('datos')->tabla('norma')->cargar($mostrar);

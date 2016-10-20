@@ -43,18 +43,18 @@ class dt_designacionh extends toba_datos_tabla
                 from (
                     select distinct id_designacion,uni_acad,id_docente,desde,hasta,carac,cat_mapuche ,cat_estat,dedic,nro_540,id_departamento,id_area,id_orientacion,min(auditoria_fecha),'H' as hist
                     from public_auditoria.logs_designacion a 
-                    where a.nro_540=$nro
+                    where a.nro_540=$nro and a.uni_acad='".$filtro['uni_acad']."'
                     and not exists (select * from designacion b
                                 where a.id_designacion=b.id_designacion
-                                and b.nro_540=$nro)
+                                and b.nro_540=$nro and a.uni_acad=b.uni_acad)
                     group by id_designacion,uni_acad,id_docente,desde,hasta,carac,cat_mapuche ,cat_estat,dedic,nro_540,id_departamento,id_area,id_orientacion
                 UNION
                     select distinct id_designacion,uni_acad,id_docente,desde,hasta,carac,cat_mapuche ,cat_estat,dedic,nro_540,id_departamento,id_area,id_orientacion,min(auditoria_fecha),'' as hist
                     from public_auditoria.logs_designacion a 
-                    where a.nro_540=$nro
+                    where a.nro_540=$nro and a.uni_acad='".$filtro['uni_acad']."'
                     and exists (select * from designacion b
                                 where a.id_designacion=b.id_designacion
-                                and b.nro_540=$nro)
+                                and b.nro_540=$nro and a.uni_acad=b.uni_acad)
                     group by id_designacion,uni_acad,id_docente,desde,hasta,carac,cat_mapuche ,cat_estat,dedic,nro_540,id_departamento,id_area,id_orientacion
                     )c 
                 LEFT OUTER JOIN docente t_do ON (c.id_docente=t_do.id_docente)
@@ -63,7 +63,8 @@ class dt_designacionh extends toba_datos_tabla
                 LEFT OUTER JOIN departamento t_dep ON (t_dep.iddepto=c.id_departamento)
                 LEFT OUTER JOIN area t_a ON  (c.id_area = t_a.idarea)
                 LEFT OUTER JOIN orientacion as t_o ON (c.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea) 
-                order by docente_nombre";    
+                order by docente_nombre";  
+           
             return toba::db('designa')->consultar($sql);
         }
 

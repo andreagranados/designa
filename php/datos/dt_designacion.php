@@ -4,6 +4,29 @@ require_once 'consultas_mapuche.php';
 
 class dt_designacion extends toba_datos_tabla
 {
+    function get_suplente(){
+        $x=toba::usuario()->get_id(); 
+        $z=toba::usuario()->get_perfil_datos($x);
+            //si el usuario esta asociado a un perfil de datos
+        if(isset($z)){
+            $sql="select sigla,descripcion from unidad_acad ";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $resul=toba::db('designa')->consultar($sql);
+            $sql=
+                "select distinct t_d.id_designacion,t_d.uni_acad,t_do.apellido||', '||t_do.nombre||'('||t_d.cat_mapuche||'-'||t_d.carac||'-'||t_d.id_designacion||')' as descripcion"
+                . " from designacion t_d"
+                . " LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente)"
+                . " LEFT OUTER JOIN novedad t_n ON (t_d.id_designacion=t_n.id_designacion and t_n.tipo_nov in (2,5) )"//licencia sin goce o cese
+                . " where t_d.tipo_desig=1"//solo designaciones no reservas
+                . " and t_d.uni_acad='".$resul[0]['sigla']."'"
+                    . " order by descripcion"
+            
+                ;
+        
+        }
+        
+        return toba::db('designa')->consultar($sql);
+    }
     function get_novedad($id_designacion,$anio,$tipo){
         
         switch ($tipo) {
@@ -669,12 +692,12 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         case 'I':$where.= " AND carac ='Interino'";break;
                         case 'R':$where.= " AND carac ='Regular'";break;
                         case 'O':$where.= " AND carac ='Otro'";break;
-                        
+                        case 'S':$where.= " AND carac ='Suplente'";break;
                     }
                     
 		}
-                if (isset($filtro['programa'])) {
-                    	$where.= " AND id_programa=".$filtro['programa'];
+                if (isset($filtro['id_programa'])) {
+                    	$where.= " AND id_programa=".$filtro['id_programa'];
 		}
 
                 //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
@@ -819,16 +842,17 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 //                            .") b "
 //                            . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
 //                            . " order by programa,docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
+                
                 $sql=  "select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
                             . ",case when b.estado<>'B' then case when  ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=2 or t_no.tipo_nov=5)) then 'L'  else b.estado end else 'B' end as estado  "//si tiene una baja o renuncia coloca B. Si tiene una licencia sin goce o cese coloca L
                             . " from ("
-                            ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
+                            ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
                             " from (".$sql.") a"
                             .$where
-                            ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
+                            ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
                             .") b "
                             . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
-                            . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
+                            . " order by programa,docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                 $ar = toba::db('designa')->consultar($sql);
                 
                 $datos = array();

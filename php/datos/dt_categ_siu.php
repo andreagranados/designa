@@ -73,5 +73,21 @@ class dt_categ_siu extends toba_datos_tabla
                 return $id;
             }
         }
+        function get_descripcion_categoria($cat){
+            
+                $sql="SELECT
+			t_cs.codigo_siu,
+			t_cs.descripcion
+		FROM
+			categ_siu as t_cs
+                        where escalafon='D'
+                        and t_cs.codigo_siu='".$cat."'";
+		
+                $resul=toba::db('designa')->consultar($sql);
+            
+                return $resul[0]['descripcion'];
+            
+            
+        }
 }
 ?>

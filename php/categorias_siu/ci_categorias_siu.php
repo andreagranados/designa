@@ -6,7 +6,8 @@ class ci_categorias_siu extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		$cuadro->set_datos($this->dep('datos')->tabla('categ_siu')->get_listado());
+            $cuadro->desactivar_modo_clave_segura();
+            $cuadro->set_datos($this->dep('datos')->tabla('categ_siu')->get_listado());
 		
 	}
 

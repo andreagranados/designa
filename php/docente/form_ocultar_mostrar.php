@@ -14,20 +14,19 @@ class form_ocultar_mostrar extends toba_ei_formulario
 			{
 				switch (this.ef('carac').get_estado()) {
 					case 'I':
-						this.mostrar_bloque_A(true);
-						
+						this.mostrar_bloque_A(false);
 						break;
 					case 'R':
 						this.mostrar_bloque_A(false);
-						
+						break;
+                                        case 'O':
+						this.mostrar_bloque_A(false);
 						break;
 					case 'S':
 						this.mostrar_bloque_A(true);
-						
 						break;						
 					default:
 						this.mostrar_bloque_A(false);
-						
 						break;					
 				}
 			}
