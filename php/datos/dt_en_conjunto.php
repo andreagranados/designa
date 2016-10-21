@@ -33,7 +33,7 @@ class dt_en_conjunto extends toba_datos_tabla
             return toba::db('designa')->consultar($sql);
         }
         function get_materias ($conj){
-            $sql="select t_m.desc_materia,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad from en_conjunto t_c, materia t_m, plan_estudio t_p"
+            $sql="select t_m.desc_materia,t_p.cod_carrera,t_p.desc_carrera,t_p.ordenanza,t_p.uni_acad from en_conjunto t_c, materia t_m, plan_estudio t_p"
                     . "  where t_c.id_conjunto=".$conj
                     ." and t_c.id_materia=t_m.id_materia"
                     . " and t_m.id_plan=t_p.id_plan";
