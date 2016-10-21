@@ -561,14 +561,14 @@ class cargo_solapas extends toba_ci
                     //obtengo la carrera
                     $car=$this->controlador()->get_carrera($x['id_materia']);
                    
-                    $maes=$form->ef('cod_carrera')->get_maestros();  
-                    $form->ef('cod_carrera')-> quitar_maestro($maes[0]);
+                    //$maes=$form->ef('cod_carrera')->get_maestros();  
+                    //$form->ef('cod_carrera')-> quitar_maestro($maes[0]); al sacar el maestro muestra todo sin filtra por el maestro
                                        
                     
                     $x['cod_carrera']=$car;
                     //$x['cod_carrera']=2;//funciona
-                    $maes=$form->ef('id_materia')->get_maestros();  
-                    $form->ef('id_materia')-> quitar_maestro($maes[0]);                                     
+                    //$maes=$form->ef('id_materia')->get_maestros();  
+                    //$form->ef('id_materia')-> quitar_maestro($maes[0]);                                     
                     $form->set_datos($x);
                     
                  }
@@ -789,6 +789,8 @@ class cargo_solapas extends toba_ci
                 $this->controlador()->dep('datos')->tabla('norma')->resetear();
                 $this->controlador()->dep('datos')->tabla('normacs')->resetear();
                 $this->controlador()->dep('datos')->tabla('suplente')->resetear();
+                $this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();
+                $this->s__alta_mate=0;
             }
             
 	}

@@ -7,10 +7,7 @@ class ci_renovacion_interinos extends toba_ci
         protected $s__deseleccionar_todos;
         protected $s__seleccionadas;
 
-//en el combo solo aparece la facultad correspondiente al usuario logueado
-        function get_ua(){
-           return $this->dep('datos')->tabla('unidad_acad')->get_ua();
-        }
+
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtro(toba_ei_formulario $filtro)
@@ -28,17 +25,17 @@ class ci_renovacion_interinos extends toba_ci
 	function evt__filtro__cancelar()
 	{
 		unset($this->s__datos_filtro);
-                $this->s__seleccionar_todos=0;
-                $this->s__deseleccionar_todos=0;
+               // $this->s__seleccionar_todos=0;
+                //$this->s__deseleccionar_todos=0;
 	}
-        function evt__filtro__seleccionar($datos)
-	{
-            $this->s__seleccionar_todos=1;	
-	}
-        function evt__filtro__deseleccionar($datos)
-	{
-            $this->s__deseleccionar_todos=1;	
-	}   
+//        function evt__filtro__seleccionar($datos)
+//	{
+//            $this->s__seleccionar_todos=1;	
+//	}
+//        function evt__filtro__deseleccionar($datos)
+//	{
+//            $this->s__deseleccionar_todos=1;	
+//	}   
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
@@ -147,57 +144,66 @@ class ci_renovacion_interinos extends toba_ci
 	//-----------------------------------------------------------------------------------
 	//---- cuadro -----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
-	function evt__cuadro__multiple_con_etiq($datos)
-	{
-            $this->s__seleccionadas=$datos;
-
-	}
-	//metodo para mostrar el tilde cuando esta seleccionada 
-        function conf_evt__cuadro__multiple_con_etiq(toba_evento_usuario $evento, $fila)
-	{
-            
-            //print_r($this->s__seleccionar_todos);
-             //[0] => Array ( [id_designacion] => 1 ) [1] => Array ( [id_designacion] => 3 
-            $sele=array();
-            if (isset($this->s__seleccionadas)) {//si hay seleccionados
-                foreach ($this->s__seleccionadas as $key=>$value) {
-                    $sele[]=$value['id_designacion'];  
-                }        
-            }   
-            
-            if (isset($this->s__seleccionadas)) {//si hay seleccionados
-               
-                if(in_array($this->s__listado[$fila]['id_designacion'],$sele)){
-                    $evento->set_check_activo(true);
-                }else{
-                    $evento->set_check_activo(false);
-                    
-                }
-            }
-           
-            if ($this->s__seleccionar_todos==1){//si presiono el boton seleccionar todos
-                $evento->set_check_activo(true);
-                $this->s__seleccionar_todos=0;
-               }
-          
-            if ($this->s__deseleccionar_todos==1){
-                $evento->set_check_activo(false);
-                $this->s__deseleccionar_todos=0;
-               }
-	}
+//	function evt__cuadro__multiple_con_etiq($datos)
+//	{
+//            $this->s__seleccionadas=$datos;
+//
+//	}
+//	//metodo para mostrar el tilde cuando esta seleccionada 
+//        function conf_evt__cuadro__multiple_con_etiq(toba_evento_usuario $evento, $fila)
+//	{
+//            
+//            //print_r($this->s__seleccionar_todos);
+//             //[0] => Array ( [id_designacion] => 1 ) [1] => Array ( [id_designacion] => 3 
+//            $sele=array();
+//            if (isset($this->s__seleccionadas)) {//si hay seleccionados
+//                foreach ($this->s__seleccionadas as $key=>$value) {
+//                    $sele[]=$value['id_designacion'];  
+//                }        
+//            }   
+//            
+//            if (isset($this->s__seleccionadas)) {//si hay seleccionados
+//               
+//                if(in_array($this->s__listado[$fila]['id_designacion'],$sele)){
+//                    $evento->set_check_activo(true);
+//                }else{
+//                    $evento->set_check_activo(false);
+//                    
+//                }
+//            }
+//           
+//            if ($this->s__seleccionar_todos==1){//si presiono el boton seleccionar todos
+//                $evento->set_check_activo(true);
+//                $this->s__seleccionar_todos=0;
+//               }
+//          
+//            if ($this->s__deseleccionar_todos==1){
+//                $evento->set_check_activo(false);
+//                $this->s__deseleccionar_todos=0;
+//               }
+//	}
         
 	function evt__cuadro__renovar($datos)
 	{
-            //print_r($datos);//Array ( [id_designacion] => 92 ) 
-            $this->set_pantalla('pant_renovar_des');
             $this->dep('datos')->tabla('designacion')->cargar($datos);
-            $doc['id_docente']=$datos['id_designacion'];
-            $this->dep('datos')->tabla('docente')->cargar($doc);
             $des=$this->dep('datos')->tabla('designacion')->get();
+            $doc['id_docente']=$des['id_docente'];
+            $this->dep('datos')->tabla('docente')->cargar($doc);
+            
             if($des['id_norma']<>null){
                 $norma['id_norma']=$des['id_norma'];
                 $this->dep('datos')->tabla('norma')->cargar($norma);
             }
+            $this->set_pantalla('pant_renovar_des');
+	}
+        //-----------------------------------------------------------------------------------
+	//---- form_docente -----------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form_docente(toba_ei_formulario $form)
+	{
+            $doc=$this->dep('datos')->tabla('docente')->get();
+            $form->set_titulo($doc['apellido'].', '.$doc['nombre'].' - '.$doc['legajo']);
 	}
 
 	//-----------------------------------------------------------------------------------
@@ -233,15 +239,23 @@ class ci_renovacion_interinos extends toba_ci
                 $datosn['cat_estat']=$datos['cat_estat'];
                 $datosn['dedic']=$datos['dedic'];
                 $datosn['carac']=$datos['carac'];
-                $form->set_datos($datosn);
-                if($datos['id_norma']<>null){
-                    $datosnorma=$this->dep('datos')->tabla('norma')->get();
-                    //print_r($datosnorma);// Array ( [id_norma] => 207 [nro_norma] => 112 [tipo_norma] => RESO [emite_norma] => CODI [fecha] => 2015-09-07 [x_dbr_clave] => 0 ) 
-                    $datosnorma['nombre_tipo']='CODI';
-                    
-                    $form->set_datos($datosnorma);
+                $ano=date("Y",strtotime($datos['desde']));
+                $mes=date("m",strtotime($datos['desde']));
+                $dia=date("d",strtotime($datos['desde']));
+                $ano=$ano+1;
+                $x=date("d/m/Y",strtotime($ano.'/'.$mes.'/'.$dia));
+                $datosn['desde']=$x;
+                if($datos['hasta'] != null){
+                    $anoh=date("Y",strtotime($datos['hasta']));
+                    $mesh=date("m",strtotime($datos['hasta']));
+                    $diah=date("d",strtotime($datos['hasta']));
+                    $anoh=$anoh+1;
+                    $y=date("d/m/Y",strtotime($anoh.'/'.$mesh.'/'.$diah));
+                    $datosn['hasta']=$y;
                 }
                 
+                $form->set_datos($datosn);
+
 		}
 	}
 //boton renovar
@@ -300,6 +314,8 @@ class ci_renovacion_interinos extends toba_ci
                      toba::notificacion()->agregar("Las fechas no estan dentro del periodo", "error");
                 }
                 
+            }else{
+                toba::notificacion()->agregar("La designacion origen no tiene fecha de fin", "error");
             }
 	}
 
@@ -326,16 +342,7 @@ class ci_renovacion_interinos extends toba_ci
             $cuadro->set_datos($mostrar);    
 	}
 
-	//-----------------------------------------------------------------------------------
-	//---- form_docente -----------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function conf__form_docente(toba_ei_formulario $form)
-	{
-            $doc=$this->dep('datos')->tabla('docente')->get();
-           
-            $form->set_titulo($doc['apellido'].', '.$doc['nombre'].' - '.$doc['legajo']);
-	}
+	
 
 }
 ?>

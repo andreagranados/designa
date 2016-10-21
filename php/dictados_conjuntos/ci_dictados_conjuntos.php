@@ -40,7 +40,6 @@ class ci_dictados_conjuntos extends toba_ci
 	{
             $this->s__conj=$datos['id_conjunto'];
             $this->set_pantalla('pant_conjunto');	
-           
 	}
 
 	function conf__cuadro_conj(toba_ei_cuadro $cuadro)
