@@ -6,6 +6,7 @@ class dt_designacion extends toba_datos_tabla
 {
     
     function get_suplente(){
+        $salida=array();
         $x=toba::usuario()->get_id(); 
         $z=toba::usuario()->get_perfil_datos($x);
             //si el usuario esta asociado a un perfil de datos
@@ -23,10 +24,10 @@ class dt_designacion extends toba_datos_tabla
                     . " order by descripcion"
             
                 ;
-        
+            $salida=toba::db('designa')->consultar($sql);
         }
         
-        return toba::db('designa')->consultar($sql);
+        return $salida;
     }
     function get_novedad($id_designacion,$anio,$tipo){
         
@@ -35,7 +36,7 @@ class dt_designacion extends toba_datos_tabla
                        . " AND t_no.tipo_norma is not null 
                            	AND t_no.tipo_emite is not null 
                            	AND t_no.norma_legal is not null
-                                AND t_no.desde<=m_e.fecha_fin and (t_no.hasta is not null or t_no.hasta>=m_e.fecha_inicio)";
+                                AND t_no.desde<=m_e.fecha_fin and t_no.hasta>=m_e.fecha_inicio";
             break;
             case 2:$nove=" AND (t_no.tipo_nov=1 or t_no.tipo_nov=4) "//baja o renuncia
                     . " AND t_no.desde<=m_e.fecha_fin and t_no.desde>=m_e.fecha_inicio";

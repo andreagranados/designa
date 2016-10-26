@@ -1,10 +1,30 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
-        //trae todos los inscriptos de una determinada materia, anio y periodo
+    function get_equipos_catedra($filtro=array()){
+        
+        $where="";
+        if (isset($filtro['uni_acad'])) {
+                $where.= " WHERE uni_acad = ".quote($filtro['uni_acad']);
+            }
+        $sql="select t_do.apellido||', '||t_do.nombre as docente_nombre, t_do.legajo,t_d.cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,t_d.uni_acad,t_m.id_materia,t_a.desc_materia,t_m.carga_horaria,t_pe.descripcion as periodo,t_r.desc_item as rol,calculo_conjunto(t_m.id_materia,t_m.id_periodo,t_m.anio) as conj,t_p.uni_acad||'-'||t_p.cod_carrera||'('||t_p.ordenanza||')' as plan
+            from asignacion_materia t_m
+            LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_m.id_designacion)
+            LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
+            LEFT OUTER JOIN materia t_a ON (t_m.id_materia=t_a.id_materia)
+            LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_a.id_plan)
+            LEFT OUTER JOIN periodo t_pe ON (t_m.id_periodo=t_pe.id_periodo)
+            LEFT OUTER JOIN tipo t_r ON (t_m.nro_tab8=t_r.nro_tabla and t_m.rol=t_r.desc_abrev)
+            where t_m.anio=".$filtro['anio']
+            ." and t_m.id_materia=".$filtro['id_materia']
+            ."order by t_m.id_materia";
+        
+         return toba::db('designa')->consultar($sql);
+    }   
+    //trae todos los inscriptos de una determinada materia, anio y periodo
     //muestra cuentos inscriptos hay por comision
     //el ultimo parametro es 0 si no es conjunto
-        function get_comisiones ($materia,$anio,$periodo,$conj){
+    function get_comisiones ($materia,$anio,$periodo,$conj){
             if ($conj==0){
                 $sql="select distinct t_m.desc_materia,t_i.id_materia,t_i.anio_acad,t_i.id_periodo,t_pe.descripcion as periodo,t_c.descripcion as comision,t_i.inscriptos,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad"
                     . " from inscriptos t_i"
@@ -211,8 +231,10 @@ class dt_asignacion_materia extends toba_datos_tabla
 
 
     function get_listado_desig($des){
-        $sql = "SELECT distinct t_a.id_designacion,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,t_t.desc_item as rol,t_p.descripcion as id_periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_a.anio,t_a.carga_horaria"
-                . " FROM asignacion_materia t_a LEFT OUTER JOIN materia t_m ON (t_m.id_materia=t_a.id_materia)"
+        $sql = "SELECT distinct t_a.id_designacion,t_pe.uni_acad||'-'||t_pe.cod_carrera as carrera,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,t_t.desc_item as rol,t_a.id_periodo,t_p.descripcion as periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_a.anio,t_a.carga_horaria,calculo_conjunto(t_a.id_materia,t_a.id_periodo,t_a.anio) as conj"
+                . " FROM asignacion_materia t_a "
+                . " LEFT OUTER JOIN materia t_m ON (t_m.id_materia=t_a.id_materia)"
+                . " LEFT OUTER JOIN plan_estudio t_pe ON (t_m.id_plan=t_pe.id_plan)"
                 . " LEFT OUTER JOIN periodo t_p ON (t_p.id_periodo=t_a.id_periodo)"
                 . " LEFT OUTER JOIN tipo t_t ON (t_a.nro_tab8=t_t.nro_tabla and t_a.rol=t_t.desc_abrev)"
                 . " LEFT OUTER JOIN modulo t_o ON (t_a.modulo=t_o.id_modulo)"

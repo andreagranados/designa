@@ -373,7 +373,12 @@ class ci_docente extends toba_ci
                     $mostrarcs['id_norma']=$desig['id_norma_cs']    ;
                     $this->dep('datos')->tabla('normacs')->cargar($mostrarcs);
                 } 
-                            
+                //veo si existe suplente para esta designacion 
+                $es_suplente=$this->dep('datos')->tabla('suplente')->existe($desig['id_designacion']);
+                if($es_suplente){
+                    $datos_suplente['id_desig_suplente']=$desig['id_designacion'];
+                    $this->dep('datos')->tabla('suplente')->cargar($datos_suplente);
+                }          
                 if($tipo==1){
                     $this->set_pantalla('pant_cargo');
                 }else{//es una reserva
