@@ -34,9 +34,7 @@ class cargo_solapas extends toba_ci
             return($result);
         }
         
-        function get_departamentos(){
-           return $this->controlador()->dep('datos')->tabla('departamento')->get_departamentos();
-        } 
+        
         //este metodo permite mostrar en el popup el nombre de la materia seleccionada
         //recibe como argumento el id 
         function get_materia($id){
@@ -116,7 +114,7 @@ class cargo_solapas extends toba_ci
             //si pertenece al periodo actual o al periodo presupuestando
             $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
             if ($vale){// si esta dentro del periodo
-                               
+                            
                 //le mando la categoria, la fecha desde y la fecha hasta
                 $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
                 $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
@@ -199,9 +197,10 @@ class cargo_solapas extends toba_ci
                                  if($tut){
                                     toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE TUTORIAS", 'error');
                                 }else{
+                                    
+                                    $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
                                     $sql="delete from imputacion where id_designacion=".$des['id_designacion'];
                                     toba::db('designa')->consultar($sql);
-                                    $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
                                     $this->controlador()->resetear();
                                     //cuando elimina la designacion tambien elimina en cascada el suplente si lo tuviera
                                     toba::notificacion()->agregar("LA DESIGNACION HA SIDO ELIMINADA", 'info');
@@ -218,11 +217,12 @@ class cargo_solapas extends toba_ci
         //si ya tenia numero de tkd cambia su estado a R (rectificada)
 	function evt__form_cargo__modificacion($datos)
 	{
-            //print_r($datos);exit;
-           
+         //si pertenece al periodo actual o al periodo presupuestando
+         $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
+         if($vale){
             //--recupero la designacion que se desea modificar 
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            //si estaba cargad la pissa y sino crea un nuevo registro
+            //si estaba carga la pissa y sino crea un nuevo registro
             if(isset($datos['suplente'])){//suplente viene con valor
                 if($datos['carac']=='S' ){
                     $datos_sup['id_desig_suplente']=$desig['id_designacion'];
@@ -315,7 +315,10 @@ class cargo_solapas extends toba_ci
                     toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
                     }
                 }
-          
+         }else{//intenta modificar una designacion que no pertenece al periodo actual o al presupuestando
+              $mensaje='LA DESIGNACION DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
+              toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+         }
 	}
 
 	function evt__form_cargo__cancelar()
@@ -857,7 +860,7 @@ class cargo_solapas extends toba_ci
                 if($desig['hasta']!= null){
                     $udia=$desig['hasta'];
                 }else{
-                    $udia=$this->controlador()->ultimo_dia_periodo(1);
+                    $udia=$this->controlador()->ultimo_dia_periodo(2);//periodo presupuestando
                 }
                 if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
                        if($mensaje!=''){//guardo historico
@@ -960,7 +963,7 @@ class cargo_solapas extends toba_ci
                 if($desig['hasta']!= null){
                     $udia=$desig['hasta'];
                 }else{
-                    $udia=$this->controlador()->ultimo_dia_periodo(1);
+                    $udia=$this->controlador()->ultimo_dia_periodo(2);
                 }
                 if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
                   if($datos['sub_tipo']=='MATE'){

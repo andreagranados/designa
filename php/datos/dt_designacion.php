@@ -4,30 +4,19 @@ require_once 'consultas_mapuche.php';
 
 class dt_designacion extends toba_datos_tabla
 {
-    
+    //solo trae las designaciones con suplencia o cese de la unidad academica correspondiente
     function get_suplente(){
-        $salida=array();
-        $x=toba::usuario()->get_id(); 
-        $z=toba::usuario()->get_perfil_datos($x);
-            //si el usuario esta asociado a un perfil de datos
-        if(isset($z)){
-            $sql="select sigla,descripcion from unidad_acad ";
-            $sql = toba::perfil_de_datos()->filtrar($sql);
-            $resul=toba::db('designa')->consultar($sql);
-            $sql=
-                "select distinct t_d.id_designacion,t_d.uni_acad,t_do.apellido||', '||t_do.nombre||'('||t_d.cat_mapuche||'-'||t_d.carac||'-'||t_d.id_designacion||')' as descripcion"
+  
+        $sql="select a.id_designacion,a.descripcion from (select distinct t_d.id_designacion,t_d.uni_acad,t_do.apellido||', '||t_do.nombre||'('||t_d.cat_mapuche||'-'||t_d.carac||'-'||t_d.id_designacion||')' as descripcion"
                 . " from designacion t_d"
                 . " LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente)"
                 . " LEFT OUTER JOIN novedad t_n ON (t_d.id_designacion=t_n.id_designacion and t_n.tipo_nov in (2,5) )"//licencia sin goce o cese
-                . " where t_d.tipo_desig=1"//solo designaciones no reservas
-                . " and t_d.uni_acad='".$resul[0]['sigla']."'"
-                    . " order by descripcion"
-            
-                ;
-            $salida=toba::db('designa')->consultar($sql);
-        }
+                . " where t_d.tipo_desig=1)a, unidad_acad b"
+                . " where a.uni_acad=b.sigla";
         
-        return $salida;
+        $sql = toba::perfil_de_datos()->filtrar($sql);
+              
+        return toba::db('designa')->consultar($sql);
     }
     function get_novedad($id_designacion,$anio,$tipo){
         
@@ -350,13 +339,13 @@ class dt_designacion extends toba_datos_tabla
            
             toba::db('designa')->consultar($sql);
         }
-// Primer dia del periodo actual**/
+// Primer dia del periodo actual**/ si se llama de ningun lado sacar
         function ultimo_dia_periodo() { 
 
             $sql="select fecha_fin from mocovi_periodo_presupuestario where actual=true";
-            $resul=toba::db('designa')->consultar($sql);
+            $resul=toba::db('designa')->consultar($sql);    
             return $resul[0]['fecha_fin'];
-        }
+         }
  
         /** Ultimo dia del periodo actual**/
         function primer_dia_periodo() {
@@ -364,6 +353,7 @@ class dt_designacion extends toba_datos_tabla
             $sql="select fecha_inicio from mocovi_periodo_presupuestario where actual=true";
             $resul=toba::db('designa')->consultar($sql);
             return $resul[0]['fecha_inicio'];
+            
            }
          function ultimo_dia_periodo_anio($anio) { 
 
@@ -539,8 +529,8 @@ class dt_designacion extends toba_datos_tabla
 //trae todas las designaciones/reservas de una determinada facultad que entran dentro del periodo vigente
         function get_listado_vigentes($agente,$filtro=array())
 	{
-                $udia=$this->ultimo_dia_periodo();
-                $pdia=$this->primer_dia_periodo();
+                $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//periodo presupuestando
+                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo(2);
 		$where = array();
                 //[activo] => Array ( [condicion] => es_igual_a [valor] => 0 )
 		if (isset($filtro['activo'])) {
@@ -619,7 +609,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 			                                         else case when (t_no.desde <= t_d.hasta and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end
 			                                         end
                         end as lic,
-			t_d.observaciones
+			t_d.observaciones,t_v.vinc
 		FROM
 			designacion as t_d 
                         LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu)
@@ -633,7 +623,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 			LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
                         LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto)
                         LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea)
-                        LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea),
+                        LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
+                        LEFT OUTER JOIN vinculo as t_v ON (t_d.id_designacion = t_v.desig),
 			docente as t_d1,
 			dedicacion as t_d2,
 			caracter as t_c,
@@ -657,7 +648,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                
 	}
         //devuelve true si esta en rojo y false en caso contrario
-        //function en_rojo($udia,$pdia){
+        
         function en_rojo($anio){
                $ar=array();
                $ar['anio']=$anio;
@@ -676,7 +667,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         }
         function get_listado_540($filtro=array())
 	{
-                
+                //en el filtro viene el periodo actual o el periodo presupuestando
                 $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
                 $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
 		
@@ -691,17 +682,16 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		}
                 if (isset($filtro['caracter'])) {
                     switch ($filtro['caracter']) {
-                        case 'I':$where.= " AND carac ='Interino'";break;
+                        case 'I':$where.= " AND (carac ='Interino' or carac ='Otro' or carac ='Suplente')";break;
                         case 'R':$where.= " AND carac ='Regular'";break;
-                        case 'O':$where.= " AND carac ='Otro'";break;
-                        case 'S':$where.= " AND carac ='Suplente'";break;
+                        
                     }
                     
 		}
                 if (isset($filtro['id_programa'])) {
                     	$where.= " AND id_programa=".$filtro['id_programa'];
 		}
-                //me aseguro de colocar en estado B 
+                //me aseguro de colocar en estado B todas las designaciones que tienen baja
                 $sql2=" update designacion a set estado ='B' "
                         . " where estado<>'B' and uni_acad=".quote($filtro['uni_acad'])
                      ." and exists (select * from novedad b
@@ -864,11 +854,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $ar = toba::db('designa')->consultar($sql);
                 
                 $datos = array();
-                //recupero el anio del periodo actual
-                $sqlanio="select anio from mocovi_periodo_presupuestario where actual ";
-                $anio=toba::db('designa')->consultar($sqlanio);
                 
-                $band=$this->en_rojo($anio[0]['anio']);
+                $band=$this->en_rojo($filtro['anio']);
                 
                 if($band){//si gaste mas de lo que tengo
                     toba::notificacion()->agregar('USTED ESTA EN ROJO','error'); 
@@ -905,8 +892,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 	}
          function get_listado_norma($filtro=array())
 	{
-                $udia=$this->ultimo_dia_periodo();
-                $pdia=$this->primer_dia_periodo();
+                $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);
+                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
 		$where = "";
                 
                 //que sea una designacion vigente, dentro del periodo actual
@@ -1033,13 +1020,10 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         
         function get_listado_presup($filtro=array())
 	{
-                //anio del periodo actual
-                $sql="select anio from mocovi_periodo_presupuestario where actual";
-                $resul=toba::db('designa')->consultar($sql);
-                $anio= $resul[0]['anio'];
-
-                $udia=$this->ultimo_dia_periodo();//ultimo dia del periodo actual
-                $pdia=$this->primer_dia_periodo();
+                $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+                $anio=$filtro['anio'];
+                
 		$where = "";
                 
                 //que sea una designacion o reserva vigente, dentro del periodo actual
@@ -1374,8 +1358,12 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 	}
          function get_listado_reservas($filtro=array())
 	{
-            $udia=$this->ultimo_dia_periodo();
-            $pdia=$this->primer_dia_periodo();
+            if (isset($filtro['anio'])) {
+              	$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+		}     
+            //$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);//periodo actual
+            //$pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
             $where=" AND desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)";
             //trae las reservas que caen dentro del periodo
             $sql="select distinct t_d.id_designacion,t_r.id_reserva,t_r.descripcion as reserva,desde,hasta,cat_mapuche,cat_estat,dedic,carac,uni_acad,
@@ -1507,8 +1495,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         function get_renovacion($filtro=array())
 	{
                 
-                $udia=$this->ultimo_dia_periodo();
-                $pdia=$this->primer_dia_periodo();
+                $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);
+                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
 		$where = "";
                 //trae todos los cargos interinos de esa UA
                 //que no tengan 

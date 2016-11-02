@@ -31,7 +31,7 @@ class ci_expediente_tkd extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
+		if (isset($this->s__where)) {
                     $cuadro->set_datos($this->dep('datos')->tabla('impresion_540')->get_listado_filtro($this->s__where));
 		} 
 	}

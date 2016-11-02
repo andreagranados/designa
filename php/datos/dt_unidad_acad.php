@@ -25,7 +25,8 @@ class dt_unidad_acad extends toba_datos_tabla
              $resul=toba::db('designa')->consultar($sql);
              return $resul;
         }
-        //credito docente del periodo actual para una UA
+        //credito docente del periodo actual para una UA alguien usa esta funcion?
+        //sino la usan sacar?
         function credito ($ua){
              $sql="select sum(b.credito) as cred "
                      . " from mocovi_credito b, mocovi_periodo_presupuestario c"
@@ -46,6 +47,7 @@ class dt_unidad_acad extends toba_datos_tabla
             
         }
         //credito docente x año y UA
+        //sino la usan sacar
         function credito_x_anio ($ua,$anio){
              $sql="select sum(b.credito) as cred "
                      . "from  mocovi_credito b, mocovi_periodo_presupuestario c"

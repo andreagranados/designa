@@ -237,7 +237,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'descripcion', --identificador
 	'ef_editable', --elemento_formulario
 	'descripcion', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'1', --orden
 	'Descripción de la Reserva', --etiqueta
@@ -477,7 +477,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cat_mapuche', --identificador
 	'ef_popup', --elemento_formulario
 	'cat_mapuche', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'5', --orden
 	'Categoría SIU', --etiqueta
@@ -819,7 +819,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'get_departamentos', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
-	NULL, --carga_dt
+	'3228', --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente

@@ -12,12 +12,13 @@ class dt_departamento extends toba_datos_tabla
 		$where ="";
                             
                 if(isset($id_ua)){
-                    $where=" WHERE idunidad_academica='".$id_ua."'";
+                    $where=" and idunidad_academica='".$id_ua."'";
                     
                 }
                 $sql = "SELECT distinct t_d.iddepto, t_d.descripcion "
-                        . " FROM departamento t_d"
-                        . " LEFT OUTER JOIN unidad_acad t_u ON (t_u.sigla=t_d.idunidad_academica)"
+                        . " FROM departamento t_d,"
+                        . " unidad_acad t_u "
+                        . " WHERE t_u.sigla=t_d.idunidad_academica"
                         . "  $where"
                         . " order by descripcion";
                 //obtengo el perfil de datos del usuario logueado
@@ -27,6 +28,7 @@ class dt_departamento extends toba_datos_tabla
                 
                 if((trim($resul[0]['sigla'])<>'CRUB') && (trim($resul[0]['sigla'])<>'FACA') && (trim($resul[0]['sigla'])<>'ASMA') && (trim($resul[0]['sigla'])<>'CUZA')&& (trim($resul[0]['sigla'])<>'FAAS')){
                     $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil para que solo aparezcan los departamentos de su facultad
+                
                 }
                                 
 		$resul = toba::db('designa')->consultar($sql);

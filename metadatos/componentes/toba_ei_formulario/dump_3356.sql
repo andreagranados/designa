@@ -323,9 +323,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'Carácter', --etiqueta
 	NULL, --etiqueta_estilo
 	'R - Regular <br>
- I - Interino <br>
-O - Extraordinario <br>
-S - Suplente', --descripcion
+ I - Interino /Extraordinario/Suplente<br>', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -343,7 +341,7 @@ S - Suplente', --descripcion
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'R,I,O,S', --carga_lista
+	'R,I', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	NULL, --carga_maestros
@@ -416,7 +414,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --estado_defecto
 	'0', --solo_lectura
 	'0', --solo_lectura_modificacion
-	'get_anios', --carga_metodo
+	'get_anio_ayp', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
 	'3359', --carga_dt

@@ -256,17 +256,17 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	NULL, --eventos
 	NULL, --subclase
 	NULL, --subclase_archivo
-	'<table>
+	'<table height="156" width="339">
 	<tbody>
 		<tr>
 			<td colspan="2">
-				<strong>Agente</strong>: [dep id=form_docente]</td>
+				<p><strong>Agente</strong>: [dep id=form_docente]</p></td>
 		</tr>
 		<tr>
 			<td>
 				<p><strong>Cargo Origen</strong></p><p>[dep id=form_desig]</p></td>
 			<td>
-				<p><strong>Cargo Nuevo</strong></p><p>[dep id=form_desig_nueva]</p></td>
+				<p>&nbsp;</p><p><strong>Cargo Nuevo</strong></p><p>[dep id=form_desig_nueva]</p></td>
 		</tr>
 	</tbody>
 </table>

@@ -5,12 +5,6 @@ class ci_informe_estado_actual extends toba_ci
         protected $s__desig;
 
 
-        function credito ($ua){
-            return $this->dep('datos')->tabla('unidad_acad')->credito($ua);
-        }
-        function credito_x_anio($ua,$anio){
-            return $this->dep('datos')->tabla('unidad_acad')->credito_x_anio($ua,$anio);
-        }
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtro(toba_ei_formulario $filtro)

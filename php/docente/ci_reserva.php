@@ -5,12 +5,35 @@ class ci_reserva extends designa_ci
     protected $s__desig;
     protected $s__volver;
     protected $s__where;
+    protected $s__datos_filtro;
+    
+    //---- Filtro -----------------------------------------------------------------------
+
+	function conf__filtro(toba_ei_formulario $filtro)
+	{
+		if (isset($this->s__datos_filtro)) {
+			$filtro->set_datos($this->s__datos_filtro);
+		}
+	}
+
+	function evt__filtro__filtrar($datos)
+	{
+		$this->s__datos_filtro = $datos;
+	}
+
+	function evt__filtro__cancelar()
+	{
+		unset($this->s__datos_filtro);
+              
+	}
     
 //---- cuadro_reserva -----------------------------------------------------------------------
 
 	function conf__cuadro_reserva(toba_ei_cuadro $cuadro)
 	{
-            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('designacion')->get_listado_reservas());    
+            if (isset($this->s__datos_filtro)) {
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('designacion')->get_listado_reservas($this->s__datos_filtro));    
+            }
 	}
         
         function evt__cuadro_reserva__seleccion($datos)
@@ -41,11 +64,7 @@ class ci_reserva extends designa_ci
 	{
            //esto por el boton atajo del listado de estado actual
             if($this->controlador()->dep('datos')->tabla('reserva')->esta_cargada()){
-                $this->dep('form_reserva')->ef('desde')->set_obligatorio(true);
-                $this->dep('form_reserva')->ef('descripcion')->set_obligatorio(true);
-                $this->dep('form_reserva')->ef('cat_mapuche')->set_obligatorio(true);  
-                $this->dep('form_reserva')->ef('carac')->set_obligatorio(true); 
-                $this->dep('form_reserva')->ef('id_imp')->set_obligatorio(true); 
+
                 $form->set_datos($this->controlador()->dep('datos')->tabla('reserva')->get());
             }
                 
@@ -74,9 +93,7 @@ class ci_reserva extends designa_ci
             return $cat;
             
         }
-        function get_departamentos(){
-            return $this->controlador()->dep('datos')->tabla('departamento')->get_departamentos();   
-        } 
+       
           //este metodo permite mostrar en el popup el codigo de la categoria
         //recibe como argumento el id 
         function get_categoria($id){
@@ -242,6 +259,7 @@ class ci_reserva extends designa_ci
 	function evt__form_reserva__cancelar()
 	{
             $this->resetear();
+            $this->set_pantalla('pant_reservas');
 	}
         function resetear()
 	{
@@ -327,20 +345,23 @@ class ci_reserva extends designa_ci
 	function evt__volver()
 	{
             $this->controlador()->resetear();
-            if($this->s__volver==1){
-                toba::vinculador()->navegar_a('designa',3658);
-            } 
+            
         }
         function evt__atras()
 	{
-            $this->set_pantalla('pant_reservas');
+            if($this->s__volver==1){//viene desde informe actual
+                toba::vinculador()->navegar_a('designa',3658);
+            }else{
+                $this->set_pantalla('pant_reservas');
+            }
         }
         
         
         function conf()
         {
             $id = toba::memoria()->get_parametro('id_designacion');
-            if(isset($id)){
+            if(isset($id)){//viene desde informe de estado actual
+                $this->set_pantalla('pant_edicion');
                 $this->s__volver=1;
             }else{
                 $this->s__volver=0;
