@@ -123,7 +123,7 @@ INSERT INTO apex_objeto_mt_me (objeto_mt_me_proyecto, objeto_mt_me, ev_procesar_
 	NULL, --ev_procesar_etiq
 	NULL, --ev_cancelar_etiq
 	'900px', --ancho
-	'300px', --alto
+	'400px', --alto
 	NULL, --posicion_botonera
 	'tab_v', --tipo_navegacion
 	'0', --botonera_barra_item
@@ -187,6 +187,18 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3265', --objeto_consumidor
 	'3319', --objeto_proveedor
 	'cuadro_materias', --identificador
+	NULL, --parametros_a
+	NULL, --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	NULL  --orden
+);
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
+	'2720', --dep_id
+	'3265', --objeto_consumidor
+	'3877', --objeto_proveedor
+	'cuadro_norma', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
 	NULL, --parametros_c
@@ -307,6 +319,18 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3265', --objeto_consumidor
 	'3347', --objeto_proveedor
 	'form_norma', --identificador
+	NULL, --parametros_a
+	NULL, --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	NULL  --orden
+);
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
+	'2722', --dep_id
+	'3265', --objeto_consumidor
+	'3879', --objeto_proveedor
+	'form_norma_alta', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
 	NULL, --parametros_c
@@ -535,15 +559,22 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'designa', --proyecto
 	'1478', --pantalla
 	'3265', --objeto_ci
-	'1', --orden
+	'0', --orden
 	'2134'  --dep_id
 );
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
 	'designa', --proyecto
 	'1478', --pantalla
 	'3265', --objeto_ci
+	'1', --orden
+	'2720'  --dep_id
+);
+INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
+	'designa', --proyecto
+	'1478', --pantalla
+	'3265', --objeto_ci
 	'2', --orden
-	'2246'  --dep_id
+	'2722'  --dep_id
 );
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
 	'designa', --proyecto
@@ -618,6 +649,12 @@ INSERT INTO apex_eventos_pantalla (pantalla, objeto_ci, evento_id, proyecto) VAL
 	'1474', --pantalla
 	'3265', --objeto_ci
 	'2382', --evento_id
+	'designa'  --proyecto
+);
+INSERT INTO apex_eventos_pantalla (pantalla, objeto_ci, evento_id, proyecto) VALUES (
+	'1478', --pantalla
+	'3265', --objeto_ci
+	'2334', --evento_id
 	'designa'  --proyecto
 );
 INSERT INTO apex_eventos_pantalla (pantalla, objeto_ci, evento_id, proyecto) VALUES (

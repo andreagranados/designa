@@ -109,7 +109,13 @@ class dt_designacion extends toba_datos_tabla
     function get_lic_maternidad($filtro){
         $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
         $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
-        $datos_lic = consultas_mapuche::get_lic_maternidad($filtro['uni_acad'],$udia,$pdia);
+        if($filtro['uni_acad']=='ESCM'){
+            $ua='IBMP';
+        }else{
+            $ua=$filtro['uni_acad'];
+        }
+        
+        $datos_lic = consultas_mapuche::get_lic_maternidad($ua,$udia,$pdia);
         $sql=" CREATE LOCAL TEMP TABLE auxi
             (   nro_legaj integer,
             nro_cargo  integer,
@@ -330,13 +336,17 @@ class dt_designacion extends toba_datos_tabla
             $resul=toba::db('designa')->consultar($sql);
             return $resul[0]['tipo_desig'];
         }
-        function modifica_norma($id_des,$id_norma,$p){
-            switch ($p) {
-                case 1: $sql="update designacion set id_norma=".$id_norma." where id_designacion=".$id_des;              break;
-                case 2: $sql="update designacion set id_norma_cs=".$id_norma." where id_designacion=".$id_des;break;
-                
+        function modifica_norma($id_des,$id_norma){
+            $sql="select id_norma,tipo_desig from designacion where id_designacion=$id_des";
+            $res=toba::db('designa')->consultar($sql);
+            if($res[0]['tipo_desig']==1){
+                if($res[0]['id_norma'] != null){//si la designacion tiene norma entonces la guarda en norma_desig
+                    $sql="INSERT INTO norma_desig(id_norma, id_designacion) VALUES(".$res[0]['id_norma'].",".$id_des.")";
+                    toba::db('designa')->consultar($sql);
+                }
             }
-           
+            
+            $sql="update designacion set id_norma=".$id_norma." where id_designacion=".$id_des;
             toba::db('designa')->consultar($sql);
         }
 // Primer dia del periodo actual**/ si se llama de ningun lado sacar
@@ -892,15 +902,15 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 	}
          function get_listado_norma($filtro=array())
 	{
-                $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);
-                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
+                $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);;
+                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
 		$where = "";
                 
                 //que sea una designacion vigente, dentro del periodo actual
 		$where=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)"
                         . " AND nro_540 is not null"
-                        . " AND check_presup='NO'"//es decir check presupuesto = 0
-                        . " AND id_norma is null";//solo traigo las que no tienen una norma legal
+                        . " AND check_presup='NO'";//es decir check presupuesto = 0
+                        
                
                 if (isset($filtro['uni_acad'])) {
 			$where.= " AND trim(uni_acad) = trim(".quote($filtro['uni_acad']).")";

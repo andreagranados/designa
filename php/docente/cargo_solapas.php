@@ -3,6 +3,7 @@ class cargo_solapas extends toba_ci
 {
     protected $s__alta_impu;
     protected $s__alta_mate;
+    protected $s__alta_norma;
     protected $s__pantalla;
     public $s__nombre_archivo;
     protected $s__alta_nov;
@@ -351,7 +352,10 @@ class cargo_solapas extends toba_ci
         {
             $this->s__pantalla = "pant_novedad_b";
         }
-        
+        function conf__pant_norma()
+        {
+            $this->s__pantalla = "pant_norma";
+        }
         //-----------------------------------------------------------------------------------
 	//---- cuadro_imputacion ------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -486,21 +490,19 @@ class cargo_solapas extends toba_ci
                 //si estoy en la pantalla pant_imputacion
                 case 'pant_imputacion':$this->controlador()->dep('datos')->tabla('imputacion')->resetear();//para deseleccionar la imputacion que esta cargada
                                        $this->s__alta_impu = 1; // y presiona el boton agregar
-
-
-                    break;
+                                       break;
                 //si estoy en la pantalla pant_materias y presiono el boton alta
                 case 'pant_materias':$this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();//para deseleccionar la asignacion_materia que esta cargada
                                      $this->s__alta_mate = 1;
-                               break;
+                                     break;
                 case 'pant_novedad':$this->controlador()->dep('datos')->tabla('novedad')->resetear();//para deseleccionar la novedad que esta cargada
                                     $this->s__alta_nov = 1;
-                               break;
+                                    break;
                 case 'pant_novedad_b':$this->controlador()->dep('datos')->tabla('novedad_baja')->resetear();//para deseleccionar la novedad que esta cargada
-                                    $this->s__alta_novb = 1;
-                               break;           
-                
-                
+                                    $this->s__alta_novb = 1;                                    
+                                    break;           
+                case 'pant_norma': $this->s__alta_norma = 1; 
+                                    break;   
                 default:
                     break;
             }
@@ -628,28 +630,7 @@ class cargo_solapas extends toba_ci
              $this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();
         }
 
-	//-----------------------------------------------------------------------------------
-	//---- JAVASCRIPT -------------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function extender_objeto_js()
-	{
-		//	
-		//            echo "{$this->objeto_js}.evt__validar_datos() 
-		//            {
-		//                var confirma = true;
-		//                if (parametro_venenoso) {
-		//                       confirma = confirm('Tas seguro que queres ejecutarme en Güindous Messenyer?');
-		//                }
-		//                return confirma;
-		//             }
-		//             //---- Eventos ---------------------------------------------
-		
-		
-	}
-
-
-
+	
 	//-----------------------------------------------------------------------------------
 	//---- form_cargo_gestion -----------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -738,50 +719,122 @@ class cargo_solapas extends toba_ci
                 }
         }
 	//se muestra como boton Guardar. Si no existe la crea y si ya existe la modifica
-        function conf__form_normacs(toba_ei_formulario $form){
-            if ($this->controlador()->dep('datos')->tabla('normacs')->esta_cargada()) {
-                $datos = $this->controlador()->dep('datos')->tabla('normacs')->get();
-                $d=$this->controlador()->dep('datos')->tabla('norma')->get_detalle_norma($datos['id_norma']);
-                $datos['tipo_norma']=$d[0]['nombre_tipo'];
-                $datos['emite_norma']=$d[0]['quien_emite_norma'];
-                //Retorna un 'file pointer' apuntando al campo binario o blob de la tabla.
-                $pdf = $this->controlador()->dep('datos')->tabla('normacs')->get_blob('pdf');
-                if (isset($pdf)) {
-                    $temp_nombre = md5(uniqid(time())).'.pdf';
-                    $s__temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);
-                    $temp_imagen = fopen($s__temp_archivo['path'], 'w');
-                    stream_copy_to_stream($pdf, $temp_imagen);//copia $pdf a $temp_imagen
-                    fclose($temp_imagen);
-                    $datos['imagen_vista_previa'] = "<a target='_blank' href='{$s__temp_archivo['url']}' >norma</a>";
-                }
-                return $datos;
-            }
-        }
+//        function conf__form_normacs(toba_ei_formulario $form){
+//            if ($this->controlador()->dep('datos')->tabla('normacs')->esta_cargada()) {
+//                $datos = $this->controlador()->dep('datos')->tabla('normacs')->get();
+//                $d=$this->controlador()->dep('datos')->tabla('norma')->get_detalle_norma($datos['id_norma']);
+//                $datos['tipo_norma']=$d[0]['nombre_tipo'];
+//                $datos['emite_norma']=$d[0]['quien_emite_norma'];
+//                //Retorna un 'file pointer' apuntando al campo binario o blob de la tabla.
+//                $pdf = $this->controlador()->dep('datos')->tabla('normacs')->get_blob('pdf');
+//                if (isset($pdf)) {
+//                    $temp_nombre = md5(uniqid(time())).'.pdf';
+//                    $s__temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);
+//                    $temp_imagen = fopen($s__temp_archivo['path'], 'w');
+//                    stream_copy_to_stream($pdf, $temp_imagen);//copia $pdf a $temp_imagen
+//                    fclose($temp_imagen);
+//                    $datos['imagen_vista_previa'] = "<a target='_blank' href='{$s__temp_archivo['url']}' >norma</a>";
+//                }
+//                return $datos;
+//            }
+//        }
 
-        function evt__form_normacs__modificacion($datos){
+//        function evt__form_normacs__modificacion($datos){
+//            
+//            if($this->controlador()->dep('datos')->tabla('normacs')->esta_cargada()){//es porque la designacion tiene norma
+//                   if($datos['norma']==null){
+//                       toba::notificacion()->agregar('La designacion ya tiene norma, para cambiarla seleccione una nueva desde Seleccionar Norma','info');
+//                   }else{
+//                       $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+//                       $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$datos['norma'],2);
+//                       $mostrar['id_norma']=$datos['norma'];
+//                       $this->controlador()->dep('datos')->tabla('normacs')->resetear();
+//                       $this->controlador()->dep('datos')->tabla('normacs')->cargar($mostrar);
+//                   } 
+//                }else{//la designacion no tiene norma
+//                    if($datos['norma']==null){
+//                       toba::notificacion()->agregar('Debe seleccionar una norma desde..','info');
+//                   }else{//si el popup tiene datos entonces es porque ha seleccionado una norma
+//                       
+//                        $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+//                        $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$datos['norma'],2);                       
+//                        $mostrar['id_norma']=$datos['norma'];
+//                        $this->controlador()->dep('datos')->tabla('normacs')->resetear();
+//                        $this->controlador()->dep('datos')->tabla('normacs')->cargar($mostrar);
+//                   }
+//                }
+//        }
+        //-----------------------------------------------------------------------------------
+	//---- cuadro_normas --------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__cuadro_norma(toba_ei_cuadro $cuadro)
+	{
+            //trae la designacion que fue cargada
+            if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
+                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();     
+                $datos=$this->controlador()->dep('datos')->tabla('norma_desig')->get_listado_normas($desig['id_designacion']);          
+                $cuadro->set_datos($datos);
             
-            if($this->controlador()->dep('datos')->tabla('normacs')->esta_cargada()){//es porque la designacion tiene norma
-                   if($datos['norma']==null){
-                       toba::notificacion()->agregar('La designacion ya tiene norma, para cambiarla seleccione una nueva desde Seleccionar Norma','info');
-                   }else{
-                       $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                       $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$datos['norma'],2);
-                       $mostrar['id_norma']=$datos['norma'];
-                       $this->controlador()->dep('datos')->tabla('normacs')->resetear();
-                       $this->controlador()->dep('datos')->tabla('normacs')->cargar($mostrar);
-                   } 
-                }else{//la designacion no tiene norma
-                    if($datos['norma']==null){
-                       toba::notificacion()->agregar('Debe seleccionar una norma desde..','info');
-                   }else{//si el popup tiene datos entonces es porque ha seleccionado una norma
-                       
-                        $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                        $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$datos['norma'],2);                       
-                        $mostrar['id_norma']=$datos['norma'];
-                        $this->controlador()->dep('datos')->tabla('normacs')->resetear();
-                        $this->controlador()->dep('datos')->tabla('normacs')->cargar($mostrar);
-                   }
+            }
+	}
+        function evt__cuadro_norma__seleccion($datos)
+	{
+           $this->s__alta_norma=1;
+           $this->controlador()->dep('datos')->tabla('norma_desig')->cargar($datos);
+	}
+        //metodo definido en el popup y funciona junto con $form->set_datos()
+        function get_xxx(){
+            if ($this->controlador()->dep('datos')->tabla('norma_desig')->esta_cargada()){
+                $datos=$this->controlador()->dep('datos')->tabla('norma_desig')->get();
+                $datos_norma=$this->controlador()->dep('datos')->tabla('norma')->get_detalle_norma($datos['id_norma']);
+                $salida=$datos_norma[0]['tipo_norma'].'-'.$datos_norma[0]['nro_norma'];
+                return $salida;
+            }
+            
+        }
+        //-----------------------------------------------------------------------------------
+	//---- form_norma_alta --------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+        function conf__form_norma_alta(toba_ei_formulario $form)
+	{
+                     
+            if($this->s__alta_norma==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
+                $this->dep('form_norma_alta')->descolapsar();
+                //$form->ef('id_materia')->set_obligatorio('true');
+                //$form->ef('rol')->set_obligatorio('true');
+                //$form->ef('modulo')->set_obligatorio('true');
+                //$form->ef('anio')->set_obligatorio('true');
+                //$form->ef('id_periodo')->set_obligatorio('true');
+            } else{$this->dep('form_norma_alta')->colapsar();
+              }
+             if ($this->controlador()->dep('datos')->tabla('norma_desig')->esta_cargada()){
+                $datos=$this->controlador()->dep('datos')->tabla('norma_desig')->get();
+                $form->set_datos($datos);
+            }
+
+        }
+        function evt__form_norma_alta__alta($datos){
+             if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
+                  $desig=$this->controlador()->dep('datos')->tabla('designacion')->get(); 
+                  $norma_nueva['id_designacion']=$desig['id_designacion'];
+                  $norma_nueva['id_norma']=$datos['id_norma'];
+                  //agrega la nueva norma asociada a la designacion
+                  $this->controlador()->dep('datos')->tabla('norma_desig')->set($norma_nueva);
+                  $this->controlador()->dep('datos')->tabla('norma_desig')->sincronizar();
+                  $this->controlador()->dep('datos')->tabla('norma_desig')->resetear();
+                  $this->s__alta_norma=0;//descolapsa el form
                 }
+        }
+        function evt__form_norma_alta__baja($datos){
+            $this->controlador()->dep('datos')->tabla('norma_desig')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('norma_desig')->resetear();
+            $this->s__alta_norma=0;//descolapsa el formulario 
+        }
+       
+        function evt__form_norma_alta__cancelar($datos){
+            $this->controlador()->dep('datos')->tabla('norma_desig')->resetear();//para deseleccionar
+            $this->s__alta_norma=0;
         }
 	function evt__volver()
 	{
