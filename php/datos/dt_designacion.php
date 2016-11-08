@@ -109,10 +109,11 @@ class dt_designacion extends toba_datos_tabla
     function get_lic_maternidad($filtro){
         $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
         $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
-        if($filtro['uni_acad']=='ESCM'){
-            $ua='IBMP';
-        }else{
+        if(trim($filtro['uni_acad'])!='ESCM'){
             $ua=$filtro['uni_acad'];
+        }else{
+            $ua='IBMP';
+            
         }
         
         $datos_lic = consultas_mapuche::get_lic_maternidad($ua,$udia,$pdia);
