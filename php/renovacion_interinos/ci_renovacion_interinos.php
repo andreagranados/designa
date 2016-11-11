@@ -158,16 +158,23 @@ class ci_renovacion_interinos extends toba_ci
                             //busco la imputacion de la designacion de origen
                             $impu_orig=$this->dep('datos')->tabla('imputacion')->imputaciones($desig_origen['id_designacion']);
                             if(count($impu_orig)>0){//si la desig de origen tiene imputacion
-                                $impu['id_programa']=$impu_orig[0]['id_programa'];
+                                foreach ($impu_orig as $key => $value) {
+                                    $impu['id_programa']=$impu_orig[$key]['id_programa'];    
+                                    $impu['porc']=$impu_orig[$key]['porc'];
+                                    $impu['id_designacion']=$des_nueva['id_designacion'];
+                                    $this->dep('datos')->tabla('imputacion')->set($impu);
+                                    $this->dep('datos')->tabla('imputacion')->sincronizar();
+                                }
+                                
                             }else{//sino lo imputo al por defecto
                                 $prog=$this->dep('datos')->tabla('mocovi_programa')->programa_defecto();
                                 $impu['id_programa']=$prog;
+                                $impu['porc']=100;
+                                $impu['id_designacion']=$des_nueva['id_designacion'];
+                                $this->dep('datos')->tabla('imputacion')->set($impu);
+                                $this->dep('datos')->tabla('imputacion')->sincronizar();
                             }
-                                                        
-                            $impu['porc']=100;
-                            $impu['id_designacion']=$des_nueva['id_designacion'];
-                            $this->dep('datos')->tabla('imputacion')->set($impu);
-                            $this->dep('datos')->tabla('imputacion')->sincronizar();
+                        
                             $dat_vin['desig']=$des_nueva['id_designacion'];
                             $dat_vin['vinc']=$desig_origen['id_designacion'];
                             $this->dep('datos')->tabla('vinculo')->set($dat_vin);
