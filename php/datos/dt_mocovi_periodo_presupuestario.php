@@ -171,7 +171,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
           
           if(count($resul>0)){//el usuario esta asociado a un perfil de datos
             $ua=$resul[0]['sigla'];
-            
+           
             //1 periodo actual
             //2 periodo presupuestando
             //obtengo inicio y fin del periodo actual o presupuestando
@@ -347,7 +347,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                 return true;
              }
             }
-          }else{//el usuario no esta asociado a un perfil de datos
+          }else{//el usuario no esta asociado a un perfil de datos              
               return false;
           }
         }

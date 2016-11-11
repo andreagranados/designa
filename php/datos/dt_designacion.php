@@ -12,7 +12,8 @@ class dt_designacion extends toba_datos_tabla
                 . " LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente)"
                 . " LEFT OUTER JOIN novedad t_n ON (t_d.id_designacion=t_n.id_designacion and t_n.tipo_nov in (2,5) )"//licencia sin goce o cese
                 . " where t_d.tipo_desig=1)a, unidad_acad b"
-                . " where a.uni_acad=b.sigla";
+                . " where a.uni_acad=b.sigla"
+                . " order by descripcion";
         
         $sql = toba::perfil_de_datos()->filtrar($sql);
               
@@ -1702,7 +1703,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
                 $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
 		}  
-                
+             
             $where.=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)";    
             $where2="";
             $where3="";
@@ -1787,7 +1788,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 //                                ) 
 //                            ";
             $sql=$this->armar_consulta($pdia, $udia, $filtro['anio']);           
-            
+           
 //            $con="select * into temp auxi from ("
 //                    ."select uni_acad,id_programa,nombre as programa,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end )as monto  "
 //                    . " from ("
@@ -1810,8 +1811,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     .")a group by uni_acad,id_programa,programa"
                     . ")b, unidad_acad c where b.uni_acad=c.sigla";
            
-            //$con = toba::perfil_de_datos()->filtrar($con);  daba error!!
-             
             toba::db('designa')->consultar($con);
             
             //obtengo el credito de cada programa para cada facultad
@@ -1826,6 +1825,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             $cp = toba::perfil_de_datos()->filtrar($cp); 
             $cp="select * into temp auxi2 from (".$cp.")b"; //en auxi2 tengo todos los creditos por programa    
             toba::db('designa')->consultar($cp);
+            
             //solo me interesan los programas con credito, si no tiene credito no aparece. 
             //Todas las designaciones que esten asociadas a programas sin credito se van a perder con el right
             //al hacer RIGHT JOIN  toma todos los registros de la tabla derecha tengan o no correspondencia con la de la izquierda
@@ -1833,9 +1833,19 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             $con="select b.id_unidad as uni_acad,b.id_programa,b.programa,b.credito,case when a.monto is null then 0 else trunc(a.monto,2) end as monto,case when a.monto is null then trunc((b.credito),2) else trunc((b.credito-a.monto),2) end as saldo "
                     . " into temp auxi3"
                     . " from auxi a RIGHT JOIN auxi2 b ON (a.uni_acad=b.id_unidad and a.id_programa=b.id_programa)";
+//            $con="select case when b.id_unidad is not null then b.id_unidad else a.uni_acad end as uni_acad,"
+//                    . " case when b.id_programa is not null then b.id_programa else a.id_programa end as id_programa,"
+//                    . " case when b.programa is not null then b.programa else a.programa end as programa,"
+//                    . "case when b.credito is null then 0 else b.credito end as credito,"
+//                    . "case when a.monto is null then 0 else trunc(a.monto,2) end as monto,"
+//                    //. "case when a.monto is null then trunc((b.credito),2) else trunc((b.credito-a.monto),2) end as saldo "
+//                    ." case when a.monto is not null and b.credito is not null then trunc((b.credito-a.monto),2) else case when a.monto is null and b.credito is not null then b.credito else case when  a.monto is not null and b.credito is null then a.monto*(-1) else 0 end  end end as saldo "
+//                    . " into temp auxi3"
+//                    . " from auxi a FULL OUTER JOIN auxi2 b ON (a.uni_acad=b.id_unidad and a.id_programa=b.id_programa)";
+                    
             toba::db('designa')->consultar($con);
             $con="select * from auxi3";
-            toba::db('designa')->consultar($con);
+            $res=toba::db('designa')->consultar($con);
             
             //-------tomo solo las reservas. dias_lic=0 porque las reservas nunca van a tener dias de licencia
             $sqlr="SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta, t_d.uni_acad,m_c.costo_diario, t_t.porc,t_t.id_programa,m_p.nombre,0 as dias_lic,
@@ -1867,8 +1877,10 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     . " from auxir a RIGHT JOIN auxi3 b ON (a.uni_acad=b.uni_acad and a.id_programa=b.id_programa)";
             toba::db('designa')->consultar($conf);
             $conf="select * from auxif $where3";
-            //----
+           
+            //---
             return toba::db('designa')->consultar($conf);
+            
         }
  
 //        function get_totales($filtro=array())

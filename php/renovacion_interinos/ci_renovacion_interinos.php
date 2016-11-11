@@ -155,8 +155,15 @@ class ci_renovacion_interinos extends toba_ci
                             $this->dep('datos')->tabla('nueva_desig')->sincronizar();
                             $des_nueva=$this->dep('datos')->tabla('nueva_desig')->get();
                             //ingresa la imputacion presupuestaria de la designacion nueva
-                            $prog=$this->dep('datos')->tabla('mocovi_programa')->programa_defecto();
-                            $impu['id_programa']=$prog;
+                            //busco la imputacion de la designacion de origen
+                            $impu_orig=$this->dep('datos')->tabla('imputacion')->imputaciones($desig_origen['id_designacion']);
+                            if(count($impu_orig)>0){//si la desig de origen tiene imputacion
+                                $impu['id_programa']=$impu_orig[0]['id_programa'];
+                            }else{//sino lo imputo al por defecto
+                                $prog=$this->dep('datos')->tabla('mocovi_programa')->programa_defecto();
+                                $impu['id_programa']=$prog;
+                            }
+                                                        
                             $impu['porc']=100;
                             $impu['id_designacion']=$des_nueva['id_designacion'];
                             $this->dep('datos')->tabla('imputacion')->set($impu);
