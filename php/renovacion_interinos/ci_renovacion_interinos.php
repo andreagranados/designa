@@ -164,6 +164,7 @@ class ci_renovacion_interinos extends toba_ci
                                     $impu['id_designacion']=$des_nueva['id_designacion'];
                                     $this->dep('datos')->tabla('imputacion')->set($impu);
                                     $this->dep('datos')->tabla('imputacion')->sincronizar();
+                                    $this->dep('datos')->tabla('imputacion')->resetear();
                                 }
                                 
                             }else{//sino lo imputo al por defecto

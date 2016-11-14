@@ -157,14 +157,22 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
   
         }
         //calcula la cantidad de dias transcurridos entre 2 fechas
-        function dias_transcurridos($fecha_i,$fecha_f){
+        function dias_transcurridos($fecha_i,$fecha_f){//strtotime convierte una cadena en formato de fecha
+            
+            //el strtotime no funciona con dd/mm/YYYY
+            $fecha_i = str_replace('/', '-', $fecha_i);
+            $fecha_i=date('Y-m-d', strtotime($fecha_i));
+            $fecha_f = str_replace('/', '-', $fecha_f);
+            $fecha_f=date('Y-m-d', strtotime($fecha_f));
+            //diferencia en segundos
             $dias=(strtotime($fecha_i)-strtotime($fecha_f))/86400;//Esta función espera que se proporcione una cadena que contenga un formato de fecha en Inglés US e intentará convertir ese formato a una fecha Unix
+            /////convierto segundos en días /(60*60*24)
+            //obtengo el valor absoulto de los días (quito el posible signo negativo) 
             $dias=abs($dias);
             $dias=floor($dias);
             return $dias;
         }
         function alcanza_credito($desde,$hasta,$cat,$per){
-            
           $sql_ua = "select sigla,descripcion from unidad_acad ";
           $sql_ua = toba::perfil_de_datos()->filtrar($sql_ua);
           $resul=toba::db('designa')->consultar($sql_ua);
