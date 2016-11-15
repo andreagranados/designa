@@ -112,7 +112,11 @@ class ci_reserva extends designa_ci
         //la ingresa en estado A (alta)
 	function evt__form_reserva__alta($datos)
 	{
-          
+        if($datos['hasta'] !=null && $datos['hasta']<$datos['desde']){//verifica que la fecha hasta>desde
+           $mensaje='LA FECHA HASTA DEBE SER MAYOR A LA FECHA DESDE';
+           toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+           
+        }else{
           $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
           if ($vale){
              //revisar que haya credito antes de cargar
@@ -160,6 +164,7 @@ class ci_reserva extends designa_ci
               toba::notificacion()->agregar(utf8_decode($mensaje), "error");
           } 
           $this->set_pantalla('pant_reservas');
+         }
 	}
         //modifico la reserva
         //modifica el estado a R (rectificada) cuando tenia nro de 540 

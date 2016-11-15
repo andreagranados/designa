@@ -141,14 +141,11 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                 if($desde<=$actual[0]['fecha_fin'] && ($hasta>=$actual[0]['fecha_inicio'] || $hasta == null)){//si pertenece al periodo actual
                     $salida = true;
                     
-                }else{//sino pertenece al periodo actual pregunto si pertenece a alguno de los presupuestando
-                    $i=0;
-                    $long=count($pres);
-                    while (!$salida && $i<=$long-1) {
-                        if($desde<=$pres[$i]['fecha_fin'] && ($hasta>=$pres[$i]['fecha_inicio'] || $hasta == null)){
+                }else{//sino pertenece al periodo actual pregunto si pertenece al periodo presupuestando
+                    if(count($pres)>0){
+                        if($desde<=$pres[0]['fecha_fin'] && ($hasta>=$pres[0]['fecha_inicio'] || $hasta == null)){
                             $salida=true;
                         }
-                        $i++;
                     }
                 } 
             }
