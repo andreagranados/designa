@@ -664,6 +664,10 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         function en_rojo($anio){
                $ar=array();
                $ar['anio']=$anio;
+               $sql="select sigla,descripcion from unidad_acad ";
+               $sql = toba::perfil_de_datos()->filtrar($sql);
+               $resul=toba::db('designa')->consultar($sql);
+               $ar['uni_acad']=$resul[0]['sigla'];
                $res=$this->get_totales($ar);//monto1+monto2=gastado
                $band=false;
                $i=0;
