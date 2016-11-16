@@ -1,6 +1,51 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
+    function anexo1($filtro=array()){
+        $where='';
+        if (isset($filtro['id_departamento'])) {
+		$where.= " WHERE id_departamento = ".$filtro['id_departamento']['valor'];
+		}
+        if (isset($filtro['id_area'])) {
+		$where.= " AND id_area = ".$filtro['id_area']['valor'];
+	}
+         if (isset($filtro['id_orientacion'])) {
+		$where.= " AND id_orientacion = ".$filtro['id_orientacion']['valor'];
+	}
+        
+        $sql="select anexo1(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
+        toba::db('designa')->consultar($sql);
+        $sql="select a.*
+            from auxiliar a 
+            $where
+            order by agente";
+        return toba::db('designa')->consultar($sql);
+    }
+    function anexo2($filtro=array()){
+        //print_r($where);//Array ( [uni_acad] => Array ( [condicion] => es_igual_a [valor] => FAIF ) [anio] => Array ( [condicion] => es_igual_a [valor] => 2016 ) )
+        $where='';
+        if (isset($filtro['id_departamento'])) {
+		$where.= " WHERE id_departamento = ".$filtro['id_departamento']['valor'];
+		}
+        if (isset($filtro['id_area'])) {
+		$where.= " AND id_area = ".$filtro['id_area']['valor'];
+	}
+         if (isset($filtro['id_orientacion'])) {
+		$where.= " AND id_orientacion = ".$filtro['id_orientacion']['valor'];
+	}
+        
+        $sql="select anexo2(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
+        toba::db('designa')->consultar($sql);
+        $sql="select a.*,b.descripcion as dep,c.descripcion as area,d.descripcion as orient
+            from auxiliar a
+            LEFT OUTER JOIN departamento b ON (a.id_departamento=b.iddepto)
+            LEFT OUTER JOIN area c ON (a.id_area=c.idarea)
+            LEFT OUTER JOIN orientacion as d ON (a.id_orientacion = d.idorient and d.idarea=c.idarea)
+            
+            $where
+            order by agente";
+        return toba::db('designa')->consultar($sql);
+    }
     function get_equipos_catedra($filtro=array()){
         
         $where="";
