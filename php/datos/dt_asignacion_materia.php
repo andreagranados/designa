@@ -381,7 +381,7 @@ class dt_asignacion_materia extends toba_datos_tabla
        
         return $post;
     }
-       function get_otros($id_desig){
+    function get_otros($id_desig){
        $post='';
        $sql="select t_t.descripcion,t_a.carga_horaria from asignacion_tutoria t_a, tutoria t_t"
                . " where t_a.id_designacion=".$id_desig
