@@ -54,7 +54,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --etiqueta
 	'1', --maneja_datos
 	'1', --sobre_fila
-	'chequeado', --confirmacion
+	NULL, --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
 	'aplicar.png', --imagen
@@ -120,7 +120,7 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	'1', --scroll
 	'350px', --scroll_alto
 	't', --cc_modo
-	'0', --cc_modo_anidado_colap
+	'1', --cc_modo_anidado_colap
 	NULL, --cc_modo_anidado_totcol
 	NULL  --cc_modo_anidado_totcua
 );

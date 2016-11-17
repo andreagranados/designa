@@ -18,7 +18,7 @@ class dt_asignacion_materia extends toba_datos_tabla
         $sql="select a.*
             from auxiliar a 
             $where
-            order by agente";
+            order by agente,desde";
         return toba::db('designa')->consultar($sql);
     }
     function anexo2($filtro=array()){

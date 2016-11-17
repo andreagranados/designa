@@ -47,17 +47,21 @@ class ci_control_presupuesto extends toba_ci
 
 	function evt__cuadro__seleccion($datos)
 	{
-		$this->dep('datos')->tabla('designacion')->cargar($datos);
-                if($datos['check_presup']==1){//si esta chequedo lo deschequea
+                $this->dep('datos')->tabla('designacion')->cargar($datos);
+                $desig=$this->dep('datos')->tabla('designacion')->get();
+                if($desig['check_presup']==1){//si esta chequedo lo deschequea
                     $datos['check_presup']=0;
+                    $mensaje=utf8_decode('La designación '.$datos['id_designacion'].' ha perdido el check');
                 }else{//sino lo chequea
                     $datos['check_presup']=1;
+                    $mensaje=utf8_decode('La designación '.$datos['id_designacion'].' ha sido checkeada');
                 }
                     
                 
                 $this->dep('datos')->tabla('designacion')->set($datos);//modifica el check de presupuesto de esa designacion
-		$this->dep('datos')->sincronizar();
-		$this->resetear();
+		$this->dep('datos')->tabla('designacion')->sincronizar();
+		$this->dep('datos')->tabla('designacion')->resetear();
+                toba::notificacion()->agregar($mensaje,'info');
 	}
 
 	
