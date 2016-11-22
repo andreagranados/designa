@@ -131,7 +131,7 @@ class ci_impresion_540 extends toba_ci
                     'outerLineThickness' => 2,
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
-                    'width' => 800
+                    'width' => 820
                     );
 
                 $i=0;

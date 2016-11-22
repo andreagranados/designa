@@ -717,7 +717,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $datos = array();
                 
                 $band=$this->en_rojo($filtro['anio']);
-                               
+                  
                 if($band){//si gaste mas de lo que tengo
                     toba::notificacion()->agregar('USTED ESTA EN ROJO','error'); 
                 }
