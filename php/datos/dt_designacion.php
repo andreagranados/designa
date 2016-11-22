@@ -1310,6 +1310,16 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 			$where.= "AND uni_acad = ".quote($filtro['uni_acad']);
                         $where2=" AND a.id_unidad = ".quote($filtro['uni_acad']);
 		}
+            else{//si no elige nada en el filtro
+                $sql="select sigla,descripcion from unidad_acad ";
+                $sql = toba::perfil_de_datos()->filtrar($sql);
+                $resul=toba::db('designa')->consultar($sql);
+                if(count($resul)==1){//esta asociada a un perfil de datos
+                    $where.= " AND uni_acad = ".quote($resul[0]['sigla']);
+                    $where2.= " AND a.id_unidad  = ".quote($resul[0]['sigla']);
+                }
+               
+            }    
             if (isset($filtro['programa'])) {
 			$where.= "AND id_programa = ".$filtro['programa'];
                         $where3= " WHERE id_programa = ".$filtro['programa'];
