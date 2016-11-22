@@ -38,8 +38,16 @@ class ci_expediente_tkd extends toba_ci
 
 	function evt__cuadro__seleccion($datos)
 	{
-            $this->dep('datos')->tabla('impresion_540')->cargar($datos);
-            $this->s__mostrar=1;
+            $band=$this->dep('datos')->tabla('impresion_540')->esta_anulado($datos['id']);
+            if($band){//si esta anulado
+                $this->s__mostrar=0;
+                $this->resetear();
+                toba::notificacion()->agregar('NO SE PUEDE MODIFICAR UN TKD ANULADO', "error");
+            }else{
+                $this->dep('datos')->tabla('impresion_540')->cargar($datos);
+                $this->s__mostrar=1;
+            }
+            
 	}
 
 	//---- Formulario -------------------------------------------------------------------

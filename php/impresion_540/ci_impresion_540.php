@@ -108,7 +108,7 @@ class ci_impresion_540 extends toba_ci
                 $pdf = $salida->get_pdf();
            
                 //modificamos los márgenes de la hoja top, bottom, left, right
-                $pdf->ezSetMargins(80, 50, 5, 5);
+                $pdf->ezSetMargins(80, 50, 3, 3);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
                 $formato = 'Página {PAGENUM} de {TOTALPAGENUM}'.'   CM: Categ Mapuche - CE: Categ Estatuto';
@@ -127,7 +127,7 @@ class ci_impresion_540 extends toba_ci
                     'showHeadings' => true,
                     'titleFontSize' => 10,
                     'fontSize' => 8,
-                    'shadeCol' => array(0.9,0.9,3,0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
+                    'shadeCol' => array(0.9,0.9,3,0.9,5,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
                     'outerLineThickness' => 2,
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
@@ -187,9 +187,9 @@ class ci_impresion_540 extends toba_ci
                             $baja='B'.':'.date("d/m/Y",strtotime($datos_novedad2[0]['desde']));
                         }
                         
-                       
+                       if($nove!="" || $baja!=""){
                         $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' => '','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => $nove,'col17' =>$baja ,'col18' =>'');    
-                        $i++;
+                        $i++;}
                         ///
                     }
                 }

@@ -13,7 +13,22 @@ class dt_designacionh extends toba_datos_tabla
              return true;
          }
      }
+     //trae los tkd de la ua que ingresa como arumento y solo los que pudieran llegar a anularse
+     function get_tkd_a_anular($ua=null)    {
+            $where="";
+            if(isset($ua)){
+                $where=" where uni_acad='$ua' and nro_540 is not null "
+                        . "and not exists (select * from designacion b"
+                                    . " where a.uni_acad=b.uni_acad"
+                                    . " and a.nro_540=b.nro_540"
+                        . "  and b.check_presup=1        )";
+            }
+            $sql = "SELECT distinct nro_540 FROM designacion a $where order by nro_540";
+            print_r($sql);
+            return toba::db('designa')->consultar($sql);
+        }
      //trae los numeros de ticket que han sido generados en la ua que ingresa como argumento
+     //presupuesto quiere ver todos
     function get_tkd_ua($ua=null)    {
             $where="";
             if(isset($ua)){

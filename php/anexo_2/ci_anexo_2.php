@@ -45,11 +45,6 @@ class ci_anexo_2 extends toba_ci
 		} 
 	}
 
-	
-
-	
-	
-
 }
 
 ?>
