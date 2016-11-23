@@ -400,7 +400,8 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
            
             //----------dias trabajados dentro del periodo
             $dias=0;
-            if($desde<=$pdia){
+            if($desde<=$udia){//dentro del periodo
+               if($desde<=$pdia){
                 //$hasta-$pdia
                 if(($hasta == null)||($hasta>=$udia)){
                     $dias=$this->dias_transcurridos($pdia,$udia)+1;
@@ -408,7 +409,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                     $dias=$this->dias_transcurridos($pdia,$hasta)+1;
                 }
              
-            }else{if(($hasta>=$udia) || ($hasta == null)){
+               }else{if(($hasta>=$udia) || ($hasta == null)){
                 //$udia-$desde
                         $dias=$this->dias_transcurridos($desde,$udia)+1;
                         }else{
@@ -416,7 +417,9 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                         $dias=($this->dias_transcurridos($desde,$hasta))+1;
 
                         }
-                  }
+                  } 
+            } 
+           
              
             $cuesta_nuevo=$dias*$valor_categoria;
             
@@ -502,6 +505,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                        
            
             $sql=dt_designacion::armar_consulta($pdia,$udia,$anio);
+            
             $sql="select * from (".$sql.")b WHERE b.id_designacion<>".$id_vieja." and b.uni_acad='".$ua."' and b.desde <='".$udia."'  and (b.hasta >='".$pdia."' or b.hasta is null)"; 
             //aqui queda                       
             //$con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from ("
