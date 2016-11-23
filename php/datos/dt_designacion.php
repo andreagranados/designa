@@ -720,7 +720,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         . " where estado<>'B' and uni_acad=".quote($filtro['uni_acad'])
                      ." and exists (select * from novedad b
                         where a.id_designacion=b.id_designacion 
-                        and b.tipo_nov=1)";
+                        and (b.tipo_nov=1 or b.tipo_nov=4))";
                  toba::db('designa')->consultar($sql2);
                 //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
                 $sql=$this->armar_consulta($pdia, $udia, $filtro['anio']);
@@ -929,7 +929,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         . " where estado<>'B' and uni_acad=".quote($filtro['uni_acad'])
                      ." and exists (select * from novedad b
                         where a.id_designacion=b.id_designacion 
-                        and b.tipo_nov=1)";
+                        and (b.tipo_nov=1 or b.tipo_nov=4))";
                  toba::db('designa')->consultar($sql2);
 
 		$sql=$this->armar_consulta($pdia, $udia, $anio);
@@ -973,7 +973,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         . " where estado<>'B' and uni_acad=".quote($filtro['uni_acad'])
                      ." and exists (select * from novedad b
                         where a.id_designacion=b.id_designacion 
-                        and b.tipo_nov=1)";
+                        and (b.tipo_nov=1 or b.tipo_nov=4))";
                //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
                 $sql=$this->armar_consulta($pdia,$udia,$filtro['anio']);
 		//si el estado de la designacion es  B entonces le pone estado B, si es <>B se fija si tiene licencia sin goce o cese
