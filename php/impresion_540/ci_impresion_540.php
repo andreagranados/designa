@@ -53,9 +53,14 @@ class ci_impresion_540 extends toba_ci
                 
                if (isset($this->s__datos_filtro)) {
                    $this->s__anio=$this->s__datos_filtro['anio'];
-                   $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro); 
-                   $cuadro->set_datos($this->s__listado);
-		} //hasta que no presiona filtrar no aparece nada
+                   $band=$this->dep('datos')->tabla('designacion')->control_imputaciones($this->s__datos_filtro);
+                   if($band){
+                        toba::notificacion()->agregar(utf8_decode("Existen designaciones dentro del período que no cumplen con el 100% de imputación"), "error");
+                   }else{
+                        $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro); 
+                        $cuadro->set_datos($this->s__listado);//hasta que no presiona filtrar no aparece nada
+                   }
+		} 
                
                 
 	}

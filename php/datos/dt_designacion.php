@@ -666,6 +666,30 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                return $band;
                 
         }
+        function control_imputaciones($filtro=array()){
+             //en el filtro viene el periodo actual o el periodo presupuestando
+            $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+            $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+            //que sea una designacion vigente, dentro del periodo actual
+            $where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
+            if (isset($filtro['uni_acad'])) {
+	         $where.= " AND uni_acad = ".quote($filtro['uni_acad']);
+		}
+            $sql="select * from(
+                    select a.id_designacion,sum(porc) as suma 
+                        from designacion a
+                        left outer join imputacion b on (a.id_designacion=b.id_designacion)
+                        $where
+                        group by a.id_designacion) b"
+                    . " where suma<100";
+           
+            $resul=toba::db('designa')->consultar($sql);
+            if(count($resul)>0){//si encuentra casos entonces retorna true
+                return true;
+            }else{
+                return false;
+            }
+        }
         function get_listado_540($filtro=array())
 	{
                 //en el filtro viene el periodo actual o el periodo presupuestando
@@ -676,7 +700,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
                 $where.=" AND  nro_540 is null"
                           ." AND exists (select * from imputacion b
-  		            where a.id_designacion=b.id_designacion)";//obligo a que tenga imputacion, sino no puede generar tkd
+  		            where a.id_designacion=b.id_designacion
+                            and b.porc=0)";//obligo a que tenga imputacion, sino no puede generar tkd
                 
 		if (isset($filtro['uni_acad'])) {
 			$where.= " AND uni_acad = ".quote($filtro['uni_acad']);
