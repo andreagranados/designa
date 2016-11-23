@@ -44,7 +44,7 @@ class ci_anular_tkd extends toba_ci
 
 	function evt__cuadro__anular($datos)
 	{
-            //print_r($this->s__datos_filtro);//uni_acad = 'FAIF' AND	nro_540 = '481'3,1
+             //print_r($this->s__datos_filtro);//uni_acad = 'FAIF' AND	nro_540 = '481'3,1
             $sele=array();
             foreach ($this->s__datos as $key => $value) {
                     $sele[]=$value['id_designacion']; 
@@ -52,6 +52,7 @@ class ci_anular_tkd extends toba_ci
             $comma_separated = implode(',', $sele);
             
             $sql="update impresion_540 set estado='A' where id=".$this->s__datos_filtro['nro_540']['valor'];
+            toba::db('designa')->consultar($sql);
             $sql="insert into designacionh select * from designacion where id_designacion in (".$comma_separated .") ";
             toba::db('designa')->consultar($sql);
             $sql="update designacion set nro_540=null where id_designacion in (".$comma_separated .") ";
