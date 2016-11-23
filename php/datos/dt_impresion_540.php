@@ -39,7 +39,8 @@ class dt_impresion_540 extends toba_datos_tabla
                     . " and a.nro_540 is not null"
                     . " and not exists(select * from designacion b"
                     . "                where a.nro_540=b.nro_540"
-                    . "                and b.check_presup=1  )";
+                    . "                and b.check_presup=1  )"
+                    . " order by nro_540";
             return toba::db('designa')->consultar($sql);
         }
         //trae un listado de los tkd generados por la unidad academica que ingresa como argumento

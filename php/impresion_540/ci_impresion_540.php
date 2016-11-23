@@ -91,6 +91,7 @@ class ci_impresion_540 extends toba_ci
                 
                 try {
                 $dato=array();
+                $dato['anio']=$this->s__anio;
                 $dato['expediente']='';
                 $dato['fecha_impresion']=date('Y-m-d');
                 $this->dep('datos')->tabla('impresion_540')->set($dato);

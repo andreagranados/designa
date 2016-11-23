@@ -1,7 +1,25 @@
 <?php
 class dt_integrante_interno_pi extends toba_datos_tabla
 {
-    //trae todos los proyectos de investigacion en los que haya participado
+    function get_participantes($where=null){
+        if(!is_null($where)){
+                    $where=' WHERE '.$where;
+            }else{
+                    $where='';
+            }
+        
+        $sql="select * from ("
+                . "select t_do.apellido||t_do.nombre as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,i.carga_horaria"
+                . " from integrante_interno_pi i, docente t_do ,pinvestigacion t_i,designacion d "
+                . " WHERE i.id_designacion=d.id_designacion "
+                . "and d.id_docente=t_do.id_docente
+                    and t_i.id_pinv=i.pinvest 
+                    order by apellido,nombre,t_i.codigo) b $where";
+        
+        return toba::db('designa')->consultar($sql);
+            
+    }    
+//trae todos los proyectos de investigacion en los que haya participado
     function sus_proyectos_inv_filtro($where=null){
         if(!is_null($where)){
                     $where=' WHERE '.$where;
