@@ -404,7 +404,10 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
            
             //----------dias trabajados dentro del periodo
             $dias=0;
-            if($desde<=$udia){//dentro del periodo
+            if($desde>$udia || ($hasta!=null && $hasta<$pdia)){//cae fuera del periodo
+                $dias=0;
+            }else{
+            
                if($desde<=$pdia){
                 //$hasta-$pdia
                 if(($hasta == null)||($hasta>=$udia)){
