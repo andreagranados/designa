@@ -285,7 +285,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 . " LEFT OUTER JOIN tipo t_t ON (t_a.nro_tab8=t_t.nro_tabla and t_a.rol=t_t.desc_abrev)"
                 . " LEFT OUTER JOIN modulo t_o ON (t_a.modulo=t_o.id_modulo)"
                 . " where t_a.id_designacion=".$des
-                ." order by t_a.anio,t_o.id_modulo";
+                ." order by t_a.anio desc,t_o.id_modulo";
         
 	return toba::db('designa')->consultar($sql);
     }

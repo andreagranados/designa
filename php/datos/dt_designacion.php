@@ -953,21 +953,36 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         function get_listado_estactual($filtro=array())
 	{
                 
-                if (isset($filtro['anio'])) {
-                	$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
-                        $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+                if (isset($filtro['anio']['valor'])) {
+                	$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
+                        $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
 		}       
                  //que sea una designacion correspondiente al periodo seleccionado
 		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
                 
-		if (isset($filtro['uni_acad'])) {
-			$where.= "AND uni_acad = ".quote($filtro['uni_acad']);
+		if (isset($filtro['uni_acad']['valor'])) {
+			$where.= "AND uni_acad = ".quote($filtro['uni_acad']['valor']);
 		}
-                if (isset($filtro['id_departamento'])) {
-			$sql="select * from departamento where iddepto=".$filtro['id_departamento'];
+                if (isset($filtro['id_departamento']['valor'])) {
+			$sql="select * from departamento where iddepto=".$filtro['id_departamento']['valor'];
                         $resul=toba::db('designa')->consultar($sql);
                         $where.= " AND id_departamento =".quote($resul[0]['descripcion']);
 		}
+                if (isset($filtro['carac']['valor'])) {
+                    switch ($filtro['carac']['valor']) {
+                        case 'R':$c="'Regular'";break;
+                        case 'O':$c="'Otro'";break;
+                        case 'I':$c="'Interino'";break;
+                        case 'S':$c="'Suplente'";break;
+                        default:
+                            break;
+                    }
+                    $where.= " AND carac=".$c;
+                 }
+                if (isset($filtro['estado']['valor'])) {
+                     $where.= " AND estado='".$filtro['estado']['valor']."'";
+                 }
+               
                  //me aseguro de colocar en estado B todas las designaciones que tienen baja
                 $sql2=" update designacion a set estado ='B' "
                         . " where estado<>'B' and uni_acad=".quote($filtro['uni_acad'])
@@ -975,7 +990,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         where a.id_designacion=b.id_designacion 
                         and (b.tipo_nov=1 or b.tipo_nov=4))";
                //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
-                $sql=$this->armar_consulta($pdia,$udia,$filtro['anio']);
+                $sql=$this->armar_consulta($pdia,$udia,$filtro['anio']['valor']);
 		//si el estado de la designacion es  B entonces le pone estado B, si es <>B se fija si tiene licencia sin goce o cese
                 $sql=  "select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
                             .",case when b.estado<>'B' then case when  ((t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)) and (t_no.tipo_nov=2 or t_no.tipo_nov=5)) then 'L'  else b.estado end else 'B' end as estado "

@@ -75,10 +75,11 @@ class ci_personas extends toba_ci
 
 	function evt__formulario__alta($datos)
 	{
-                $this->dep('datos')->tabla('persona')->set($datos);
-		$this->dep('datos')->sincronizar();
-		$this->resetear();
-                $this->s__mostrar=0;
+            $datos['nro_tabla']=1;    
+            $this->dep('datos')->tabla('persona')->set($datos);
+            $this->dep('datos')->sincronizar();
+            $this->resetear();
+            $this->s__mostrar=0;
 	}
 
 	function evt__formulario__modificacion($datos)

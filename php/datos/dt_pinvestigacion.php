@@ -1,4 +1,5 @@
 <?php
+require_once 'dt_mocovi_periodo_presupuestario.php';
 class dt_pinvestigacion extends toba_datos_tabla
 {
 	function get_descripciones()
@@ -98,12 +99,67 @@ class dt_pinvestigacion extends toba_datos_tabla
                 }
             }
         }
-        function get_listado_filtro($filtro=array())
+//        function get_listado_filtro($filtro=array())
+//	{
+//		$where = array();
+//		if (isset($filtro['uni_acad'])) {
+//			$where[] = "uni_acad = ".quote($filtro['uni_acad']);
+//		}
+//		$sql = "SELECT
+//			t_p.id_pinv,
+//			t_p.codigo,
+//                        case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'SUB-PROYECTO' else 'PROYECTO' end end es_programa,
+//			t_p.denominacion,
+//			t_p.nro_resol,
+//			t_p.fec_resol,
+//			t_ua.descripcion as uni_acad_nombre,
+//			t_p.fec_desde,
+//			t_p.fec_hasta,
+//			t_p.nro_ord_cs,
+//			t_p.fecha_ord_cs,
+//			t_p.duracion,
+//			t_p.objetivo
+//		FROM
+//			pinvestigacion as t_p
+//                        LEFT OUTER JOIN unidad_acad as t_ua ON (t_p.uni_acad = t_ua.sigla)
+//                        LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
+//		ORDER BY codigo,es_programa";
+//		if (count($where)>0) {
+//			$sql = sql_concatenar_where($sql, $where);
+//		}
+//		return toba::db('designa')->consultar($sql);
+//	}
+        function get_listado_filtro($filtro=null)
 	{
-		$where = array();
-		if (isset($filtro['uni_acad'])) {
-			$where[] = "uni_acad = ".quote($filtro['uni_acad']);
+                $where = "";
+		if (isset($filtro['uni_acad']['valor'])) {
+			$where = " WHERE uni_acad = ".quote($filtro['uni_acad']['valor']);
 		}
+                if (isset($filtro['anio']['valor'])) {
+		    $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+                    $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
+                    $where.=" and fec_desde <='".$udia."' and fec_hasta >='".$pdia."' ";
+		}
+                if (isset($filtro['denominacion']['valor'])) {
+                    switch ($filtro['denominacion']['condicion']) {
+                        case 'es_distinto_de':$where.=" and denominacion  !='".$filtro['denominacion']['valor']."'";break;
+                        case 'es_igual_a':$where.=" and denominacion = '".$filtro['denominacion']['valor']."'";break;
+                        case 'termina_con':$where.=" and denominacion ILIKE '%".$filtro['denominacion']['valor']."'";break;
+                        case 'comienza_con':$where.=" and denominacion ILIKE '".$filtro['denominacion']['valor']."%'";break;
+                        case 'no_contiene':$where.=" and denominacion NOT ILIKE '%".$filtro['denominacion']['valor']."%'";break;
+                        case 'contiene':$where.=" and denominacion ILIKE '%".$filtro['denominacion']['valor']."%'";break;
+                    }
+                 }
+                  if (isset($filtro['codigo']['valor'])) {
+                    switch ($filtro['codigo']['condicion']) {
+                        case 'es_distinto_de':$where.=" and codigo  !='".$filtro['codigo']['valor']."'";break;
+                        case 'es_igual_a':$where.=" and codigo = '".$filtro['codigo']['valor']."'";break;
+                        case 'termina_con':$where.=" and codigo ILIKE '%".$filtro['codigo']['valor']."'";break;
+                        case 'comienza_con':$where.=" and codigo ILIKE '".$filtro['codigo']['valor']."%'";break;
+                        case 'no_contiene':$where.=" and codigo NOT ILIKE '%".$filtro['codigo']['valor']."%'";break;
+                        case 'contiene':$where.=" and codigo ILIKE '%".$filtro['codigo']['valor']."%'";break;
+                    }
+                 }
 		$sql = "SELECT
 			t_p.id_pinv,
 			t_p.codigo,
@@ -122,13 +178,11 @@ class dt_pinvestigacion extends toba_datos_tabla
 			pinvestigacion as t_p
                         LEFT OUTER JOIN unidad_acad as t_ua ON (t_p.uni_acad = t_ua.sigla)
                         LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
+                $where        
 		ORDER BY codigo,es_programa";
-		if (count($where)>0) {
-			$sql = sql_concatenar_where($sql, $where);
-		}
+		
 		return toba::db('designa')->consultar($sql);
 	}
-
 	function get_listado()
 	{
 		$sql = "SELECT

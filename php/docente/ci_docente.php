@@ -77,8 +77,8 @@ class ci_docente extends toba_ci
             return($dedicacion);
         }
         
-	function get_categ_estatuto($ec,$id){
-            return $this->dep('datos')->tabla('macheo_categ')->get_categ_estatuto($ec,$id);
+	function get_categ_estatuto($id){
+            return $this->dep('datos')->tabla('macheo_categ')->get_categ_estatuto($id);
         }
         //esta la uso en algun lado? sino sacar
         function get_categoria_popup($id){
