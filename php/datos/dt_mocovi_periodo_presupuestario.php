@@ -210,7 +210,10 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             
             //----------dias trabajados dentro del periodo 1(actual) 2 (presupuestando)
             $dias=0;
-            if($desde<=$pdia){
+            if($desde>$udia || ($hasta!=null && $hasta<$pdia)){//cae fuera del periodo
+                $dias=0;
+            }else{
+              if($desde<=$pdia){
                 //$hasta-$pdia
                 if(($hasta == null)||($hasta>=$udia)){
                     $dias=$this->dias_transcurridos($pdia,$udia)+1;
@@ -218,7 +221,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                     $dias=$this->dias_transcurridos($pdia,$hasta)+1;
                 }
              
-            }else{if(($hasta>=$udia) || ($hasta == null)){
+              }else{if(($hasta>=$udia) || ($hasta == null)){
                 //$udia-$desde
                         $dias=$this->dias_transcurridos($desde,$udia)+1;
                         }else{
@@ -226,6 +229,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                         $dias=($this->dias_transcurridos($desde,$hasta))+1;
                         }
                   }
+            }
             
             //print_r('desde:'.$desde);print_r('hasta:'.$hasta);print_r($dias);exit();      
             $cuesta=$dias*$valor_categoria;

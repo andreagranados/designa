@@ -952,7 +952,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         //junto a todas las designaciones que son reserva
         function get_listado_estactual($filtro=array())
 	{
-                
                 if (isset($filtro['anio']['valor'])) {
                 	$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
                         $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
@@ -982,6 +981,11 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 if (isset($filtro['estado']['valor'])) {
                      $where.= " AND estado='".$filtro['estado']['valor']."'";
                  }
+                if (isset($filtro['programa']['valor'])) {
+                    $sql="select * from mocovi_programa where id_programa=".$filtro['programa']['valor'];
+                    $resul=toba::db('designa')->consultar($sql);
+                    $where.= " AND programa =".quote($resul[0]['nombre']);
+                  }
                
                  //me aseguro de colocar en estado B todas las designaciones que tienen baja
                 $sql2=" update designacion a set estado ='B' "
