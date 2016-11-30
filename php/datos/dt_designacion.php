@@ -445,6 +445,7 @@ class dt_designacion extends toba_datos_tabla
                 return $res;
 
         }
+   
         
 	function get_listado($filtro=array())
 	{
@@ -947,7 +948,48 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 return toba::db('designa')->consultar($sql);
             
 	}
-        
+        function get_costo_liberado($filtro=array())
+        {
+            if (isset($filtro['anio']['valor'])) {
+                $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
+                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+		}    
+            //que sea una designacion correspondiente al periodo seleccionado
+            $where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
+                    
+            if (isset($filtro['uni_acad']['valor'])) {
+		$where.= "AND uni_acad = ".quote($filtro['uni_acad']['valor']);
+		}  
+            $caracter='';    
+            if (isset($filtro['carac']['valor'])) {
+		$caracter= " and carac= ".quote($filtro['carac']['valor']);
+		}       
+            $sql="select c.id_designacion,c.cat_mapuche,c.carac,c.desde,c.hasta,c.dias,g.apellido||','||g.nombre as agente,g.legajo,d.costo_diario,case when f.porc is null then 0 else porc end as porc,c.dias*d.costo_diario*(case when f.porc is null then 0 else porc end)/100 as costo
+                from (
+                select a.id_designacion,a.carac,a.desde,a.hasta,a.id_docente,a.cat_mapuche,sum( case when b.desde<='".$pdia."' then 
+                ( case when (b.hasta is null or b.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) 
+                else ((b.hasta-'".$pdia."')+1) end ) else (case when (b.hasta is null or b.hasta>='".$udia."' ) then ((('".$udia."')-b.desde+1)) else ((b.hasta-b.desde+1)) end ) end  ) as dias
+                from designacion a, novedad b
+                Where a.uni_acad='".$filtro['uni_acad']['valor']."'".
+                " and a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null) "          
+                .$caracter
+                ." and a.id_designacion = b.id_designacion
+                and b.tipo_nov in (2,5)
+                and b.tipo_norma is not null
+                and b.tipo_emite is not null
+                and norma_legal is not null
+                and b.desde <= '".$udia."' and b.hasta >= '".$pdia."'
+                group by a.id_designacion,a.carac,a.desde,a.hasta,a.id_docente,cat_mapuche) c
+                left outer join mocovi_costo_categoria d on (d.codigo_siu=c.cat_mapuche)
+                left outer join mocovi
+                
+_periodo_presupuestario e on (e.id_periodo=d.id_periodo )
+                left outer join imputacion f on (f.id_designacion=c.id_designacion )
+                left outer join docente g on (c.id_docente=g.id_docente)
+                where e.anio=".$filtro['anio']['valor']
+                    ." order by agente";    
+            return toba::db('designa')->consultar($sql);
+        }
         //trae las designaciones del periodo vigente, de la UA correspondiente
         //junto a todas las designaciones que son reserva
         function get_listado_estactual($filtro=array())
@@ -1006,7 +1048,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                             .") b "
                             . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5 or t_no.tipo_nov=1 or t_no.tipo_nov=4) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
                             . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
-              
                 return toba::db('designa')->consultar($sql);
     
 	}
