@@ -153,7 +153,6 @@ class ci_impresion_540 extends toba_ci
                     
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
                         if(strcmp($programa, $des['programa']) !== 0){//compara
-                            //$datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
                             $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
                             $sub=0; 
                             $programa=$des['programa'];
@@ -181,7 +180,7 @@ class ci_impresion_540 extends toba_ci
                           foreach ($datos_novedad as $key => $value) {
                             	$desden=date("d/m/Y",strtotime($datos_novedad[0]['desde']));
                           	$hastan=date("d/m/Y",strtotime($datos_novedad[0]['hasta']));
-                          	$nove.='L'.' ('.$desden.'-'.$hastan.")"."\n";
+                          	$nove.="L"." (".$desden."\n".$hastan.")";
                             }
                           //$desden=date("d/m/Y",strtotime($datos_novedad[0]['desde']));
                           //$hastan=date("d/m/Y",strtotime($datos_novedad[0]['hasta']));
@@ -196,15 +195,12 @@ class ci_impresion_540 extends toba_ci
                         }
                         
                        if($nove!="" || $baja!=""){
-                        //$datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' => '','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => $nove,'col17' =>$baja ,'col18' =>'');    
                         $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' => '','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => $nove,'col17' =>$baja ,'col18' =>'');    
                         $i++;}
                         ///
                     }
                 }
               
-                //$datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
-                //$datos[$i+1]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
                 $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
                 $datos[$i+1]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
                           
