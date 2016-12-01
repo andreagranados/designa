@@ -123,7 +123,7 @@ class ci_impresion_540 extends toba_ci
                 //Luego definimos la ubicación de la fecha en el pie de página.
                 $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
                 //Configuración de Título.
-                $salida->titulo(utf8_d_seguro("Informe TKD #".$numero."/".$this->s__anio));
+                $salida->titulo(utf8_d_seguro("Informe TKD #".$numero."/".$this->s__anio." de ".$this->s__datos_filtro['uni_acad']));
                
                 $titulo=" ";
                 //-- Cuadro con datos
@@ -133,7 +133,7 @@ class ci_impresion_540 extends toba_ci
                     'showHeadings' => true,
                     'titleFontSize' => 10,
                     'fontSize' => 7,
-                    'shadeCol' => array(0.9,0.9,3,0.9,5,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
+                    'shadeCol' => array(0.9,3,0.9),
                     'outerLineThickness' => 2,
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
@@ -153,7 +153,8 @@ class ci_impresion_540 extends toba_ci
                     
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
                         if(strcmp($programa, $des['programa']) !== 0){//compara
-                            $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+                            //$datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+                            $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
                             $sub=0; 
                             $programa=$des['programa'];
                             $i++;
@@ -169,7 +170,8 @@ class ci_impresion_540 extends toba_ci
                         }else{
                             $hasta='';
                         }
-                        $datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => trim($des['programa']) ,'col4' => $des['porc'].'%','col5' => trim($ayn),'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'].$des['dedic'],'col10' => trim($des['carac']),'col11' => $desde,'col12' => $hasta,'col13' => trim($des['id_departamento']),'col14' => trim($des['id_area']),'col15' => trim($des['id_orientacion']),'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
+                        //$datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => trim($des['programa']) ,'col4' => $des['porc'].'%','col5' => trim($ayn),'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'].$des['dedic'],'col10' => trim($des['carac']),'col11' => $desde,'col12' => $hasta,'col13' => trim($des['id_departamento']),'col14' => trim($des['id_area']),'col15' => trim($des['id_orientacion']),'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
+                        $datos[$i]=array('col2' => $des['id_designacion'], 'col3' => trim($des['programa']) ,'col4' => $des['porc'].'%','col5' => trim($ayn),'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'].$des['dedic'],'col10' => trim($des['carac']),'col11' => $desde,'col12' => $hasta,'col13' => trim($des['id_departamento']),'col14' => trim($des['id_area']),'col15' => trim($des['id_orientacion']),'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
                         $i++;  
                         $nove="";
                         //aqui agregar nueva linea
@@ -194,22 +196,25 @@ class ci_impresion_540 extends toba_ci
                         }
                         
                        if($nove!="" || $baja!=""){
-                        $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' => '','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => $nove,'col17' =>$baja ,'col18' =>'');    
+                        //$datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' => '','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => $nove,'col17' =>$baja ,'col18' =>'');    
+                        $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' => '','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => $nove,'col17' =>$baja ,'col18' =>'');    
                         $i++;}
                         ///
                     }
                 }
               
-                $datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
-                $datos[$i+1]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
+                //$datos[$i]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+                //$datos[$i+1]=array('col1' => '','col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
+                $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+                $datos[$i+1]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
                           
             
                //genera la tabla de datos
                 $car=utf8_decode("Carácter");
                 $area=utf8_decode("Área");
                 $orient=utf8_decode("Orientación");
-                $pdf->ezTable($datos, array('col1'=>'<b>UA</b>', 'col2'=>'<b>Id</b>','col3' => '<b>Programa</b>','col4' => '<b>Porc</b>','col5' => '<b>Ap y Nombre</b>','col6' => '<b>Legajo</b>','col7' => '<b>CM</b>','col8' => '<b>CE</b>','col10' =>'<b>'.$car.'</b>','col11' => '<b>Desde</b>','col12' => '<b>Hasta</b>','col13' => '<b>Departamento</b>','col14' => '<b>'.$area.'</b>','col15' => '<b>'.$orient.'</b>','col16' => '<b>Dias Lic</b>','col17' => '<b>Estado</b>','col18' => '<b>Costo</b>'), $titulo, $opciones);
-
+                //$pdf->ezTable($datos, array('col1'=>'<b>UA</b>', 'col2'=>'<b>Id</b>','col3' => '<b>Programa</b>','col4' => '<b>Porc</b>','col5' => '<b>Ap_y_Nombre</b>','col6' => '<b>Legajo</b>','col7' => '<b>CM</b>','col8' => '<b>CE</b>','col10' =>'<b>'.$car.'</b>','col11' => '<b>Desde</b>','col12' => '<b>Hasta</b>','col13' => '<b>Depart</b>','col14' => '<b>'.$area.'</b>','col15' => '<b>'.$orient.'</b>','col16' => '<b>Dias Lic</b>','col17' => '<b>Estado</b>','col18' => '<b>Costo</b>'), $titulo, $opciones);
+                $pdf->ezTable($datos, array( 'col2'=>'<b>Id</b>','col3' => '<b>Programa</b>','col4' => '<b>Porc</b>','col5' => '<b>Ap_y_Nombre</b>','col6' => '<b>Legajo</b>','col7' => '<b>CM</b>','col8' => '<b>CE</b>','col10' =>'<b>'.$car.'</b>','col11' => '<b>Desde</b>','col12' => '<b>Hasta</b>','col13' => '<b>Depart</b>','col14' => '<b>'.$area.'</b>','col15' => '<b>'.$orient.'</b>','col16' => '<b>Dias Lic</b>','col17' => '<b>Estado</b>','col18' => '<b>Costo</b>'), $titulo, $opciones);
                 //agrega texto al pdf. Los primeros 2 parametros son las coordenadas (x,y) el tercero es el tamaño de la letra, y el cuarto el string a agregar
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
                 //Encabezado: Logo Organización - Nombre 
