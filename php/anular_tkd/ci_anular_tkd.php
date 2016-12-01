@@ -51,12 +51,28 @@ class ci_anular_tkd extends toba_ci
              }
             $comma_separated = implode(',', $sele);
             
-            $sql="update impresion_540 set estado='A' where id=".$this->s__datos_filtro['nro_540']['valor'];
-            toba::db('designa')->consultar($sql);
-            $sql="insert into designacionh select * from designacion where id_designacion in (".$comma_separated .") ";
-            toba::db('designa')->consultar($sql);
-            $sql="update designacion set nro_540=null where id_designacion in (".$comma_separated .") ";
-            toba::db('designa')->consultar($sql);
+            toba::db()->abrir_transaccion();
+                
+            try {
+                $sql="update impresion_540 set estado='A' where id=".$this->s__datos_filtro['nro_540']['valor'];
+                toba::db('designa')->consultar($sql);
+                $sql="insert into designacionh select * from designacion where id_designacion in (".$comma_separated .") ";
+                toba::db('designa')->consultar($sql);
+                $sql="select count(distinct id_designacion) as cant from designacion where id_designacion in (".$comma_separated .") ";
+                $res=toba::db('designa')->consultar($sql);
+                $mensaje='';
+                if(count($res[0])>0){
+                    $mensaje="Se anularon ".$res[0]['cant']. " designaciones";
+                }
+                $sql="update designacion set nro_540=null where id_designacion in (".$comma_separated .") ";
+                toba::db('designa')->consultar($sql);
+                toba::notificacion()->agregar(utf8_decode('La anulación se realizó con éxito.'.$mensaje), "info");
+                    
+                toba::db()->cerrar_transaccion();
+            } catch (toba_error_db $e) {
+                    toba::db()->abortar_transaccion();
+                    throw $e;
+                    }
             
 	}
 

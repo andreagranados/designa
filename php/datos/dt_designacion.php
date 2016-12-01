@@ -17,7 +17,8 @@ class dt_designacion extends toba_datos_tabla
                . " from designacion a"
                . " LEFT OUTER JOIN docente b ON (a.id_docente=b.id_docente)"
                . "  LEFT OUTER JOIN reserva c ON (a.id_reserva=c.id_reserva)"
-               . " $where";
+               . " $where"
+               . " order by agente";
        return toba::db('designa')->consultar($sql);
    } 
    //solo trae las designaciones con licencia o cese de la unidad academica correspondiente
@@ -741,7 +742,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $datos = array();
                 
                 $band=$this->en_rojo($filtro['anio']);
-                  
+                
                 if($band){//si gaste mas de lo que tengo
                     toba::notificacion()->agregar('USTED ESTA EN ROJO','error'); 
                 }

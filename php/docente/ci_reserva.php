@@ -80,11 +80,7 @@ class ci_reserva extends designa_ci
 		} 
 	}
 
-	 function get_categ_estatuto($id,$ec){
-             $cat=$this->controlador()->get_categ_estatuto($id,$ec);
-             return $cat;
-            
-        }
+
         //este metodo permite mostrar en el popup el codigo de la categoria
         //recibe como argumento el id 
         function get_descripcion_categoria($id){
@@ -142,7 +138,7 @@ class ci_reserva extends designa_ci
                //calculo la dedicacion y la cat estatuto por si las dudas no se autocompletaron y quedaron vacias
                 $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
                 $datos['dedic']=$dedi;
-                $est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                $est=$this->controlador()->get_categ_estatuto($datos['cat_mapuche']);
                 $datos['cat_estat']=$est;
                //----------------------
                 
@@ -185,7 +181,7 @@ class ci_reserva extends designa_ci
             if($desig['cat_mapuche']<>$datos['cat_mapuche']){
                 $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
                 $datos['dedic']=$dedi;
-                $est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);
+                $est=$this->controlador()->get_categ_estatuto($datos['cat_mapuche']);
                 $datos['cat_estat']=$est;    
             }
 

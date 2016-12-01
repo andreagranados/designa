@@ -84,7 +84,7 @@ class ci_impresion_540 extends toba_ci
             //$datos_novedad=$this->dep('datos')->tabla('designacion')->get_novedad(3338,$this->s__anio);
            // print_r($datos_novedad);exit;
             if (isset($this->s__seleccionadas)){//si selecciono para imprimir
-                            
+                     
                 //genero un nuevo numero de 540
              
                 toba::db()->abrir_transaccion();
@@ -132,7 +132,7 @@ class ci_impresion_540 extends toba_ci
                     'rowGap' => 0.7,//ancho de las filas
                     'showHeadings' => true,
                     'titleFontSize' => 10,
-                    'fontSize' => 8,
+                    'fontSize' => 7,
                     'shadeCol' => array(0.9,0.9,3,0.9,5,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
                     'outerLineThickness' => 2,
                     'innerLineThickness' => 0.7,
