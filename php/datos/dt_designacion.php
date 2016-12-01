@@ -982,9 +982,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 and b.desde <= '".$udia."' and b.hasta >= '".$pdia."'
                 group by a.id_designacion,a.carac,a.desde,a.hasta,a.id_docente,cat_mapuche) c
                 left outer join mocovi_costo_categoria d on (d.codigo_siu=c.cat_mapuche)
-                left outer join mocovi
-                
-_periodo_presupuestario e on (e.id_periodo=d.id_periodo )
+                left outer join mocovi_periodo_presupuestario e on (e.id_periodo=d.id_periodo )
                 left outer join imputacion f on (f.id_designacion=c.id_designacion )
                 left outer join docente g on (c.id_docente=g.id_docente)
                 where e.anio=".$filtro['anio']['valor']
