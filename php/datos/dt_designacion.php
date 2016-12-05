@@ -949,6 +949,32 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 return toba::db('designa')->consultar($sql);
             
 	}
+        function get_designaciones_de($filtro=array()){
+            $where=" ";
+            if (isset($filtro['id_docente']['valor'])) {
+              $where=" AND t_do.id_docente=".$filtro['id_docente']['valor'];          
+            }
+            if (isset($filtro['anio']['valor'])) {
+              $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
+              $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+              $where.=" and t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)";
+            }
+            $sql="select a.*,case when b.id_novedad is null then 'A' else 'L' end as estado,t_de.descripcion as departamento,t_a.descripcion as area,t_o.descripcion as orientacion from"
+                    . "(select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_d.id_designacion, t_d.cat_estat,t_d.dedic,t_d.carac,t_d.desde,t_d.hasta,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion"
+                    . " from designacion t_d, docente t_do"
+                    . " WHERE t_d.id_docente=t_do.id_docente"
+                    . $where
+                    ." order by desde"
+                    . ")a"
+                    . " LEFT OUTER JOIN novedad b ON (a.id_designacion=b.id_designacion"
+                    . " and b.tipo_nov in (2,5) "
+                    . " and b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null))"
+                    . " LEFT OUTER JOIN departamento t_de ON (a.id_departamento=t_de.iddepto)"
+                    . " LEFT OUTER JOIN area t_a ON (a.id_area=t_a.idarea)"
+                    . " LEFT OUTER JOIN orientacion t_o ON (a.id_orientacion=t_o.idorient and t_o.idarea=t_a.idarea)";
+            
+            return toba::db('designa')->consultar($sql);       
+        }
         function get_costo_liberado($filtro=array())
         {
             if (isset($filtro['anio']['valor'])) {
