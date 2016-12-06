@@ -775,6 +775,11 @@ class cargo_solapas extends toba_ci
             if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();     
                 $datos=$this->controlador()->dep('datos')->tabla('norma_desig')->get_listado_normas($desig['id_designacion']);          
+                foreach ($datos as $key => $value) {
+                    if(isset($value['link'])){
+                        $datos[$key]['link']="<a href='".$datos[$key]['link']."'target='_blank'>link</a>";
+                    }
+                }
                 $cuadro->set_datos($datos);
             
             }

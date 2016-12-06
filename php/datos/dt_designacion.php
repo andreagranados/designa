@@ -360,8 +360,13 @@ class dt_designacion extends toba_datos_tabla
             $res=toba::db('designa')->consultar($sql);
             if($res[0]['tipo_desig']==1){
                 if($res[0]['id_norma'] != null){//si la designacion tiene norma entonces la guarda en norma_desig
-                    $sql="INSERT INTO norma_desig(id_norma, id_designacion) VALUES(".$res[0]['id_norma'].",".$id_des.")";
-                    toba::db('designa')->consultar($sql);
+                    $sql="select * from norma_desig where id_norma=".$id_norma." and id_designacion=".$id_des;
+                    $res2=toba::db('designa')->consultar($sql);
+                    if(count($res2)==0){//no existe entonces la agrega
+                        $sql="INSERT INTO norma_desig(id_norma, id_designacion) VALUES(".$res[0]['id_norma'].",".$id_des.")";
+                        toba::db('designa')->consultar($sql);
+                    }
+                    
                 }
             }
             
@@ -973,7 +978,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     ." order by desde"
                     . ")a"
                     .$where2
-                  
                     . " LEFT OUTER JOIN departamento t_de ON (a.id_departamento=t_de.iddepto)"
                     . " LEFT OUTER JOIN area t_a ON (a.id_area=t_a.idarea)"
                     . " LEFT OUTER JOIN orientacion t_o ON (a.id_orientacion=t_o.idorient and t_o.idarea=t_a.idarea)";

@@ -51,7 +51,7 @@ class dt_norma extends toba_datos_tabla
        }
        //designaciones asociadas a id_norma por id_norma o por id_norma_cs
        function get_detalle($id_norma){
-           $sql="select b.*,quien_emite_norma,nombre_tipo,t_do.apellido||', '||t_do.nombre as docente from (
+           $sql="select distinct b.*,quien_emite_norma,nombre_tipo,t_do.apellido||', '||t_do.nombre as docente from (
                     select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,uni_acad from 
                        norma t_n
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma=t_n.id_norma)
@@ -60,6 +60,12 @@ class dt_norma extends toba_datos_tabla
                    . "select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,uni_acad from 
                        norma t_n
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma_cs=t_n.id_norma)
+                        where t_n.id_norma=$id_norma"
+                   . " UNION "
+                   . "select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,uni_acad from 
+                       norma_desig t_no
+                        LEFT OUTER JOIN designacion t_d ON (t_d.id_norma=t_no.id_norma)
+                        LEFT OUTER JOIN norma t_n ON (t_no.id_norma=t_n.id_norma)
                         where t_n.id_norma=$id_norma"
                    . ")b"
                    . "  LEFT OUTER JOIN docente t_do ON (b.id_docente=t_do.id_docente)
@@ -90,8 +96,17 @@ class dt_norma extends toba_datos_tabla
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma_cs=t_n.id_norma)
                         LEFT OUTER JOIN tipo_emite b ON (t_n.emite_norma=b.cod_emite)
                         LEFT OUTER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo) 
-                        where t_d.id_designacion is not null "
-                   . ")b $where";
+                        where t_d.id_designacion is not null 
+                        UNION 
+                       select t_n.id_norma,t_no.nro_norma,t_no.tipo_norma,t_no.emite_norma,t_no.fecha,quien_emite_norma,nombre_tipo,uni_acad,link
+                       from norma_desig t_n
+                        LEFT OUTER JOIN norma t_no ON (t_n.id_norma=t_no.id_norma)
+                        LEFT OUTER JOIN designacion t_d ON (t_n.id_designacion=t_d.id_designacion)
+                        LEFT OUTER JOIN tipo_emite b ON (t_no.emite_norma=b.cod_emite)
+                        LEFT OUTER JOIN tipo_norma_exp c ON (t_no.tipo_norma=c.cod_tipo) 
+                       "
+                   . ")b $where"
+                   . " order by tipo_norma,emite_norma,nro_norma";
            
            return toba::db('designa')->consultar($sql);
        }

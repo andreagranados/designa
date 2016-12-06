@@ -96,7 +96,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3652', --objeto_cuadro_col
 	'id_designacion', --clave
 	'5', --orden
-	'id desig', --titulo
+	'Id Desig', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -127,7 +127,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3653', --objeto_cuadro_col
 	'cat_mapuche', --clave
 	'6', --orden
-	'Categoria Mapuche', --titulo
+	'Categoría Mapuche', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -158,7 +158,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3654', --objeto_cuadro_col
 	'cat_estatuto', --clave
 	'7', --orden
-	'Categoria Estatuto', --titulo
+	'Categoría Estatuto', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
