@@ -901,7 +901,7 @@ class cargo_solapas extends toba_ci
             //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $desig['estado']='L';
+            //$desig['estado']='L'; le saco esta linea porque el estado L depende del periodo 
             
             $mensaje="";
             //las licencias con goce no afectan el credito entonces no pierde tkd
