@@ -178,8 +178,8 @@ class ci_impresion_540 extends toba_ci
                           $datos_novedad=$this->dep('datos')->tabla('designacion')->get_novedad($des['id_designacion'],$this->s__anio,1);
                           
                           foreach ($datos_novedad as $key => $value) {
-                            	$desden=date("d/m/Y",strtotime($datos_novedad[0]['desde']));
-                          	$hastan=date("d/m/Y",strtotime($datos_novedad[0]['hasta']));
+                            	$desden=date("d/m/Y",strtotime($datos_novedad[$key]['desde']));
+                          	$hastan=date("d/m/Y",strtotime($datos_novedad[$key]['hasta']));
                           	$nove.="L"." (".$desden."\n".$hastan.")";
                             }
                           //$desden=date("d/m/Y",strtotime($datos_novedad[0]['desde']));
