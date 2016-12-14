@@ -412,7 +412,8 @@ class ci_pinv_otros extends designa_ci
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $fecha = strtotime($datos['fecha_solicitud']);
                 $anio=date("Y",$fecha);
-                $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias($pi['id_pinv'],$anio,$datos['cant_dias']);
+                $via=$this->controlador()->dep('datos')->tabla('viatico')->get();
+                $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_modif($pi['id_pinv'],$anio,$datos['cant_dias'],$via['id_viatico']);
                 if($band){//verifica que no supere los 14 dias anuales
                     $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
                     $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();

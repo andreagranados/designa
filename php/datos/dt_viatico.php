@@ -37,6 +37,24 @@ class dt_viatico extends toba_datos_tabla
             return true;
         }
     }
+     function control_dias_modif($id_proy,$anio,$dias,$id_via){
+        
+        $sql="select sum(cant_dias) as cantidad from viatico "
+                . " where id_proyecto= ".$id_proy
+                ." and  extract(year from fecha_solicitud)=".$anio
+                ." and id_viatico<>".$id_via;
+       
+        $resul=toba::db('designa')->consultar($sql);
+        if(count($resul)>0){
+            if($resul[0]['cantidad']+$dias<=14){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
 }
 
 ?>
