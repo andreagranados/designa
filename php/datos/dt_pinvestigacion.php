@@ -4,10 +4,21 @@ class dt_pinvestigacion extends toba_datos_tabla
 {
 	function get_descripciones()
 	{
-		$sql = "SELECT id_pinv, codigo FROM pinvestigacion ORDER BY codigo";
-		return toba::db('designa')->consultar($sql);
+            $sql = "SELECT id_pinv, codigo FROM pinvestigacion ORDER BY codigo";
+            return toba::db('designa')->consultar($sql);
 	}
-
+        function get_integrantes($id_proy){
+            $sql="select max(a.id_designacion) as id_designacion,trim(c.apellido)||', '||trim(c.nombre) as agente "
+                    . " from integrante_interno_pi a"
+                    . " LEFT OUTER JOIN designacion b ON (a.id_designacion=b.id_designacion)"
+                . " LEFT OUTER JOIN docente c ON (c.id_docente=b.id_docente)"
+                    . " where pinvest=".$id_proy
+                    ." group by agente"
+                    ." order by agente"
+                    ;
+            
+            return toba::db('designa')->consultar($sql);
+        }
         function pertenece_programa($id_proy)
         {
             $sql="select * from subproyecto where id_proyecto=$id_proy";

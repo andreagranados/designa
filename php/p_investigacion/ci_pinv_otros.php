@@ -95,6 +95,8 @@ class ci_pinv_otros extends designa_ci
 
 	function conf__formulario(designa_ei_formulario $form)
 	{
+            $this->controlador()->dep('datos')->tabla('viatico')->resetear();
+            $this->s__mostrar_v=0;
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
@@ -318,6 +320,13 @@ class ci_pinv_otros extends designa_ci
 	function evt__filtros__cancelar()
 	{
             unset($this->s__datos_filtro);
+        }
+        
+        function get_integrantes(){
+            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                return($this->controlador()->dep('datos')->tabla('pinvestigacion')->get_integrantes($pi['id_pinv']));
+            }
         }
         //-----------------------------------------------------------------------------------
 	//---- cuadro_viaticos ----------------------------------------------------------------

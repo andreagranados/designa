@@ -10,9 +10,12 @@ class dt_viatico extends toba_datos_tabla
 	  
         }
         $sql=" select id_viatico,id_proyecto, nro_tab, tipo, fecha_solicitud, fecha_pago, 
-       expediente_pago, destinatario, memo_solicitud, memo_certificados, 
-       case when es_nacional=1 then 'SI' else 'NO' end as es_nacional, cant_dias, fecha_present_certif, observaciones "
-                . " from viatico where id_proyecto=".$id_p.$where.
+       expediente_pago, trim(c.apellido)||', '||trim(c.nombre) as destinatario, memo_solicitud, memo_certificados, 
+       case when es_nacional=1 then 'SI' else 'NO' end as es_nacional, cant_dias, fecha_present_certif, a.observaciones "
+                . " from viatico a"
+                . " left outer join designacion b on (a.id_designacion=b.id_designacion)"
+                . " left outer join docente c on (c.id_docente=b.id_docente)"
+                . " where id_proyecto=".$id_p.$where.
                 " order by fecha_solicitud";
         return toba::db('designa')->consultar($sql);
     }
