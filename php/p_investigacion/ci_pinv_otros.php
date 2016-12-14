@@ -3,9 +3,11 @@ class ci_pinv_otros extends designa_ci
 {
         protected $s__mostrar;
         protected $s__mostrar_s;
+        protected $s__mostrar_v;
         protected $s__pantalla;
         protected $s__mostrar_form_est;
         protected $s__mostrar_form_tiene;
+        protected $s__datos_filtro;
         
         function get_codigo($id){//recibe el programa
              if($id!=0){//pertenece a un programa entonces el codigo es el del programa
@@ -298,9 +300,132 @@ class ci_pinv_otros extends designa_ci
             $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
             $this->s__mostrar=0;
 	}
-        
-        
+        //-----------------------------------------------------------------------------------
+	//---- filtros ----------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+        function conf__filtros(toba_ei_filtro $filtro)
+	{
+            if (isset($this->s__datos_filtro)) {
+                $filtro->set_datos($this->s__datos_filtro);
+		}
+	}
 
+	function evt__filtros__filtrar($datos)
+	{
+            $this->s__datos_filtro = $datos;
+	}
+
+	function evt__filtros__cancelar()
+	{
+            unset($this->s__datos_filtro);
+        }
+        //-----------------------------------------------------------------------------------
+	//---- cuadro_viaticos ----------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__cuadro_viatico(toba_ei_cuadro $cuadro)
+	{
+            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if (isset($this->s__datos_filtro)) {
+                    $f=$this->s__datos_filtro;
+                }else{
+                    $f=array();
+                }
+                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('viatico')->get_listado($pi['id_pinv'],$f));
+            }
+            
+	}
+       
+        function conf__form_viatico(toba_ei_formulario $form)
+	{
+             if($this->s__mostrar_v==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
+                $this->dep('form_viatico')->descolapsar();
+             }else{
+                $this->dep('form_viatico')->colapsar();
+             }
+             if ($this->controlador()->dep('datos')->tabla('viatico')->esta_cargada()) {
+                 $datos=$this->controlador()->dep('datos')->tabla('viatico')->get();
+                 $form->set_datos($datos);
+            }
+	}
+        function evt__cuadro_viatico__seleccion($datos)
+	{
+            $this->s__mostrar_v=1;
+            $this->controlador()->dep('datos')->tabla('viatico')->cargar($datos);
+	}
+        function evt__form_viatico__alta($datos)
+	{
+            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $datos['id_proyecto']=$pi['id_pinv'];
+            $datos['nro_tab']=13;
+            $mensaje="";
+            if($datos['es_nacional']==1){//si es nacional
+                if($datos['cant_dias']>5){
+                    $mensaje="Nacional hasta 5 dias";
+                }
+            }else{
+                 if($datos['cant_dias']>7){
+                    $mensaje="Internacional hasta 7 dias";
+                }
+            }
+             
+            if($mensaje==""){
+                $fecha = strtotime($datos['fecha_solicitud']);
+                $anio=date("Y",$fecha);
+                $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias($pi['id_pinv'],$anio,$datos['cant_dias']);
+                if($band){//verifica que no supere los 14 dias anuales
+                    $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
+                    $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
+                    $this->controlador()->dep('datos')->tabla('viatico')->resetear();
+                    $this->s__mostrar_v=0;
+                }else{
+                    toba::notificacion()->agregar('Supera los 14 dias anuales', 'error');  
+                }
+            }else{
+                toba::notificacion()->agregar($mensaje, 'error');  
+            }
+            
+	}
+        function evt__form_viatico__modificacion($datos)
+	{
+            $mensaje="";
+            if($datos['es_nacional']==1){//si es nacional
+                if($datos['cant_dias']>5){
+                    $mensaje="Nacional hasta 5 dias";
+                }
+            }else{
+                 if($datos['cant_dias']>7){
+                    $mensaje="Internacional hasta 7 dias";
+                }
+            }
+            if($mensaje==""){
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $fecha = strtotime($datos['fecha_solicitud']);
+                $anio=date("Y",$fecha);
+                $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias($pi['id_pinv'],$anio,$datos['cant_dias']);
+                if($band){//verifica que no supere los 14 dias anuales
+                    $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
+                    $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
+                    
+                }else{
+                    toba::notificacion()->agregar('Supera los 14 dias anuales', 'error');  
+                }
+            }else{
+                toba::notificacion()->agregar($mensaje, 'error');  
+            }
+           
+	}
+        function evt__form_viatico__baja()
+	{
+            $this->controlador()->dep('datos')->tabla('viatico')->eliminar_todo();
+            $this->controlador()->dep('datos')->tabla('viatico')->resetear();
+	}
+        function evt__form_viatico__cancelar()
+	{
+            $this->controlador()->dep('datos')->tabla('viatico')->resetear();
+            $this->s__mostrar_v=0;
+	}
 	//-----------------------------------------------------------------------------------
 	//---- cuadro_winsip ----------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -400,6 +525,10 @@ class ci_pinv_otros extends designa_ci
 	{
             $this->s__pantalla = "pant_estimulos";
 	}
+        function conf__pant_viaticos(toba_ei_pantalla $pantalla)
+	{
+            $this->s__pantalla = "pant_viaticos";
+	}
         //-----------------------------------------------------------------------------------
 	//---- Eventos --------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -409,6 +538,7 @@ class ci_pinv_otros extends designa_ci
                 case "pant_winsip":$this->s__mostrar_s=1; $this->controlador()->dep('datos')->tabla('winsip')->resetear();break;
                 case "pant_subsidios":$this->s__mostrar=1; $this->controlador()->dep('datos')->tabla('subsidio')->resetear();break;   
                 case "pant_estimulos":$this->s__mostrar_form_tiene=1; $this->controlador()->dep('datos')->tabla('tiene_estimulo')->resetear();break;   
+                case "pant_viaticos":$this->s__mostrar_v=1;$this->controlador()->dep('datos')->tabla('viatico')->resetear();break;
             }
         }
        
