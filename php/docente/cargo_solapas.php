@@ -187,18 +187,23 @@ class cargo_solapas extends toba_ci
                     if ($tkd){
                             toba::notificacion()->agregar("NO SE PUEDE ELIMINAR UNA DESIGNACION QUE HA TENIDO NUMERO DE TKD", 'error');
                     }else{//nunca se genero tkd para esta designacion
-                        $mat=$this->controlador()->dep('datos')->tabla('designacion')->tiene_materias($des['id_designacion']);
-                        if($mat){
-                            toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE MATERIAS ASIGNADAS", 'error');
-                        }else{
-                            $nov=$this->controlador()->dep('datos')->tabla('designacion')->tiene_novedades($des['id_designacion']);
-                            if($nov){
-                                toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE NOVEDADES",'error' );
+                        //----
+                        //si pertenece al periodo actual o al periodo presupuestando
+                        $vale=$this->controlador()->pertenece_periodo($des['desde'],$des['hasta']);
+                        if ($vale){// si esta dentro del periodo
+                            //----
+                            $mat=$this->controlador()->dep('datos')->tabla('designacion')->tiene_materias($des['id_designacion']);
+                            if($mat){
+                                toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE MATERIAS ASIGNADAS", 'error');
                             }else{
-                                $tut=$this->controlador()->dep('datos')->tabla('designacion')->tiene_tutorias($des['id_designacion']);
-                                 if($tut){
-                                    toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE TUTORIAS", 'error');
+                                $nov=$this->controlador()->dep('datos')->tabla('designacion')->tiene_novedades($des['id_designacion']);
+                                if($nov){
+                                    toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE NOVEDADES",'error' );
                                 }else{
+                                    $tut=$this->controlador()->dep('datos')->tabla('designacion')->tiene_tutorias($des['id_designacion']);
+                                     if($tut){
+                                        toba::notificacion()->agregar("NO SE PUEDE ELIMINAR LA DESIGNACION PORQUE TIENE TUTORIAS", 'error');
+                                    }else{
                                     
                                     $this->controlador()->dep('datos')->tabla('designacion')->eliminar_todo();
                                     $sql="delete from imputacion where id_designacion=".$des['id_designacion'];
@@ -208,6 +213,9 @@ class cargo_solapas extends toba_ci
                                     toba::notificacion()->agregar("LA DESIGNACION HA SIDO ELIMINADA", 'info');
                                 }
                             }
+                        }
+                        }else{
+                            toba::notificacion()->agregar("NO PUEDE ELIMINAR UNA DESIGNACION SI ESTA NO PERTENECER AL PERIODO ACTUAL/PRESUPUESTANDO", 'error'); 
                         }
                     }
                 }else{
@@ -224,11 +232,11 @@ class cargo_solapas extends toba_ci
          
          if($datos['hasta']!=null && $datos['hasta']==$nuevafecha){//si hasta <>null and hasta=desde-1 es una anulacion
               $vale=true;
-         }else{//si pertenece al periodo actual o al periodo presupuestando
+         }else{
              if($datos['hasta'] !=null && $datos['hasta']<$datos['desde']){//verifica que la fecha hasta>desde
                  $vale=false;
                  $mensaje='La fecha hasta debe ser mayor que la desde';
-             }else{
+             }else{//si pertenece al periodo actual o al periodo presupuestando
                  $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
                  $mensaje='LA DESIGNACION DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
              }
@@ -1111,6 +1119,7 @@ class cargo_solapas extends toba_ci
             //verifico que este dentro del periodo de la designacion
             //permito ingresar como fecha de baja un dia antes de la fecha desde. Esto para anular designaciones
             if( $datos['desde']>=($desig['desde']-1) && $datos['desde']<=$udia ){
+                    //actualiza las novedades licencias/cese  > que la baja
                     $this->controlador()->dep('datos')->tabla('novedad')->setear_baja($desig['id_designacion'],$datos['desde']);
                     if($mensaje!=''){
                     //agrego historico

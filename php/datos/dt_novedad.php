@@ -1,6 +1,7 @@
 <?php
 class dt_novedad extends toba_datos_tabla
 {
+      
 	function get_descripciones()
 	{
 		$sql = "SELECT id_novedad, tipo_norma FROM novedad ORDER BY tipo_norma";
@@ -57,9 +58,19 @@ class dt_novedad extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
         function setear_baja($des,$hasta)
-        {
-            $sql="update novedad set hasta='".$hasta."' where id_designacion=".$des." and hasta is not null and hasta>='".$hasta."'";
+        {//busco las novedades de esa designacion con fecha hasta>a la fecha que ingresa
+            $mensaje="";
+            $sql="select * from novedad where id_designacion=".$des." and tipo_nov in (2,5) and hasta>'".$hasta."'";
+            $resul=toba::db('designa')->consultar($sql);
+            
+            if (count($resul)>0){
+                $mensaje=" LA DESIGNACION TENIA LICENCIAS QUE EXCEDIAN LA FECHA DE LA BAJA";
+            }
+            $sql="update novedad set hasta='".$hasta."' where id_designacion=".$des." and  tipo_nov in (2,5) and hasta is not null and hasta>='".$hasta."'";
             toba::db('designa')->consultar($sql);
+            if($mensaje<>""){
+                toba::notificacion()->agregar($mensaje,'info');
+            }
         }
         function estado_designacion($id_desig){
             $sql="select * from novedad where id_designacion=".$id_desig;
