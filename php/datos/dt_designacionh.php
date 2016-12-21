@@ -31,8 +31,9 @@ class dt_designacionh extends toba_datos_tabla
      //presupuesto quiere ver todos
     function get_tkd_ua($ua=null)    {
             $where="";
+            //el tkd 333 esta para varias facus porque pablo hizo update equivocado
             if(isset($ua)){
-                $where=" where uni_acad='$ua' and nro_540 is not null";
+                $where=" where uni_acad='$ua' and nro_540 is not null and ((nro_540<>333) or (nro_540=333 and uni_acad='CUZA'))";
             }
             $sql = "SELECT distinct nro_540 FROM public_auditoria.logs_designacion $where order by nro_540";
             
