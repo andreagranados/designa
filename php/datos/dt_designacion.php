@@ -703,8 +703,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
                 $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
 		
-                //que sea una designacion vigente, dentro del periodo actual
-		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
+                //que sea una designacion vigente, dentro del periodo actual o anulado cuando le setean el hasta con el dia anterior al desde
+		$where=" WHERE ((a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)) or (a.desde>a.hasta and ".$filtro['anio']."=extract(year from a.hasta)))";
                 $where.=" AND  nro_540 is null";
                           
                 
