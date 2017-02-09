@@ -917,8 +917,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 
 		$where = "";
                 
-                //que sea una designacion o reserva vigente, dentro del periodo actual
-		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
+                //que sea una designacion o reserva vigente, dentro del periodo actual o anulada (hasta>desde)
+		$where=" WHERE ((a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)) or (a.desde>a.hasta and ".$filtro['anio']."=extract(year from a.hasta)))";
                 //que tenga numero de 540 y norma legal
                 $where.=" AND a.nro_540 is not null
                           AND a.nro_norma is not null";
