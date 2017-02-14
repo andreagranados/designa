@@ -41,7 +41,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
             }
         }
         $sql="select * from ("
-                . "select t_do.apellido||t_do.nombre as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria"
+                . "select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria"
                 . " from integrante_interno_pi i, docente t_do ,pinvestigacion t_i,designacion d, funcion_investigador f "
                 . " WHERE i.id_designacion=d.id_designacion "
                 . "and d.id_docente=t_do.id_docente
