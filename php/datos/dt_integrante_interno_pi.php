@@ -1,19 +1,52 @@
 <?php
+require_once 'dt_mocovi_periodo_presupuestario.php';
+require_once 'consultas_mapuche.php';
 class dt_integrante_interno_pi extends toba_datos_tabla
 {
-    function get_participantes($where=null){
-        if(!is_null($where)){
-                    $where=' WHERE '.$where;
-            }else{
-                    $where='';
-            }
+    function get_participantes($filtro=array()){
+        $where=" WHERE ";
+        if (isset($filtro['uni_acad']['valor'])) {
+            $where.= "  uni_acad = ".quote($filtro['uni_acad']['valor']);
+         }
+        if (isset($filtro['anio']['valor'])) {
+            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
+            $where.=" and fec_desde <='".$udia."' and (fec_hasta>='".$pdia."' or fec_hasta is null)";
+                    
+	}   
+        if (isset($filtro['funcion_p']['valor'])) {
+            $where.=" and funcion_p=".quote($filtro['funcion_p']['valor']);
+        }
         
+        if (isset($filtro['codigo']['valor'])) {
+            switch ($filtro['codigo']['condicion']) {
+                case 'contiene':  $where.=" and codigo ILIKE ".quote("%{$filtro['codigo']['valor']}%");  break;
+                case 'no_contiene':   $where.=" and codigo NOT ILIKE ".quote("%{$filtro['codigo']['valor']}%"); break;
+                case 'comienza_con': $where.=" and codigo ILIKE ".quote("{$filtro['codigo']['valor']}%");   break;
+                case 'termina_con':  $where.=" and codigo ILIKE ".quote("%{$filtro['codigo']['valor']}");  break;
+                case 'es_igual_a': $where.=" and codigo = ".quote("{$filtro['codigo']['valor']}");   break;
+                case 'es_distinto_de':  $where.=" and codigo <> ".quote("{$filtro['codigo']['valor']}");  break;
+                
+            }
+        }
+         if (isset($filtro['descripcion']['valor'])) {
+            switch ($filtro['descripcion']['condicion']) {
+                case 'contiene':  $where.=" and descripcion ILIKE ".quote("%{$filtro['descripcion']['valor']}%");  break;
+                case 'no_contiene':   $where.=" and descripcion NOT ILIKE ".quote("%{$filtro['descripcion']['valor']}%"); break;
+                case 'comienza_con': $where.=" and descripcion ILIKE ".quote("{$filtro['descripcion']['valor']}%");   break;
+                case 'termina_con':  $where.=" and descripcion ILIKE ".quote("%{$filtro['descripcion']['valor']}");  break;
+                case 'es_igual_a': $where.=" and descripcion = ".quote("{$filtro['descripcion']['valor']}");   break;
+                case 'es_distinto_de':  $where.=" and descripcion <> ".quote("{$filtro['descripcion']['valor']}");  break;
+                
+            }
+        }
         $sql="select * from ("
-                . "select t_do.apellido||t_do.nombre as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,i.carga_horaria"
-                . " from integrante_interno_pi i, docente t_do ,pinvestigacion t_i,designacion d "
+                . "select t_do.apellido||t_do.nombre as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria"
+                . " from integrante_interno_pi i, docente t_do ,pinvestigacion t_i,designacion d, funcion_investigador f "
                 . " WHERE i.id_designacion=d.id_designacion "
                 . "and d.id_docente=t_do.id_docente
                     and t_i.id_pinv=i.pinvest 
+                    and i.funcion_p=f.id_funcion
                     order by apellido,nombre,t_i.codigo) b $where";
         
         return toba::db('designa')->consultar($sql);
