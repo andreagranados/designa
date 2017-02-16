@@ -198,6 +198,7 @@ class ci_pinv_otros extends designa_ci
             $datosp['nro_resol']=$datos['nro_resol'];
             $datosp['fec_resol']=$datos['fec_resol'];
             $datosp['objetivo']=$datos['objetivo']; 
+            $datosp['observacion']=$datos['observacion']; 
             switch ($datos['tipo']) {
                 case 0:$datosp['tipo']='PROIN'; break;
                 case 1:$datosp['tipo']='PIN1';break;
