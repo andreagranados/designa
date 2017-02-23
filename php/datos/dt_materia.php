@@ -57,7 +57,8 @@ class dt_materia extends toba_datos_tabla
        //trae todas, no discrimina
         function get_listado($filtro=array())
 	{
-		$where = array();
+		
+                $where = array();
                 if (isset($filtro['uni_acad'])) {
 			$where[] = "uni_acad = ".quote("{$filtro['uni_acad']}");
 		}
@@ -68,16 +69,17 @@ class dt_materia extends toba_datos_tabla
                 if (isset($filtro['id_departamento'])) {
 			$where[] = "id_departamento = ".$filtro['id_departamento'];
 		}
-                
-                if (isset($filtro['cod_carrera'])) {
-			$where[] = "cod_carrera ILIKE ".quote("%{$filtro['cod_carrera']}%");
+             
+                if (isset($filtro['id_plan'])) {
+			$where[] = "t_m.id_plan= ".$filtro['id_plan'];
 		}
                 if (isset($filtro['periodo_dictado'])) {
 			$where[] = "periodo_dictado = ".$filtro['periodo_dictado'];
 		}
 		$sql = "SELECT
 			t_m.id_materia,
-			t_pe.cod_carrera as id_plan,
+			t_pe.cod_carrera,
+                        t_pe.id_plan,
 			t_m.desc_materia,
 			t_m.orden_materia,
 			t_m.anio_segunplan,
@@ -92,7 +94,8 @@ class dt_materia extends toba_datos_tabla
                         t_pe.ordenanza,
                         t_pe. uni_acad
 		FROM
-			materia as t_m	LEFT OUTER JOIN periodo as t_p ON (t_m.periodo_dictado = t_p.id_periodo)
+			materia as t_m	
+                        LEFT OUTER JOIN periodo as t_p ON (t_m.periodo_dictado = t_p.id_periodo)
 			LEFT OUTER JOIN periodo as t_p1 ON (t_m.periodo_dictado_real = t_p1.id_periodo)
 			LEFT OUTER JOIN departamento as t_d ON (t_m.id_departamento = t_d.iddepto)
                         LEFT OUTER JOIN area as t_ma ON (t_m.id_area = t_ma.idarea) 
@@ -106,7 +109,8 @@ class dt_materia extends toba_datos_tabla
 			$sql = sql_concatenar_where($sql, $where);
 		}
                     
-                $sql=$sql." order by id_plan,anio_segunplan";
+                $sql=$sql." order by t_m.id_plan,orden_materia,anio_segunplan,periodo_dictado";
+                
 		return toba::db('designa')->consultar($sql);
 	}
 

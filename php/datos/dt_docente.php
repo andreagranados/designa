@@ -18,8 +18,19 @@ class dt_docente extends toba_datos_tabla
             $res = toba::db('designa')->consultar($sql);
             return $res[0]['legajo'];
         }
+        function get_docente($filtro=array()){
+            $where="";
+            if (isset($filtro['id_docente'])) {
+                $where.= " WHERE id_docente = ".$filtro['id_docente'];
+            }
+            $sql = "SELECT id_docente, apellido, nombre,legajo FROM docente $where ORDER BY nombre";
+	    return toba::db('designa')->consultar($sql);
+        }
+        function get_designaciones_periodo($id_doc,$anio){
+            
+        }
         function get_designaciones($id_doc){
-            $sql="select t_d.id_designacion,t_no.nro_norma,t_no.tipo_norma,t_no.fecha,t_dep.descripcion as depto,t_a.descripcion as area,t_or.descripcion as orient,t_u.descripcion as ua,t_d.desde,t_d.hasta,t_e.descripcion as cat, t_c.descripcion as caracter,t_de.descripcion as ded"
+            $sql="select t_d.id_designacion,t_d.cat_estat,t_d.dedic,t_no.nro_norma,t_no.tipo_norma,t_no.fecha,t_dep.descripcion as depto,t_a.descripcion as area,t_or.descripcion as orient,t_u.descripcion as ua,t_d.desde,t_d.hasta,t_e.descripcion as cat, t_c.descripcion as caracter,t_de.descripcion as ded"
                     . " from designacion t_d "
                     . " LEFT OUTER JOIN categ_estatuto t_e ON (t_e.codigo_est=t_d.cat_estat)"
                     . " LEFT OUTER JOIN caracter t_c ON (t_c.id_car=t_d.carac)"
@@ -203,6 +214,7 @@ class dt_docente extends toba_datos_tabla
 			t_d.id_docente,
 			t_d.legajo,
 			t_d.apellido,
+                        t_d.apellido||', '||t_d.nombre as descripcion,
 			t_d.nombre,
 			t_d.nro_tabla,
 			t_d.tipo_docum,
@@ -221,7 +233,8 @@ class dt_docente extends toba_datos_tabla
 			docente as t_d	
 		$where )a, designacion b, unidad_acad c"
                     . " where a.id_docente=b.id_docente"
-                    . " and b.uni_acad=c.sigla";
+                    . " and b.uni_acad=c.sigla"
+                    . " order by descripcion";
             $sql = toba::perfil_de_datos()->filtrar($sql);
             return toba::db('designa')->consultar($sql);
         }
