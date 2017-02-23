@@ -26,6 +26,7 @@ class dt_docente extends toba_datos_tabla
             $sql = "SELECT id_docente, apellido, nombre,legajo FROM docente $where ORDER BY nombre";
 	    return toba::db('designa')->consultar($sql);
         }
+      
         function get_designaciones_periodo($id_doc,$anio){
             
         }

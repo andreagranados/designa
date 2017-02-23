@@ -82,12 +82,12 @@ class ci_certificacion_periodo extends toba_ci
                 //Primero definimos la plantilla para el número de página.
             $formato = 'Página {PAGENUM} de {TOTALPAGENUM}';
                 //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
-            $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
-                //Luego definimos la ubicación de la fecha en el pie de página.
-            $pdf->addText(480,20,8,"Sistema MOCOVI-Modulo Designaciones Docentes".date('d/m/Y h:i:s a')); 
-            $pdf->addText(80,170,10,"Se extiende el presente certificado el ".date("d/m/Y")." a las ".date("h").":".date("i")." ".date("A").", a pedido del interesado, y a los efectos de ser presentado ante quien corresponda."."\n"); 
-            $pdf->addText(750,90,10,"------------------"); 
-            $pdf->addText(750,80,10,"Firma y Sello"); 
+//            $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+//                //Luego definimos la ubicación de la fecha en el pie de página.
+//            $pdf->addText(480,20,8,"Sistema MOCOVI-Modulo Designaciones Docentes".date('d/m/Y h:i:s a')); 
+//            $pdf->addText(80,170,10,"Se extiende el presente certificado el ".date("d/m/Y")." a las ".date("h").":".date("i")." ".date("A").", a pedido del interesado, y a los efectos de ser presentado ante quien corresponda."."\n"); 
+//            $pdf->addText(750,90,10,"------------------"); 
+//            $pdf->addText(750,80,10,"Firma y Sello"); 
                 //Configuración de Título.
             $salida->titulo(utf8_d_seguro("Planilla de Designación del Docente"));
  
@@ -127,8 +127,16 @@ class ci_certificacion_periodo extends toba_ci
                 $pdf->ezText($texto,12);
                 $texto= "Orientacion: <b>".$des['orient']."</b>";
                 $pdf->ezText($texto,12);
-                $desig=$this->dep('datos')->tabla('docente')->get_materias($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
-                $this->s__datos_filtro;
+                $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig($des['id_designacion']);
+                $i=0;
+                foreach ($mate as $ma) {//busco todas las materias correspondientes al año previamente seleccionado
+                    if($ma['anio']==$this->s__datos_filtro['anio']){
+                        $datos[$i]=array('col1' => $ma['desc_materia'], 'col2' => $ma['carrera'],'col3' => $ma['periodo'],'col4' => $ma['carga_horaria'],'col5' => $ma['modulo']);
+                        $i++;
+                    }
+                    
+                }
+                $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Periodo','col4' => 'Hs','col5' => 'Módulo'), 'ACTIVIDAD ACADEMICA', $opciones);
             }
             
             $datos = array(
@@ -136,7 +144,7 @@ class ci_certificacion_periodo extends toba_ci
                 array('col1' => 3, 'col2' => 4,'col3' => 2,'col4' => 2,'col5' => 2),
               );
             
-            $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Año','col4' => 'Hs','col5' => 'Módulo'), 'ACTIVIDAD ACADEMICA', $opciones);
+            $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Periodo','col4' => 'Hs','col5' => 'Módulo'), 'ACTIVIDAD ACADEMICA', $opciones);
             
             $pdf->ezText("\n\n\n", 10);
             
