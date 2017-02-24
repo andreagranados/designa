@@ -1,9 +1,10 @@
 <?php
+require_once 'dt_mocovi_periodo_presupuestario.php';
 class ci_certificacion_periodo extends toba_ci
 {
         protected $s__datos_filtro;
         protected $s__agente;
-        //protected $s__where;
+        
         //-----------------------------------------------------------------------------------
 	//---- filtro -----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -18,36 +19,13 @@ class ci_certificacion_periodo extends toba_ci
 	function evt__filtro__filtrar($datos)
 	{
             $this->s__datos_filtro = $datos;
-            //$this->s__where = $this->dep('filtro')->get_sql_where();
 	}
 
 	function evt__filtro__cancelar()
 	{
             unset($this->s__datos_filtro);
-            //unset($this->s__where);
+          
 	}
-//        //-----------------------------------------------------------------------------------
-//	//---- filtros ----------------------------------------------------------------------
-//	//-----------------------------------------------------------------------------------
-//
-//	function conf__filtros(toba_ei_filtro $filtro)
-//	{
-//		if (isset($this->s__datos_filtro)) {
-//			$filtro->set_datos($this->s__datos_filtro);
-//		}
-//	}
-//
-//	function evt__filtros__filtrar($datos)
-//	{
-//		$this->s__datos_filtro = $datos;
-//                $this->s__where = $this->dep('filtros')->get_sql_where();
-//	}
-//
-//	function evt__filtros__cancelar()
-//	{
-//            unset($this->s__datos_filtro);
-//            unset($this->s__where);
-//	}
 	//-----------------------------------------------------------------------------------
 	//---- cuadro -----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -131,20 +109,28 @@ class ci_certificacion_periodo extends toba_ci
                 $i=0;
                 foreach ($mate as $ma) {//busco todas las materias correspondientes al año previamente seleccionado
                     if($ma['anio']==$this->s__datos_filtro['anio']){
-                        $datos[$i]=array('col1' => $ma['desc_materia'], 'col2' => $ma['carrera'],'col3' => $ma['periodo'],'col4' => $ma['carga_horaria'],'col5' => $ma['modulo']);
+                        $datos[$i]=array('col1' => $ma['desc_materia'], 'col2' => $ma['carrera'],'col3' => $ma['periodo'],'col4' => $ma['carga_horaria'],'col5' => $ma['moddes']);
                         $i++;
                     }
                     
                 }
                 $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Periodo','col4' => 'Hs','col5' => 'Módulo'), 'ACTIVIDAD ACADEMICA', $opciones);
+                
             }
-            
+            $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($this->s__datos_filtro['anio']);
+            $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($this->s__datos_filtro['anio']);
+            //busco la actividad en investigacion
+            //$inve=$this->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv($this->s__agente['id_docente']);
+//          foreach ($inve as $i) {
+//              if($i['desde']){
+//              }
+//          }
             $datos = array(
                 array('col1' => 1, 'col2' => 2,'col3' => 2,'col4' => 2,'col5' => 2),
                 array('col1' => 3, 'col2' => 4,'col3' => 2,'col4' => 2,'col5' => 2),
               );
             
-            $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Periodo','col4' => 'Hs','col5' => 'Módulo'), 'ACTIVIDAD ACADEMICA', $opciones);
+            $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Periodo','col4' => 'Hs','col5' => 'Módulo'), 'INVESTIGACION', $opciones);
             
             $pdf->ezText("\n\n\n", 10);
             
