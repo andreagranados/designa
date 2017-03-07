@@ -1,5 +1,4 @@
 <?php
-require_once 'dt_mocovi_periodo_presupuestario.php';
 class ci_certificacion_periodo extends toba_ci
 {
         protected $s__datos_filtro;
@@ -55,7 +54,8 @@ class ci_certificacion_periodo extends toba_ci
             $pdf = $salida->get_pdf();
            
                 //modificamos los márgenes de la hoja top, bottom, left, right
-            $pdf->ezSetMargins(80, 50, 5, 5);
+            //$pdf->ezSetMargins(80, 50, 5, 5);
+            $pdf->ezSetMargins(30, 30, 50, 30);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
             $formato = 'Página {PAGENUM} de {TOTALPAGENUM}';
@@ -67,7 +67,8 @@ class ci_certificacion_periodo extends toba_ci
 //            $pdf->addText(750,90,10,"------------------"); 
 //            $pdf->addText(750,80,10,"Firma y Sello"); 
                 //Configuración de Título.
-            $salida->titulo(utf8_d_seguro("Planilla de Designación del Docente"));
+            
+           $salida->titulo(utf8_d_seguro(utf8_decode("Planilla de Designación del Docente")));
  
            $opciones = array(
                 'showLines'=>1,
@@ -86,24 +87,29 @@ class ci_certificacion_periodo extends toba_ci
             $ag=$this->dep('datos')->tabla('docente')->get_agente($this->s__agente['id_docente']);
             $leg=$this->dep('datos')->tabla('docente')->get_legajo($this->s__agente['id_docente']);
             //recupero las designaciones del periodo previamente seleccionado
-            $desig=$this->dep('datos')->tabla('docente')->get_designaciones($this->s__agente['id_docente']);
-            
+            $desig=$this->dep('datos')->tabla('docente')->get_designaciones_periodo($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
+            $pdf->ezText("\n", 7);
             $texto="Docente: <b>".$ag."</b> Legajo ".$leg;
             $pdf->ezText($texto,12);
             $pdf->ezText("\n", 7);
             
             foreach ($desig as $des) {//para cada designacion
-                $texto= "Categoria y Dedicacion: <b>".trim($des['cat_estat'])."-".$des['dedic']."</b> Desde: <b>".$des['desde']. "</b> Hasta: <b>".$des['hasta']."</b>";
+                if($des['hasta'] == null){
+                    $hasta='-';
+                }else{
+                    $hasta=date_format(date_create($des['hasta']),'d/m/Y');
+                }
+                $texto= utf8_decode("Categoría y Dedicación: <b>".trim($des['cat_estat'])."-".$des['dedic']."</b> Desde: <b>".date_format(date_create($des['desde']),'d/m/Y'). "</b> Hasta: <b>".$hasta."</b>");
                 $pdf->ezText($texto,12);
                 
                
-                $texto= "Situacion: <b>".$des['caracter']."</b>";
+                $texto= utf8_decode("Situación: <b>".$des['caracter']."</b>");
                 $pdf->ezText($texto,12);
                 $texto= "Departamento: <b>".$des['depto']."</b>";
                 $pdf->ezText($texto,12);
-                $texto= "Area: <b>".$des['area']."</b>";
+                $texto= utf8_decode("Área: <b>".$des['area']."</b>");
                 $pdf->ezText($texto,12);
-                $texto= "Orientacion: <b>".$des['orient']."</b>";
+                $texto= utf8_decode("Orientación: <b>".$des['orient']."</b>");
                 $pdf->ezText($texto,12);
                 $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig($des['id_designacion']);
                 $i=0;
@@ -114,11 +120,10 @@ class ci_certificacion_periodo extends toba_ci
                     }
                     
                 }
-                $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Periodo','col4' => 'Hs','col5' => 'Módulo'), 'ACTIVIDAD ACADEMICA', $opciones);
-                
+                $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => utf8_decode('Período'),'col4' => 'Hs','col5' => utf8_decode('Módulo')), 'ACTIVIDAD ACADEMICA', $opciones);
+                $pdf->ezText("\n", 7);
             }
-            $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($this->s__datos_filtro['anio']);
-            $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($this->s__datos_filtro['anio']);
+            
             //busco la actividad en investigacion
             //$inve=$this->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv($this->s__agente['id_docente']);
 //          foreach ($inve as $i) {
@@ -130,7 +135,7 @@ class ci_certificacion_periodo extends toba_ci
                 array('col1' => 3, 'col2' => 4,'col3' => 2,'col4' => 2,'col5' => 2),
               );
             
-            $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Periodo','col4' => 'Hs','col5' => 'Módulo'), 'INVESTIGACION', $opciones);
+          //  $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Periodo','col4' => 'Hs','col5' => 'Módulo'), 'INVESTIGACION', $opciones);
             
             $pdf->ezText("\n\n\n", 10);
             
