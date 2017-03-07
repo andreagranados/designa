@@ -77,6 +77,7 @@ class ci_proyectos_extension extends toba_ci
 	{
             if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('formulario')->descolapsar();
+                $form->ef('uni_acad')->set_obligatorio('true');
                 $form->ef('denominacion')->set_obligatorio('true');
                 $form->ef('nro_resol')->set_obligatorio('true');
                 $form->ef('fecha_resol')->set_obligatorio('true');
@@ -99,11 +100,12 @@ class ci_proyectos_extension extends toba_ci
                         $datos['financiacion']='NO';
                     };
 		$form->set_datos($datos);
-		}
+                }
             //pregunto si el usuario logueado esta asociado a un perfil para desactivar los campos que no debe completar
              
             $perfil=toba::usuario()->get_perfil_datos();   
             if($perfil!=null){//si esta asociado a un perfil de datos entonces no permito que toquen los sig campos
+                $form->ef('uni_acad')->set_solo_lectura(true);   
                 $form->ef('codigo')->set_solo_lectura(true);   
                 $form->ef('nro_ord_cs')->set_solo_lectura(true);   
                 $form->ef('res_rect')->set_solo_lectura(true);   
@@ -124,18 +126,23 @@ class ci_proyectos_extension extends toba_ci
 
 	function evt__formulario__alta($datos)
 	{
-		$ua = $this->dep('datos')->tabla('unidad_acad')->get_ua();
-                $datos['uni_acad']= $ua[0]['sigla'];
-                if(trim($datos['financiacion'])=='SI'){
-                        $datos['financiacion']=true;
-                    };
-                if(trim($datos['financiacion'])=='NO') {   
-                        $datos['financiacion']=false;
-                    };
+            $perfil=toba::usuario()->get_perfil_datos();   
+            if($perfil!=null){
+              $ua = $this->dep('datos')->tabla('unidad_acad')->get_ua();//trae la ua de acuerdo al perfil de datos  
+              $datos['uni_acad']= $ua[0]['sigla'];
+            }
+	    
+            if(trim($datos['financiacion'])=='SI'){
+                $datos['financiacion']=true;
+               };
+            if(trim($datos['financiacion'])=='NO') {   
+                $datos['financiacion']=false;
+               };
                 
-                $this->dep('datos')->tabla('pextension')->set($datos);
-		$this->dep('datos')->tabla('pextension')->sincronizar();
-		$this->resetear();
+            $this->dep('datos')->tabla('pextension')->set($datos);
+	    $this->dep('datos')->tabla('pextension')->sincronizar();
+            $this->dep('datos')->tabla('pextension')->cargar($datos);
+            toba::notificacion()->agregar('El proyecto ha sido guardado exitosamente','info');
 	}
 
 	function evt__formulario__modificacion($datos)
@@ -214,6 +221,7 @@ class ci_proyectos_extension extends toba_ci
                     break;
                 case 'pant_edicion':
                     $this->s__mostrar=1;
+                    $this->dep('datos')->tabla('pextension')->resetear();
                     break;
             }
 
