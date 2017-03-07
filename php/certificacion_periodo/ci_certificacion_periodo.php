@@ -107,9 +107,9 @@ class ci_certificacion_periodo extends toba_ci
                 $pdf->ezText($texto,12);
                 $texto= "Departamento: <b>".$des['depto']."</b>";
                 $pdf->ezText($texto,12);
-                $texto= utf8_decode("Área: <b>".$des['area']."</b>");
+                $texto= utf8_decode("Área:")." <b>".$des['area']."</b>";
                 $pdf->ezText($texto,12);
-                $texto= utf8_decode("Orientación: <b>".$des['orient']."</b>");
+                $texto= utf8_decode("Orientación:")." <b>".$des['orient']."</b>";
                 $pdf->ezText($texto,12);
                 $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig($des['id_designacion']);
                 $i=0;
