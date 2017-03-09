@@ -120,7 +120,7 @@ class ci_articulo73 extends toba_ci
                     $datos[3]=array('col1' => '<b>MODO DE INGRESO:</b> '.$dat[0]['desc_modo_ingreso']);
                     $datos[4]=array('col1' => utf8_decode('<b>OBSERVACIÓN:</b> ').$dat[0]['observacion']);
                     $datos[5]=array('col1' => utf8_decode('<b>RESOLUCIÓN:</b> ').$dat[0]['nro_resolucion']);
-                    $datos[6]=array('col1' => '<b>CATEGORIA QUE REGULARIZA:</b> '.$dat[0]['cat_est_reg']);
+                    $datos[6]=array('col1' => '<b>CATEGORIA PROPUESTA X LA UA PARA REGULARIZAR:</b> '.$dat[0]['cat_est_reg']);
                     $datos[7]=array('col1' => '<b>DEPARTAMENTO:</b> '.$dat[0]['departamento']);
                     $datos[8]=array('col1' => utf8_decode('<b>ÁREA: </b>').$dat[0]['area']);
                     $datos[9]=array('col1' => utf8_decode('<b>ORIENTACIÓN: </b>').$dat[0]['orientacion']);
