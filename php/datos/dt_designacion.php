@@ -184,13 +184,15 @@ class dt_designacion extends toba_datos_tabla
                 }
                 
             }
-            $ua=$filtro['uni_acad'];
-            if($filtro['uni_acad']=='ESCM'){
-                $filtro['uni_acad']='IBMP';
-            }
-            //recupero los cargos de mapuche de ese periodo y esa ua
-            $datos_mapuche = consultas_mapuche::get_cargos($filtro['uni_acad'],$udia,$pdia);
+           
+            $ua=trim($filtro['uni_acad']);
+            if($ua=="ESCM"){
+                $ua='IBMP';
+            };
             
+            //recupero los cargos de mapuche de ese periodo y esa ua
+            $datos_mapuche = consultas_mapuche::get_cargos($ua,$udia,$pdia);
+
             $sql=" CREATE LOCAL TEMP TABLE auxi
             (   id_desig integer,
             chkstopliq  integer,
@@ -212,7 +214,7 @@ class dt_designacion extends toba_datos_tabla
                 }else{
                     $concat="null";
                 }
-                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$ua."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",'".$valor['lic']."')";
+                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$filtro['uni_acad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",'".$valor['lic']."')";
                 
                 toba::db('designa')->consultar($sql);
             }
@@ -222,6 +224,7 @@ class dt_designacion extends toba_datos_tabla
             if(isset($filtro['uni_acad'])){
                 $where=" and t_d.uni_acad='".$filtro['uni_acad']."'";
             }
+            
             $sql="select * from( select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,b.nro_cargo,b.chkstopliq,b.lic,a.licd from "
                     . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup"
                     . " from designacion t_d, docente t_do
