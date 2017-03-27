@@ -458,7 +458,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3609', --objeto_cuadro_col
 	'check_academica', --clave
 	'15', --orden
-	'Check academica?', --titulo
+	'Verificación académica?', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -892,7 +892,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3725', --objeto_cuadro_col
 	'check_presupuesto', --clave
 	'19', --orden
-	'Check Presupuesto?', --titulo
+	'Verificación Presupuestaria?', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

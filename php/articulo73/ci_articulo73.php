@@ -127,9 +127,9 @@ class ci_articulo73 extends toba_ci
                     $datos[10]=array('col1' => utf8_decode('<b>ORIENTACIÓN: </b>').$dat[0]['orientacion']);
                     $datos[11]=array('col1' => '<b>EXPEDIENTE:</b> '.$dat[0]['expediente']);
                     $datos[12]=array('col1' => utf8_decode('<b>OBSERVACIÓN ACADÉMICA:</b> ').$dat[0]['observacion_acad']);
-                    $datos[13]=array('col1' => utf8_decode('<b>CHECK ACADÉMICA:</b> ').$dat[0]['ca']);
+                    $datos[13]=array('col1' => utf8_decode('<b>VERIFICACIÓN ACADÉMICA:</b> ').$dat[0]['ca']);
                     $datos[14]=array('col1' => utf8_decode('<b>OBSERVACIÓN PRESUPUESTARIA:</b> ').$dat[0]['observacion_presup']);
-                    $datos[15]=array('col1' => utf8_decode('<b>CHECK PRESUPUESTARIO:</b> ').$dat[0]['cp']);
+                        $datos[15]=array('col1' => utf8_decode('<b>VERIFICACIÓN PRESUPUESTARIA:</b> ').$dat[0]['cp']);
                     
                     
                     $pdf->ezTable($datos, array('col1'=>'<b>UA: '.$dat[0]['uni_acad'].'</b>'), $titulo, $opciones);
