@@ -114,24 +114,25 @@ class ci_articulo73 extends toba_ci
                     $dat=$this->dep('datos')->tabla('articulo_73')->get_datos($art['id_designacion']);
                     
                     $i=0;
-                    $datos[0]=array('col1' => utf8_decode('<b>DESIGNACIÓN:</b> ') .$dat[0]['designacion']);
-                    $datos[1]=array('col1' => utf8_decode('<b>ANTIGÜEDAD: </b> ').$dat[0]['antiguedad']);
-                    $datos[2]=array('col1' => '<b>CONTINUIDAD:</b> '.$dat[0]['desc_continuidad']);
-                    $datos[3]=array('col1' => '<b>MODO DE INGRESO:</b> '.$dat[0]['desc_modo_ingreso']);
-                    $datos[4]=array('col1' => utf8_decode('<b>OBSERVACIÓN:</b> ').$dat[0]['observacion']);
-                    $datos[5]=array('col1' => utf8_decode('<b>RESOLUCIÓN:</b> ').$dat[0]['nro_resolucion']);
-                    $datos[6]=array('col1' => utf8_decode('<b>CATEGORÍA PROPUESTA POR LA UA PARA REGULARIZAR:</b> ').$dat[0]['cat_est_reg']);
-                    $datos[7]=array('col1' => '<b>DEPARTAMENTO:</b> '.$dat[0]['departamento']);
-                    $datos[8]=array('col1' => utf8_decode('<b>ÁREA: </b>').$dat[0]['area']);
-                    $datos[9]=array('col1' => utf8_decode('<b>ORIENTACIÓN: </b>').$dat[0]['orientacion']);
-                    $datos[10]=array('col1' => '<b>EXPEDIENTE:</b> '.$dat[0]['expediente']);
-                    $datos[11]=array('col1' => utf8_decode('<b>OBSERVACIÓN ACADÉMICA:</b> ').$dat[0]['observacion_acad']);
-                    $datos[12]=array('col1' => utf8_decode('<b>CHECK ACADÉMICA:</b> ').$dat[0]['ca']);
-                    $datos[13]=array('col1' => utf8_decode('<b>OBSERVACIÓN PRESUPUESTARIA:</b> ').$dat[0]['observacion_presup']);
-                    $datos[14]=array('col1' => utf8_decode('<b>CHECK PRESUPUESTARIO:</b> ').$dat[0]['cp']);
+                    $datos[0]=array('col1' => utf8_decode('<b>LEGAJO:</b> ') .$dat[0]['legajo']);
+                    $datos[1]=array('col1' => utf8_decode('<b>DESIGNACIÓN:</b> ') .$dat[0]['designacion']);
+                    $datos[2]=array('col1' => utf8_decode('<b>ANTIGÜEDAD: </b> ').$dat[0]['antiguedad']);
+                    $datos[3]=array('col1' => '<b>CONTINUIDAD:</b> '.$dat[0]['desc_continuidad']);
+                    $datos[4]=array('col1' => '<b>MODO DE INGRESO:</b> '.$dat[0]['desc_modo_ingreso']);
+                    $datos[5]=array('col1' => utf8_decode('<b>OBSERVACIÓN:</b> ').$dat[0]['observacion']);
+                    $datos[6]=array('col1' => utf8_decode('<b>RESOLUCIÓN:</b> ').$dat[0]['nro_resolucion']);
+                    $datos[7]=array('col1' => utf8_decode('<b>CATEGORÍA PROPUESTA POR LA UA PARA REGULARIZAR:</b> ').$dat[0]['cat_est_reg']);
+                    $datos[8]=array('col1' => '<b>DEPARTAMENTO:</b> '.$dat[0]['departamento']);
+                    $datos[9]=array('col1' => utf8_decode('<b>ÁREA: </b>').$dat[0]['area']);
+                    $datos[10]=array('col1' => utf8_decode('<b>ORIENTACIÓN: </b>').$dat[0]['orientacion']);
+                    $datos[11]=array('col1' => '<b>EXPEDIENTE:</b> '.$dat[0]['expediente']);
+                    $datos[12]=array('col1' => utf8_decode('<b>OBSERVACIÓN ACADÉMICA:</b> ').$dat[0]['observacion_acad']);
+                    $datos[13]=array('col1' => utf8_decode('<b>CHECK ACADÉMICA:</b> ').$dat[0]['ca']);
+                    $datos[14]=array('col1' => utf8_decode('<b>OBSERVACIÓN PRESUPUESTARIA:</b> ').$dat[0]['observacion_presup']);
+                    $datos[15]=array('col1' => utf8_decode('<b>CHECK PRESUPUESTARIO:</b> ').$dat[0]['cp']);
                     
                     
-                    $pdf->ezTable($datos, array('col1'=>'<b>Legajo: '.$dat[0]['legajo'].'</b>'), $titulo, $opciones);
+                    $pdf->ezTable($datos, array('col1'=>'<b>UA: '.$dat[0]['uni_acad'].'</b>'), $titulo, $opciones);
                     foreach ($pdf->ezPages as $pageNum=>$id){ 
                         $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
                         //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
@@ -208,7 +209,8 @@ class ci_articulo73 extends toba_ci
         }
         function evt__form_acad__modificacion($datos)
         {
-            //solo modifica check de academica y observ de academica
+            //solo modifica check de academica, observ de academica y pase superior
+            $datos2['pase_superior']=$datos['pase_superior'];
             $datos2['check_academica']=$datos['check_academica'];
             $datos2['observacion_acad']=$datos['observacion_acad'];
             $datos2['expediente']=$datos['expediente'];
