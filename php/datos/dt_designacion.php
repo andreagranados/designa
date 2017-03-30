@@ -668,9 +668,11 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                $i=0;
                $long=count($res);
                while(!$band && $i<$long){
-                   if(($res[$i]['credito']-($res[$i]['monto1']+$res[$i]['monto2']))<-50){//if($gaste>$resul[$i]['cred']){
+                   if($res[$i]['credito']>0){
+                     if(($res[$i]['credito']-($res[$i]['monto1']+$res[$i]['monto2']))<-50){//if($gaste>$resul[$i]['cred']){
                         $band=true;
                     }
+                   }
                     $i++;
                }
                return $band;
