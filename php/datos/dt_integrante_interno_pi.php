@@ -3,6 +3,22 @@ require_once 'dt_mocovi_periodo_presupuestario.php';
 require_once 'consultas_mapuche.php';
 class dt_integrante_interno_pi extends toba_datos_tabla
 {
+    //trae los integrantes docentes de la ua que ingresa que participan en proyectos de otras ua
+    function get_participantes_externos($filtro=array()){
+        $where=" ";
+        if (isset($filtro['uni_acad']['valor'])) {
+            $where.= "  and a.uni_acad = ".quote($filtro['uni_acad']['valor'])." and t_i.uni_acad <> ".quote($filtro['uni_acad']['valor']);
+         }
+         $sql="select distinct a.id_docente,b.apellido,b.nombre,b.legajo,a.id_designacion,a.uni_acad,t_i.codigo,t_i.denominacion,t_i.uni_acad as ua,t_i.fec_desde,t_i.fec_hasta,funcion_p,i.desde,i.hasta
+                from designacion a, docente b, integrante_interno_pi i,pinvestigacion t_i 
+                where 
+                a.id_docente=b.id_docente
+                and i.id_designacion=a.id_designacion
+                and i.pinvest =t_i.id_pinv
+                ".$where;
+        
+        return toba::db('designa')->consultar($sql); 
+    }
     function get_participantes($filtro=array()){
         $where=" WHERE ";
         if (isset($filtro['uni_acad']['valor'])) {
@@ -111,108 +127,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
             LEFT OUTER JOIN categoria_invest c ON (a.categoria=c.cod_cati)
             order by apellido,nombre";
         return toba::db('designa')->consultar($sql);
-        
-        //mesdesde siempre es menor a meshasta
-//        $desde=$filtro['mesdesde'];
-//        $inicio=$filtro['mesdesde'];
-//        //primer dia del mes
-//	
-//        $primera=true;
-//        $concat="";
-//        while ($desde<=$filtro['meshasta']) {
-//            //primer dia del mes
-//            $fechadesde= date ('d-m-Y',strtotime($filtro['anio'].'-'.$desde.'-01'));
-//	
-//            switch ($desde) {
-//                    case 1:$dias=31;break;
-//                    case 2:$dias=28;break;
-//                    case 3:$dias=31;break;
-//                    case 4:$dias=30;break;
-//                    case 5:$dias=31;break;
-//                    case 6:$dias=31;break;
-//                    case 7:$dias=30;break;
-//                    case 8:$dias=31;break;
-//                    case 9:$dias=30;break;
-//                    case 10:$dias=31;break;
-//                    case 11:$dias=30;break;
-//                    case 12:$dias=31;break;
-//                }        
-//            $fechahasta=date('d-m-Y',strtotime($filtro['anio'].'-'.$desde.'-'.$dias));
-//            if ($primera){
-//                //$sql="select  a$desde".".id_docente$desde,a$desde".".pinvest$desde,a$desde".".cat_investigador$desde,dedic_doc$desde,dedic_inv$desde from ("
-//                $sql="select * from ("
-//                        . " select d.id_docente as id_docente$desde,pinvest as pinvest$desde,i.cat_investigador as cat_investigador$desde,min(case when t_d.dedic is not null then t_d.dedic else d.dedic end )as dedic_doc$desde,"
-//                        . "max(case when t_d.dedic is not null then
-//case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
-//else (case when t_d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
-//      else case when t_d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
-//           else case when i.carga_horaria>=20 then 0 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 0 else 3 end end
-//           end
-//     end)
-//end
-//
-//else 
-//case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
-//else (case when d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
-//      else case when d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
-//           else case when i.carga_horaria>=20 then 0 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 0 else 3 end end
-//           end
-//     end)
-//end
-//end ) as dedic_inv$desde"
-//                        ." from integrante_interno_pi i
-//                        LEFT OUTER JOIN designacion d ON (d.id_designacion=i.id_designacion)
-//                        LEFT OUTER JOIN designacion t_d ON (d.id_docente=t_d.id_docente and t_d.uni_acad='".trim($filtro['ua'])."' and t_d.desde <= '".$fechahasta."' and (t_d.hasta >= '".$fechadesde."' or t_d.hasta is null))
-//                        where ua='".trim($filtro['ua'])."'"
-//                        ."  and cat_investigador<>6
-//                            and  (trim(funcion_p)='ID' or trim(funcion_p)='DP' or trim(funcion_p)='D' or trim(funcion_p)='C' or trim(funcion_p)='ID' or trim(funcion_p)='DpP' or trim(funcion_p)='BC')
-//                            and i.hasta>='".$fechadesde."' and i.desde<='".$fechahasta."'
-//                        group by d.id_docente,pinvest,cat_investigador
-//                        )a$desde ";
-//                $primera=false;
-//            }else{
-//                $sql=$sql." LEFT OUTER JOIN (
-//                            select d.id_docente as id_docente$desde,pinvest as pinvest$desde,cat_investigador as cat_investigador$desde,min(case when t_d.dedic is not null then t_d.dedic else d.dedic end )as dedic_doc$desde,
-//                                max(case when t_d.dedic is not null then
-//case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
-//else (case when t_d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
-//      else case when t_d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
-//           else case when i.carga_horaria>=20 then 0 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 0 else 3 end end
-//           end
-//     end)
-//end
-//
-//else 
-//case when (trim(funcion_p)='BC' or cat_invest_conicet is not null) then 1 
-//else (case when d.dedic=1 then (case when i.carga_horaria>=20 then 1 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end )
-//      else case when d.dedic=2 then (case when i.carga_horaria>=20 then 2 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 2 else 3 end end) 
-//           else case when i.carga_horaria>=20 then 0 else case when (i.carga_horaria<20 and i.carga_horaria>=10) then 0 else 3 end end
-//           end
-//     end)
-//end
-//end ) as dedic_inv$desde
-//                            from integrante_interno_pi i
-//                            LEFT OUTER JOIN designacion d ON (d.id_designacion=i.id_designacion)
-//                            LEFT OUTER JOIN designacion t_d ON (d.id_docente=t_d.id_docente and t_d.uni_acad='".trim($filtro['ua'])."' and t_d.desde <= '".$fechahasta."' and (t_d.hasta >= '".$fechadesde."' or t_d.hasta is null))
-//                            where ua='".trim($filtro['ua'])."'"
-//                            ." and cat_investigador<>6
-//                            and  (trim(funcion_p)='ID' or trim(funcion_p)='DP' or trim(funcion_p)='D' or trim(funcion_p)='C' or trim(funcion_p)='ID' or trim(funcion_p)='DpP' or trim(funcion_p)='BC')
-//                            and i.hasta>='".$fechadesde."' and i.desde<='".$fechahasta."'
-//                            group by d.id_docente,pinvest,cat_investigador)a$desde ON (a$desde.id_docente$desde=a".($desde-1).".id_docente".($desde-1)." and a$desde.pinvest$desde=a".($desde-1).".pinvest".($desde-1)." and a$desde.cat_investigador$desde=a".($desde-1).".cat_investigador".($desde-1).")";
-//            }
-//            $concat=$concat."dedic_doc$desde".","."dedic_inv$desde".",";
-//            //$concat=$concat."dedic_doc$desde".",";
-//            $desde++;
-//    }
-//    $sql="select t_do.apellido,t_do.nombre,".$inicio." as mesdesde,".($desde-1)." as meshasta,t_do.id_docente,pi.codigo,pi.id_pinv,".$concat."t_c.descripcion as cod_cati  "
-//                . "from ("
-//            .$sql
-//            .") z"
-//            . " LEFT OUTER JOIN docente t_do ON (z.id_docente$inicio=t_do.id_docente)
-// 		LEFT OUTER JOIN pinvestigacion pi ON (z.pinvest$inicio=pi.id_pinv)
-// 		LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=z.cat_investigador$inicio)";   
-//    //print_r($sql);
-//       return toba::db('designa')->consultar($sql);
+       
     }
     
 }
