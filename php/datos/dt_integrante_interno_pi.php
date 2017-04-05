@@ -5,9 +5,15 @@ class dt_integrante_interno_pi extends toba_datos_tabla
 {
     //trae los integrantes docentes de la ua que ingresa que participan en proyectos de otras ua
     function get_participantes_externos($filtro=array()){
+        
         $where=" ";
         if (isset($filtro['uni_acad']['valor'])) {
             $where.= "  and a.uni_acad = ".quote($filtro['uni_acad']['valor'])." and t_i.uni_acad <> ".quote($filtro['uni_acad']['valor']);
+         }
+        if (isset($filtro['anio']['valor'])) {
+            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
+            $where.=" and t_i.fec_desde<='".$udia."' and (t_i.fec_hasta>='".$pdia."' or t_i.fec_hasta is null)";
          }
          $sql="select distinct a.id_docente,b.apellido,b.nombre,b.legajo,a.id_designacion,a.uni_acad,t_i.codigo,t_i.denominacion,t_i.uni_acad as ua,t_i.fec_desde,t_i.fec_hasta,funcion_p,i.desde,i.hasta
                 from designacion a, docente b, integrante_interno_pi i,pinvestigacion t_i 
@@ -90,7 +96,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
     }
     //dado un docente, trae todos los proyectos de investigacion en los que haya participado
     function sus_proyectos_inv($id_doc){
-        $sql="select t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd "
+        $sql="select t_d.id_designacion||'-'||t_d.cat_estat||t_d.dedic||t_d.carac||'-'||t_i.ua||'('||to_char(t_d.desde,'dd/mm/YYYY')||'-'||case when t_d.hasta is null then '' else to_char(t_d.hasta,'dd/mm/YYYY') end  ||')' as desig,t_p.uni_acad,t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd "
                 . " from integrante_interno_pi t_i"
                 . " LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv)"
                 . " LEFT OUTER JOIN designacion t_d  ON (t_i.id_designacion=t_d.id_designacion)"
