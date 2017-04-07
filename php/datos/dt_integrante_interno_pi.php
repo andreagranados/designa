@@ -15,7 +15,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
             $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
             $where.=" and t_i.fec_desde<='".$udia."' and (t_i.fec_hasta>='".$pdia."' or t_i.fec_hasta is null)";
          }
-         $sql="select distinct a.id_docente,b.apellido,b.nombre,b.legajo,a.id_designacion,a.uni_acad,t_i.codigo,t_i.denominacion,t_i.uni_acad as ua,t_i.fec_desde,t_i.fec_hasta,funcion_p,i.desde,i.hasta
+         $sql="select distinct a.id_docente,b.apellido,b.nombre,b.legajo,a.id_designacion,a.uni_acad,t_i.codigo,t_i.denominacion,t_i.uni_acad as ua,t_i.fec_desde,t_i.fec_hasta,funcion_p,i.desde,i.hasta,i.carga_horaria
                 from designacion a, docente b, integrante_interno_pi i,pinvestigacion t_i 
                 where 
                 a.id_docente=b.id_docente
