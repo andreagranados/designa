@@ -30,7 +30,6 @@ class ci_ver_designaciones extends toba_ci
         function conf__cuadro(toba_ei_cuadro $cuadro)
 	{   
             if (isset($this->s__datos_filtro)) {
-                //print_r($this->s__datos_filtro);exit;
                 $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_designaciones_de($this->s__datos_filtro));
 	     }
 	}

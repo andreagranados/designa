@@ -975,17 +975,19 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     . " and b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null))";
               $seleccion=" case when b.id_novedad is null then 'A' else 'L' end as estado, ";
             }
-            $sql="select a.*,".$seleccion."t_de.descripcion as departamento,t_a.descripcion as area,t_o.descripcion as orientacion from"
-                    . "(select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_d.id_designacion, t_d.cat_estat,t_d.dedic,t_d.carac,t_d.desde,t_d.hasta,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion"
+            $sql="select a.*,".$seleccion."t_de.descripcion as departamento,t_a.descripcion as area,t_o.descripcion as orientacion,t_n.tipo_norma||t_n.nro_norma||'/'||extract(year from t_n.fecha) as norma  from"
+                    . "(select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_d.id_designacion, t_d.estado,t_d.cat_estat,t_d.dedic,t_d.carac,t_d.desde,t_d.hasta,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_d.id_norma"
                     . " from designacion t_d, docente t_do"
                     . " WHERE t_d.id_docente=t_do.id_docente"
                     . $where
                     ." order by desde"
                     . ")a"
                     .$where2
+                    . " LEFT OUTER JOIN norma t_n ON (a.id_norma=t_n.id_norma)"
                     . " LEFT OUTER JOIN departamento t_de ON (a.id_departamento=t_de.iddepto)"
                     . " LEFT OUTER JOIN area t_a ON (a.id_area=t_a.idarea)"
-                    . " LEFT OUTER JOIN orientacion t_o ON (a.id_orientacion=t_o.idorient and t_o.idarea=t_a.idarea)";
+                    . " LEFT OUTER JOIN orientacion t_o ON (a.id_orientacion=t_o.idorient and t_o.idarea=t_a.idarea)"
+                    . "order by desde,hasta";
             
             return toba::db('designa')->consultar($sql);       
         }
