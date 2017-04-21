@@ -47,7 +47,7 @@ class dt_categorizacion extends toba_datos_tabla
                 .$where.")b, unidad_acad c"
                 . " where b.uni_acad=c.sigla" 
         
-                ." order by id_docente,anio_categ";
+                ." order by apellido,nombre,anio_categ";
         $sql = toba::perfil_de_datos()->filtrar($sql);
         
         return toba::db('designa')->consultar($sql);
