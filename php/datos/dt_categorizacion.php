@@ -49,7 +49,7 @@ class dt_categorizacion extends toba_datos_tabla
         
                 ." order by id_docente,anio_categ";
         $sql = toba::perfil_de_datos()->filtrar($sql);
-        print_r($sql);
+        
         return toba::db('designa')->consultar($sql);
     }
     
