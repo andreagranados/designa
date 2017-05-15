@@ -80,6 +80,7 @@ class dt_articulo_73 extends designa_datos_tabla
         }else{
             $concatenar="";
         }
+        
         $sql="select sigla,descripcion from unidad_acad ";
         $sql = toba::perfil_de_datos()->filtrar($sql);
         $perfil=toba::db('designa')->consultar($sql);
@@ -115,8 +116,8 @@ class dt_articulo_73 extends designa_datos_tabla
                         $sql=" insert into auxi values (".$valor['nro_legaj'].",".$valor['antig'].")";
                         toba::db('designa')->consultar($sql);
                     }
-                    $sql = "SELECT a.*,b.antiguedad from ("
-                    . " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
+                    $sql = "SELECT a.*,b.antiguedad from (".
+                     " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
                     . " from docente a, designacion b,mocovi_costo_categoria c, imputacion d, mocovi_programa e"
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
@@ -126,7 +127,7 @@ class dt_articulo_73 extends designa_datos_tabla
                            )
                         
                         and c.codigo_siu=b.cat_mapuche
-                        and c.id_periodo=2--periodo 2016
+                        and c.id_periodo=2
                         and c.costo_diario<=751.13
                         and b.uni_acad='".$ua."'"
                             //tiene una designacion interina en 2018
@@ -143,7 +144,7 @@ class dt_articulo_73 extends designa_datos_tabla
                             . ") a INNER JOIN auxi b "
                     .                   " ON (a.legajo=b.nro_legaj)"
                             . " order by descripcion";
-                          
+
                     //and c.id_periodo=2--periodo 2016
                     //c.costo_diario<=751,12 --costo de PAD1=ADJE
                     $res=toba::db('designa')->consultar($sql);

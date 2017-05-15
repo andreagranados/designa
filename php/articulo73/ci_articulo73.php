@@ -14,11 +14,13 @@ class ci_articulo73 extends toba_ci
         
         
         function get_articulo73_nuevo(){
+           $res=array();
            if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()) {
-               $this->dep('datos')->tabla('articulo_73')->get_articulo73(0);
+               $res=$this->dep('datos')->tabla('articulo_73')->get_articulo73(0);
            } else{
-               $this->dep('datos')->tabla('articulo_73')->get_articulo73(1);
+               $res=$this->dep('datos')->tabla('articulo_73')->get_articulo73(1);
            }   
+            return $res;
         }
 	function conf__filtros(toba_ei_filtro $filtro)
 	{
