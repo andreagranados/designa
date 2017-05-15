@@ -71,9 +71,15 @@ class dt_articulo_73 extends designa_datos_tabla
         }
     }
    
-    function get_articulo73()
+    function get_articulo73($i=null)
         {
-
+        if($i==1){
+            $concatenar= "  and not exists (select art.id_designacion from articulo_73 art
+                            where art.id_designacion=b.id_designacion
+                        )    "    ;
+        }else{
+            $concatenar="";
+        }
         $sql="select sigla,descripcion from unidad_acad ";
         $sql = toba::perfil_de_datos()->filtrar($sql);
         $perfil=toba::db('designa')->consultar($sql);
@@ -130,9 +136,7 @@ class dt_articulo_73 extends designa_datos_tabla
                             and d2.desde <= '2018-01-31' and (d2.hasta >= '2017-01-01' or d2.hasta is null)
                             and b.cat_mapuche=d2.cat_mapuche
                         )    "
-                      ."  and not exists (select art.id_designacion from articulo_73 art
-                            where art.id_designacion=b.id_designacion
-                        )    "      
+                       .$concatenar
                       . " and b.id_designacion=d.id_designacion"
                             . " and e.id_programa=d.id_programa"
                             . " and e.id_tipo_programa=1 "//solo considero designaciones imputadas al programa por defecto (dinero del tesoro nacional)
