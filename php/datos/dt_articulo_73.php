@@ -40,7 +40,7 @@ class dt_articulo_73 extends designa_datos_tabla
      
         $sql = 
                 "SELECT * FROM ("
-                ." SELECT t_a.id_designacion,t_doc.nro_docum,t_a.observacion,t_a.observacion_acad,t_a.observacion_presup,t_m.catsiu,t_d.uni_acad,t_a.id_departamento,t_dep.descripcion as departamento,t_an.descripcion as area,t_o.descripcion as orientacion,t_a.antiguedad,case when t_a.pase_superior=true then 'SI' else 'NO' end as pase_superior,t_a.pase_superior as pase_sup,t_a.check_academica as check_acad,case when t_a.check_academica=true then 'SI' else 'NO' end as check_academica,t_a.expediente,case when t_a.check_presup=true then 'SI' else 'NO' end as check_presupuesto,t_a.check_presup,t_a.nro_resolucion,t_t.desc_item as modo_ingreso ,t_ti.desc_item as continuidad,t_doc.apellido,t_doc.nombre,t_doc.legajo,t_d.cat_estat||t_d.dedic as cat_estat,t_a.cat_est_reg ||t_a.dedic_reg as cat_estat2 "
+                ." SELECT t_a.id_designacion,t_doc.nro_docum,t_a.observacion,t_a.observacion_acad,t_a.observacion_presup,t_m.catsiu,t_d.uni_acad,t_a.id_departamento,t_dep.descripcion as departamento,t_an.descripcion as area,t_o.descripcion as orientacion,t_a.antiguedad,case when t_a.pase_superior=true then 'SI' else 'NO' end as pase_superior,t_a.pase_superior as pase_sup,t_a.check_academica as check_acad,case when t_a.check_academica=true then 'SI' else 'NO' end as check_academica,t_a.expediente,case when t_a.check_presup=true then 'SI' else 'NO' end as check_presupuesto,t_a.check_presup,t_a.nro_resolucion,t_t.desc_item as modo_ingreso ,t_ti.desc_item as continuidad,t_doc.apellido,t_doc.nombre,t_doc.legajo,t_d.cat_estat||t_d.dedic as cat_estat,t_a.cat_est_reg ||t_a.dedic_reg as cat_estat2,t_a.etapa "
                 . " FROM articulo_73 t_a "
                 . " LEFT OUTER JOIN macheo_categ t_m ON (t_m.catest=t_a.cat_est_reg and t_m.id_ded=t_a.dedic_reg)"
                  . " LEFT OUTER JOIN designacion t_d ON (t_a.id_designacion=t_d.id_designacion)"
@@ -123,13 +123,20 @@ class dt_articulo_73 extends designa_datos_tabla
                         and c.id_periodo=2--periodo 2016
                         and c.costo_diario<=751.13
                         and b.uni_acad='".$ua."'"
+                            //tiene una designacion interina en 2018
+                    ."  and exists (select * from designacion d2
+                            where d2.id_docente=a.id_docente
+                            and d2.carac='I'
+                            and d2.desde <= '2018-01-31' and (d2.hasta >= '2017-01-01' or d2.hasta is null)
+                            and b.cat_mapuche=d2.cat_mapuche
+                        )    "
                       . " and b.id_designacion=d.id_designacion"
                             . " and e.id_programa=d.id_programa"
                             . " and e.id_tipo_programa=1 "//solo considero designaciones imputadas al programa por defecto (dinero del tesoro nacional)
                             . ") a INNER JOIN auxi b "
                     .                   " ON (a.legajo=b.nro_legaj)"
                             . " order by descripcion";
-                            
+                          
                     //and c.id_periodo=2--periodo 2016
                     //c.costo_diario<=751,12 --costo de PAD1=ADJE
                     $res=toba::db('designa')->consultar($sql);

@@ -46,7 +46,18 @@ class ci_articulo73 extends toba_ci
 	function evt__cuadro__seleccion($datos)
 	{
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
-            $this->set_pantalla('pant_visualizacion');
+            $art=$this->dep('datos')->tabla('articulo_73')->get();
+            
+            if($art['etapa']==1){
+                toba::notificacion()->agregar('Ya paso a Superior, no se puede modificar', 'info');
+            }else{
+                if($art['check_academica']){
+                    toba::notificacion()->agregar('Ya tiene el check de academica, no se puede modificar', 'info');
+                }else{
+                    $this->set_pantalla('pant_visualizacion');
+                }
+            }
+            
         }
         //esta funcion es invocada desde javascript
         //cuando se presiona el boton pdf_acta
@@ -177,25 +188,36 @@ class ci_articulo73 extends toba_ci
         function evt__cuadro__editar($datos)
         {
            $this->dep('datos')->tabla('articulo_73')->cargar($datos);
-           $this->set_pantalla('pant_academica');
-           $this->s__imprimir=1;
+           $art=$this->dep('datos')->tabla('articulo_73')->get();
+            
+            if($art['etapa']==1){
+                toba::notificacion()->agregar('Ya paso a Superior, no se puede modificar', 'info');
+            }else{
+                    $this->set_pantalla('pant_academica');
+                    $this->s__imprimir=1;
+            }
+           
         }
 	function evt__cuadro__check($datos)
 	{
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
             $art=$this->dep('datos')->tabla('articulo_73')->get();
-            
-            if($art['check_academica']==1){
-                $datos['check_academica']=false;
-                $mensaje="Ha sido deschequeado correctamente";
+            if($art['etapa']==1){
+                toba::notificacion()->agregar('Ya paso a Superior', 'info');
             }else{
-                $datos['check_academica']=true;
-                $mensaje="Ha sido chequeado correctamente";
+                if($art['check_academica']==1){
+                    $datos['check_academica']=false;
+                    $mensaje="Ha sido deschequeado correctamente";
+                }else{
+                    $datos['check_academica']=true;
+                    $mensaje="Ha sido chequeado correctamente";
+                }
+                $this->dep('datos')->tabla('articulo_73')->set($datos);
+                $this->dep('datos')->tabla('articulo_73')->sincronizar();
+                toba::notificacion()->agregar($mensaje, 'info');
             }
             
-            $this->dep('datos')->tabla('articulo_73')->set($datos);
-            $this->dep('datos')->tabla('articulo_73')->sincronizar();
-            toba::notificacion()->agregar($mensaje, 'info');
+            
 	}
         function conf__form_acad(toba_ei_formulario $form)
         {
@@ -209,6 +231,8 @@ class ci_articulo73 extends toba_ci
         }
         function evt__form_acad__modificacion($datos)
         {
+            $datos2['articulo']=$datos['articulo'];
+            $datos2['cat_que_reg']=$datos['cat_que_reg'];
             //solo modifica check de academica, observ de academica y pase superior
             $datos2['pase_superior']=$datos['pase_superior'];
             $datos2['check_academica']=$datos['check_academica'];
@@ -297,6 +321,7 @@ class ci_articulo73 extends toba_ci
             $datos['nro_tab11']=11;
             $datos['check_academica']=false;
             $datos['pase_superior']=false;
+            $datos['etapa']=2;
             $dao=$this->dep('datos')->tabla('designacion')->get_dao($datos['id_designacion']);
             if(count($dao)>0){//guardo departamento, area y orientacion de la designacion previamente seleccionada
                 $datos['id_departamento']=$dao[0]['id_departamento'];    
