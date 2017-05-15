@@ -130,6 +130,9 @@ class dt_articulo_73 extends designa_datos_tabla
                             and d2.desde <= '2018-01-31' and (d2.hasta >= '2017-01-01' or d2.hasta is null)
                             and b.cat_mapuche=d2.cat_mapuche
                         )    "
+                      ."  and not exists (select * from articulo_73 art
+                            where art.id_designacion=b.id_designacion
+                        )    "      
                       . " and b.id_designacion=d.id_designacion"
                             . " and e.id_programa=d.id_programa"
                             . " and e.id_tipo_programa=1 "//solo considero designaciones imputadas al programa por defecto (dinero del tesoro nacional)
