@@ -87,11 +87,12 @@ class dt_articulo_73 extends designa_datos_tabla
         if(count($perfil)>0){
             $ua=$perfil[0]['sigla'];
             //veo cuales son los docentes son interinos vigentes de esta facultad
+            //le agregamos tambien los regulares para que regularicen en otro departamento? no se
             $sql=" SELECT distinct a.legajo"
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
-                        and ((b.carac='I' and b.cat_estat<>'AYS' and b.cat_estat<>'PTR' and b.cat_estat<>'PAS') or (b.carac='R' and b.cat_estat='ASDEnc' ))
+                        and ((b.carac='I' and b.cat_estat<>'AYS' and b.cat_estat<>'PTR' and b.cat_estat<>'PAS') or (b.carac='R' and b.cat_estat='ASDEnc' ) or b.carac='R')
                         and b.uni_acad='".$ua."'";
                     
             $legajos=toba::db('designa')->consultar($sql);
