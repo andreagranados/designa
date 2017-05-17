@@ -124,17 +124,17 @@ class dt_articulo_73 extends designa_datos_tabla
                     . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
                         and (b.carac='I' and (b.cat_estat<>'AYS' and b.cat_estat<>'PTR' and b.cat_estat<>'PAS')
                            or
-                           (b.carac='R' and b.cat_estat='ASDEnc')
+                           (b.carac='R' and b.cat_estat='ASDEnc') 
+                           or b.carac='R'
                            )
                         
                         and c.codigo_siu=b.cat_mapuche
                         and c.id_periodo=2
                         and c.costo_diario<=751.13
                         and b.uni_acad='".$ua."'"
-                            //tiene una designacion interina en 2018
+                            //tiene una designacion en 2018
                     ."  and exists (select * from designacion d2
                             where d2.id_docente=a.id_docente
-                            and d2.carac='I'
                             and d2.desde <= '2018-01-31' and (d2.hasta >= '2017-01-01' or d2.hasta is null)
                             and b.cat_mapuche=d2.cat_mapuche
                         )    "
