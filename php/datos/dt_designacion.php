@@ -70,18 +70,16 @@ class dt_designacion extends toba_datos_tabla
         if (isset($filtro['anio'])) {
             $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
             $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
-            $where.=" and desde <='".$udia."' and (hasta>='".$pdia."' or hasta is null)"
-                    . " and ((hasta is not null and desde < hasta) or hasta is null) ";//esto para descartar las designaciones con desde=hasta o desde>hasta;
+            $where.=" and t_d.desde <='".$udia."' and (t_d.hasta>='".$pdia."' or t_d.hasta is null)"
+                    . " and ((t_d.hasta is not null and t_d.desde < t_d.hasta) or t_d.hasta is null) ";//esto para descartar las designaciones con desde=hasta o desde>hasta;
 	}     
-        $sql="select t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.cat_mapuche,t_d.desde,t_d.hasta,t_d.carac "
-                 . " from designacion t_d, docente t_do"
-                 . " where  t_d.id_docente=t_do.id_docente and cat_mapuche='".$categ."'"
-                 .  $where
-                ." UNION "
-                ."select 'RESERVA' as docente,0 as legajo,t_d.cat_mapuche,t_d.desde,t_d.hasta,t_d.carac "
+        $sql="select t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.cat_mapuche,t_d.desde,t_d.hasta,t_d.carac ,t_d.cat_estat,t_d.dedic,case when t_n.id_novedad is not null then 'SI' else 'NO' end as lic"
                  . " from designacion t_d"
-                 . " where  cat_mapuche='".$categ."'"
-                 .  $where
+                . " left outer join docente t_do on (t_d.id_docente=t_do.id_docente)"
+                . " left outer join novedad t_n on (t_n.id_designacion=t_d.id_designacion and t_n.tipo_nov in (2,5) and t_n.desde <='".$udia."' and (t_n.hasta>='".$pdia."' or t_n.hasta is null))"
+                . " where   cat_mapuche='".$categ."' and tipo_desig=1 "
+                .  $where
+                
                ;
        
         return toba::db('designa')->consultar($sql);

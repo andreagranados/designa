@@ -1,6 +1,11 @@
 <?php
 class dt_integrante_externo_pi extends toba_datos_tabla
 {
+    function modificar_fecha_desde($tipo_doc,$nro,$pinv,$desdeactual,$desdenuevo)
+    {
+        $sql=" update integrante_externo_pi set desde='".$desdenuevo."' where tipo_docum='".$tipo_doc."' and nro_docum=".$nro." and pinvest=".$pinv." and desde='".$desdeactual."'" ;
+        toba::db('designa')->consultar($sql);
+    }
     function get_listado($id_p=null)
     {
         $sql="select t_i.pinvest, trim(t_p.apellido)||', '||trim(t_p.nombre) as nombre, t_p.tipo_docum,t_p.nro_docum,t_p.tipo_sexo,t_p.fec_nacim,funcion_p,carga_horaria,desde,hasta,rescd "

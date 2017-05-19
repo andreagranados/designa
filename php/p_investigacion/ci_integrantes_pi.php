@@ -77,12 +77,18 @@ class ci_integrantes_pi extends designa_ci
 
         function evt__form_integrantes__guardar($datos)
 	{
+           // print_r($datos);
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             foreach ($datos as $clave => $elem){
                  $datos[$clave]['pinvest']=$pi['id_pinv'];      
                  if(isset($datos[$clave]['id_designacion'])){
                     $uni=$this->dep('datos')->tabla('designacion')->get_ua($datos[$clave]['id_designacion']);      
                     $datos[$clave]['ua']=$uni;
+                    //esto era para modificar la fecha desde que es parte de la clave
+                    //if($datos[$clave]['apex_ei_analisis_fila']=='M'){
+                        //$this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($datos[$clave]['id_designacion'],$pi['id_pinv'],$datos[$clave]['desde']);
+                    //}
+                   
                  }
                  
             }
@@ -152,10 +158,12 @@ class ci_integrantes_pi extends designa_ci
         }
         function evt__form_integrante_e__modificacion($datos)
         {
+            $actual=$this->dep('datos')->tabla('integrante_externo_pi')->get();
             $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
             $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
-            
-             
+//esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
+            $this->dep('datos')->tabla('integrante_externo_pi')->modificar_fecha_desde($actual['tipo_docum'],$actual['nro_docum'],$actual['pinvest'],$actual['desde'],$datos['desde']);
+ 
         }
         function evt__form_integrante_e__cancelar()
 	{

@@ -29,7 +29,16 @@ class ci_cantidad_designaciones extends toba_ci
             $where="";
             if (isset($this->s__datos_filtro['uni_acad'])) {
                 $where.= " where sigla = ".quote($this->s__datos_filtro['uni_acad']);
+            }else{
+                //obtengo el perfil de datos del usuario logueado
+                $con="select sigla,descripcion from unidad_acad ";
+                $con = toba::perfil_de_datos()->filtrar($con);
+                $resul=toba::db('designa')->consultar($con);
+                if(count($resul)>0){
+                     $where.=" where sigla ='".trim($resul[0]['sigla'])."'";
+                 }
             }
+            
             //recupero las uniacad
             $sql="select sigla from unidad_acad $where order by sigla";
             $ua=toba::db('designa')->consultar($sql);
@@ -81,6 +90,24 @@ class ci_cantidad_designaciones extends toba_ci
                 $cuadro->set_datos($this->s__datos);
                 
             }
+	}
+        function evt__volver(){
+            $this->set_pantalla('pant_inicial');   
+        }
+
+	//-----------------------------------------------------------------------------------
+	//---- JAVASCRIPT -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function extender_objeto_js()
+	{
+		echo "
+		//---- Eventos ---------------------------------------------
+		
+		{$this->objeto_js}.evt__volver = function()
+		{
+		}
+		";
 	}
 
 }
