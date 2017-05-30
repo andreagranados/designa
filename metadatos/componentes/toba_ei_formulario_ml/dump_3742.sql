@@ -37,7 +37,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --parametro_f
 	NULL, --usuario
 	'2016-05-11 13:31:03', --creacion
-	'abajo'  --posicion_botonera
+	'ambos'  --posicion_botonera
 );
 --- FIN Grupo de desarrollo 0
 
@@ -110,7 +110,7 @@ INSERT INTO apex_objeto_ut_formulario (objeto_ut_formulario_proyecto, objeto_ut_
 	'1', --filas_agregar
 	'1', --filas_agregar_online
 	'0', --filas_agregar_abajo
-	NULL, --filas_agregar_texto
+	'Agregar', --filas_agregar_texto
 	'1', --filas_borrar_en_linea
 	NULL, --filas_undo
 	'0', --filas_ordenar

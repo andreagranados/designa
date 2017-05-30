@@ -122,7 +122,7 @@ class dt_articulo_73 extends designa_datos_tabla
                     . " from docente a, designacion b,mocovi_costo_categoria c, imputacion d, mocovi_programa e"
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
-                        and (b.carac='I' and (b.cat_estat<>'AYS' and b.cat_estat<>'PTR' and b.cat_estat<>'PAS')
+                        and ((b.carac='I' and b.cat_estat<>'AYS' and b.cat_estat<>'PTR' and b.cat_estat<>'PAS')
                            or
                            (b.carac='R' and b.cat_estat='ASDEnc') 
                            or b.carac='R'
