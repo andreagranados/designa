@@ -88,37 +88,37 @@ class dt_articulo_73 extends designa_datos_tabla
             $ua=$perfil[0]['sigla'];
             //veo cuales son los docentes son interinos vigentes de esta facultad
             //le agregamos tambien los regulares para que regularicen en otro departamento? no se
-            $sql=" SELECT distinct a.legajo"
-                    . " from docente a, designacion b"
-                    . " where a.id_docente=b.id_docente"
-                    . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
-                        and ((b.carac='I' and b.cat_estat<>'AYS' and b.cat_estat<>'PTR' and b.cat_estat<>'PAS') or (b.carac='R' and b.cat_estat='ASDEnc' ) or b.carac='R')
-                        and b.uni_acad='".$ua."'";
+//            $sql=" SELECT distinct a.legajo"
+//                    . " from docente a, designacion b"
+//                    . " where a.id_docente=b.id_docente"
+//                    . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
+//                        and ((b.carac='I' and b.cat_estat<>'AYS' and b.cat_estat<>'PTR' and b.cat_estat<>'PAS') or (b.carac='R' and b.cat_estat='ASDEnc' ) or b.carac='R')
+//                        and b.uni_acad='".$ua."'";
                     
-            $legajos=toba::db('designa')->consultar($sql);
-            if(count($legajos)>0){//si hay docentes 
+            //$legajos=toba::db('designa')->consultar($sql);
+            //if(count($legajos)>0){//si hay docentes 
                  
-                $doc=array();
-                foreach ($legajos as $value) {
-                    $leg[]=$value['legajo'];
-                }
-                $conjunto=implode(",",$leg);
-                //recupero de mapuche la antiguedad de los legajos que van como argumento
-                       
-                $datos_mapuche = consultas_mapuche::get_antiguedad_docente($conjunto);
+//                $doc=array();
+//                foreach ($legajos as $value) {
+//                    $leg[]=$value['legajo'];
+//                }
+//                $conjunto=implode(",",$leg);
+//                //recupero de mapuche la antiguedad de los legajos que van como argumento
+//                       
+//                $datos_mapuche = consultas_mapuche::get_antiguedad_docente($conjunto);
                 
-                if(count($datos_mapuche)>0){ 
-                    $sql=" CREATE LOCAL TEMP TABLE auxi(
-                        nro_legaj integer,
-                        antiguedad integer
-                    );";
-                    toba::db('designa')->consultar($sql);//creo la tabla auxi
-                    foreach ($datos_mapuche as $valor) {
-                        $sql=" insert into auxi values (".$valor['nro_legaj'].",".$valor['antig'].")";
-                        toba::db('designa')->consultar($sql);
-                    }
-                    $sql = "SELECT a.*,b.antiguedad from (".
-                     " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
+               //if(count($datos_mapuche)>0){ 
+//                    $sql=" CREATE LOCAL TEMP TABLE auxi(
+//                        nro_legaj integer,
+//                        antiguedad integer
+//                    );";
+//                    toba::db('designa')->consultar($sql);//creo la tabla auxi
+//                    foreach ($datos_mapuche as $valor) {
+//                        $sql=" insert into auxi values (".$valor['nro_legaj'].",".$valor['antig'].")";
+//                        toba::db('designa')->consultar($sql);
+//                    }
+                   // $sql = "SELECT a.*,b.antiguedad from (".
+                     $sql = " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
                     . " from docente a, designacion b,mocovi_costo_categoria c, imputacion d, mocovi_programa e"
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '2016-09-30' and (b.hasta >= '2016-06-01' or b.hasta is null)
@@ -142,8 +142,9 @@ class dt_articulo_73 extends designa_datos_tabla
                       . " and b.id_designacion=d.id_designacion"
                             . " and e.id_programa=d.id_programa"
                             . " and e.id_tipo_programa=1 "//solo considero designaciones imputadas al programa por defecto (dinero del tesoro nacional)
-                            . ") a INNER JOIN auxi b "
-                    .                   " ON (a.legajo=b.nro_legaj)"
+                            //. ") a"
+                            //. " INNER JOIN auxi b "
+                            //.                   " ON (a.legajo=b.nro_legaj)"
                             . " order by descripcion";
 
                     //and c.id_periodo=2--periodo 2016
@@ -151,8 +152,8 @@ class dt_articulo_73 extends designa_datos_tabla
                     $res=toba::db('designa')->consultar($sql);
                     return $res;
                     
-                 }
-                }
+               //  }
+              //  }
             }
          
         }
