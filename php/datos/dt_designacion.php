@@ -963,13 +963,22 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             $seleccion="";
             
             if (isset($filtro['id_departamento']['valor'])) {
-              $where=" AND t_d.id_departamento=".$filtro['id_departamento']['valor'];
+                switch ($filtro['id_departamento']['condicion']) {
+                    case 'es_distinto_de': $where=" AND t_d.id_departamento<>".$filtro['id_departamento']['valor'];break;
+
+                    default: $where=" AND t_d.id_departamento=".$filtro['id_departamento']['valor']; break;
+                }
+              
             }
             if (isset($filtro['id_docente']['valor'])) {
               $where.=" AND t_do.id_docente=".$filtro['id_docente']['valor'];          
             }
             if (isset($filtro['uni_acad']['valor'])) {
-                $where.=" AND t_d.uni_acad='".$filtro['uni_acad']['valor']."'";          
+                switch ($filtro['uni_acad']['condicion']) {
+                    case 'es_distinto_de':  $where.=" AND t_d.uni_acad<>'".$filtro['uni_acad']['valor']."'";          break;
+                    default:$where.=" AND t_d.uni_acad='".$filtro['uni_acad']['valor']."'";break;
+                }
+                
             }
             if (isset($filtro['anio']['valor'])) {
               $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
