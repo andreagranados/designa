@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3906]--  P Investigacion - CI - ci_pinv_otros - filtros 
+--[4009]--  SinInvestigación - filtros 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -9,7 +9,7 @@
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, clase_proyecto, clase, punto_montaje, subclase, subclase_archivo, objeto_categoria_proyecto, objeto_categoria, nombre, titulo, colapsable, descripcion, fuente_datos_proyecto, fuente_datos, solicitud_registrar, solicitud_obj_obs_tipo, solicitud_obj_observacion, parametro_a, parametro_b, parametro_c, parametro_d, parametro_e, parametro_f, usuario, creacion, posicion_botonera) VALUES (
 	'designa', --proyecto
-	'3906', --objeto
+	'4009', --objeto
 	NULL, --anterior
 	NULL, --identificador
 	NULL, --reflexivo
@@ -20,8 +20,8 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
-	'P Investigacion - CI - ci_pinv_otros - filtros', --nombre
-	NULL, --titulo
+	'SinInvestigación - filtros', --nombre
+	'Opciones de Búsqueda', --titulo
 	'0', --colapsable
 	NULL, --descripcion
 	'designa', --fuente_datos_proyecto
@@ -36,7 +36,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --parametro_e
 	NULL, --parametro_f
 	NULL, --usuario
-	'2016-12-13 11:00:40', --creacion
+	'2017-06-21 08:19:37', --creacion
 	'abajo'  --posicion_botonera
 );
 --- FIN Grupo de desarrollo 0
@@ -48,8 +48,8 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
 	'designa', --proyecto
-	'3124', --evento_id
-	'3906', --objeto
+	'3213', --evento_id
+	'4009', --objeto
 	'filtrar', --identificador
 	'&Filtrar', --etiqueta
 	'1', --maneja_datos
@@ -81,8 +81,8 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 );
 INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
 	'designa', --proyecto
-	'3125', --evento_id
-	'3906', --objeto
+	'3214', --evento_id
+	'4009', --objeto
 	'cancelar', --identificador
 	'&Limpiar', --etiqueta
 	'0', --maneja_datos
@@ -119,7 +119,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 ------------------------------------------------------------
 INSERT INTO apex_objeto_ei_filtro (objeto_ei_filtro_proyecto, objeto_ei_filtro, ancho) VALUES (
 	'designa', --objeto_ei_filtro_proyecto
-	'3906', --objeto_ei_filtro
+	'4009', --objeto_ei_filtro
 	NULL  --ancho
 );
 
@@ -129,32 +129,33 @@ INSERT INTO apex_objeto_ei_filtro (objeto_ei_filtro_proyecto, objeto_ei_filtro, 
 
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, objeto_ei_filtro_proyecto, tipo, nombre, expresion, etiqueta, descripcion, obligatorio, inicial, orden, estado_defecto, opciones_es_multiple, opciones_ef, carga_metodo, carga_clase, carga_include, carga_dt, carga_consulta_php, carga_sql, carga_fuente, carga_lista, carga_col_clave, carga_col_desc, carga_permite_no_seteado, carga_no_seteado, carga_no_seteado_ocultar, carga_maestros, edit_tamano, edit_maximo, edit_mascara, edit_unidad, edit_rango, edit_expreg, estilo, popup_item, popup_proyecto, popup_editable, popup_ventana, popup_carga_desc_metodo, popup_carga_desc_clase, popup_carga_desc_include, popup_puede_borrar_estado, punto_montaje, check_valor_si, check_valor_no, check_desc_si, check_desc_no, selec_cant_minima, selec_cant_maxima, selec_utilidades, selec_tamano, selec_ancho, selec_serializar, selec_cant_columnas, placeholder) VALUES (
-	'254', --objeto_ei_filtro_col
-	'3906', --objeto_ei_filtro
+	'282', --objeto_ei_filtro_col
+	'4009', --objeto_ei_filtro
 	'designa', --objeto_ei_filtro_proyecto
 	'opciones', --tipo
-	'anio', --nombre
-	'anio', --expresion
-	'Período', --etiqueta
-	'Año de la solicitud', --descripcion
+	'tipo', --nombre
+	'tipo', --expresion
+	'Tipo', --etiqueta
+	'1- No están en ningún Proyecto de Investigación<br>
+2- No están en un Proyecto de Investigación Vigente (el proyecto ya venció)', --descripcion
 	'0', --obligatorio
 	'1', --inicial
 	'1', --orden
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
 	'ef_combo', --opciones_ef
-	'get_anios', --carga_metodo
+	NULL, --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
-	'3359', --carga_dt
+	NULL, --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	NULL, --carga_lista
-	'anio', --carga_col_clave
-	'anio', --carga_col_desc
-	'1', --carga_permite_no_seteado
-	'--Seleccione--', --carga_no_seteado
+	'1,2', --carga_lista
+	NULL, --carga_col_clave
+	NULL, --carga_col_desc
+	'0', --carga_permite_no_seteado
+	NULL, --carga_no_seteado
 	'0', --carga_no_seteado_ocultar
 	NULL, --carga_maestros
 	NULL, --edit_tamano

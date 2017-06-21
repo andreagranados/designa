@@ -2,6 +2,45 @@
 require_once 'dt_mocovi_periodo_presupuestario.php';
 class dt_pinvestigacion extends toba_datos_tabla
 {
+        function get_docentes_sininv($filtro=array()){
+            
+            //primer y ultimo dia periodo actual
+            $pdia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);
+            $udia = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
+            $concat="";
+            if(count($filtro)>0){
+                if($filtro['tipo']['valor']==2){
+                    $concat=" and fec_desde <= '".$udia."' and (fec_hasta >= '".$pdia."' or fec_hasta is null)";
+                }
+               
+            }
+            $where='';
+            $con="select sigla,descripcion from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            if(isset($resul)){
+                $where=" and uni_acad='".$resul[0]['sigla']."' ";
+            }
+            //revisa en el periodo actual: designaciones correspondientes al periodo actual y proyectos vigentes
+            //designaciones exclusivas y parciales
+            $sql = "select distinct a.id_docente,b.apellido||','||b.nombre as agente,b.legajo
+                    from designacion a, docente b, mocovi_periodo_presupuestario c
+                    where 
+                    a.id_docente=b.id_docente
+                    $where
+                    and c.actual
+                    and desde <= c.fecha_fin and (hasta >= c.fecha_inicio or hasta is null)  
+                    and dedic in (1,2)
+                    and not exists (select * from integrante_interno_pi i, pinvestigacion t_i , designacion t_d
+                                    WHERE
+                                    t_i.id_pinv=i.pinvest
+                                    and i.id_designacion=t_d.id_designacion
+                                    and a.id_docente=t_d.id_docente
+                                    ".$concat
+                                .")
+                    order by agente";
+            return toba::db('designa')->consultar($sql);
+        }
 	function get_descripciones()
 	{
             $sql = "SELECT id_pinv, codigo FROM pinvestigacion ORDER BY codigo";
