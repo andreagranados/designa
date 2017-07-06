@@ -2,6 +2,7 @@
 require_once 'dt_mocovi_periodo_presupuestario.php';
 class dt_pinvestigacion extends toba_datos_tabla
 {
+       
         function get_docentes_sininv($filtro=array()){
             
             //primer y ultimo dia periodo actual
@@ -87,6 +88,9 @@ class dt_pinvestigacion extends toba_datos_tabla
                     $res[]=$ar;
                     $ar['id_tipo']=2;
                     $ar['descripcion']='PIN2 ';
+                    $res[]=$ar;
+                    $ar['id_tipo']=3;
+                    $ar['descripcion']='RECO ';
                     $res[]=$ar;
                 }else{//es un sub-proyecto
                     $ar['id_tipo']=1;
@@ -181,10 +185,20 @@ class dt_pinvestigacion extends toba_datos_tabla
 //	}
         function get_listado_filtro($filtro=null)
 	{
-                $where = "";
+                $con="select sigla from unidad_acad ";
+                $con = toba::perfil_de_datos()->filtrar($con);
+                $resul=toba::db('designa')->consultar($con);
+                //print_r($resul);
+                $where = " WHERE 1=1 ";
+              
+                if(count($resul)<=1){//es usuario de una unidad academica
+                    $where.=" and t_p.uni_acad = ".quote($resul[0]['sigla']);
+                }//sino es usuario de la central no filtro a menos que haya elegido
+                
 		if (isset($filtro['uni_acad']['valor'])) {
-			$where = " WHERE uni_acad = ".quote($filtro['uni_acad']['valor']);
+			$where .= " and t_p.uni_acad = ".quote($filtro['uni_acad']['valor']);   
 		}
+                
                 if (isset($filtro['anio']['valor'])) {
 		    $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
                     $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
@@ -210,24 +224,43 @@ class dt_pinvestigacion extends toba_datos_tabla
                         case 'contiene':$where.=" and codigo ILIKE '%".$filtro['codigo']['valor']."%'";break;
                     }
                  }
-		$sql = "SELECT
+                  if (isset($filtro['estado']['valor'])) {
+                      switch ($filtro['estado']['condicion']) {
+                            case 'es_distinto_de':$where.=" and t_p.estado  !='".$filtro['estado']['valor']."'";break;
+                            case 'es_igual_a':$where.=" and t_p.estado = '".$filtro['estado']['valor']."'";break;
+                      }
+                  }
+                  if (isset($filtro['tipo']['valor'])) {
+                      switch ($filtro['tipo']['condicion']) {
+                            case 'es_distinto_de':$where.=" and tipo  !='".$filtro['tipo']['valor']."'";break;
+                            case 'es_igual_a':$where.=" and tipo = '".$filtro['tipo']['valor']."'";break;
+                      }
+                  }
+		$sql = "SELECT distinct
 			t_p.id_pinv,
 			t_p.codigo,
-                        case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'SUB-PROYECTO' else 'PROYECTO' end end es_programa,
+                        case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'PROYECTO DE PROGRAMA' else 'PROYECTO' end end es_programa,
 			t_p.denominacion,
 			t_p.nro_resol,
 			t_p.fec_resol,
-			t_ua.descripcion as uni_acad_nombre,
+			t_p.uni_acad,
 			t_p.fec_desde,
 			t_p.fec_hasta,
 			t_p.nro_ord_cs,
 			t_p.fecha_ord_cs,
 			t_p.duracion,
-			t_p.objetivo
+			t_p.objetivo,
+                        t_p.estado,
+                        t_p.tipo,
+                        director_de(t_p.id_pinv) as director,
+                        codirector_de(t_p.id_pinv) as codirector
+                       -- case when t_p.es_programa=1 then t_do2.apellido||','||t_do2.nombre else case when b.id_proyecto is not null then 'PROYECTO DE PROGRAMA' else t_do.apellido||','||t_do.nombre end end director
+                        --,case when t_p.es_programa=1 then case when t_do2.apellido is not null then t_do2.apellido else '' end else case when b.id_proyecto is not null then 'SUB-PROYECTO' else t_do.apellido||','||t_do.nombre end end as director
 		FROM
 			pinvestigacion as t_p
-                        LEFT OUTER JOIN unidad_acad as t_ua ON (t_p.uni_acad = t_ua.sigla)
+                        
                         LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
+ 
                 $where        
 		ORDER BY codigo,es_programa";
 		

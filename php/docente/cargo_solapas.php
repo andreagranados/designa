@@ -660,9 +660,18 @@ class cargo_solapas extends toba_ci
 	}
 
         function conf__form_norma(toba_ei_formulario $form){
-            
+            //agrega la ayuda al ef nro de norma
+            //$texto="<a href='' target='_blank'>link</a>";
+            //$form->ef('nro_norma')->set_descripcion($texto);
             if ($this->controlador()->dep('datos')->tabla('norma')->esta_cargada()) {
                 $datos = $this->controlador()->dep('datos')->tabla('norma')->get();
+                if(isset($datos['link'])){//tiene el link a la norma
+                    $texto="<a href='".$datos['link']."' target='_blank'>link</a>";
+                    print_r( utf8_decode('Pincha aquí para ver la norma última->').$texto);
+                    //no lo toma con el comando
+                    //$form->ef('nro_norma')->set_descripcion("Pincha aqui para ver:<a href='hola'>"."</a>");
+                    
+                }
                 $d=$this->controlador()->dep('datos')->tabla('norma')->get_detalle_norma($datos['id_norma']);
                 $datos['tipo_norma']=$d[0]['nombre_tipo'];
                 $datos['emite_norma']=$d[0]['quien_emite_norma'];

@@ -63,9 +63,11 @@ class ci_p_investigacion extends toba_ci
 	}
         function conf__form_encabezado(toba_ei_formulario $form)
 	{
+           
             if ($this->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
-                 $form->set_titulo($pi['denominacion']);
+                $texto=$pi['denominacion']." (".$pi['codigo'].") de: ".$pi['uni_acad'];
+                $form->set_titulo($texto);
                 
             }        
         }

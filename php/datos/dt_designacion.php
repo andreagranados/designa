@@ -4,7 +4,11 @@ require_once 'consultas_mapuche.php';
 
 class dt_designacion extends toba_datos_tabla
 {
-    
+   function get_uni_acad($id_desig){
+       $sql="select uni_acad from designacion where id_designacion=".$id_desig;
+       $resul=toba::db('designa')->consultar($sql);
+       return $resul[0]['uni_acad'];
+   } 
    function get_designaciones($where=null){
         
         if(!is_null($where)){    

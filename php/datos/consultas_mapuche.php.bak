@@ -44,7 +44,7 @@ class consultas_mapuche
  	$sql="select distinct b.nro_licencia,case when b.nro_legaj is null then a.nro_legaj else b.nro_legaj end as nro_legaj,b.nro_cargo,fec_desde,fec_hasta,codn_tipo_lic as tipo_lic
 		from  mapuche.dh05 b, mapuche.dl02 c, mapuche.dh03 a
 		where b.nrovarlicencia=c.nrovarlicencia
-		and (c.codn_tipo_lic='MATE' or c.codn_tipo_lic='MAT2' or c.codn_tipo_lic='MAT3' or c.codn_tipo_lic='MAT4')
+		and (c.codn_tipo_lic='MATE' or c.codn_tipo_lic='MAT2' or c.codn_tipo_lic='MAT3' or c.codn_tipo_lic='MAT4' or c.codn_tipo_lic='MD90')
 		and b.fec_desde <= '".$udia."' and (b.fec_hasta >= '".$pdia."' or b.fec_hasta is null)
 		and (b.nro_cargo=a.nro_cargo or b.nro_legaj=a.nro_legaj)
 		and a.codc_uacad='".$ua."'";	
