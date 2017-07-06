@@ -9,6 +9,14 @@ class ci_pinv_otros extends designa_ci
         protected $s__mostrar_form_tiene;
         protected $s__datos_filtro;
         
+        function get_listado_docentes(){
+            $salida=array();
+            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+              $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+              $salida=$this->controlador()->dep('datos')->tabla('integrante_interno_pi')->get_listado_docentes($pi['id_pinv']);
+             }
+            return $salida; 
+        }
         function get_estados_pi(){
              //si es de la unidad acad retorna solo I
             return($this->controlador()->dep('datos')->tabla('estado_pi')->get_descripciones_perfil());
@@ -142,8 +150,15 @@ class ci_pinv_otros extends designa_ci
             //pregunto si el usuario logueado esta asociado a un perfil para desactivar los campos que no debe completar
             $perfil = toba::usuario()->get_perfil_datos();
             if ($perfil != null) {
+                $sql="select sigla,descripcion from unidad_acad ";
+                $sql = toba::perfil_de_datos()->filtrar($sql);
+                $resul=toba::db('designa')->consultar($sql);
+              
+                if($resul[0]['sigla']=='ASMA' or $resul[0]['sigla']=='AUZA'){
+                    $form->ef('disp_asent')->set_obligatorio(1);      
+                }
                   //  $form->ef('estado')->set_solo_lectura(true);   
-                $form->ef('disp_asent')->set_obligatorio(1);  
+                
                 }
                  
 	}
