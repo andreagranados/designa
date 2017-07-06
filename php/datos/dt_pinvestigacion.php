@@ -2,7 +2,22 @@
 require_once 'dt_mocovi_periodo_presupuestario.php';
 class dt_pinvestigacion extends toba_datos_tabla
 {
-       
+        function get_responsable($id_proy){
+           $salida=array();
+           $sql="select t_do.id_docente,trim(t_do.apellido)||','||trim(t_do.nombre) as descripcion"
+                   . " from pinvestigacion t_p, docente t_do "
+                   . " where t_p.id_pinv=".$id_proy
+                   . " and t_p.id_respon_sub=t_do.id_docente ";
+           $resul=toba::db('designa')->consultar($sql);
+           
+           if(count($resul)>0){
+               return $resul;
+           }else{
+               return $salida;
+           }
+           
+           
+        }
         function get_docentes_sininv($filtro=array()){
             
             //primer y ultimo dia periodo actual

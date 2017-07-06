@@ -17,6 +17,15 @@ class ci_pinv_otros extends designa_ci
              }
             return $salida; 
         }
+        function get_responsable_fondo(){
+            $salida=array();
+            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+              $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+              $salida=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get_responsable($pi['id_pinv']);
+             }
+            return $salida; 
+            
+        }
         function get_estados_pi(){
              //si es de la unidad acad retorna solo I
             return($this->controlador()->dep('datos')->tabla('estado_pi')->get_descripciones_perfil());
