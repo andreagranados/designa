@@ -351,7 +351,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3734', --objeto_cuadro
 	'3522', --objeto_cuadro_col
-	'es_programa', --clave
+	'desc_tipo', --clave
 	'4', --orden
 	'Descrip Tipo', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo

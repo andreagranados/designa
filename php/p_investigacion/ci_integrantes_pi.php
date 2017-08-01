@@ -4,7 +4,7 @@ class ci_integrantes_pi extends designa_ci
         protected $s__mostrar_e;
         protected $s__mostrar_i;
         protected $s__pantalla;
-        
+           
         function get_persona($id){   
         }
         function conf__pant_integrantes_i(toba_ei_pantalla $pantalla)
@@ -176,6 +176,13 @@ class ci_integrantes_pi extends designa_ci
                 $form->ef('desde')->set_obligatorio('true');
                 $form->ef('hasta')->set_obligatorio('true');
                 $form->ef('rescd')->set_obligatorio('true');
+                if ($this->dep('datos')->tabla('integrante_interno_pi')->esta_cargada()) {
+                     $datos=$this->dep('datos')->tabla('integrante_interno_pi')->get();
+                     $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                     if($datos['ua']!=$pi['uni_acad']){
+                         $form->ef('resaval')->set_obligatorio('true');
+                     }
+                 }
             }else{
                 $this->dep('form_integrante_i')->colapsar();
             }
@@ -184,7 +191,7 @@ class ci_integrantes_pi extends designa_ci
 		$docente=$this->dep('datos')->tabla('designacion')->get_docente($datos['id_designacion']);             
                 $datos['id_docente']=$docente;
                 $form->set_datos($datos);
-		}
+            }
              
         }
          //da de alta un nuevo integrante dentro del proyecto 
@@ -195,11 +202,14 @@ class ci_integrantes_pi extends designa_ci
                 toba::notificacion()->agregar('No pueden agregar participantes al proyecto', 'error');  
                 
             }else{ //pedir obligatorio campo resaval porque es un integrante de otra facultad
-                $ua=$this->controlador()->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
-               
-                if(($pi['uni_acad']==$ua[0]['sigla']) and !(isset($datos['resaval']))){ 
+                $uni=$this->dep('datos')->tabla('designacion')->get_ua($datos['id_designacion']); 
+                
+                if(($pi['uni_acad']!=$uni) and !(isset($datos['resaval']))){ 
                      toba::notificacion()->agregar('Debe completar la Resol de aval porque es un integrante de otra facultad', 'error');  
+                    
                 }else{
+                    $datos['pinvest']=$pi['id_pinv'];
+                    $datos['ua']=$uni;
                     $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
                     $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
                     $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
@@ -213,23 +223,25 @@ class ci_integrantes_pi extends designa_ci
            
             $ua=$this->controlador()->controlador()->dep('datos')->tabla('designacion')->get_uni_acad($datos['id_designacion']);
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['uni_acad']==$ua){
-                //pedir obligatorio campo resaval
-                if(!isset($datos['resaval'])){
-                     toba::notificacion()->agregar('Debe completar la resol de aval', 'error');  
-                }
-                
-                }
+//            if($pi['uni_acad']!=$ua){
+//                //pedir obligatorio campo resaval
+//                if(!isset($datos['resaval'])){
+//                     toba::notificacion()->agregar('Debe completar la resol de aval', 'error');  
+//                }
+//                
+//                }
             $datos['ua']=$ua;
             $datos['pinvest']=$pi['id_pinv'];
             $datos['check_inv']=0;//pierde el check si es que lo tuviera
             // $actual=$this->dep('datos')->tabla('integrante_interno_pi')->get();  
             $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
             $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+            $this->s__mostrar_i=0;
+            toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
         }
         function evt__form_integrante_i__baja($datos)
         {
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');  
                 
@@ -237,6 +249,7 @@ class ci_integrantes_pi extends designa_ci
                 $this->dep('datos')->tabla('integrante_interno_pi')->eliminar_todo();
                 $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
                 $this->s__mostrar_i=0;
+                toba::notificacion()->agregar('El registro se ha eliminado correctamente', 'info');  
             }
              
         }

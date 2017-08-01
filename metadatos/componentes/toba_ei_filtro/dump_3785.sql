@@ -136,7 +136,9 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'estado', --nombre
 	'estado', --expresion
 	'Estado', --etiqueta
-	NULL, --descripcion
+	'P (Pendiente) <br>
+R (Rendido) <br>
+V (Vencido)', --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'2', --orden
@@ -150,7 +152,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'P,R', --carga_lista
+	'P,R,V', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	'1', --carga_permite_no_seteado
@@ -311,7 +313,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'uni_acad', --expresion
 	'Unidad Académica', --etiqueta
 	NULL, --descripcion
-	'1', --obligatorio
+	'0', --obligatorio
 	'1', --inicial
 	'1', --orden
 	NULL, --estado_defecto

@@ -156,7 +156,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3776', --objeto_cuadro
 	'3513', --objeto_cuadro_col
-	'rescd', --clave
+	'rescd_bm', --clave
 	'3', --orden
 	'Resolución', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo

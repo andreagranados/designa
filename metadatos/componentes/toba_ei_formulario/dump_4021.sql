@@ -23,7 +23,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'P Investigacion - CI - ci_pinv_otros - ci_integrantes_pi - form_integrante_i', --nombre
 	NULL, --titulo
 	'0', --colapsable
-	NULL, --descripcion
+	'hola', --descripcion
 	'designa', --fuente_datos_proyecto
 	'designa', --fuente_datos
 	NULL, --solicitud_registrar
@@ -240,7 +240,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'3', --orden
-	'Funcion', --etiqueta
+	'Función', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
 	'0', --colapsado
@@ -804,7 +804,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'12', --orden
-	'Res Aval', --etiqueta
+	'Res Aval de otra UA', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
 	'0', --colapsado

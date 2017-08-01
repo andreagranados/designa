@@ -251,10 +251,21 @@ class dt_pinvestigacion extends toba_datos_tabla
                             case 'es_igual_a':$where.=" and tipo = '".$filtro['tipo']['valor']."'";break;
                       }
                   }
-		$sql = "SELECT distinct
+                  $where2='';
+                  if (isset($filtro['desc_tipo']['valor'])) {
+                    switch ($filtro['desc_tipo']['condicion']) {
+                        case 'es_distinto_de':$where2.=" WHERE desc_tipo  !='".$filtro['desc_tipo']['valor']."'";break;
+                        case 'es_igual_a':$where2.=" WHERE desc_tipo = '".$filtro['desc_tipo']['valor']."'";break;
+                        case 'termina_con':$where2.=" WHERE desc_tipo ILIKE '%".$filtro['desc_tipo']['valor']."'";break;
+                        case 'comienza_con':$where2.=" WHERE desc_tipo ILIKE '".$filtro['desc_tipo']['valor']."%'";break;
+                        case 'no_contiene':$where2.=" WHERE desc_tipo NOT ILIKE '%".$filtro['desc_tipo']['valor']."%'";break;
+                        case 'contiene':$where2.=" WHERE desc_tipo ILIKE '%".$filtro['desc_tipo']['valor']."%'";break;
+                    }
+                 }  
+		$sql = "SELECT * FROM ("."SELECT distinct
 			t_p.id_pinv,
 			t_p.codigo,
-                        case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'PROYECTO DE PROGRAMA' else 'PROYECTO' end end es_programa,
+                        case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'PROYECTO DE PROGRAMA' else 'PROYECTO' end end as desc_tipo,
 			t_p.denominacion,
 			t_p.nro_resol,
 			t_p.fec_resol,
@@ -269,15 +280,14 @@ class dt_pinvestigacion extends toba_datos_tabla
                         t_p.tipo,
                         director_de(t_p.id_pinv) as director,
                         codirector_de(t_p.id_pinv) as codirector
-                       -- case when t_p.es_programa=1 then t_do2.apellido||','||t_do2.nombre else case when b.id_proyecto is not null then 'PROYECTO DE PROGRAMA' else t_do.apellido||','||t_do.nombre end end director
-                        --,case when t_p.es_programa=1 then case when t_do2.apellido is not null then t_do2.apellido else '' end else case when b.id_proyecto is not null then 'SUB-PROYECTO' else t_do.apellido||','||t_do.nombre end end as director
+                       
 		FROM
 			pinvestigacion as t_p
                         
                         LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
  
                 $where        
-		ORDER BY codigo,es_programa";
+		ORDER BY codigo,desc_tipo)sub $where2";
 		
 		return toba::db('designa')->consultar($sql);
 	}

@@ -642,7 +642,11 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'10', --orden
 	'Cat invest CONICET', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'IP (Investigador Principal)<br>
+IA (Investigador Adjunto)<br>
+II (Investigador Independiente)<br>
+IAs (Investigador Asistente)<br>
+IS (Investigador Superior)<br>', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo

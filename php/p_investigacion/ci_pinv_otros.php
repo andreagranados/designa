@@ -8,7 +8,14 @@ class ci_pinv_otros extends designa_ci
         protected $s__mostrar_form_est;
         protected $s__mostrar_form_tiene;
         protected $s__datos_filtro;
+        protected $s__datos;
         
+        //evento implicito que no se muestra en un boton
+        //sirve para ocultar el ef suplente
+        function evt__formulario__modif($datos)
+        {
+            $this->s__datos = $datos;
+        }
         function get_listado_docentes(){
             $salida=array();
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
@@ -114,13 +121,14 @@ class ci_pinv_otros extends designa_ci
 	//---- formulario -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	function conf__formulario(designa_ei_formulario $form)
+	//function conf__formulario(designa_ei_formulario $form)
+        function conf__formulario($componente)
 	{
             $this->controlador()->dep('datos')->tabla('viatico')->resetear();
             $this->s__mostrar_v=0;
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-              
+                    
                 $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
                 if($pi['es_programa']==1){
                     $pi['es_programa']='SI';
@@ -146,7 +154,8 @@ class ci_pinv_otros extends designa_ci
                     $pi['programa']=$pertenece;
                 }else{$pi['programa']=0;}
               
-                $form->set_datos($pi);
+               // $form->set_datos($pi);
+                 $componente->set_datos($pi);
 		}
             else{//si el proyecto no esta cargado no habilito la pantalla
                 $this->pantalla()->tab("pant_integrantes")->desactivar();	 
@@ -166,9 +175,8 @@ class ci_pinv_otros extends designa_ci
                 if(trim($resul[0]['sigla'])=='ASMA' or trim($resul[0]['sigla'])=='AUZA'){
                     $form->ef('disp_asent')->set_obligatorio(1);      
                 }
-                  //  $form->ef('estado')->set_solo_lectura(true);   
-                
-                }
+                  //  $form->ef('estado')->set_solo_lectura(true);       
+            }
                  
 	}
         function evt__formulario__modif_estado($datos)
@@ -177,19 +185,27 @@ class ci_pinv_otros extends designa_ci
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             //si pasa a estado A entonces tiene que poner el check in en 1 a todos los integrantes
             if($pi['estado']<>'A' and $datos['estado']=='A'){//sino estaba activo y lo activa
+                //le coloca SCyt les coloca el check de aprobados a todos los integrantes del proyecto
                 $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->chequeados_ok($pi['id_pinv']);
-                //idem externos
+                $this->controlador()->dep('datos')->tabla('integrante_externo_pi')->chequeados_ok($pi['id_pinv']);
             }
             
             $datos2['codigo']=$datos['codigo'];
             $datos2['nro_ord_cs']=$datos['nro_ord_cs'];
             $datos2['fecha_ord_cs']=$datos['fecha_ord_cs'];
             $datos2['estado']=$datos['estado'];
+            $datos2['observacionscyt']=$datos['observacionscyt'];
+            $datos2['nro_resol_baja']=$datos['nro_resol_baja'];
+            $datos2['fec_baja']=$datos['fec_baja'];
+            $datos2['id_respon_sub']=$datos['id_respon_sub'];
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
             if($datos['estado']=='B'){//tiene que dar de baja a todos los integrantes
                 //ademas agrega al director y codirector del proyecto penados
                 //penados
+                //deberia dar de baja a todos los participantes del proyecto y completar la resol de baja
+                 $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->dar_baja($pi['id_pinv'],$pi['fec_hasta'],$datos['fec_baja'],$datos['nro_resol_baja']);
+                 toba::notificacion()->agregar('Se ha dado de baja a todos los participantes del proyecto', 'info');  
             }
            
             
@@ -232,7 +248,9 @@ class ci_pinv_otros extends designa_ci
             unset($datos['codigo']);
             unset($datos['nro_ord_cs']);
             unset($datos['fecha_ord_cs']);
-           
+            unset($datos['observacionscyt']);
+            unset($datos['nro_resol_baja']);
+            unset($datos['fec_baja']);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
           }
@@ -376,13 +394,21 @@ class ci_pinv_otros extends designa_ci
             $this->controlador()->dep('datos')->tabla('subsidio')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
 	}
-
+    //este es para la central
 	function evt__form_subsidio__modificacion($datos)
 	{
             $this->controlador()->dep('datos')->tabla('subsidio')->set($datos);
             $this->controlador()->dep('datos')->tabla('subsidio')->sincronizar();
 	}
-
+        //boton modificacion para las unidades academicas
+        //solo cargan memo y nota
+        function evt__form_subsidio__modificacion_ua($datos)
+	{
+            $datos2['memo']=$datos['memo'];
+            $datos2['nota']=$datos['nota'];
+            $this->controlador()->dep('datos')->tabla('subsidio')->set($datos2);
+            $this->controlador()->dep('datos')->tabla('subsidio')->sincronizar();
+	}
 	function evt__form_subsidio__cancelar()
 	{
             $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
