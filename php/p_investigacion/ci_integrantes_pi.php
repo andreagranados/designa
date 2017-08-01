@@ -223,13 +223,7 @@ class ci_integrantes_pi extends designa_ci
            
             $ua=$this->controlador()->controlador()->dep('datos')->tabla('designacion')->get_uni_acad($datos['id_designacion']);
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-//            if($pi['uni_acad']!=$ua){
-//                //pedir obligatorio campo resaval
-//                if(!isset($datos['resaval'])){
-//                     toba::notificacion()->agregar('Debe completar la resol de aval', 'error');  
-//                }
-//                
-//                }
+            
             $datos['ua']=$ua;
             $datos['pinvest']=$pi['id_pinv'];
             $datos['check_inv']=0;//pierde el check si es que lo tuviera
