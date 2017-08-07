@@ -448,7 +448,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4039', --objeto_cuadro_col
 	'resaval', --clave
 	'13', --orden
-	'Res Aval', --titulo
+	'Res Aval de UA', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

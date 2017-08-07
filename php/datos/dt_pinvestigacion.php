@@ -62,11 +62,27 @@ class dt_pinvestigacion extends toba_datos_tabla
             $sql = "SELECT id_pinv, codigo FROM pinvestigacion ORDER BY codigo";
             return toba::db('designa')->consultar($sql);
 	}
+        //retorna todos los integrantes internos de un proyecto menos IA,IE,DE
+        //solo los que podrian ser los destinatarios de los viaticos
+        function get_integrantes_resp_viatico($id_proy){
+             $sql="select max(a.id_designacion) as id_designacion,trim(c.apellido)||', '||trim(c.nombre) as agente "
+                    . " from integrante_interno_pi a"
+                    . " LEFT OUTER JOIN designacion b ON (a.id_designacion=b.id_designacion)"
+                    . " LEFT OUTER JOIN docente c ON (c.id_docente=b.id_docente)"
+                    . " where pinvest=".$id_proy
+                    ." and funcion_p <>'IA' and funcion_p<>'IE' and funcion_p<>'DE'"
+                    ." group by agente"
+                    ." order by agente"
+                    ;
+            
+            return toba::db('designa')->consultar($sql);
+        }
+        //retorna listado de todos los integrantes internos de un proyecto
         function get_integrantes($id_proy){
             $sql="select max(a.id_designacion) as id_designacion,trim(c.apellido)||', '||trim(c.nombre) as agente "
                     . " from integrante_interno_pi a"
                     . " LEFT OUTER JOIN designacion b ON (a.id_designacion=b.id_designacion)"
-                . " LEFT OUTER JOIN docente c ON (c.id_docente=b.id_docente)"
+                    . " LEFT OUTER JOIN docente c ON (c.id_docente=b.id_docente)"
                     . " where pinvest=".$id_proy
                     ." group by agente"
                     ." order by agente"

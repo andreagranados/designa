@@ -294,29 +294,33 @@ class ci_integrantes_pi extends designa_ci
         //da de alta un nuevo integrante dentro del proyecto 
         function evt__form_integrante_e__guardar($datos)
 	{
-            $pe=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('No pueden agregar participantes al proyecto', 'error');  
                 
             }else{
-                $datos['pinvest']=$pe['id_pinv'];
+                $datos['pinvest']=$pi['id_pinv'];
                 $datos['nro_tabla']=1;
                 $datos['tipo_docum']=$datos['integrante'][0];
                 $datos['nro_docum']=$datos['integrante'][1];
+                $datos['check_inv']=0;
                 $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
                 $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
                 $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+                $this->s__mostrar_e=0;
+                toba::notificacion()->agregar('El integrante se ha dado de alta correctamente', 'info');  
             }
 	}
         function evt__form_integrante_e__baja($datos)
         {
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');  
                 
             }else{
                 $this->dep('datos')->tabla('integrante_externo_pi')->eliminar_todo();
                 $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+                toba::notificacion()->agregar('El integrante se ha eliminado correctamente', 'info');  
                 $this->s__mostrar_e=0;
             
             }

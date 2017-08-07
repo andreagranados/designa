@@ -1,7 +1,0 @@
-<?php
-
-class dt_estado_pi extends toba_datos_tabla
-{
-
-}
-?>
