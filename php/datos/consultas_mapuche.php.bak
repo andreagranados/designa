@@ -58,7 +58,12 @@ class consultas_mapuche
  	
  	$where="";
  	if(isset($ua)){
- 		$where=" and b.codc_uacad='".$ua."'";
+ 		if($ua=='FADE'){
+ 	          $where="and (b.codc_uacad='".$ua."' or b.codc_uacad='SESO')";
+ 	        }else{
+ 	          $where=" and b.codc_uacad='".$ua."'";
+ 	        }
+ 		
  		}
  	//recupero las licencias del periodo no remuneradas
  	$sql="select b.nro_licencia,b.nro_legaj,b.nro_cargo,fec_desde,fec_hasta,codn_tipo_lic 

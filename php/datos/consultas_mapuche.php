@@ -59,7 +59,7 @@ class consultas_mapuche
  	$where="";
  	if(isset($ua)){
  		if($ua=='FADE'){
- 	          $where="and (b.codc_uacad='".$ua."' or b.codc_uacad='SESO')";
+ 	          $where=" and (b.codc_uacad='".$ua."' or b.codc_uacad='SESO')";
  	        }else{
  	          $where=" and b.codc_uacad='".$ua."'";
  	        }
