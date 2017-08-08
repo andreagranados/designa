@@ -34,7 +34,28 @@ class dt_persona extends toba_datos_tabla
         }
 	function get_descripciones()
 	{
-		$sql = "SELECT * FROM persona ORDER BY apellido";
+		$sql = "SELECT p.*,trim(apellido)||', '||trim(nombre) as descripcion FROM persona p ORDER BY apellido,nombre";
+		return toba::db('designa')->consultar($sql);
+	}
+        //devuelve un listado de todos los docentes y personas (unifica ambas tablas)
+        //si esta en la tabla docente y tambien en la tabla persona aparece solo una vez
+        function get_descripciones_p($where=null)
+	{
+            if(!is_null($where)){
+                    $where=' WHERE '.$where;
+                }else{
+                    $where='';
+                }
+	    $sql = " select sub.id_persona,max(descripcion) as descripcion from 
+                    (SELECT trim(p.tipo_docum)||p.nro_docum as id_persona,trim(apellido)||', '||trim(nombre) as descripcion 
+                        FROM persona p
+                    UNION
+                    SELECT trim(d.tipo_docum)||d.nro_docum as id_persona,trim(apellido)||', '||trim(nombre) as descripcion 
+                        FROM docente d
+                    )sub
+                    $where
+                    group by sub.id_persona
+                    order by descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
         //metodo utilizado para mostrar las personas

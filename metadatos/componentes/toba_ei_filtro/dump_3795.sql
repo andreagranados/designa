@@ -133,9 +133,9 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'3795', --objeto_ei_filtro
 	'designa', --objeto_ei_filtro_proyecto
 	'opciones', --tipo
-	'id_docente', --nombre
-	'id_docente', --expresion
-	'Docente', --etiqueta
+	'id_persona', --nombre
+	'id_persona', --expresion
+	'Persona', --etiqueta
 	NULL, --descripcion
 	'1', --obligatorio
 	'1', --inicial
@@ -143,16 +143,16 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
 	'ef_combo', --opciones_ef
-	'get_descripciones', --carga_metodo
+	'get_descripciones_p', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
-	'3209', --carga_dt
+	'3714', --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
 	NULL, --carga_lista
-	'id_docente', --carga_col_clave
-	'nombre', --carga_col_desc
+	'id_persona', --carga_col_clave
+	'descripcion', --carga_col_desc
 	'1', --carga_permite_no_seteado
 	'--Seleccione--', --carga_no_seteado
 	'0', --carga_no_seteado_ocultar

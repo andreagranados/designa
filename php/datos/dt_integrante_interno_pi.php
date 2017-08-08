@@ -113,16 +113,34 @@ class dt_integrante_interno_pi extends toba_datos_tabla
             }else{
                     $where='';
             }
-        $sql="SELECT a.*,t_do.apellido,t_do.nombre,t_do.tipo_docum,t_do.nro_docum,t_do.legajo from ("
-                ." select t_d.id_docente,t_d.cat_estat||t_d.dedic as categoria, t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_p.nro_ord_cs,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd ,t_c.descripcion as cat_inv"
-                . " from integrante_interno_pi t_i"
-                . " LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv)"
-                . " LEFT OUTER JOIN designacion t_d  ON (t_i.id_designacion=t_d.id_designacion)"
-                . " LEFT OUTER JOIN categoria_invest t_c ON (t_i.cat_investigador=t_c.cod_cati) "
-                .$where 
-                . ")a"
-                . " LEFT OUTER JOIN docente t_do ON (a.id_docente=t_do.id_docente) "
-                ." order by desde";
+//        $sql="SELECT a.*,t_do.apellido,t_do.nombre,t_do.tipo_docum,t_do.nro_docum,t_do.legajo from ("
+//                ." select t_d.id_docente,t_d.cat_estat||t_d.dedic as categoria, t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_p.nro_ord_cs,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd ,t_c.descripcion as cat_inv"
+//                . " from integrante_interno_pi t_i"
+//                . " LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv)"
+//                . " LEFT OUTER JOIN designacion t_d  ON (t_i.id_designacion=t_d.id_designacion)"
+//                . " LEFT OUTER JOIN categoria_invest t_c ON (t_i.cat_investigador=t_c.cod_cati) "
+//                .$where 
+//                . ")a"
+//                . " LEFT OUTER JOIN docente t_do ON (a.id_docente=t_do.id_docente) "
+//                ." order by desde";
+        $sql="select * from (
+                select t_d.id_docente,trim(t_do.tipo_docum)||t_do.nro_docum as id_persona,t_d.cat_estat||t_d.dedic as categoria, t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_p.nro_ord_cs,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd ,t_c.descripcion as cat_inv 
+                from integrante_interno_pi t_i 
+                LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv) 
+                LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)
+                LEFT OUTER JOIN categoria_invest t_c ON (t_i.cat_investigador=t_c.cod_cati) 
+                LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente) 
+                UNION
+                select t_do.id_docente,trim(t_pe.tipo_docum)||t_pe.nro_docum as id_persona,'' as categoria, t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_p.nro_ord_cs,t_e.funcion_p,t_e.carga_horaria,t_in.nombre_institucion as ua,t_e.desde,t_e.hasta,t_e.rescd ,t_c.descripcion as cat_inv 
+                from integrante_externo_pi t_e 
+                LEFT OUTER JOIN pinvestigacion t_p ON(t_e.pinvest=t_p.id_pinv) 
+                LEFT OUTER JOIN persona t_pe ON(t_pe.tipo_docum=t_e.tipo_docum and t_pe.nro_docum=t_e.nro_docum) 
+                LEFT OUTER JOIN docente t_do ON(t_pe.tipo_docum=t_do.tipo_docum and t_pe.nro_docum=t_do.nro_docum) 
+                LEFT OUTER JOIN categoria_invest t_c ON (t_e.cat_invest=t_c.cod_cati) 
+                LEFT OUTER JOIN institucion t_in ON (t_e.id_institucion=t_in.id_institucion)
+            ) sub"
+            .$where
+            ." order by desde"    ;
        
         return toba::db('designa')->consultar($sql);
     }

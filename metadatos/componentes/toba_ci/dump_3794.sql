@@ -162,7 +162,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_edicion', --identificador
 	'1', --orden
 	'Pantalla', --etiqueta
-	'Permite buscar los proyectos de investigación en los que ha participado o participa un docente', --descripcion
+	'Permite buscar los proyectos de investigación en los que ha participado ó participa un docente', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen
@@ -192,14 +192,4 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'3794', --objeto_ci
 	'0', --orden
 	'2639'  --dep_id
-);
-
-------------------------------------------------------------
--- apex_eventos_pantalla
-------------------------------------------------------------
-INSERT INTO apex_eventos_pantalla (pantalla, objeto_ci, evento_id, proyecto) VALUES (
-	'1591', --pantalla
-	'3794', --objeto_ci
-	'3063', --evento_id
-	'designa'  --proyecto
 );
