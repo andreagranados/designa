@@ -1,0 +1,6 @@
+<?php
+class ci_materias extends toba_ci
+{
+	
+}
+?>

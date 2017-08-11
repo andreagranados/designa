@@ -28,7 +28,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 . " left outer join docente t_do on (t_do.id_docente=t_d.id_docente)"
                 . " left outer join categoria_invest t_c on (t_c.cod_cati=t_i.cat_investigador)"
                 . " where pinvest=".$id_proy
-                ." order by t_do.apellido,t_do.nombre,t_i.id_designacion,desde";
+                ." order by t_do.apellido,t_do.nombre,desde";
         return toba::db('designa')->consultar($sql); 
     }
     function modificar_fecha_desde($id_desig,$pinv,$desde,$nuevadesde){
