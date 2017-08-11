@@ -129,9 +129,9 @@ class dt_articulo_73 extends designa_datos_tabla
                            )
                         
                         and c.codigo_siu=b.cat_mapuche
-                        and c.id_periodo=2
-                        and c.costo_diario<=751.13
-                        and b.uni_acad='".$ua."'"
+                        and c.id_periodo=2"
+                        //and c.costo_diario<=751.13 esto lo saco para la segunda etapa
+                        ." and b.uni_acad='".$ua."'"
                             //tiene una designacion en 2018
                     ."  and exists (select * from designacion d2
                             where d2.id_docente=a.id_docente
