@@ -185,6 +185,7 @@ class ci_pinv_otros extends designa_ci
 	}
         function evt__formulario__modif_estado($datos)
         {  
+            $mensaje="";
             //antes de hacer la modificacion recupero el estado que tenia
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             //si pasa a estado A entonces tiene que poner el check in en 1 a todos los integrantes
@@ -192,6 +193,7 @@ class ci_pinv_otros extends designa_ci
                 //le coloca SCyt les coloca el check de aprobados a todos los integrantes del proyecto
                 $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->chequeados_ok($pi['id_pinv']);
                 $this->controlador()->dep('datos')->tabla('integrante_externo_pi')->chequeados_ok($pi['id_pinv']);
+                $mensaje=" Los integrantes han sido chequeados (check_inv=1)";
             }
             
             $datos2['codigo']=$datos['codigo'];
@@ -211,29 +213,36 @@ class ci_pinv_otros extends designa_ci
                  $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->dar_baja($pi['id_pinv'],$pi['fec_hasta'],$datos['fec_baja'],$datos['nro_resol_baja']);
                  toba::notificacion()->agregar('Se ha dado de baja a todos los participantes del proyecto', 'info');  
             }
-           
-            
+            toba::notificacion()->agregar('Se ha modificado correctamente.'.$mensaje, 'info');  
         }
-        //modificacion de datos principales del proyecto
+        //modificacion de datos principales del proyecto por la Unidad Académica
         function evt__formulario__modificacion($datos)
 	{    
           
           $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
           if($pi['estado']<>'I'){
-               toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
+              if($pi['estado']='A' and $pi['id_respon_sub']<>$datos['id_respon_sub']){//esta modificando el responsable del fondo
+                  $datos2['id_respon_sub']=$datos['id_respon_sub'];
+                  $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
+                  $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+                  toba::notificacion()->agregar('Se ha modificado el estado del proyecto.', 'info');  
+              }else{
+                  toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
+              }
           }else{
            
-          switch ($datos['es_programa']) {
-            case 'SI':$datos['es_programa']=1;
-                    $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
-            case 'NO':$datos['es_programa']=0;break;
-            }
-          switch ($datos['tipo']) {
-              case 0:$datos['tipo']='PROIN';break;
-              case 1:$datos['tipo']='PIN1 ';break;
-              case 2:$datos['tipo']='PIN2 ';break;
-              case 3:$datos['tipo']='RECO ';break;
-          }  
+                switch ($datos['es_programa']) {
+                    case 'SI':$datos['es_programa']=1;
+                         $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
+                    case 'NO':$datos['es_programa']=0;break;
+                 }
+                switch ($datos['tipo']) {
+                    case 0:$datos['tipo']='PROIN';break;
+                    case 1:$datos['tipo']='PIN1 ';break;
+                    case 2:$datos['tipo']='PIN2 ';break;
+                    case 3:$datos['tipo']='RECO ';break;
+                }  
+                
            //print_r($datos);exit();
           if($datos['programa']!=0){
                 $band=$this->controlador()->dep('datos')->tabla('subproyecto')->esta($datos['programa'],$pi['id_pinv']);
@@ -247,6 +256,11 @@ class ci_pinv_otros extends designa_ci
                 
             }else{//no pertenece a ningun programa
                 $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
+            }
+            if($datos['nro_resol']<>$pi['nro_resol']){//si modifica la resolucion del cd entonces automaticamente se modifica la res de los integrantes
+                $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                $this->controlador()->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                //idem externos $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
             }
             //elimino lo que viene en codigo y ordenanza dado que no corresponde al perfil de la UA
             unset($datos['codigo']);

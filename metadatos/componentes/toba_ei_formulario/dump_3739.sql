@@ -287,7 +287,7 @@ INSERT INTO apex_objeto_ut_formulario (objeto_ut_formulario_proyecto, objeto_ut_
 	NULL, --analisis_cambios
 	'0', --no_imprimir_efs_sin_estado
 	'0', --resaltar_efs_con_estado
-	'<table>
+	'<table height="249" width="256">
 	<tbody>
 		<tr>
 			<td>
@@ -333,9 +333,9 @@ INSERT INTO apex_objeto_ut_formulario (objeto_ut_formulario_proyecto, objeto_ut_
 		</tr>
 		<tr>
 			<td>
-				[ef id=objetivo]</td>
+				[ef id=id_respon_sub]</td>
 			<td>
-				[ef id=resumen]</td>
+				[ef id=disp_asent]</td>
 		</tr>
 		<tr>
 			<td>
@@ -345,19 +345,23 @@ INSERT INTO apex_objeto_ut_formulario (objeto_ut_formulario_proyecto, objeto_ut_
 		</tr>
 		<tr>
 			<td>
-				[ef id=id_respon_sub]</td>
+				[ef id=objetivo]</td>
 			<td>
-				[ef id=disp_asent]</td>
+				[ef id=resumen]</td>
 		</tr>
 		<tr>
 			<td>
 				[ef id=palabras_clave]</td>
 			<td>
-				[ef id=observacion]</td>
+				&nbsp;</td>
 		</tr>
 		<tr>
 			<td>
 				[ef id=observacionscyt]</td>
+			<td>
+				[ef id=observacion]</td>
+			<td>
+				&nbsp;</td>
 		</tr>
 	</tbody>
 </table>

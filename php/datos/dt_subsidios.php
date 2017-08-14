@@ -1,6 +1,14 @@
 <?php
 class dt_subsidios extends designa_datos_tabla
 {
+        function actualiza_vencidos(){
+            //los subsidios que no se rindieron y pasaron mas de 13 meses (390 dias) quedan vencidos
+            $sql="update subsidio set estado='V' 
+                    where fecha_rendicion is null and 
+                    extract(year from age( now(),fecha_pago))*365+extract(month from age( now(),fecha_pago))*30+extract(day from age( now(),fecha_pago)) >390";
+            return toba::db('designa')->consultar($sql);
+            
+        }
         function get_subsidios_de($id_proy){
             $sql="select t_s.*,trim(t_d.apellido)||','||trim(t_d.nombre) as responsable from subsidio t_s "
                     . "LEFT OUTER JOIN docente t_d ON (t_s.id_respon_sub=t_d.id_docente)"
