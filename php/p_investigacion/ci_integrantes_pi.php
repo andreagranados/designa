@@ -317,8 +317,7 @@ class ci_integrantes_pi extends designa_ci
                     $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
                     $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
                     $this->s__mostrar_e=0;
-                    toba::notificacion()->agregar('El integrante se ha dado de alta correctamente', 'info');  
-
+                    toba::notificacion()->agregar('El integrante se ha dado de alta correctamente', 'info'); 
             }
 	}
         function evt__form_integrante_e__baja($datos)
@@ -332,9 +331,7 @@ class ci_integrantes_pi extends designa_ci
                 $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
                 toba::notificacion()->agregar('El integrante se ha eliminado correctamente', 'info');  
                 $this->s__mostrar_e=0;
-            
             }
-             
         }
         function evt__form_integrante_e__modificacion($datos)
         {

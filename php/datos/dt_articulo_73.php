@@ -3,7 +3,7 @@ require_once 'consultas_mapuche.php';
 class dt_articulo_73 extends designa_datos_tabla
 {
     function get_datos($id_desig){
-        $sql="select distinct t_d.uni_acad,t_do.legajo,trim(t_do.apellido)||', '||trim(t_do.nombre)||'('||t_d.cat_estat||t_d.dedic||')'||'-'||t_do.tipo_docum||':'||t_do.nro_docum as designacion, t_a.antiguedad, t_ti.desc_item as desc_continuidad,t_tip.desc_item as desc_modo_ingreso, t_a.observacion,t_a.nro_resolucion,t_a.cat_est_reg||t_a.dedic_reg as cat_est_reg,t_dep.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,t_a.observacion_acad,t_a.check_academica,t_a.pase_superior,t_a.observacion_presup,t_a.check_presup,t_a.expediente, case when t_a.check_academica then 'SI' else 'NO' end as ca,case when t_a.check_presup then 'SI' else 'NO' end as cp"
+        $sql="select distinct t_d.uni_acad,t_do.legajo,trim(t_do.apellido)||', '||trim(t_do.nombre)||'('||t_d.cat_estat||t_d.dedic||')'||'-'||t_do.tipo_docum||':'||t_do.nro_docum as designacion, t_a.antiguedad, t_ti.desc_item as desc_continuidad,t_tip.desc_item as desc_modo_ingreso, t_a.observacion,t_a.nro_resolucion,t_a.cat_est_reg||t_a.dedic_reg as cat_est_reg,t_dep.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,t_a.observacion_acad,t_a.check_academica,t_a.pase_superior,t_a.observacion_presup,t_a.check_presup,t_a.expediente, case when t_a.check_academica then 'SI' else 'NO' end as ca,case when t_a.check_presup then 'SI' else 'NO' end as cp,articulo,cat_que_reg"
                 . " from articulo_73 t_a "
                 . " LEFT OUTER JOIN designacion t_d ON (t_a.id_designacion=t_d.id_designacion)"
                 . " LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)"

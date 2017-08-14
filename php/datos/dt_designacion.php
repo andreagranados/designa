@@ -168,6 +168,61 @@ class dt_designacion extends toba_datos_tabla
         return $res;
             
     }    
+    function get_comparacion_imput(){
+            $ua=trim($filtro['uni_acad']);
+            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+            
+            $sql=" SELECT distinct a.legajo"
+                    . " from docente a, designacion b"
+                    . " where a.id_docente=b.id_docente"
+                    . " and b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null)
+                        and b.uni_acad='".$ua."'";
+            $legajos=toba::db('designa')->consultar($sql);
+            if(count($legajos)>0){//si hay docentes 
+                $doc=array();
+                foreach ($legajos as $value) {
+                    $leg[]=$value['legajo'];
+                }
+                $conjunto=implode(",",$leg);
+                //recupero de mapuche los datos de los legajos
+                $datos_mapuche = consultas_mapuche::get_cargos_imputaciones($conjunto);
+                
+            }
+            //recupero los cargos de mapuche de ese periodo y esa ua
+            $datos_mapuche = consultas_mapuche::get_cargos($ua,$udia,$pdia);
+            $sql=" CREATE LOCAL TEMP TABLE auxi(
+            id_desig 		integer,
+            chkstopliq  	integer,
+            ua   		character(5),
+            nro_legaj  		integer,
+            ape 		character varying(100),
+            nom 		character varying(100),
+            nro_cargo 		integer,
+            codc_categ 		character varying(4),
+            caracter 		character varying(4),
+            fec_alta 		date,
+            fec_baja 		date,            
+            porc_ipres		numeric(5,2),
+            codn_area 		integer,
+  	    codn_subar 		integer,
+            codn_subsubar 	integer,
+            codn_fuent 		integer,
+            imputacion		text
+            );";
+            toba::db('designa')->consultar($sql);
+            foreach ($datos_mapuche as $valor) {
+                if(isset($valor['fec_baja'])){
+                    $concat="'".$valor['fec_baja']."'";
+                }else{
+                    $concat="null";
+                }
+                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$filtro['uni_acad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",'".$valor['lic']."')";
+                
+                toba::db('designa')->consultar($sql);
+            }
+            
+    }
     function get_comparacion($filtro){
             //print_r($filtro);exit();// Array ( [uni_acad] => FAIF [anio] => 2016 ) 
             $salida=array();

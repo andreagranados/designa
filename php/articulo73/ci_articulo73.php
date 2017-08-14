@@ -233,10 +233,9 @@ class ci_articulo73 extends toba_ci
         {
             if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()) {
                  $datos=$this->dep('datos')->tabla('articulo_73')->get();
-                 
                  $x=$this->dep('datos')->tabla('articulo_73')->get_datos($datos['id_designacion']);
                  return $x[0];
-                  
+ 
             }
         }
         function evt__form_acad__modificacion($datos)
