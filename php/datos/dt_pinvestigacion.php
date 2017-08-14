@@ -2,6 +2,23 @@
 require_once 'dt_mocovi_periodo_presupuestario.php';
 class dt_pinvestigacion extends toba_datos_tabla
 {
+        function control($id_doc,$id_pinv,$estado){//retorna true cuando es estado I y el docente no esta (para integrantes docentes)
+            if($estado='I'){
+                $sql="select t_d.id_docente from integrante_interno_pi t_i "
+                        . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
+                        . " where t_i.pinvest=$id_pinv"
+                        . " and t_d.id_docente=$id_doc";
+                $resul=toba::db('designa')->consultar($sql);
+                if(count($resul)>0){//ese docente ya esta
+                    return false;
+                }else{
+                    return true;
+                }
+            }else{
+                return true;
+            }
+        }
+     
         function get_responsable($id_proy){
            $salida=array();
            $sql="select t_do.id_docente,trim(t_do.apellido)||','||trim(t_do.nombre) as descripcion"

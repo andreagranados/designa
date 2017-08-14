@@ -208,12 +208,21 @@ class ci_integrantes_pi extends designa_ci
                      toba::notificacion()->agregar('Debe completar la Resol de aval porque es un integrante de otra facultad', 'error');  
                     
                 }else{
-                    $datos['pinvest']=$pi['id_pinv'];
-                    $datos['ua']=$uni;
-                    $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-                    $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                    $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
-
+                    //controla que si el proyecto esta en estado I entonces no pueda cargar mas de un registro por docente
+                    $bandera=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->control($datos['id_docente'],$pi['id_pinv'],$pi['estado']);
+                    if($bandera){
+                        $datos['pinvest']=$pi['id_pinv'];
+                        $datos['ua']=$uni;
+                        $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
+                        $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                        $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+                        toba::notificacion()->agregar('El docente ha sido ingresado correctamente', 'info');   
+                        $this->s__mostrar_i=0;
+    
+                    }else{
+                        toba::notificacion()->agregar('Este docente ya se encuentra. En un proyecto en estado Inicial solo puede cargar un registro por docente. ', 'error');     
+                    }
+                    
                 }
             }
 	}
@@ -298,17 +307,18 @@ class ci_integrantes_pi extends designa_ci
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('No pueden agregar participantes al proyecto', 'error');  
                 
-            }else{
-                $datos['pinvest']=$pi['id_pinv'];
-                $datos['nro_tabla']=1;
-                $datos['tipo_docum']=$datos['integrante'][0];
-                $datos['nro_docum']=$datos['integrante'][1];
-                $datos['check_inv']=0;
-                $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
-                $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
-                $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
-                $this->s__mostrar_e=0;
-                toba::notificacion()->agregar('El integrante se ha dado de alta correctamente', 'info');  
+            }else{                 
+                    $datos['pinvest']=$pi['id_pinv'];
+                    $datos['nro_tabla']=1;
+                    $datos['tipo_docum']=$datos['integrante'][0];
+                    $datos['nro_docum']=$datos['integrante'][1];
+                    $datos['check_inv']=0;
+                    $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
+                    $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+                    $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+                    $this->s__mostrar_e=0;
+                    toba::notificacion()->agregar('El integrante se ha dado de alta correctamente', 'info');  
+
             }
 	}
         function evt__form_integrante_e__baja($datos)
