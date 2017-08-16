@@ -82,4 +82,16 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'no_modif_viaticos', --descripcion
 	'0'  --permite_edicion
 );
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'21', --restriccion_funcional
+	'no_edita_nro_cargo', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'22', --restriccion_funcional
+	'no_edita_norma', --descripcion
+	'0'  --permite_edicion
+);
 --- FIN Grupo de desarrollo 0

@@ -2,7 +2,7 @@
 class ci_comparacion_sdd_mapuche extends toba_ci
 {
 	protected $s__datos_filtro;
-
+ 
 
 	//---- Filtro -----------------------------------------------------------------------
 
@@ -32,11 +32,17 @@ class ci_comparacion_sdd_mapuche extends toba_ci
 		} 
 	}
 
-	function evt__cuadro__seleccion($datos)
+        function evt__cuadro__editar($datos)
 	{
-		$this->dep('datos')->cargar($datos);
+            $resul=$this->dep('datos')->tabla('designacion')->actualiza_nro_cargo($datos['id_designacion'],$datos['nro_cargo']);
+            if($resul){
+                toba::notificacion()->agregar(utf8_decode('Se ha actualizado el número de cargo correspondiente a la designación!'), "info");
+            }else{
+                toba::notificacion()->agregar(utf8_decode('No es posible realizar la actualización!'), "error");
+            }
+            
 	}
-
+        
 	//---- Formulario -------------------------------------------------------------------
 
 	function conf__formulario(toba_ei_formulario $form)

@@ -23,17 +23,19 @@ class dt_asignacion_materia extends toba_datos_tabla
     }
     function anexo2($filtro=array()){
         //print_r($where);//Array ( [uni_acad] => Array ( [condicion] => es_igual_a [valor] => FAIF ) [anio] => Array ( [condicion] => es_igual_a [valor] => 2016 ) )
-        $where='';
+        $where=' WHERE 1=1 ';
         if (isset($filtro['id_departamento'])) {
-		$where.= " WHERE id_departamento = ".$filtro['id_departamento']['valor'];
+		$where.= " AND id_departamento = ".$filtro['id_departamento']['valor'];
 		}
         if (isset($filtro['id_area'])) {
 		$where.= " AND id_area = ".$filtro['id_area']['valor'];
 	}
-         if (isset($filtro['id_orientacion'])) {
+        if (isset($filtro['id_orientacion'])) {
 		$where.= " AND id_orientacion = ".$filtro['id_orientacion']['valor'];
 	}
-        
+        if (isset($filtro['nro_540'])) {
+		$where.= " AND nro_540 = ".$filtro['nro_540']['valor'];
+	}
         $sql="select anexo2(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
         toba::db('designa')->consultar($sql);
         $sql="select a.*,b.descripcion as dep,c.descripcion as area,d.descripcion as orient

@@ -120,11 +120,11 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'3898', --objeto_ci
 	'1624', --pantalla
 	'pant_inicial', --identificador
-	NULL, --orden
+	'1', --orden
 	'Pantalla Inicial', --etiqueta
-	NULL, --descripcion
+	'Listado de designaciones docentes por período. Se pueden utilizar los filtros: <b>departamento, unidad académica y docente </b>solos o combinados. <br> Por ejemplo: para listar los docentes designados en el departamento XX  utilizar el filtro Departamento. <br>Para listar los docentes designados en el departamento XX de la unidad acad YY utilizar filtros: Departamento y Unidad Académica.', --descripcion
 	NULL, --tip
-	NULL, --imagen_recurso_origen
+	'apex', --imagen_recurso_origen
 	NULL, --imagen
 	NULL, --objetos
 	NULL, --eventos
@@ -132,7 +132,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	NULL, --subclase_archivo
 	NULL, --template
 	NULL, --template_impresion
-	NULL  --punto_montaje
+	'23'  --punto_montaje
 );
 --- FIN Grupo de desarrollo 0
 

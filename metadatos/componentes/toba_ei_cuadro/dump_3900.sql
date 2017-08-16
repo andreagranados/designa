@@ -187,7 +187,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3900', --objeto_cuadro
 	'3820', --objeto_cuadro_col
-	'cat_estat', --clave
+	'cat_est', --clave
 	'4', --orden
 	'Cat Estatuto', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
@@ -218,9 +218,9 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3900', --objeto_cuadro
 	'3821', --objeto_cuadro_col
-	'dedic', --clave
+	'cat_map', --clave
 	'5', --orden
-	'Dedicación', --titulo
+	'Cat Mapuche', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

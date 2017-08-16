@@ -168,47 +168,60 @@ class dt_designacion extends toba_datos_tabla
         return $res;
             
     }    
-    function get_comparacion_imput(){
+    function actualiza_nro_cargo($id_desig,$nro_cargo){
+        if($id_desig<>-1 and $nro_cargo<>-1){
+            $sql="update designacion set nro_cargo=$nro_cargo"
+                . " where id_designacion=$id_desig";
+            toba::db('designa')->consultar($sql);  
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+    function get_comparacion_imput($filtro){
             $ua=trim($filtro['uni_acad']);
             $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
             $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
             
-            $sql=" SELECT distinct a.legajo"
+            $sql=" SELECT distinct b.nro_cargo"
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null)
-                        and b.uni_acad='".$ua."'";
-            $legajos=toba::db('designa')->consultar($sql);
-            if(count($legajos)>0){//si hay docentes 
+                        and b.uni_acad='".$ua."'"
+                    . " and b.nro_cargo <> 0 and b.nro_cargo is not null";
+            $cargos=toba::db('designa')->consultar($sql);
+            
+            if(count($cargos)>0){//si hay docentes 
                 $doc=array();
-                foreach ($legajos as $value) {
-                    $leg[]=$value['legajo'];
+                foreach ($cargos as $value) {
+                    $car[]=$value['nro_cargo'];
                 }
-                $conjunto=implode(",",$leg);
+                $conjunto=implode(",",$car);
+               
                 //recupero de mapuche los datos de los legajos
-                $datos_mapuche = consultas_mapuche::get_cargos_imputaciones($conjunto);
-                
+                $datos_mapuche = consultas_mapuche::get_cargos_imputaciones($ua,$udia,$pdia,$conjunto);
             }
             //recupero los cargos de mapuche de ese periodo y esa ua
-            $datos_mapuche = consultas_mapuche::get_cargos($ua,$udia,$pdia);
+            
             $sql=" CREATE LOCAL TEMP TABLE auxi(
-            id_desig 		integer,
-            chkstopliq  	integer,
-            ua   		character(5),
-            nro_legaj  		integer,
-            ape 		character varying(100),
-            nom 		character varying(100),
-            nro_cargo 		integer,
-            codc_categ 		character varying(4),
-            caracter 		character varying(4),
-            fec_alta 		date,
-            fec_baja 		date,            
-            porc_ipres		numeric(5,2),
-            codn_area 		integer,
-  	    codn_subar 		integer,
-            codn_subsubar 	integer,
-            codn_fuent 		integer,
-            imputacion		text
+                    id_desig 		integer,
+                    chkstopliq  	integer,
+                    ua   		character(5),
+                    nro_legaj  		integer,
+                    ape 		character varying(100),
+                    nom 		character varying(100),
+                    nro_cargo 		integer,
+                    codc_categ 		character varying(4),
+                    caracter 		character varying(4),
+                    fec_alta 		date,
+                    fec_baja 		date,            
+                    porc_ipres		numeric(5,2),
+                    codn_area 		integer,
+                    codn_subar 		integer,
+                    codn_subsubar 	integer,
+                    codn_fuent 		integer,
+                    imputacion		text
             );";
             toba::db('designa')->consultar($sql);
             foreach ($datos_mapuche as $valor) {
@@ -217,10 +230,22 @@ class dt_designacion extends toba_datos_tabla
                 }else{
                     $concat="null";
                 }
-                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$filtro['uni_acad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",'".$valor['lic']."')";
-                
+                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$filtro['uni_acad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",".$valor['porc_ipres'].",".$valor['codn_area'].",".$valor['codn_subar'].",".$valor['codn_subsubar'].",".$valor['codn_fuent'].",'".$valor['imputacion']."')";
                 toba::db('designa')->consultar($sql);
             }
+            $sql="select t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.id_designacion,t_d.nro_cargo, t_m.imputacion, t_mapu.imputacion as imputacion_mapu,t_d.cat_mapuche,t_d.carac,desde,hasta,t_i.porc,t_mapu.porc_ipres
+                    from designacion t_d
+                    LEFT OUTER JOIN imputacion t_i ON (t_d.id_designacion=t_i.id_designacion)
+                    LEFT OUTER JOIN mocovi_programa t_m ON (t_m.id_programa=t_i.id_programa)
+                    LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
+                    LEFT OUTER JOIN auxi t_mapu ON (t_d.nro_cargo=t_mapu.nro_cargo)
+                    WHERE t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
+                        and t_d.uni_acad='".$ua."'"
+                    ." and t_d.nro_cargo <> 0 and t_d.nro_cargo is not null";
+                    //. " and (t_m.area<>t_mapu.codn_area or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area<>t_mapu.codn_subsubar or t_m.fuente<>t_mapu.codn_fuent)";
+            $resul=toba::db('designa')->consultar($sql);
+            return $resul;
+            
             
     }
     function get_comparacion($filtro){
@@ -233,9 +258,9 @@ class dt_designacion extends toba_datos_tabla
                 switch ($filtro['tipo']) {
                     case 1: $where2=" where id_designacion=-1 and chkstopliq=0 and lic='NO'";
                         break;
-                    case 2: $where2=" where nro_cargo is null";
+                    case 2: $where2=" where nro_cargo = -1";
                         break;
-                    case 3: $where2=" where id_designacion<>-1 and nro_cargo is not null";
+                    case 3: $where2=" where id_designacion<>-1 and nro_cargo <> -1";
                         break;
 
                 }
@@ -282,7 +307,7 @@ class dt_designacion extends toba_datos_tabla
                 $where=" and t_d.uni_acad='".$filtro['uni_acad']."'";
             }
             
-            $sql="select * from( select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,b.nro_cargo,b.chkstopliq,b.lic,a.licd from "
+            $sql="select * from( select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,case when b.nro_cargo is null then -1 else b.nro_cargo end as nro_cargo,b.chkstopliq,b.lic,a.licd from "
                     . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup"
                     . " from designacion t_d, docente t_do
                         where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
@@ -312,7 +337,6 @@ class dt_designacion extends toba_datos_tabla
                     ." order by uni_acad,apellido,nombre,id_designacion,nro_cargo) d $where2";
             
             $resul = toba::db('designa')->consultar($sql);
-            
             return $resul;
   
         }
@@ -1049,7 +1073,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
               $seleccion=" case when b.id_novedad is null then 'A' else 'L' end as estado, ";
             }
             $sql="select a.*,".$seleccion."t_de.descripcion as departamento,t_a.descripcion as area,t_o.descripcion as orientacion,t_n.tipo_norma||t_n.nro_norma||'/'||extract(year from t_n.fecha) as norma  from"
-                    . "(select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_d.id_designacion, t_d.estado,t_d.cat_estat,t_d.dedic,t_d.carac,t_d.desde,t_d.hasta,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_d.id_norma"
+                    . "(select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_d.id_designacion, t_d.estado,t_d.cat_estat||t_d.dedic as cat_est,t_d.cat_mapuche as cat_map,t_d.carac,t_d.desde,t_d.hasta,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_d.id_norma"
                     . " from designacion t_d, docente t_do"
                     . " WHERE t_d.id_docente=t_do.id_docente"
                     . $where
