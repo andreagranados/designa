@@ -124,7 +124,6 @@ class cargo_solapas extends toba_ci
                     $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
                     $datos['uni_acad']= $ua[0]['sigla'];
                     $datos['id_docente']=$docente['id_docente'];
-                    $datos['nro_cargo']=0;
                     $datos['check_presup']=0;
                     $datos['check_academica']=0;
                     $datos['tipo_desig']=1;

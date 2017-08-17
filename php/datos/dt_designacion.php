@@ -168,12 +168,20 @@ class dt_designacion extends toba_datos_tabla
         return $res;
             
     }    
+    //actualiza el campo nro_cargo  de la designacion
     function actualiza_nro_cargo($id_desig,$nro_cargo){
         if($id_desig<>-1 and $nro_cargo<>-1){
-            $sql="update designacion set nro_cargo=$nro_cargo"
+            $sql="select * from designacion where nro_cargo=$nro_cargo and id_designacion<>$id_desig";
+            $res=toba::db('designa')->consultar($sql);  
+            if(count($res)>0){//ya hay otra designacion con ese numero de cargo
+                return false;
+            }else{
+                $sql="update designacion set nro_cargo=$nro_cargo"
                 . " where id_designacion=$id_desig";
-            toba::db('designa')->consultar($sql);  
-            return true;
+                toba::db('designa')->consultar($sql);  
+                return true;
+            }
+            
         }else{
             return false;
         }
@@ -307,8 +315,37 @@ class dt_designacion extends toba_datos_tabla
                 $where=" and t_d.uni_acad='".$filtro['uni_acad']."'";
             }
             
-            $sql="select * from( select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,case when b.nro_cargo is null then -1 else b.nro_cargo end as nro_cargo,b.chkstopliq,b.lic,a.licd from "
-                    . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup"
+//            $sql="select * from( select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,b.caracter,a.desde,a.hasta,b.fec_alta,b.fec_baja,case when b.nro_cargo is null then -1 else b.nro_cargo end as nro_cargo,b.chkstopliq,b.lic,a.licd from "
+//                    . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup"
+//                    . " from designacion t_d, docente t_do
+//                        where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
+//                             and t_d.id_docente=t_do.id_docente".$where.")a "
+//                            ." LEFT OUTER JOIN novedad c
+//							ON(a.id_designacion=c.id_designacion
+//							and c.tipo_nov in(2,4,5)
+//							and c.desde <= '".$udia."' and (c.hasta >= '".$pdia."' or c.hasta is null)
+//							)"
+//                         .")a"
+//                    . " LEFT OUTER JOIN auxi b ON (a.cat_mapuche=b.codc_categ
+//                                                and a.legajo=b.nro_legaj
+//                                                and a.uni_acad=b.ua
+//                                                and b.fec_alta <= '".$udia."' and (b.fec_baja >= '".$pdia."' or b.fec_baja is null)
+//                                                )"
+//                    ." UNION "
+//                    ."select '-1' as id_desig,ua,ape,nom,nro_legaj,null,codc_categ,null as check_presup,caracter,null,null,fec_alta,fec_baja,nro_cargo,chkstopliq,lic,null"
+//                    ." from auxi b "
+//                    ." where
+//                        not exists (select * from designacion c, docente d
+//                                    where 
+//                                    c.id_docente=d.id_docente
+//                                    and d.legajo=b.nro_legaj
+//                                    and c.uni_acad=b.ua 
+//                                    and c.cat_mapuche=b.codc_categ
+//                                    ) "
+//                    ." order by uni_acad,apellido,nombre,id_designacion,nro_cargo) d $where2";
+            //si tiene seteado el nro_cargo entonces hace join por nro_cargo, y sino  busca por categ, ua, fecha
+                    $sql="select * from( select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,case when a.nro_cargo<>0 and a.nro_cargo is not null then c.caracter else b.caracter end as caracter,a.desde,a.hasta,case when a.nro_cargo<>0 and a.nro_cargo is not null then c.fec_alta else b.fec_alta end fec_alta,case when a.nro_cargo<>0 and a.nro_cargo is not null then c.fec_baja else b.fec_baja end as fec_baja,case when a.nro_cargo <>0 and a.nro_cargo is not null then a.nro_cargo else case when b.nro_cargo is null then -1 else b.nro_cargo end end as nro_cargo,b.chkstopliq,case when a.nro_cargo<>0 and a.nro_cargo is not null then c.lic else b.lic end as lic,a.licd,case when a.nro_cargo is not null or a.nro_cargo<>0 then a.nro_cargo else b.nro_cargo end as nro_cargo_m from "
+                    . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup,t_d.nro_cargo "
                     . " from designacion t_d, docente t_do
                         where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
                              and t_d.id_docente=t_do.id_docente".$where.")a "
@@ -318,13 +355,13 @@ class dt_designacion extends toba_datos_tabla
 							and c.desde <= '".$udia."' and (c.hasta >= '".$pdia."' or c.hasta is null)
 							)"
                          .")a"
-                    . " LEFT OUTER JOIN auxi b ON (a.cat_mapuche=b.codc_categ
+                    . " LEFT OUTER JOIN auxi c ON (a.nro_cargo=c.nro_cargo)" //cuando el nro_cargo de designacion ya esta seteado
+                    . " LEFT OUTER JOIN auxi b ON ( a.cat_mapuche=b.codc_categ
                                                 and a.legajo=b.nro_legaj
                                                 and a.uni_acad=b.ua
-                                                and b.fec_alta <= '".$udia."' and (b.fec_baja >= '".$pdia."' or b.fec_baja is null)
-                                                )"
+                                                and b.fec_alta <= '".$udia."' and (b.fec_baja >= '".$pdia."' or b.fec_baja is null))"                                                 
                     ." UNION "
-                    ."select '-1' as id_desig,ua,ape,nom,nro_legaj,null,codc_categ,null as check_presup,caracter,null,null,fec_alta,fec_baja,nro_cargo,chkstopliq,lic,null"
+                    ."select '-1' as id_desig,ua,ape,nom,nro_legaj,null,codc_categ,null as check_presup,caracter,null,null,fec_alta,fec_baja,nro_cargo,chkstopliq,lic,null,null"
                     ." from auxi b "
                     ." where
                         not exists (select * from designacion c, docente d
@@ -335,7 +372,6 @@ class dt_designacion extends toba_datos_tabla
                                     and c.cat_mapuche=b.codc_categ
                                     ) "
                     ." order by uni_acad,apellido,nombre,id_designacion,nro_cargo) d $where2";
-            
             $resul = toba::db('designa')->consultar($sql);
             return $resul;
   
