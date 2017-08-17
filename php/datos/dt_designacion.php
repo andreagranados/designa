@@ -344,8 +344,8 @@ class dt_designacion extends toba_datos_tabla
 //                                    ) "
 //                    ." order by uni_acad,apellido,nombre,id_designacion,nro_cargo) d $where2";
             //si tiene seteado el nro_cargo entonces hace join por nro_cargo, y sino  busca por categ, ua, fecha
-                    $sql="select * from( select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,case when a.nro_cargo<>0 and a.nro_cargo is not null then c.caracter else b.caracter end as caracter,a.desde,a.hasta,case when a.nro_cargo<>0 and a.nro_cargo is not null then c.fec_alta else b.fec_alta end fec_alta,case when a.nro_cargo<>0 and a.nro_cargo is not null then c.fec_baja else b.fec_baja end as fec_baja,case when a.nro_cargo <>0 and a.nro_cargo is not null then a.nro_cargo else case when b.nro_cargo is null then -1 else b.nro_cargo end end as nro_cargo,b.chkstopliq,case when a.nro_cargo<>0 and a.nro_cargo is not null then c.lic else b.lic end as lic,a.licd,case when a.nro_cargo is not null or a.nro_cargo<>0 then a.nro_cargo else b.nro_cargo end as nro_cargo_m from "
-                    . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup,t_d.nro_cargo "
+                    $sql="select * from( select distinct a.id_designacion,a.uni_acad,a.apellido,a.nombre,a.legajo,a.check_presup,a.cat_mapuche,a.carac,case when a.nro_cargo is not null then c.caracter else b.caracter end as caracter,a.desde,a.hasta,case when a.nro_cargo is not null then c.fec_alta else b.fec_alta end fec_alta,case when a.nro_cargo is not null then c.fec_baja else b.fec_baja end as fec_baja,case when a.nro_cargo is not null then a.nro_cargo else case when b.nro_cargo is null then -1 else b.nro_cargo end end as nro_cargo,b.chkstopliq,case when a.nro_cargo<>0 and a.nro_cargo is not null then c.lic else b.lic end as lic,a.licd,a.nro_cargo as nro_cargo_m from "
+                    . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup,t_d.nro_cargo"
                     . " from designacion t_d, docente t_do
                         where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
                              and t_d.id_docente=t_do.id_docente".$where.")a "
@@ -372,6 +372,17 @@ class dt_designacion extends toba_datos_tabla
                                     and c.cat_mapuche=b.codc_categ
                                     ) "
                     ." order by uni_acad,apellido,nombre,id_designacion,nro_cargo) d $where2";
+//            $sql= "select * from (select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup,t_d.nro_cargo"
+//                    . " from designacion t_d, docente t_do
+//                        where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
+//                             and t_d.id_docente=t_do.id_docente".$where.")a "
+//                            ." LEFT OUTER JOIN novedad c
+//							ON(a.id_designacion=c.id_designacion
+//							and c.tipo_nov in(2,4,5)
+//							and c.desde <= '".$udia."' and (c.hasta >= '".$pdia."' or c.hasta is null)
+//							)"
+//                         .")a";
+            //print_r($sql);exit;
             $resul = toba::db('designa')->consultar($sql);
             return $resul;
   
