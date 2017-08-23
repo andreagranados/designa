@@ -47,7 +47,8 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             LEFT OUTER JOIN docente t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
             LEFT OUTER JOIN designacion t_d ON (t_d.id_docente=t_do.id_docente)
             LEFT OUTER JOIN integrante_interno_pi t_i ON (t_i.id_designacion=t_d.id_designacion)
-            where a.pinvest=$id_p
+            where t_i.pinvest=$id_p
+            and t_i.pinvest=a.pinvest
             and a.nro_docum=t_do.nro_docum
             and a.tipo_docum=t_do.tipo_docum
             and funcion_p is not null
@@ -57,7 +58,8 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             from movi a
             LEFT OUTER JOIN persona t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
             LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.nro_docum=t_do.nro_docum and t_i.tipo_docum=t_do.tipo_docum)
-            where a.pinvest=$id_p
+            where t_i.pinvest=$id_p
+            and t_i.pinvest=a.pinvest
             and a.nro_docum=t_do.nro_docum
             and a.tipo_docum=t_do.tipo_docum
             and funcion_p is not null

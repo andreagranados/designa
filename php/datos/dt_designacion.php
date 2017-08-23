@@ -188,30 +188,34 @@ class dt_designacion extends toba_datos_tabla
         
     }
     function get_comparacion_imput($filtro){
-            $ua=trim($filtro['uni_acad']);
-            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
-            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
             
-            $sql=" SELECT distinct b.nro_cargo"
+        $ua=trim($filtro['uni_acad']);
+                        
+        $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+        $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+            
+        $sql=" SELECT distinct b.nro_cargo"
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null)
-                        and b.uni_acad='".$ua."'"
+                     and b.uni_acad='".$ua."'"
                     . " and b.nro_cargo <> 0 and b.nro_cargo is not null";
-            $cargos=toba::db('designa')->consultar($sql);
+        $cargos=toba::db('designa')->consultar($sql);
             
-            if(count($cargos)>0){//si hay docentes 
+        if(count($cargos)>0){//si hay docentes 
                 $doc=array();
                 foreach ($cargos as $value) {
                     $car[]=$value['nro_cargo'];
-                }
+        }
                 $conjunto=implode(",",$car);
                
                 //recupero de mapuche los datos de los legajos
-                $datos_mapuche = consultas_mapuche::get_cargos_imputaciones($ua,$udia,$pdia,$conjunto);
-            }
-            //recupero los cargos de mapuche de ese periodo y esa ua
+        $datos_mapuche = consultas_mapuche::get_cargos_imputaciones($ua,$udia,$pdia,$conjunto);
+        }
+        if(count($datos_mapuche)>0){
+                
             
+            //recupero los cargos de mapuche de ese periodo y esa ua
             $sql=" CREATE LOCAL TEMP TABLE auxi(
                     id_desig 		integer,
                     chkstopliq  	integer,
@@ -241,19 +245,20 @@ class dt_designacion extends toba_datos_tabla
                 $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$filtro['uni_acad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",".$valor['porc_ipres'].",".$valor['codn_area'].",".$valor['codn_subar'].",".$valor['codn_subsubar'].",".$valor['codn_fuent'].",'".$valor['imputacion']."')";
                 toba::db('designa')->consultar($sql);
             }
-            $sql="select t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.id_designacion,t_d.nro_cargo, t_m.imputacion, t_mapu.imputacion as imputacion_mapu,t_d.cat_mapuche,t_d.carac,desde,hasta,t_i.porc,t_mapu.porc_ipres
+            $sql="select t_d.uni_acad,t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.id_designacion,t_d.nro_cargo, t_m.imputacion,t_m.area,t_m.sub_area,t_m.sub_sub_area,t_m.fuente, t_mapu.imputacion as imputacion_mapu,t_d.cat_mapuche,t_d.carac,desde,hasta,t_i.porc,t_mapu.porc_ipres
                     from designacion t_d
                     LEFT OUTER JOIN imputacion t_i ON (t_d.id_designacion=t_i.id_designacion)
                     LEFT OUTER JOIN mocovi_programa t_m ON (t_m.id_programa=t_i.id_programa)
                     LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
                     LEFT OUTER JOIN auxi t_mapu ON (t_d.nro_cargo=t_mapu.nro_cargo)
                     WHERE t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
-                        and t_d.uni_acad='".$ua."'"
-                    ." and t_d.nro_cargo <> 0 and t_d.nro_cargo is not null";
-                    //. " and (t_m.area<>t_mapu.codn_area or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area<>t_mapu.codn_subsubar or t_m.fuente<>t_mapu.codn_fuent)";
+                     and t_d.uni_acad='".$ua."'"
+                    ." and t_d.nro_cargo <> 0 and t_d.nro_cargo is not null"
+                    ." and t_m.sub_sub_area is null or t_m.sub_sub_area <>t_mapu.codn_subsubar";
+                    //. " and (t_m.area<>t_mapu.codn_area or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area=t_mapu.codn_subsubar)";// or t_m.fuente<>t_mapu.codn_fuent)";
             $resul=toba::db('designa')->consultar($sql);
             return $resul;
-            
+           } 
             
     }
     function get_comparacion($filtro){
@@ -1734,7 +1739,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     . " LEFT OUTER JOIN orientacion o ON (o.idorient=b.id_orientacion and o.idarea=b.id_area)"
                     . ")c $where3"
                      ;    
-                       
             return toba::db('designa')->consultar($sql);
         }
         

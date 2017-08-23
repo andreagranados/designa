@@ -10,6 +10,8 @@ class cargo_solapas extends toba_ci
     protected $s__alta_novb;
     protected $s__volver;
     protected $s__datos;
+    protected $s__datos_filtro;
+    protected $s__where;
         
     
         function conf()
@@ -516,7 +518,26 @@ class cargo_solapas extends toba_ci
             }
            }
         
-        
+         //---- Filtro -----------------------------------------------------------------------
+
+	function conf__filtro_materias(toba_ei_filtro $filtro)
+	{
+		if (isset($this->s__datos_filtro)) {
+			$filtro->set_datos($this->s__datos_filtro);
+		}
+	}
+
+	function evt__filtro_materias__filtrar($datos)
+	{
+		$this->s__datos_filtro = $datos;
+                $this->s__where = $this->dep('filtro_materias')->get_sql_where();    
+	}
+
+	function evt__filtro_materias__cancelar()
+	{
+            $this->s__datos_filtro=null;
+            unset($this->s__where);             
+	}
         //-----------------------------------------------------------------------------------
 	//---- cuadro_materias --------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -526,7 +547,7 @@ class cargo_solapas extends toba_ci
             //trae la designacion que fue cargada
             if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()){
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();     
-                $datos=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get_listado_desig($desig['id_designacion']);          
+                $datos=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get_listado_desig($desig['id_designacion'],$this->s__datos_filtro);          
                 $cuadro->set_datos($datos);
                 //--aqui agregar
                 $band=$this->controlador()->dep('datos')->tabla('asignacion_materia')->materias_durante_licencia($desig['id_designacion']);

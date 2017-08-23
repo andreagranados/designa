@@ -7,7 +7,7 @@ INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_a
 	'departamentos', --usuario_grupo_acc
 	'Departamentos', --nombre
 	NULL, --nivel_acceso
-	'Solicitado por FAIN para los directores de dptos', --descripcion
+	'Directores de Departamentos', --descripcion
 	NULL, --vencimiento
 	NULL, --dias
 	NULL, --hora_entrada
@@ -103,9 +103,4 @@ INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, r
 	'designa', --proyecto
 	'departamentos', --usuario_grupo_acc
 	'2'  --restriccion_funcional
-);
-INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
-	'designa', --proyecto
-	'departamentos', --usuario_grupo_acc
-	'22'  --restriccion_funcional
 );
