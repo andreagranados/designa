@@ -127,7 +127,6 @@ class ci_reserva extends designa_ci
                 $datos['id_reserva']=$reserva['id_reserva'];
                 $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
                 $datos['uni_acad']= $ua[0]['sigla'];
-                $datos['nro_cargo']=0;
                 $datos['check_presup']=0;
                 $datos['check_academica']=0;
                 $datos['tipo_desig']=2;
