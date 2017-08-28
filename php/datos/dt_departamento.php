@@ -6,7 +6,15 @@ class dt_departamento extends toba_datos_tabla
 		$sql = "SELECT iddepto, descripcion FROM departamento ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
-
+        //trae todos los departamentos menos los que se cargaron como SIN DEPARTAMENTO
+        function get_descrip()
+	{
+		$sql = "SELECT iddepto, d.descripcion||' de: '||u.sigla as descripcion FROM departamento d"
+                        . " LEFT OUTER JOIN unidad_acad u ON (d.idunidad_academica=u.sigla)"
+                        . " WHERE not (d.descripcion like 'SIN%')"
+                        . " ORDER BY descripcion";
+		return toba::db('designa')->consultar($sql);
+	}
         function get_departamentos($id_ua=null)
 	{
 		$where ="";

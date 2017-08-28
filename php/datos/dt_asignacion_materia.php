@@ -48,6 +48,30 @@ class dt_asignacion_materia extends toba_datos_tabla
             order by agente";
         return toba::db('designa')->consultar($sql);
     }
+    function get_responsables_programas($where=null){
+    
+      if(!is_null($where)){
+           $where=' WHERE '.$where." ";
+      }else{
+           $where=' WHERE 1=1';
+      }
+      $sql="select * from (
+          select t_do.apellido||', '||t_do.nombre as docente_nombre, t_m.id_designacion,t_m.id_materia,t_m.modulo as id_modulo,t_do.legajo,t_m.anio,t_d.cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,t_a.desc_materia,t_mo.descripcion as modulo,t_pe.descripcion as periodo,t_r.desc_item as rol,t_p.uni_acad,t_p.cod_carrera,t_p.ordenanza,t_pr.id_estado,t_pr.link,substr(t_pr.observacion,0,10) as observacion
+            from asignacion_materia t_m
+            LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_m.id_designacion)
+            LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
+            LEFT OUTER JOIN materia t_a ON (t_m.id_materia=t_a.id_materia)
+            LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_a.id_plan)
+            LEFT OUTER JOIN periodo t_pe ON (t_m.id_periodo=t_pe.id_periodo)
+            LEFT OUTER JOIN modulo t_mo ON (t_mo.id_modulo=t_m.modulo)
+            LEFT OUTER JOIN tipo t_r ON (t_m.nro_tab8=t_r.nro_tabla and t_m.rol=t_r.desc_abrev)
+            LEFT OUTER JOIN programa t_pr ON (t_m.id_materia=t_pr.id_materia and t_m.id_designacion=t_pr.id_designacion and t_m.anio=t_pr.anio and t_m.modulo=t_pr.modulo)
+            where rol='EC')sub
+            $where "
+            ."order by docente_nombre";
+        
+         return toba::db('designa')->consultar($sql);  
+    }
     function get_equipos_catedra($filtro=array()){
         
         $where="";
@@ -286,7 +310,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                  }
         }
                 
-        $sql = "SELECT distinct t_a.id_designacion,t_pe.uni_acad||'-'||t_pe.desc_carrera||'('||t_pe.cod_carrera||')' as carrera,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,t_t.desc_item as rol,t_a.id_periodo,t_p.descripcion as periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_o.descripcion as moddes,t_a.anio,t_a.carga_horaria,calculo_conjunto(t_a.id_materia,t_a.id_periodo,t_a.anio) as conj"
+        $sql = "SELECT distinct t_a.id_designacion,t_pe.uni_acad||'-'||t_pe.desc_carrera||'('||t_pe.cod_carrera||')' as carrera,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,t_t.desc_item as rol,t_a.id_periodo,t_p.descripcion as periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_o.descripcion as moddes,t_a.anio,t_a.carga_horaria,calculo_conjunto(t_a.id_materia,t_a.id_periodo,t_a.anio) as conj,substr(t_a.observacion,0,20) as observacion"
                 . " FROM asignacion_materia t_a "
                 . " LEFT OUTER JOIN materia t_m ON (t_m.id_materia=t_a.id_materia)"
                 . " LEFT OUTER JOIN plan_estudio t_pe ON (t_m.id_plan=t_pe.id_plan)"

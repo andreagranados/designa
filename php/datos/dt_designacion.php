@@ -1723,7 +1723,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             
             $sql="select * from (".
             "select distinct b.*,d.descripcion as dep,a.descripcion as area,o.descripcion as ori 
-                  from (select * from (select distinct a.anio,b.id_designacion,c.apellido||','||c.nombre as docente_nombre,c.legajo,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,carga_horaria,b.id_departamento,b.id_area,b.id_orientacion,a.id_materia,d.descripcion as modulo,f.desc_item as rol,g.descripcion as periodo,i.uni_acad||'#'||h.desc_materia||'#'||i.cod_carrera||'('||h.cod_siu||')' as desc_materia,i.cod_carrera,i.ordenanza
+                  from (select * from (select distinct a.anio,b.id_designacion,c.apellido||','||c.nombre as docente_nombre,c.legajo,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,carga_horaria,b.id_departamento,b.id_area,b.id_orientacion,a.id_materia,d.descripcion as modulo,a.modulo as id_modulo,f.desc_item as rol,g.descripcion as periodo,i.uni_acad||'#'||h.desc_materia||'#'||i.cod_carrera||'('||h.cod_siu||')' as desc_materia,i.cod_carrera,i.ordenanza,a.observacion
                           from asignacion_materia a, designacion b, docente c, modulo d, tipo f, periodo g, materia h, plan_estudio i
                           where a.id_designacion=b.id_designacion
                             and c.id_docente=b.id_docente
