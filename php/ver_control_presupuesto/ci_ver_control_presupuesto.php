@@ -30,8 +30,7 @@ class ci_ver_control_presupuesto extends toba_ci
 		if (isset($this->s__datos_filtro)) {
 			 //busca todas las designaciones que estan dentro del periodo vigente, que tienen numero de 540 y ademas tienen el numero de la norma legal
                     //a presupuesto no le interesa chequear nada que no tenga norma legal
-                    
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_presup($this->s__datos_filtro));
+                    $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_presup($this->s__datos_filtro));
 		} 
 	}
 
