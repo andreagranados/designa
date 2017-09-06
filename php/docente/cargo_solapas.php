@@ -706,8 +706,8 @@ class cargo_solapas extends toba_ci
                     //no lo toma con el comando
                     //$form->ef('nro_norma')->set_descripcion("Pincha aqui para ver:<a href='hola'>"."</a>");
                     //-- Se agrega un icono de informaci�n al lado de cada ef
-                    $icono_informacion = new icono_informacion();
-                    $form->ef('nro_norma')->agregar_icono_utileria($icono_informacion);
+                   //$icono_informacion = new icono_informacion();
+                    //$form->ef('nro_norma')->agregar_icono_utileria($icono_informacion);
                 }
                 $d=$this->controlador()->dep('datos')->tabla('norma')->get_detalle_norma($datos['id_norma']);
                 $datos['tipo_norma']=$d[0]['nombre_tipo'];
