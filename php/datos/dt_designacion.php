@@ -216,10 +216,10 @@ class dt_designacion extends toba_datos_tabla
                 foreach ($cargos as $value) {
                     $car[]=$value['nro_cargo'];
         }
-                $conjunto=implode(",",$car);
-               
+        $conjunto=implode(",",$car);
                 //recupero de mapuche los datos de los legajos
         $datos_mapuche = consultas_mapuche::get_cargos_imputaciones($ua,$udia,$pdia,$conjunto);
+ 
         }
         if(count($datos_mapuche)>0){
                 

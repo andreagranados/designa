@@ -1,4 +1,18 @@
 <?php
+class icono_informacion implements toba_ef_icono_utileria
+{
+   	function get_html(toba_ef $ef)
+	{
+            //$x=$ef->get_dato();
+            //print_r($x);
+            $texto="https://despacho.uncoma.edu.ar/archivos/resol_021_2016_1004.pdf";
+            $salida = "<a href='".$texto."' target='_blank' >";
+		//$salida = "<a href='https://despacho.uncoma.edu.ar/archivos/resol_021_2016_1004.pdf' target='_blank' >";
+	    $salida .= toba_recurso::imagen_toba('info_chico.gif', true, null, null, "Ver norma");
+	    $salida .= "</a>";
+	    return $salida;
+	}
+}
 class cargo_solapas extends toba_ci
 {
     protected $s__alta_impu;
@@ -12,7 +26,7 @@ class cargo_solapas extends toba_ci
     protected $s__datos;
     protected $s__datos_filtro;
     protected $s__where;
-        
+            
     
         function conf()
         {
@@ -679,6 +693,7 @@ class cargo_solapas extends toba_ci
             $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
 	}
 
+    
         function conf__form_norma(toba_ei_formulario $form){
             //agrega la ayuda al ef nro de norma
             //$texto="<a href='' target='_blank'>link</a>";
@@ -690,7 +705,9 @@ class cargo_solapas extends toba_ci
                     print_r( utf8_decode('Pincha aquí para ver la norma última->').$texto);
                     //no lo toma con el comando
                     //$form->ef('nro_norma')->set_descripcion("Pincha aqui para ver:<a href='hola'>"."</a>");
-                    
+                    //-- Se agrega un icono de informaci�n al lado de cada ef
+                    $icono_informacion = new icono_informacion();
+                    $form->ef('nro_norma')->agregar_icono_utileria($icono_informacion);
                 }
                 $d=$this->controlador()->dep('datos')->tabla('norma')->get_detalle_norma($datos['id_norma']);
                 $datos['tipo_norma']=$d[0]['nombre_tipo'];
