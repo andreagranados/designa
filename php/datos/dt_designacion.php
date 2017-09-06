@@ -269,7 +269,6 @@ class dt_designacion extends toba_datos_tabla
                     //." and (t_m.sub_sub_area is null or t_m.sub_sub_area <>t_mapu.codn_subsubar"//sino le coloco el null el <> no funciona. El <> solo funciona cuando ambos no son nulos
                     //. " or t_m.area is null or t_m.area<>t_mapu.codn_area or t_m.sub_area is null or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area is null or t_m.sub_sub_area<>t_mapu.codn_subsubar or t_m.fuente is null or t_m.fuente<>t_mapu.codn_fuent)";// or t_m.fuente<>t_mapu.codn_fuent)";
             $resul=toba::db('designa')->consultar($sql);
-            print_r($resul);
             return $resul;
            } 
             
