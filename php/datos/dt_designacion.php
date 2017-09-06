@@ -188,11 +188,20 @@ class dt_designacion extends toba_datos_tabla
         
     }
     function get_comparacion_imput($filtro){
+        
+        $concatena=' ';
+        if(isset($filtro['distinto'])){
+             if($filtro['distinto']['valor']==1){//si contesto que si
+                 $concatena=" and (t_m.sub_sub_area is null or t_m.sub_sub_area <>t_mapu.codn_subsubar"//sino le coloco el null el <> no funciona. El <> solo funciona cuando ambos no son nulos
+                    . " or t_m.area is null or t_m.area<>t_mapu.codn_area or t_m.sub_area is null or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area is null or t_m.sub_sub_area<>t_mapu.codn_subsubar or t_m.fuente is null or t_m.fuente<>t_mapu.codn_fuent)";// or t_m.fuente<>t_mapu.codn_fuent)";
+             }
             
-        $ua=trim($filtro['uni_acad']);
+        }
+          //$ua y anio son obligatorios  
+        $ua=trim($filtro['uni_acad']['valor']);
                         
-        $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
-        $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+        $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+        $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
             
         $sql=" SELECT distinct b.nro_cargo"
                     . " from docente a, designacion b"
@@ -242,10 +251,10 @@ class dt_designacion extends toba_datos_tabla
                 }else{
                     $concat="null";
                 }
-                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$filtro['uni_acad']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",".$valor['porc_ipres'].",".$valor['codn_area'].",".$valor['codn_subar'].",".$valor['codn_subsubar'].",".$valor['codn_fuent'].",'".$valor['imputacion']."')";
+                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$filtro['uni_acad']['valor']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",".$valor['porc_ipres'].",".$valor['codn_area'].",".$valor['codn_subar'].",".$valor['codn_subsubar'].",".$valor['codn_fuent'].",'".$valor['imputacion']."')";
                 toba::db('designa')->consultar($sql);
             }
-            $sql="select t_d.uni_acad,t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.id_designacion,t_d.nro_cargo, t_m.imputacion,t_m.area,t_m.sub_area,t_m.sub_sub_area,t_m.fuente, t_mapu.imputacion as imputacion_mapu,t_d.cat_mapuche,t_d.carac,desde,hasta,t_i.porc,t_mapu.porc_ipres
+            $sql="select t_d.uni_acad,t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.id_designacion,t_d.nro_cargo, t_m.imputacion,trim(to_char(t_m.area ,'000'))||'-'||trim(to_char(t_m.sub_area,'000'))||'-'||trim(to_char(t_m.sub_sub_area,'000'))||'-'||trim(to_char(t_m.fuente,'00')) as abrev_mo,trim(to_char(codn_area ,'000'))||'-'||trim(to_char(codn_subar,'000'))||'-'||trim(to_char(codn_subsubar,'000'))||'-'||trim(to_char(codn_fuent,'00')) as abrev_mapu, t_mapu.imputacion as imputacion_mapu,t_d.cat_mapuche,t_d.carac,desde,hasta,t_i.porc,t_mapu.porc_ipres
                     from designacion t_d
                     LEFT OUTER JOIN imputacion t_i ON (t_d.id_designacion=t_i.id_designacion)
                     LEFT OUTER JOIN mocovi_programa t_m ON (t_m.id_programa=t_i.id_programa)
@@ -253,9 +262,12 @@ class dt_designacion extends toba_datos_tabla
                     LEFT OUTER JOIN auxi t_mapu ON (t_d.nro_cargo=t_mapu.nro_cargo)
                     WHERE t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
                      and t_d.uni_acad='".$ua."'"
-                    ." and t_d.nro_cargo <> 0 and t_d.nro_cargo is not null"
-                    ." and (t_m.sub_sub_area is null or t_m.sub_sub_area <>t_mapu.codn_subsubar"//sino le coloco el null el <> no funciona. El <> solo funciona cuando ambos no son nulos
-                    . " or t_m.area is null or t_m.area<>t_mapu.codn_area or t_m.sub_area is null or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area is null or t_m.sub_sub_area<>t_mapu.codn_subsubar or t_m.fuente is null or t_m.fuente<>t_mapu.codn_fuent)";// or t_m.fuente<>t_mapu.codn_fuent)";
+                    ." and t_d.nro_cargo <> 0 and t_d.nro_cargo is not null $concatena"
+                    ;
+                    
+           
+                    //." and (t_m.sub_sub_area is null or t_m.sub_sub_area <>t_mapu.codn_subsubar"//sino le coloco el null el <> no funciona. El <> solo funciona cuando ambos no son nulos
+                    //. " or t_m.area is null or t_m.area<>t_mapu.codn_area or t_m.sub_area is null or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area is null or t_m.sub_sub_area<>t_mapu.codn_subsubar or t_m.fuente is null or t_m.fuente<>t_mapu.codn_fuent)";// or t_m.fuente<>t_mapu.codn_fuent)";
             $resul=toba::db('designa')->consultar($sql);
             return $resul;
            } 

@@ -37,7 +37,8 @@ class dt_integrante_interno_pi extends toba_datos_tabla
     }
     //modifica la resolucion del cd de alta al proyecto de todos los integrantes del proyecto
     function modificar_rescd($pinv,$resol){
-        $sql=" update integrante_interno_pi set rescd='".$resol."' where pinvest=".$pinv;
+        //pierde el check porque se esta modificando la resol
+        $sql=" update integrante_interno_pi set check_inv=0,rescd='".$resol."' where pinvest=".$pinv;
         toba::db('designa')->consultar($sql); 
     }
     //trae los integrantes docentes de la ua que ingresa que participan en proyectos de otras ua

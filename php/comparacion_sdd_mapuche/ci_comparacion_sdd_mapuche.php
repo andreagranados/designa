@@ -2,8 +2,7 @@
 class ci_comparacion_sdd_mapuche extends toba_ci
 {
 	protected $s__datos_filtro;
- 
-
+        
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtro(toba_ei_formulario $filtro)
@@ -22,7 +21,7 @@ class ci_comparacion_sdd_mapuche extends toba_ci
 	{
 		unset($this->s__datos_filtro);
 	}
-
+       
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)

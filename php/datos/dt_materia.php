@@ -1,6 +1,14 @@
 <?php
 class dt_materia extends toba_datos_tabla
 {
+        function get_hs_semanales($id_mat){
+            $sql = "select case when t_m.horas_semanales is null then 0 else t_m.horas_semanales end as horas_semanales  "
+                    . " from materia t_m"
+                     . " where t_m.id_materia= ".$id_mat;
+            $resul= toba::db('designa')->consultar($sql);
+            return $resul[0]['horas_semanales'];
+            
+        }
         function get_uni_acad($id_mat){
             $sql = "select t_p.uni_acad  from materia t_m, plan_estudio t_p"
                      . " where t_m.id_plan=t_p.id_plan and t_m.id_materia= ".$id_mat;

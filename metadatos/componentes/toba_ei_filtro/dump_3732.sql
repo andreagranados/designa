@@ -133,9 +133,9 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'3732', --objeto_ei_filtro
 	'designa', --objeto_ei_filtro_proyecto
 	'cadena', --tipo
-	'apellido', --nombre
-	'apellido', --expresion
-	'Docente (apellido)', --etiqueta
+	'nombre_docente', --nombre
+	'nombre_docente', --expresion
+	'Docente', --etiqueta
 	NULL, --descripcion
 	'0', --obligatorio
 	'1', --inicial

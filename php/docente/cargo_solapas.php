@@ -23,7 +23,7 @@ class cargo_solapas extends toba_ci
                 $this->s__volver=0;
             }
         }
-        
+       
            //trae los programas asociados a una UA
         function get_programas_ua(){
             return $this->controlador()->get_programas_ua();

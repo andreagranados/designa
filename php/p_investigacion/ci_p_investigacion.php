@@ -59,7 +59,9 @@ class ci_p_investigacion extends toba_ci
 
 	function evt__volver()
 	{
-		$this->resetear();
+	     $this->resetear();
+             $this->dep('ci_pinv_otros')->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->resetear();
+             $this->dep('ci_pinv_otros')->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->resetear();
 	}
         function conf__form_encabezado(toba_ei_formulario $form)
 	{

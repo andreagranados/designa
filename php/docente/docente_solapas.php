@@ -61,14 +61,8 @@ class docente_solapas extends toba_ci
     }
     function evt__cuadro_categorizacion__seleccion($datos)
     {
-        $carga=$this->puede_cargar_categorizacion();//SI EL DOCENTE NO TIENE DESIGNACIONES EN LA UA ASOCIADA AL PERFIL DEL USUARIO ENTONCES NO PUEDE EDITAR
-        if($carga){
             $this->s__mostrar_categ=1;
             $this->controlador()->dep('datos')->tabla('categorizacion')->cargar($datos); 
-        }else{
-            $mensaje='NO ES UN DOCENTE DE SU UNIDAD ACADÉMICA, POR LO TANTO NO PUEDE EDITAR CATEGORIZACIONES';
-            toba::notificacion()->agregar(utf8_decode($mensaje), "info");
-         }
     }
     function conf__form_categ(toba_ei_formulario $form)
         {
@@ -419,11 +413,6 @@ class docente_solapas extends toba_ci
         }
 	
 
-        function puede_cargar_categorizacion(){
-             $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
-             return $this->controlador()->dep('datos')->tabla('docente')->puede_cargar_categorizacion($doc['id_docente']);
-        } 
-
 	//-----------------------------------------------------------------------------------
 	//---- Eventos ----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -436,16 +425,8 @@ class docente_solapas extends toba_ci
                                         $this->controlador()->dep('datos')->tabla('titulos_docente')->resetear();
                                         break;
                 case 'pant_categorizacion':
-                    //si estoy en la pantalla categorizacion y presiono el boton agregar
-                                        $carga=$this->puede_cargar_categorizacion();
-                                        if($carga){
-                                            $this->s__mostrar_categ=1;
-                                            $this->controlador()->dep('datos')->tabla('categorizacion')->resetear();
-                                        }else{
-                                            $mensaje='NO ES UN DOCENTE DE SU UNIDAD ACADÉMICA, POR LO TANTO NO PUEDE CARGAR CATEGORIZACIONES';
-                                            toba::notificacion()->agregar(utf8_decode($mensaje), "info");
-                                        }
-                                        
+                                        $this->s__mostrar_categ=1;
+                                        $this->controlador()->dep('datos')->tabla('categorizacion')->resetear();
                                         break;
                 
             }

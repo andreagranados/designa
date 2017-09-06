@@ -162,7 +162,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_inicial', --identificador
 	'1', --orden
 	'Inicial', --etiqueta
-	NULL, --descripcion
+	'Operación en contrucción!', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen
@@ -202,7 +202,7 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'designa', --proyecto
 	'1626', --pantalla
 	'3908', --objeto_ci
-	'2', --orden
+	'1', --orden
 	'2755'  --dep_id
 );
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (

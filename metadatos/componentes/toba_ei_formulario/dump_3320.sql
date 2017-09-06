@@ -555,7 +555,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'3320', --objeto_ei_formulario
 	'designa', --objeto_ei_formulario_proyecto
 	'carga_horaria', --identificador
-	'ef_combo', --elemento_formulario
+	'ef_editable', --elemento_formulario
 	'carga_horaria', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
@@ -573,17 +573,17 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --estado_defecto
 	'0', --solo_lectura
 	'0', --solo_lectura_modificacion
-	NULL, --carga_metodo
+	'get_hs_semanales', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
-	NULL, --carga_dt
+	'3406', --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'1,2,3,4,5,6,7,8,9,10,11,12,13,14,15', --carga_lista
+	NULL, --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
-	NULL, --carga_maestros
+	'id_materia', --carga_maestros
 	'0', --carga_cascada_relaj
 	'0', --cascada_mantiene_estado
 	'1', --carga_permite_no_seteado

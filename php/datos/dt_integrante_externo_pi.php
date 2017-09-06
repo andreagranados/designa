@@ -10,6 +10,12 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         $sql=" update integrante_externo_pi set desde='".$desdenuevo."' where tipo_docum='".$tipo_doc."' and nro_docum=".$nro." and pinvest=".$pinv." and desde='".$desdeactual."'" ;
         toba::db('designa')->consultar($sql);
     }
+      //modifica la resolucion del cd de alta al proyecto de todos los integrantes del proyecto
+    function modificar_rescd($pinv,$resol){
+        //pierde el check porque se esta modificando la resol
+        $sql=" update integrante_externo_pi set check_inv=0,rescd='".$resol."' where pinvest=".$pinv;
+        toba::db('designa')->consultar($sql); 
+    }
     function get_listado($id_p=null)
     {
         $sql="select t_i.pinvest, trim(t_p.apellido)||', '||trim(t_p.nombre) as nombre, t_p.tipo_docum,t_p.nro_docum,t_p.tipo_sexo,t_p.fec_nacim,funcion_p,carga_horaria,desde,hasta,rescd,check_inv,rescd_bm"

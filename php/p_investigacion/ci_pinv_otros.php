@@ -20,7 +20,7 @@ class ci_pinv_otros extends designa_ci
             $salida=array();
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
               $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-              $salida=$this->controlador()->dep('datos')->tabla('integrante_interno_pi')->get_listado_docentes($pi['id_pinv']);
+              $salida=$this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->get_listado_docentes($pi['id_pinv']);
              }
             return $salida; 
         }
@@ -191,8 +191,8 @@ class ci_pinv_otros extends designa_ci
             //si pasa a estado A entonces tiene que poner el check in en 1 a todos los integrantes
             if($pi['estado']<>'A' and $datos['estado']=='A'){//sino estaba activo y lo activa
                 //le coloca SCyt les coloca el check de aprobados a todos los integrantes del proyecto
-                $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->chequeados_ok($pi['id_pinv']);
-                $this->controlador()->dep('datos')->tabla('integrante_externo_pi')->chequeados_ok($pi['id_pinv']);
+                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->chequeados_ok($pi['id_pinv']);
+                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->chequeados_ok($pi['id_pinv']);
                 $mensaje=" Los integrantes han sido chequeados (check_inv=1)";
             }
             
@@ -210,7 +210,7 @@ class ci_pinv_otros extends designa_ci
                 //ademas agrega al director y codirector del proyecto penados
                 //penados
                 //deberia dar de baja a todos los participantes del proyecto y completar la resol de baja
-                 $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->dar_baja($pi['id_pinv'],$pi['fec_hasta'],$datos['fec_baja'],$datos['nro_resol_baja']);
+                 $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->dar_baja($pi['id_pinv'],$pi['fec_hasta'],$datos['fec_baja'],$datos['nro_resol_baja']);
                  toba::notificacion()->agregar('Se ha dado de baja a todos los participantes del proyecto', 'info');  
             }
             toba::notificacion()->agregar('Se ha modificado correctamente.'.$mensaje, 'info');  
@@ -221,14 +221,7 @@ class ci_pinv_otros extends designa_ci
           
           $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
           if($pi['estado']<>'I'){
-              if($pi['estado']='A' and $pi['id_respon_sub']<>$datos['id_respon_sub']){//esta modificando el responsable del fondo
-                  $datos2['id_respon_sub']=$datos['id_respon_sub'];
-                  $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
-                  $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-                  toba::notificacion()->agregar('Se ha modificado el estado del proyecto.', 'info');  
-              }else{
-                  toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
-              }
+              toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
           }else{
            
                 switch ($datos['es_programa']) {
@@ -257,9 +250,9 @@ class ci_pinv_otros extends designa_ci
             }else{//no pertenece a ningun programa
                 $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
             }
-            if($datos['nro_resol']<>$pi['nro_resol']){//si modifica la resolucion del cd entonces automaticamente se modifica la res de los integrantes
-                $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
-                $this->controlador()->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+            if(trim($datos['nro_resol'])<>trim($pi['nro_resol'])){//si modifica la resolucion del cd entonces automaticamente se modifica la res de los integrantes
+                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
                 //idem externos $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
             }
             //elimino lo que viene en codigo y ordenanza dado que no corresponde al perfil de la UA
@@ -470,6 +463,21 @@ class ci_pinv_otros extends designa_ci
 	function conf__cuadro_viatico(toba_ei_cuadro $cuadro)
 	{
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                if($pi['es_programa']==1){
+                    $pi['es_programa']='SI';
+                    //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                }else{//no es programa
+                    $pi['es_programa']='NO';
+                    $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
+                    if($pertenece!=0){// pertenece a un programa   
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                        $this->pantalla()->tab("pant_subsidios")->desactivar();	
+                        $this->pantalla()->tab("pant_winsip")->desactivar();
+                    }
+                }
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 if (isset($this->s__datos_filtro)) {
                     $f=$this->s__datos_filtro;
@@ -727,17 +735,33 @@ class ci_pinv_otros extends designa_ci
 	//-----------------------------------------------------------------------------------
 
         function evt__agregar(){
-         $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-         if($pi['estado']<>'I' and $pi['estado']<>'A'){
-                toba::notificacion()->agregar('No es posible porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
-         }else{
-            switch ($this->s__pantalla) {
-                case "pant_winsip":$this->s__mostrar_s=1; $this->controlador()->dep('datos')->tabla('winsip')->resetear();break;
-                case "pant_subsidios":$this->s__mostrar=1; $this->controlador()->dep('datos')->tabla('subsidio')->resetear();break;   
-                case "pant_estimulos":$this->s__mostrar_form_tiene=1; $this->controlador()->dep('datos')->tabla('tiene_estimulo')->resetear();break;   
-                case "pant_viaticos":$this->s__mostrar_v=1;$this->controlador()->dep('datos')->tabla('viatico')->resetear();break;
+         $perfil = toba::usuario()->get_perfil_datos();
+         if ($perfil == null) {//es usuario de la SCyT
+                 switch ($this->s__pantalla) {
+                    case "pant_winsip":$this->s__mostrar_s=1; $this->controlador()->dep('datos')->tabla('winsip')->resetear();break;
+                    case "pant_subsidios":$this->s__mostrar=1; $this->controlador()->dep('datos')->tabla('subsidio')->resetear();break;   
+                    case "pant_estimulos":$this->s__mostrar_form_tiene=1; $this->controlador()->dep('datos')->tabla('tiene_estimulo')->resetear();break;   
+                    case "pant_viaticos":$this->s__mostrar_v=1;$this->controlador()->dep('datos')->tabla('viatico')->resetear();break;
+                 }
+         }else{//es usuario de la unidad academica
+              switch ($this->s__pantalla) {
+                    case "pant_winsip":break;
+                    case "pant_subsidios": toba::notificacion()->agregar('Se ingresan desde SCyT', 'error');  break;   
+                    case "pant_estimulos":break;   
+                    case "pant_viaticos":$this->s__mostrar_v=1;$this->controlador()->dep('datos')->tabla('viatico')->resetear();break;
+                 }
             }
-         }
+//         $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+//         if($pi['estado']<>'I' and $pi['estado']<>'A'){
+//                toba::notificacion()->agregar('No es posible porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
+//         }else{
+//            switch ($this->s__pantalla) {
+//                case "pant_winsip":$this->s__mostrar_s=1; $this->controlador()->dep('datos')->tabla('winsip')->resetear();break;
+//                case "pant_subsidios":$this->s__mostrar=1; $this->controlador()->dep('datos')->tabla('subsidio')->resetear();break;   
+//                case "pant_estimulos":$this->s__mostrar_form_tiene=1; $this->controlador()->dep('datos')->tabla('tiene_estimulo')->resetear();break;   
+//                case "pant_viaticos":$this->s__mostrar_v=1;$this->controlador()->dep('datos')->tabla('viatico')->resetear();break;
+//            }
+//         }
         }
        
         //-----------------------------------------------------------------------------------

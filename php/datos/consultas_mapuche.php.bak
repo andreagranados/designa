@@ -101,7 +101,7 @@ class consultas_mapuche
  		
  		}
        
-	$sql=" select distinct a.*  from (select b.nro_cargo,b.chkstopliq,b.codc_uacad,b.codc_categ,b.codc_carac,b.fec_alta,b.fec_baja,b.nro_legaj,a.desc_appat,a.desc_nombr,tipo_ejercicio||'.'||to_char(codn_grupo_presup,'0000')||'-'||to_char(codn_area ,'000')||'-'||to_char(codn_subar,'000')||'-'||to_char(codn_subsubar,'000')||'-'||to_char(codn_fuent,'00')||'-'||to_char(codn_progr,'00')||'-'||to_char(codn_subpr,'00')||'-'||to_char(codn_proye,'00')||'-'||to_char(codn_activ,'00')||'-'||to_char(codn_obra,'00')||'-'||codn_final||'-'||codn_funci as imputacion,codn_area,codn_subar,codn_subsubar,codn_fuent,porc_ipres
+	$sql=" select distinct a.*  from (select b.nro_cargo,b.chkstopliq,b.codc_uacad,b.codc_categ,b.codc_carac,b.fec_alta,b.fec_baja,b.nro_legaj,a.desc_appat,a.desc_nombr,tipo_ejercicio||'.'||trim(to_char(codn_grupo_presup,'0000'))||'-'||trim(to_char(codn_area ,'000'))||'-'||trim(to_char(codn_subar,'000'))||'-'||trim(to_char(codn_subsubar,'000'))||'-'||trim(to_char(codn_fuent,'00'))||'-'||trim(to_char(codn_progr,'00'))||'-'||trim(to_char(codn_subpr,'00'))||'-'||to_char(codn_proye,'00')||'-'||to_char(codn_activ,'00')||'-'||to_char(codn_obra,'00')||'-'||codn_final||'-'||codn_funci as imputacion,codn_area,codn_subar,codn_subsubar,codn_fuent,porc_ipres
  	 from mapuche.dh03 b
  	 LEFT OUTER JOIN mapuche.dh01 a ON (a.nro_legaj=b.nro_legaj)
  	 LEFT OUTER JOIN mapuche.dh11 c ON (b.codc_categ=c.codc_categ)
@@ -115,7 +115,8 @@ class consultas_mapuche
         $datos_mapuche = toba::db('mapuche')->consultar($sql);
  	
  	return $datos_mapuche;
-}
+     }
+     
 
 }
 

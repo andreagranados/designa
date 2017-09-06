@@ -56,31 +56,7 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	'designa', --proyecto
 	'investigacion', --usuario_grupo_acc
 	NULL, --item_id
-	'3662'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'investigacion', --usuario_grupo_acc
-	NULL, --item_id
-	'3685'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'investigacion', --usuario_grupo_acc
-	NULL, --item_id
-	'3686'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'investigacion', --usuario_grupo_acc
-	NULL, --item_id
 	'3687'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'investigacion', --usuario_grupo_acc
-	NULL, --item_id
-	'3689'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
@@ -158,12 +134,6 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	'designa', --proyecto
 	'investigacion', --usuario_grupo_acc
 	NULL, --item_id
-	'3755'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'investigacion', --usuario_grupo_acc
-	NULL, --item_id
 	'3757'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
@@ -171,6 +141,12 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	'investigacion', --usuario_grupo_acc
 	NULL, --item_id
 	'3765'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigacion', --usuario_grupo_acc
+	NULL, --item_id
+	'3772'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
@@ -187,6 +163,11 @@ INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, r
 	'designa', --proyecto
 	'investigacion', --usuario_grupo_acc
 	'4'  --restriccion_funcional
+);
+INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
+	'designa', --proyecto
+	'investigacion', --usuario_grupo_acc
+	'13'  --restriccion_funcional
 );
 INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
 	'designa', --proyecto

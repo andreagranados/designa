@@ -4,6 +4,9 @@ class ci_integrantes_pi extends designa_ci
         protected $s__mostrar_e;
         protected $s__mostrar_i;
         protected $s__pantalla;
+        protected $s__listado;
+        protected $s__denominacion;
+        protected $s__dependencia;
            
         function get_persona($id){   
         }
@@ -429,8 +432,10 @@ class ci_integrantes_pi extends designa_ci
                     }
                 }
             $cuadro->set_titulo(str_replace(':','' ,$pi['denominacion']).'-'.$pi['codigo'].'(ResCD: '.$pi['nro_resol'].')');
-            $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
-            $cuadro->set_datos($datos);
+            $this->s__dependencia=$pi['uni_acad'];
+            $this->s__denominacion=$pi['denominacion'];
+            $this->s__listado=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
+            $cuadro->set_datos($this->s__listado);
             }
                        
 	}
@@ -467,7 +472,76 @@ class ci_integrantes_pi extends designa_ci
             
             
         }
-
+        function vista_pdf(toba_vista_pdf $salida){
+              
+                $dato=array();
+                $i=0;
+                //configuramos el nombre que tendrá el archivo pdf
+                $salida->set_nombre_archivo("Planilla.pdf");
+                //recuperamos el objteo ezPDF para agregar la cabecera y el pie de página 
+                $salida->set_papel_orientacion('landscape');
+                $salida->inicializar();
+                
+                $pdf = $salida->get_pdf();
+               
+                $pdf->ezSetMargins(80, 50, 3, 3);
+                //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
+                //Primero definimos la plantilla para el número de página.
+                $formato = 'Página {PAGENUM} de {TOTALPAGENUM}';
+                //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
+                $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+                //Luego definimos la ubicación de la fecha en el pie de página.
+                $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
+                //Configuración de Título.
+                $salida->titulo(utf8_d_seguro('2.4. PLANILLA DETALLE DEL PERSONAL AFECTADO '));    
+                $titulo="   ";
+                $opciones = array(
+                    'splitRows'=>0,
+                    'rowGap' => 1,//, the space between the text and the row lines on each row
+                   // 'lineCol' => (r,g,b) array,// defining the colour of the lines, default, black.
+                    //'showLines'=>1,
+                    'showHeadings' => true,//muestra el nombre de las columnas
+                    'titleFontSize' => 12,
+                    'fontSize' => 8,
+                    //'shadeCol' => array(1,1,1,1,1,1,1,1,1,1,1,1),
+                    'shadeCol' => array(100,100,100),//darle color a las filas intercaladamente
+                    'outerLineThickness' => 0.7,
+                    'innerLineThickness' => 0.7,
+                    'xOrientation' => 'center',
+                    'width' => 820
+                    );
+                 
+                // print_r($this->s__listado);  
+               foreach ($this->s__listado as $des) {
+                   $fec=date("d/m/Y",strtotime($des['fec_nacim']));
+                   $datos[$i]=array( 'col2'=>trim($des['nombre']),'col3' => $des['cuil'],'col4' => $fec,'col5' => $des['tipo_sexo'],'col6' => $des['cat_invest'],'col7' => trim($des['titulo']),'col8' => trim($des['titulop']),'col10' =>$des['ua'],'col11' => $des['cat_invest_conicet'],'col12' => $des['funcion_p'],'col13' => trim($des['categoria']),'col14' => $des['carga_horaria']);
+                    $i++;
+               }    
+               $pdf->ezText('DEPENDENCIA DEL PROYECTO: '.$this->s__dependencia, 10);
+               $pdf->ezText('DENOMINACION DEL PROYECTO: '.$this->s__denominacion, 10);
+               $tg=utf8_decode("Título de Grado");
+               $tp=utf8_decode("Título de Posgrado");
+               $ua=utf8_decode('UA/Institución');
+               $fn=utf8_decode('Función');
+               $cat=utf8_decode('Categoría');
+               $pdf->ezTable($datos, array( 'col2'=>'<b>ApellidoyNombre</b>','col3' => '<b>Cuil</b>','col4' => '<b>FecNacim</b>','col5' => '<b>Sexo</b>','col6' => '<b>CategInvest</b>','col7' => '<b>'.$tg.'</b>','col8' => '<b>'.$tp.'</b>','col10' =>'<b>'.$ua.'</b>','col11' => '<b>Cat Inv CONICET</b>','col12' => '<b>'.$fn.'</b>','col13' => '<b>'.$cat.'</b>','col14' => '<b>Carga Horaria</b>'), $titulo, $opciones);
+              
+              //primero agrego la imagen de fondo porque sino pisa la tabla
+                foreach ($pdf->ezPages as $pageNum=>$id){ 
+                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+                    $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
+                    //x, y ,ancho y alto x' e 'y' son las coordenadas de la esquina inferior izquierda de la imagen
+                    $pdf->addJpegFromFile($imagen, 200, 40, 400, 400);
+                    //200,50
+                    $imagen2 = toba::proyecto()->get_path().'/www/img/sein.jpg';
+                    $imagen3 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
+                    $pdf->addJpegFromFile($imagen2, 680, 520, 70, 60);
+                    $pdf->addJpegFromFile($imagen3, 10, 525, 130, 40); 
+                    
+                    $pdf->closeObject(); 
+                } 
+        }
 	
 
 }
