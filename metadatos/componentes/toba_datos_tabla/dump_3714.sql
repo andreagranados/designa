@@ -198,12 +198,26 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
 	'designa', --objeto_proyecto
 	'3714', --objeto
-	'1581', --col_id
-	'titulo', --columna
+	'1814', --col_id
+	'titulog', --columna
 	'C', --tipo
 	'0', --pk
 	'', --secuencia
-	NULL, --largo
+	'4', --largo
+	NULL, --no_nulo
+	'0', --no_nulo_db
+	'0', --externa
+	'persona'  --tabla
+);
+INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
+	'designa', --objeto_proyecto
+	'3714', --objeto
+	'1815', --col_id
+	'titulop', --columna
+	'C', --tipo
+	'0', --pk
+	'', --secuencia
+	'4', --largo
 	NULL, --no_nulo
 	'0', --no_nulo_db
 	'0', --externa

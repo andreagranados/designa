@@ -688,7 +688,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	NULL, --vinculo_target
 	NULL, --vinculo_celda
 	NULL, --vinculo_servicio
-	'0', --permitir_html
+	'1', --permitir_html
 	'Norma de Alta', --grupo
 	NULL  --evento_asociado
 );

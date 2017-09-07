@@ -1,25 +1,12 @@
 <?php
-class icono_informacion implements toba_ef_icono_utileria
-{
-   	function get_html(toba_ef $ef)
-	{
-            //$x=$ef->get_dato();
-            //print_r($x);
-            $texto="https://despacho.uncoma.edu.ar/archivos/resol_021_2016_1004.pdf";
-            $salida = "<a href='".$texto."' target='_blank' >";
-		//$salida = "<a href='https://despacho.uncoma.edu.ar/archivos/resol_021_2016_1004.pdf' target='_blank' >";
-	    $salida .= toba_recurso::imagen_toba('info_chico.gif', true, null, null, "Ver norma");
-	    $salida .= "</a>";
-	    return $salida;
-	}
-}
+
 class cargo_solapas extends toba_ci
 {
     protected $s__alta_impu;
     protected $s__alta_mate;
     protected $s__alta_norma;
     protected $s__pantalla;
-    public $s__nombre_archivo;
+    public    $s__nombre_archivo;
     protected $s__alta_nov;
     protected $s__alta_novb;
     protected $s__volver;
@@ -701,13 +688,18 @@ class cargo_solapas extends toba_ci
             if ($this->controlador()->dep('datos')->tabla('norma')->esta_cargada()) {
                 $datos = $this->controlador()->dep('datos')->tabla('norma')->get();
                 if(isset($datos['link'])){//tiene el link a la norma
-                    $texto="<a href='".$datos['link']."' target='_blank'>link</a>";
-                    print_r( utf8_decode('Pincha aquí para ver la norma última->').$texto);
-                    //no lo toma con el comando
-                    //$form->ef('nro_norma')->set_descripcion("Pincha aqui para ver:<a href='hola'>"."</a>");
-                    //-- Se agrega un icono de informaci�n al lado de cada ef
-                   //$icono_informacion = new icono_informacion();
-                    //$form->ef('nro_norma')->agregar_icono_utileria($icono_informacion);
+//                    $texto="<a href='".$datos['link']."' target='_blank'>link</a>";
+//                    print_r( utf8_decode('Pincha aquí para ver la norma última->').$texto);
+//                    //-- Se agrega un icono de informaci�n al lado de cada ef
+//                   $icono_informacion = new icono_informacion();
+//                   $form->ef('imagen_vista_previa')->agregar_icono_utileria($icono_informacion);
+                    $imagen = toba::proyecto()->get_path().'/www/img/logo_sti.jpg';
+                    //<img src='info_chico.gif'>
+                    $texto2="<a href='".$datos['link']."' target='_blank'>";
+                    $texto2 .= toba_recurso::imagen_toba('info_chico.gif', true, null, null, "Ver norma");
+                    $texto2 .="</a>";
+                    //se agrega titulo con icono link 
+                    $form->set_titulo('Norma Ultima'.$texto2);
                 }
                 $d=$this->controlador()->dep('datos')->tabla('norma')->get_detalle_norma($datos['id_norma']);
                 $datos['tipo_norma']=$d[0]['nombre_tipo'];
