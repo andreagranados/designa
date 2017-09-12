@@ -207,7 +207,7 @@ class dt_designacion extends toba_datos_tabla
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente"
                     . " and b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null)
-                     and b.uni_acad='".$ua."'"
+                        and b.uni_acad='".$ua."'"
                     . " and b.nro_cargo <> 0 and b.nro_cargo is not null";
         $cargos=toba::db('designa')->consultar($sql);
             

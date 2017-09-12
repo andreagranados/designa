@@ -259,14 +259,14 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro, objeto_cuadro_col, clave, orden, titulo, estilo_titulo, estilo, ancho, formateo, vinculo_indice, no_ordenar, mostrar_xls, mostrar_pdf, pdf_propiedades, desabilitado, total, total_cc, usar_vinculo, vinculo_carpeta, vinculo_item, vinculo_popup, vinculo_popup_param, vinculo_target, vinculo_celda, vinculo_servicio, permitir_html, grupo, evento_asociado) VALUES (
 	'designa', --objeto_cuadro_proyecto
 	'3716', --objeto_cuadro
-	'3396', --objeto_cuadro_col
-	'nro_docum', --clave
+	'4099', --objeto_cuadro_col
+	'nro_documento', --clave
 	'4', --orden
 	'Nro Docum', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
-	'0', --estilo
+	'4', --estilo
 	NULL, --ancho
-	'7', --formateo
+	'1', --formateo
 	NULL, --vinculo_indice
 	NULL, --no_ordenar
 	NULL, --mostrar_xls

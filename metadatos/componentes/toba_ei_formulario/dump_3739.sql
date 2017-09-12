@@ -2066,7 +2066,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'22', --orden
 	'Resumen', --etiqueta
 	NULL, --etiqueta_estilo
-	'Solo puede ingresar hasta 1700 caracteres', --descripcion
+	'Solo puede ingresar hasta 1800 caracteres', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo

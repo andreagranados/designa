@@ -4,6 +4,8 @@ class ci_personas extends toba_ci
         protected $s__mostrar;
         protected $s__datos_filtro;
         protected $s__where;
+        protected $s__datos;
+      
          //----Filtros ----------------------------------------------------------------------
         
         function conf__filtros(toba_ei_filtro $filtro)
@@ -53,11 +55,18 @@ class ci_personas extends toba_ci
                 $this->dep('filtros')->colapsar();
                                 
 	}
-
+       //evento implicito que no se muestra en un boton
+        //sirve para ocultar el ef suplente
+        function evt__form_cargo__modif($datos)
+        {
+            $this->s__datos = $datos;
+        }
+        
 	//---- Formulario -------------------------------------------------------------------
 
 	function conf__formulario(toba_ei_formulario $form)
 	{
+           
             if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('formulario')->descolapsar();
                 $form->ef('apellido')->set_obligatorio('true');
@@ -74,12 +83,26 @@ class ci_personas extends toba_ci
 	}
 
 	function evt__formulario__alta($datos)
-	{
-            $datos['nro_tabla']=1;    
-            $this->dep('datos')->tabla('persona')->set($datos);
-            $this->dep('datos')->sincronizar();
-            $this->resetear();
-            $this->s__mostrar=0;
+	{   
+            $inser=true;
+            if($datos['tipo_docum']=='EXTR'){
+                    $num=$this->dep('datos')->tabla('persona')->minimo_docum();
+                    $datos['nro_docum']=$num-1;
+            }else{
+                $band=$this->dep('datos')->tabla('persona')->existe($datos['tipo_docum'],$datos['nro_docum']);
+                if($band){
+                    toba::notificacion()->agregar('Esta persona ya existe.', 'error');  
+                    $inser=false;
+                    }   
+                }
+            if($inser){
+                
+                $datos['nro_tabla']=1;    
+                $this->dep('datos')->tabla('persona')->set($datos);
+                $this->dep('datos')->sincronizar();
+                $this->resetear();
+                $this->s__mostrar=0;
+            }
 	}
 
 	function evt__formulario__modificacion($datos)
@@ -99,8 +122,9 @@ class ci_personas extends toba_ci
 //el evento cancelar debe tener el tilde de manejo de datos desactivado
 	function evt__formulario__cancelar()
 	{
-		$this->resetear();
-                $this->s__mostrar=0;               
+            $this->s__mostrar=0;		
+            $this->resetear();
+                              
 	}
 
 	function resetear()
@@ -130,6 +154,7 @@ class ci_personas extends toba_ci
 	function evt__agregar()
 	{
             $this->s__mostrar=1;
+            $this->resetear();
             $this->dep('cuadro')->colapsar();
             $this->dep('filtros')->colapsar();
 	}

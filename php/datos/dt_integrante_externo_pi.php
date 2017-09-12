@@ -174,13 +174,15 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                        )
                         and t_i.hasta=p.fec_hasta) "
                 ." UNION"
-                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,t_i.nombre_institucion as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) as cuil,identificador_personal,'' as titulo,'' as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
+                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,t_i.nombre_institucion as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
                 . " from integrante_externo_pi t_e"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_e.cat_invest)"
                 . " LEFT OUTER JOIN persona t_p ON (t_e.tipo_docum=t_p.tipo_docum and t_e.nro_docum=t_p.nro_docum)"
                 . " LEFT OUTER JOIN funcion_investigador t_f ON (t_e.funcion_p=t_f.id_funcion) "
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_e.pinvest=p.id_pinv) "
                 . " LEFT OUTER JOIN institucion t_i ON (t_e.id_institucion=t_i.id_institucion) "
+                . " LEFT OUTER JOIN titulo t_t ON (t_p.titulog=t_t.codc_titul) "
+                . " LEFT OUTER JOIN titulo t_ti ON (t_p.titulog=t_ti.codc_titul) "
                 . " where t_e.pinvest in (select t_s.id_proyecto
                                        from pinvestigacion t_p, subproyecto t_s
                                        where t_p.id_pinv=".$id_p."  and t_p.id_pinv=t_s.id_programa

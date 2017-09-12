@@ -19,7 +19,7 @@ class dt_titulo extends toba_datos_tabla
 		ORDER BY codc_nivel,desc_titul";
 		return toba::db('designa')->consultar($sql);
 	}
-        
+       
 
 }
 ?>

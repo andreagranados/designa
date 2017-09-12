@@ -209,21 +209,28 @@ class ci_integrantes_pi extends designa_ci
                 
                 if(($pi['uni_acad']!=$uni) and !(isset($datos['resaval']))){ 
                      toba::notificacion()->agregar('Debe completar la Resol de aval porque es un integrante de otra facultad', 'error');  
-                    
                 }else{
                     //controla que si el proyecto esta en estado I entonces no pueda cargar mas de un registro por docente
                     $bandera=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->control($datos['id_docente'],$pi['id_pinv'],$pi['estado']);
-                    if($bandera){
-                        $datos['pinvest']=$pi['id_pinv'];
-                        $datos['ua']=$uni;
-                        $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-                        $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                        $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
-                        toba::notificacion()->agregar('El docente ha sido ingresado correctamente', 'info');   
-                        $this->s__mostrar_i=0;
-    
+                    $haysuperisicion=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion($pi['id_pinv'],$datos['id_docente'],$datos['desde'],$datos['hasta']);
+                    if($bandera && !$haysuperposicion){
+                        if($datos['desde']>=$datos['hasta']){
+                            toba::notificacion()->agregar('La fecha desde debe ser menor a la fecha hasta!', 'error');   
+                        }else{
+                            $datos['pinvest']=$pi['id_pinv'];
+                            $datos['ua']=$uni;
+                            $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
+                            $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                            $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+                            toba::notificacion()->agregar('El docente ha sido ingresado correctamente', 'info');   
+                            $this->s__mostrar_i=0;
+                        }
                     }else{
-                        toba::notificacion()->agregar('Este docente ya se encuentra. En un proyecto en estado Inicial solo puede cargar un registro por docente. ', 'error');     
+                        if (!$bandera){
+                            toba::notificacion()->agregar('Este docente ya se encuentra. En un proyecto en estado Inicial solo puede cargar un registro por docente. ', 'error');     
+                        }else{
+                            toba::notificacion()->agregar('Hay superposicion de fechas ', 'error');     
+                        }
                     }
                     
                 }
@@ -499,7 +506,7 @@ class ci_integrantes_pi extends designa_ci
                     'splitRows'=>0,
                     'rowGap' => 1,//, the space between the text and the row lines on each row
                    // 'lineCol' => (r,g,b) array,// defining the colour of the lines, default, black.
-                    //'showLines'=>1,
+                    'showLines'=>2,//coloca las lineas horizontales
                     'showHeadings' => true,//muestra el nombre de las columnas
                     'titleFontSize' => 12,
                     'fontSize' => 8,
