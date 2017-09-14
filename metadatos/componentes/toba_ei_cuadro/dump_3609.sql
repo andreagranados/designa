@@ -100,8 +100,8 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	NULL, --tamano_pagina
 	'P', --tipo_paginado
 	'1', --mostrar_total_registros
-	'1', --eof_invisible
-	NULL, --eof_customizado
+	'0', --eof_invisible
+	'No hay registros', --eof_customizado
 	'0', --siempre_con_titulo
 	'0', --exportar_paginado
 	'1', --exportar
@@ -600,7 +600,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3609', --objeto_cuadro
 	'3078', --objeto_cuadro_col
 	'lic', --clave
-	'17', --orden
+	'18', --orden
 	'Lic Mapuche', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -631,7 +631,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3609', --objeto_cuadro
 	'3079', --objeto_cuadro_col
 	'licd', --clave
-	'18', --orden
+	'17', --orden
 	'Lic SDD', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
