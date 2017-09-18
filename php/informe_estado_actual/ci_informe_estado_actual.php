@@ -5,6 +5,7 @@ class ci_informe_estado_actual extends toba_ci
         protected $s__desig;
         protected $s__where;
 
+       
         //-----------------------------------------------------------------------------------
 	//---- filtros ----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -50,9 +51,15 @@ class ci_informe_estado_actual extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
-                    //print_r($this->s__datos_filtro);exit;
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_listado_estactual($this->s__datos_filtro));
+            if (isset($this->s__datos_filtro)) {
+                $datos=$this->dep('datos')->tabla('designacion')->get_listado_estactual($this->s__datos_filtro);
+                //print_r($datos);
+                foreach ($datos as $key => $value) {
+                    if(is_null($datos[$key]['nro_norma']) or $datos[$key]['nro_norma']==''){
+                        $datos[$key]['id_designacion']= '<b><font color=red>'.$datos[$key]['id_designacion'].'</font></b>';
+                    }
+                }
+                $cuadro->set_datos($datos);
 		} 
 	}
 
@@ -73,6 +80,8 @@ class ci_informe_estado_actual extends toba_ci
         function conf__cuadroh(toba_ei_cuadro $cuadro)
         {
             if (isset($this->s__desig)) {
+                $titul=$this->dep('datos')->tabla('docente')->get_nombre($this->s__desig);
+                $cuadro->set_titulo($titul);
 		$cuadro->set_datos($this->dep('datos')->tabla('logs_designacion')->get_historico_desig($this->s__desig));
 		} 
         }
