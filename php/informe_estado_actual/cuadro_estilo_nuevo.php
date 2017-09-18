@@ -30,7 +30,7 @@ class cuadro_estilo_nuevo extends designa_ei_cuadro
 				$ancho = floor(100 / (count($filas) / $layout_cant_columnas));
 				echo "<td><table class='ei-cuadro-agrupador-filas' width='$ancho%' >";
 			}
-			$estilo_fila = $par ? 'ei_mio' : 'ei-cuadro-celda-impar';
+			$estilo_fila = $par ? 'ei-cuadro-celda-par' : 'ei-cuadro-celda-impar';
 			$clave_fila = $this->_cuadro->get_clave_fila($f);
 
 			//Genero el html de la fila, junto con sus eventos y vinculos

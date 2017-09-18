@@ -1035,7 +1035,12 @@ class cargo_solapas extends toba_ci
 	{
             if ($datos['hasta']<$datos['desde']){
                 toba::notificacion()->agregar('La fecha hasta debe ser mayor a la fecha desde','error');
-            }else{//chequeo que este dentro del periodo de la designacion
+            }else{
+               $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+               if ( !preg_match($regenorma, $datos['norma_legal'], $matchFecha) ) {
+                toba::notificacion()->agregar('Norma Invalida','error');
+               }else{
+                //chequeo que este dentro del periodo de la designacion
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                
@@ -1089,6 +1094,7 @@ class cargo_solapas extends toba_ci
                 }
 
             }  
+           }
 	}
         function evt__form_licencia__cancelar($datos)
         {
