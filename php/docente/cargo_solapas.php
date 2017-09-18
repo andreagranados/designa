@@ -968,6 +968,10 @@ class cargo_solapas extends toba_ci
                     $udia=$this->controlador()->ultimo_dia_periodo(2);//periodo presupuestando
                 }
                 if( $datos['desde']>=$desig['desde'] && $datos['desde']<=$udia && $datos['hasta']>=$desig['desde'] && $datos['hasta']<=$udia){
+                    $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+                    if ( !preg_match($regenorma, $datos['norma_legal'], $matchFecha) ) {
+                        toba::notificacion()->agregar('Norma Invalida.','error');
+                    }else{
                        if($mensaje!=''){//guardo historico
                             $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);
                             $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
@@ -985,6 +989,7 @@ class cargo_solapas extends toba_ci
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
                         $this->s__alta_nov=0;//descolapsa el formulario de alta
                         toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
+                   }        
                 }else{
                     toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
                 }
@@ -1038,7 +1043,7 @@ class cargo_solapas extends toba_ci
             }else{
                $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
                if ( !preg_match($regenorma, $datos['norma_legal'], $matchFecha) ) {
-                toba::notificacion()->agregar('Norma Invalida','error');
+                toba::notificacion()->agregar('Norma Invalida.','error');
                }else{
                 //chequeo que este dentro del periodo de la designacion
                 $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
@@ -1163,6 +1168,10 @@ class cargo_solapas extends toba_ci
             //verifico que este dentro del periodo de la designacion
             //permito ingresar como fecha de baja un dia antes de la fecha desde. Esto para anular designaciones
             if( $datos['desde']>=($desig['desde']-1) && $datos['desde']<=$udia ){
+               $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+               if ( !preg_match($regenorma, $datos['norma_legal'], $matchFecha) ) {
+                toba::notificacion()->agregar('Norma Invalida.','error');
+               }else{
                     //actualiza las novedades licencias/cese  > que la baja
                     $this->controlador()->dep('datos')->tabla('novedad')->setear_baja($desig['id_designacion'],$datos['desde']);
                     if($mensaje!=''){
@@ -1180,7 +1189,7 @@ class cargo_solapas extends toba_ci
                     $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
                     $this->s__alta_novb=0;//descolapsa el formulario de alta
                     toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente.','info');
-  
+               }
             }else{
                 toba::notificacion()->agregar(utf8_decode('La fecha de BAJA/RENUNCIA debe estar dentro del período de la designación'),'error');
             }
@@ -1241,6 +1250,10 @@ class cargo_solapas extends toba_ci
                     $udia=$this->controlador()->ultimo_dia_periodo(1);
                 }
                 if( $datos['desde']>=($desig['desde']-1) && $datos['desde']<=$udia){
+                     $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+                     if ( !preg_match($regenorma, $datos['norma_legal'], $matchFecha) ) {
+                        toba::notificacion()->agregar('Norma Invalida.','error');
+                     }else{
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
                         if($mensaje!=''){//agrego historico
@@ -1252,6 +1265,7 @@ class cargo_solapas extends toba_ci
                         $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                         toba::notificacion()->agregar($mensaje.'Los datos se guardaron correctamente','info');
+                    }    
                 }else{
                         toba::notificacion()->agregar(utf8_decode('La fecha de la BAJA/RENUNCIA debe estar dentro del período de la designación'),'error');
                     }
