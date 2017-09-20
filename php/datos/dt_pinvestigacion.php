@@ -3,7 +3,8 @@ require_once 'dt_mocovi_periodo_presupuestario.php';
 class dt_pinvestigacion extends toba_datos_tabla
 {
         function control($id_doc,$id_pinv,$estado){//retorna true cuando es estado I y el docente no esta (para integrantes docentes)
-            if($estado='I'){
+            
+            if($estado=='I'){
                 $sql="select t_d.id_docente from integrante_interno_pi t_i "
                         . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
                         . " where t_i.pinvest=$id_pinv"

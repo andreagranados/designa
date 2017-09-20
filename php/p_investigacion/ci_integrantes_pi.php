@@ -212,7 +212,8 @@ class ci_integrantes_pi extends designa_ci
                 }else{
                     //controla que si el proyecto esta en estado I entonces no pueda cargar mas de un registro por docente
                     $bandera=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->control($datos['id_docente'],$pi['id_pinv'],$pi['estado']);
-                    $haysuperisicion=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion($pi['id_pinv'],$datos['id_docente'],$datos['desde'],$datos['hasta']);
+                    $haysuperposicion=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion($pi['id_pinv'],$datos['id_docente'],$datos['desde'],$datos['hasta']);
+                    
                     if($bandera && !$haysuperposicion){
                         if($datos['desde']>=$datos['hasta']){
                             toba::notificacion()->agregar('La fecha desde debe ser menor a la fecha hasta!', 'error');   

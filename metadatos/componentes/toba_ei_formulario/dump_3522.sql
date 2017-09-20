@@ -562,7 +562,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'5', --orden
 	'Norma legal', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Formato permitido: XXXX/YYYY<br>
+4 dígitos para indicar número de norma / 4 dígitos para indicar el año de la norma', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
