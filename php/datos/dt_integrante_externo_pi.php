@@ -182,7 +182,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_e.pinvest=p.id_pinv) "
                 . " LEFT OUTER JOIN institucion t_i ON (t_e.id_institucion=t_i.id_institucion) "
                 . " LEFT OUTER JOIN titulo t_t ON (t_p.titulog=t_t.codc_titul) "
-                . " LEFT OUTER JOIN titulo t_ti ON (t_p.titulog=t_ti.codc_titul) "
+                . " LEFT OUTER JOIN titulo t_ti ON (t_p.titulop=t_ti.codc_titul) "
                 . " where t_e.pinvest in (select t_s.id_proyecto
                                        from pinvestigacion t_p, subproyecto t_s
                                        where t_p.id_pinv=".$id_p."  and t_p.id_pinv=t_s.id_programa
