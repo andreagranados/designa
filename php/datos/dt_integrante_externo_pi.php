@@ -35,7 +35,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         toba::db('designa')->consultar($sql);
         $sql="insert into movi
             select pinvest,tipo_docum,nro_docum,count(distinct desde) from 
-            (select t_i.pinvest, t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,funcion_p,carga_horaria,ua,t_i.desde,t_i.hasta,rescd 
+            (select t_i.pinvest, t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,funcion_p,carga_horaria,ua,t_i.desde,t_i.hasta,rescd
             from integrante_interno_pi t_i
             LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_i.id_designacion)
             LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
@@ -48,7 +48,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             where t_i.pinvest=$id_p)a
             group by pinvest,tipo_docum,nro_docum;";
         toba::db('designa')->consultar($sql);  
-        $sql="select * from (select t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd ,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as categoria
+        $sql="select * from (select t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd ,t_i.rescd_bm, t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as categoria
             from movi a
             LEFT OUTER JOIN docente t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
             LEFT OUTER JOIN designacion t_d ON (t_d.id_docente=t_do.id_docente)
@@ -60,7 +60,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             and funcion_p is not null
             and a.cont>1
             UNION           
-            select t_do.apellido||', '||t_do.nombre as agente,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd,'' as categoria
+            select t_do.apellido||', '||t_do.nombre as agente,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd,t_i.rescd_bm,'' as categoria
             from movi a
             LEFT OUTER JOIN persona t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
             LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.nro_docum=t_do.nro_docum and t_i.tipo_docum=t_do.tipo_docum)

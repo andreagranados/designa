@@ -34,6 +34,20 @@ class dt_pinvestigacion extends toba_datos_tabla
                     return false;//no hay superposicion
                 }
         }
+        function superposicion_modif ($id_proy,$desde,$hasta,$id_desig,$desdeactual){
+             $sql="select * "
+                     . " from integrante_interno_pi t_i "
+                        . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
+                        . " where t_i.pinvest=$id_proy "
+                        . " and t_d.id_docente=$doc "
+                     . " and (('".$desde."'>= t_i.desde  and '".$desde."'<=t_i.hasta) or ('".$hasta."'>= t_i.desde  and '".$hasta."'<=t_i.hasta))";
+             $resul=toba::db('designa')->consultar($sql);
+             if(count($resul)>0){//hay superposicion
+                    return true;
+                }else{
+                    return false;//no hay superposicion
+                }
+        }
         function get_responsable($id_proy){
            $salida=array();
            $sql="select t_do.id_docente,trim(t_do.apellido)||','||trim(t_do.nombre) as descripcion"

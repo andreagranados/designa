@@ -124,6 +124,7 @@ class ci_personas extends toba_ci
 	{
             $this->s__mostrar=0;		
             $this->resetear();
+            $this->dep('formulario')->descolapsar();//nueva
                               
 	}
 
@@ -157,6 +158,8 @@ class ci_personas extends toba_ci
             $this->resetear();
             $this->dep('cuadro')->colapsar();
             $this->dep('filtros')->colapsar();
+            unset($this->s__datos_filtro);
+            unset($this->s__where);
 	}
 
 }

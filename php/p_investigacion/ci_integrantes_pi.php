@@ -240,18 +240,26 @@ class ci_integrantes_pi extends designa_ci
 
         function evt__form_integrante_i__modificacion($datos)
         {
-           
             $ua=$this->controlador()->controlador()->dep('datos')->tabla('designacion')->get_uni_acad($datos['id_designacion']);
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $registro=$this->dep('datos')->tabla('integrante_interno_pi')->get();
+            //verificar que la modificacion no haga que se superpongan las fechas
+            $haysuperposicion=false;//no es igual al del alta porque no tengo que considerar el registro vigente$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion_modif($pi['id_pinv'],$datos['desde'],$datos['hasta'],$registro['id_designacion'],$registro['desde']);
+            if(!$haysuperposicion){
+                $datos['ua']=$ua;
+                $datos['pinvest']=$pi['id_pinv'];
+                $datos['check_inv']=0;//pierde el check si es que lo tuviera
+                $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
+                $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                $this->s__mostrar_i=0;
             
-            $datos['ua']=$ua;
-            $datos['pinvest']=$pi['id_pinv'];
-            $datos['check_inv']=0;//pierde el check si es que lo tuviera
-            // $actual=$this->dep('datos')->tabla('integrante_interno_pi')->get();  
-            $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-            $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-            $this->s__mostrar_i=0;
-            toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
+                //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
+                $actual=$this->dep('datos')->tabla('integrante_interno_pi')->get();
+                $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($actual['id_designacion'],$actual['pinvest'],$actual['desde'],$datos['desde']);
+                toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
+            }else{
+                toba::notificacion()->agregar('Hay superposicion de fechas', 'error');  
+            }
         }
         function evt__form_integrante_i__baja($datos)
         {
