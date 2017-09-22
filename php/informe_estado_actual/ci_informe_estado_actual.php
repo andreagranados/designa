@@ -53,12 +53,12 @@ class ci_informe_estado_actual extends toba_ci
 	{
             if (isset($this->s__datos_filtro)) {
                 $datos=$this->dep('datos')->tabla('designacion')->get_listado_estactual($this->s__datos_filtro);
-                //print_r($datos);
-                foreach ($datos as $key => $value) {
-                    if(is_null($datos[$key]['nro_norma']) or $datos[$key]['nro_norma']==''){
-                        $datos[$key]['id_designacion']= '<b><font color=red>'.$datos[$key]['id_designacion'].'</font></b>';
-                    }
-                }
+                //print_r($datos);exit;
+//                foreach ($datos as $key => $value) {
+//                    if(is_null($datos[$key]['nro_norma']) or $datos[$key]['nro_norma']==''){
+//                        $datos[$key]['programa']= '<b><font color=red>'.$datos[$key]['programa'].'</font></b>';
+//                    }
+//                }
                 $cuadro->set_datos($datos);
 		} 
 	}
