@@ -1,5 +1,4 @@
 <?php
-
 class PDF2Text {
     // Some settings
     var $multibyte = 2; // Use setUnicode(TRUE|FALSE)
@@ -409,7 +408,8 @@ class ci_ver_normas extends toba_ci
         function evt__cuadro__edicion($datos)
 	{
             $this->dep('datos')->tabla('norma')->cargar($datos);
-            $this->set_pantalla('pant_edicion');
+            //$this->set_pantalla('pant_edicion');antes
+            $this->set_pantalla('pant_alta');
             
         }
         function evt__cuadro__procesar($datos)
@@ -497,31 +497,111 @@ class ci_ver_normas extends toba_ci
             $norma=$this->dep('datos')->tabla('norma')->get();
             $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_detalle($norma['id_norma']));   
 	}
+        //permite volver a la pantalla incial
         function evt__volver(){
             $this->dep('datos')->tabla('norma')->resetear();
             $this->set_pantalla('pant_inicial');
         }
-        
-       function conf__formulario(toba_ei_formulario $form)
-        {
-            if ($this->dep('datos')->tabla('norma')->esta_cargada()) {
-                 $datos=$this->dep('datos')->tabla('norma')->get();
-                 return $datos;
-                  
-            }
+        function evt__agregar(){
+            $this->set_pantalla('pant_alta');
         }
-        function evt__formulario__modificacion($datos)
-        {
-            $this->dep('datos')->tabla('norma')->set($datos);
-            $this->dep('datos')->tabla('norma')->sincronizar();
-            toba::notificacion()->agregar(utf8_decode('La modificación se realizó correctamente.'), 'info');
-            
-        }
-        function evt__formulario__cancelar($datos)
-        {
-            $this->dep('datos')->tabla('norma')->resetear();
-            $this->set_pantalla('pant_inicial');   
-        }
+               
+//       function conf__formulario(toba_ei_formulario $form)
+//        {
+//            if ($this->dep('datos')->tabla('norma')->esta_cargada()) {
+//                 $datos=$this->dep('datos')->tabla('norma')->get();
+//                 return $datos;
+//                  
+//            }
+//        }
+//        function evt__formulario__modificacion($datos)
+//        {
+//            $this->dep('datos')->tabla('norma')->set($datos);
+//            $this->dep('datos')->tabla('norma')->sincronizar();
+//            toba::notificacion()->agregar(utf8_decode('La modificación se realizó correctamente.'), 'info');
+//            
+//        }
+//        function evt__formulario__cancelar($datos)
+//        {
+//            $this->dep('datos')->tabla('norma')->resetear();
+//            $this->set_pantalla('pant_inicial');   
+//        }
    
+	//-----------------------------------------------------------------------------------
+	//---- JAVASCRIPT -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function extender_objeto_js()
+	{
+		echo "
+		//---- Eventos ---------------------------------------------
+		
+		{$this->objeto_js}.evt__agregar = function()
+		{
+		}
+		";
+	}
+
+	//-----------------------------------------------------------------------------------
+	//---- form -------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form(toba_ei_formulario $form)
+	{
+            if ($this->dep('datos')->tabla('norma')->esta_cargada()) {
+                $form->set_datos($this->dep('datos')->tabla('norma')->get());
+		}
+	}
+
+	function evt__form__alta($datos)
+	{
+            //previo verificar que no se encuentre?
+            $con="select sigla,descripcion from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            if(count($resul)>0){
+                $datos['uni_acad']=$resul[0]['sigla'];
+                $bandera=$this->dep('datos')->tabla('norma')->existe($datos);
+                if($bandera){
+                    toba::notificacion()->agregar('Esta norma ya existe','error');
+                }else{
+                    $this->dep('datos')->tabla('norma')->set($datos);
+                    $this->dep('datos')->tabla('norma')->sincronizar();
+                    toba::notificacion()->agregar('La norma ha sido dada de alta exitosamente!','info');
+                    $this->set_pantalla('pant_inicial');   
+                }
+            }
+	}
+
+	function evt__form__baja($datos)
+	{
+            $this->dep('datos')->eliminar_todo();
+            $this->set_pantalla('pant_inicial');   
+            toba::notificacion()->agregar('Se ha eliminado la norma','info');
+	}
+
+	function evt__form__modificacion($datos)
+	{
+            if ($this->dep('datos')->tabla('norma')->esta_cargada()) {
+                $norma=$this->dep('datos')->tabla('norma')->get();
+                //si la designacion tiene designaciones asociadas, no la puede modificar
+                $bandera=$this->dep('datos')->tabla('norma')->esta_asociada_designacion($norma['id_norma']);
+                if($bandera){
+                    toba::notificacion()->agregar(utf8_decode('Existen designaciones asociadas a esta Norma, no puede modificar!'), 'error');
+                }else{
+                    $this->dep('datos')->tabla('norma')->set($datos);
+                    $this->dep('datos')->tabla('norma')->sincronizar();
+                    toba::notificacion()->agregar(utf8_decode('La modificación se realizó correctamente.'), 'info');
+                }
+    
+            }           
+	}
+
+	function evt__form__cancelar()
+	{
+             $this->dep('datos')->tabla('norma')->resetear();
+             $this->set_pantalla('pant_inicial');
+	}
+
 }
 ?>

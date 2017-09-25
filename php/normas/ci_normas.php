@@ -33,20 +33,20 @@ class ci_normas extends toba_ci
 	{
            $cuadro->desactivar_modo_clave_segura();
            if (isset($this->s__where)) {
-                $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_perfil($this->s__where));
+                $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_filtro($this->s__where));
            }else{
-                $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_perfil());
+                $cuadro->set_datos($this->dep('datos')->tabla('norma')->get_listado_filtro());
            }
 	}
 
 	function evt__cuadro__seleccion($datos)
 	{
-		$this->dep('datos')->tabla('norma')->cargar($datos);
+            $this->dep('datos')->tabla('norma')->cargar($datos);
                                 
 	}
         function evt__cuadro__editar($datos)
 	{
-		$this->dep('datos')->cargar($datos);  
+                $this->dep('datos')->tabla('norma')->cargar($datos);  
                 $this->dep('cuadro')->colapsar();
                 $this->dep('filtros')->colapsar();
                 $this->s__mostrar=1;
@@ -64,7 +64,7 @@ class ci_normas extends toba_ci
               }	else{
                 $this->dep('formulario')->colapsar();
               }	
-            if ($this->dep('datos')->esta_cargada()) {
+            if ($this->dep('datos')->tabla('norma')->esta_cargada()) {
                 $datos=$this->dep('datos')->tabla('norma')->get();
                 $fp_imagen = $this->dep('datos')->tabla('norma')->get_blob('pdf');
                 if (isset($fp_imagen)) {
@@ -120,7 +120,7 @@ class ci_normas extends toba_ci
                 toba::notificacion()->agregar('La norma ha sido modificada correctamente.','info');
                 $this->s__mostrar=0;
             }else{
-                toba::notificacion()->agregar('No puede modificar esta norma porque esta asociada a una designacion','info');
+                toba::notificacion()->agregar('No puede modificar esta Norma porque existen designaciones asociadas a ella.','info');
                 
             }
 
@@ -128,10 +128,17 @@ class ci_normas extends toba_ci
 
 	function evt__formulario__baja()
 	{
-		$this->dep('datos')->eliminar_todo();
-		$this->resetear();
+            $norma=$this->dep('datos')->tabla('norma')->get();
+            $band=$this->dep('datos')->tabla('norma')->esta_asociada_designacion($norma['id_norma']);
+            if($band){
+                 toba::notificacion()->agregar('Esta Norma no puede ser eliminada porque existen designaciones asociadas a ella. Primero desasocie y luego elimine.','info');
+                
+            }else{
+               $this->dep('datos')->tabla('norma')->eliminar_todo();
                 toba::notificacion()->agregar('Se ha eliminado la norma','info');
                 $this->s__mostrar=0;
+            }
+		
 	}
 
 	function evt__formulario__cancelar()
