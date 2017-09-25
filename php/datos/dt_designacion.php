@@ -168,24 +168,37 @@ class dt_designacion extends toba_datos_tabla
         return $res;
             
     }    
+    function su_cargo($id_desig){
+        $sql="select nro_cargo from designacion "
+                . " where id_designacion=".$id_desig;
+        $res=toba::db('designa')->consultar($sql);  
+        return $res[0]['nro_cargo'];
+    }
     //actualiza el campo nro_cargo  de la designacion
     function actualiza_nro_cargo($id_desig,$nro_cargo){
-        if($id_desig<>-1 and $nro_cargo<>-1){
-            $sql="select * from designacion where nro_cargo=$nro_cargo and id_designacion<>$id_desig";
-            $res=toba::db('designa')->consultar($sql);  
-            if(count($res)>0){//ya hay otra designacion con ese numero de cargo
-                return false;
-            }else{
-                $sql="update designacion set nro_cargo=$nro_cargo"
-                . " where id_designacion=$id_desig";
-                toba::db('designa')->consultar($sql);  
-                return true;
-            }
+        if(is_null($nro_cargo)){
+             $sql="update designacion set nro_cargo=null"
+                    . " where id_designacion=$id_desig";
+              toba::db('designa')->consultar($sql);  
+              return true;
             
         }else{
-            return false;
-        }
-        
+            if($id_desig<>-1 and $nro_cargo<>-1){
+                $sql="select * from designacion where nro_cargo=$nro_cargo and id_designacion<>$id_desig";
+                $res=toba::db('designa')->consultar($sql);  
+                if(count($res)>0){//ya hay otra designacion con ese numero de cargo
+                    return false;
+                }else{
+                    $sql="update designacion set nro_cargo=$nro_cargo"
+                    . " where id_designacion=$id_desig";
+                     toba::db('designa')->consultar($sql);  
+                    return true;
+                }
+            
+            }else{
+                 return false;
+             }
+        }     
     }
     function get_comparacion_imput($filtro){
         

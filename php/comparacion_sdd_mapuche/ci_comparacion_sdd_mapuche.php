@@ -54,6 +54,10 @@ class ci_comparacion_sdd_mapuche extends toba_ci
 
         function evt__cuadro__editar($datos)
 	{
+            $cargo=$this->dep('datos')->tabla('designacion')->su_cargo($datos['id_designacion']);
+            if(!is_null($cargo)){//sino es nulo entonces 
+                $datos['nro_cargo']=null;
+            }
             $resul=$this->dep('datos')->tabla('designacion')->actualiza_nro_cargo($datos['id_designacion'],$datos['nro_cargo']);
             if($resul){
                 toba::notificacion()->agregar(utf8_decode('Se ha actualizado el número de cargo correspondiente a la designación!'), "info");
