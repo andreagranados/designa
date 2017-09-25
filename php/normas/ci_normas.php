@@ -85,16 +85,29 @@ class ci_normas extends toba_ci
 //agrega una nueva norma
 	function evt__formulario__alta($datos)
 	{
-                $this->dep('datos')->tabla('norma')->set($datos);
-                if (is_array($datos['pdf'])) {
-                    $fp = fopen($datos['pdf']['tmp_name'], 'rb');
-                    $this->dep('datos')->tabla('norma')->set_blob('pdf',$fp); 
-                }else{
-                    $this->dep('datos')->tabla('norma')->set_blob('pdf',null);
+            //previo verificar que no se encuentre?
+            $con="select sigla,descripcion from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            if(count($resul)>0){
+                $datos['uni_acad']=$resul[0]['sigla'];
+                $bandera=$this->dep('datos')->tabla('norma')->existe($datos);
+                if($bandera){
+                    toba::notificacion()->agregar('Esta norma ya existe','error');
+                }else{//inserta una nueva
+                    $this->dep('datos')->tabla('norma')->set($datos);
+                    if (is_array($datos['pdf'])) {
+                        $fp = fopen($datos['pdf']['tmp_name'], 'rb');
+                        $this->dep('datos')->tabla('norma')->set_blob('pdf',$fp); 
+                    }else{
+                        $this->dep('datos')->tabla('norma')->set_blob('pdf',null);
+                    }
+                    $this->dep('datos')->tabla('norma')->sincronizar();
+                    $this->resetear();
+                    $this->s__mostrar=0;
                 }
-		$this->dep('datos')->tabla('norma')->sincronizar();
-		$this->resetear();
-                $this->s__mostrar=0;
+            }
+               
 	}
 //modifica una norma existente
 	function evt__formulario__modificacion($datos)
