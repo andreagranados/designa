@@ -1224,7 +1224,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		}       
                  //que sea una designacion correspondiente al periodo seleccionado
 		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
-                
+                $where2="";//es para filtrar por estado. Lo hago al final de todo
 		if (isset($filtro['uni_acad']['valor'])) {
 			$where.= "AND uni_acad = ".quote($filtro['uni_acad']['valor']);
 		}
@@ -1246,7 +1246,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                  }
                
                 if (isset($filtro['estado']['valor'])) {
-                     $where.= " AND estado='".$filtro['estado']['valor']."'";
+                     $where2= " WHERE b.estado = '".$filtro['estado']['valor']."'";
                  }
                 if (isset($filtro['programa']['valor'])) {
                     $sql="select * from mocovi_programa where id_programa=".$filtro['programa']['valor'];
@@ -1265,17 +1265,18 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		//si el estado de la designacion es  B entonces le pone estado B, si es <>B se fija si tiene licencia sin goce o cese
                 $sql=  "select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, arma_link(b.id_designacion) as nro_norma,b.tipo_norma,nro_540,expediente,b.observaciones,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
                             //lo saco porque lo hago con una funcion.",case when b.estado<>'B' then case when t_no.id_novedad is null then b.estado else 'L' end else 'B' end as estado ,norma_baja(b.id_designacion,'".$pdia."','".$udia."') as norma_estado"
-                            .",norma_baja(b.id_designacion,'".$pdia."','".$udia."') as estado"
+                            .",norma_baja_bl(b.id_designacion,'".$pdia."','".$udia."') as est "
                             . " from ("
-                            ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
+                            ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado_desig(a.id_designacion,'".$pdia."','".$udia."') as estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
                             " from (".$sql.") a"
                             .$where
                             ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
                             .") b "
-                        ." LEFT JOIN impresion_540 t_i ON (nro_540=t_i.id)"
+                        ." LEFT JOIN impresion_540 t_i ON (nro_540=t_i.id)"//para agregar el expediente
+                        .$where2
                             //lo saco porque lo hago con una funcion. " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
                             . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
-                 
+               //  print_r($sql);
                 return toba::db('designa')->consultar($sql);
     
 	}

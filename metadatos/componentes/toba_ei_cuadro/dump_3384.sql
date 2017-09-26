@@ -820,7 +820,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3384', --objeto_cuadro
 	'2545', --objeto_cuadro_col
-	'estado', --clave
+	'est', --clave
 	'19', --orden
 	'Estado', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
@@ -843,7 +843,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	NULL, --vinculo_target
 	NULL, --vinculo_celda
 	NULL, --vinculo_servicio
-	'0', --permitir_html
+	'1', --permitir_html
 	NULL, --grupo
 	NULL  --evento_asociado
 );
