@@ -18,7 +18,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
     }
     function get_listado($id_p=null)
     {
-        $sql="select t_i.pinvest, trim(t_p.apellido)||', '||trim(t_p.nombre) as nombre, t_p.tipo_docum,case when t_p.nro_docum<0 then docum_extran else cast(t_p.nro_docum as text) end as nro_docum,t_p.tipo_sexo,t_p.fec_nacim,funcion_p,carga_horaria,desde,hasta,rescd,check_inv,rescd_bm"
+        $sql="select t_i.pinvest, trim(t_p.apellido)||', '||trim(t_p.nombre) as nombre, t_p.tipo_docum,t_p.nro_docum,case when t_p.nro_docum<0 then docum_extran else cast(t_p.nro_docum as text) end as nro_docum2,t_p.tipo_sexo,t_p.fec_nacim,funcion_p,carga_horaria,desde,hasta,rescd,check_inv,rescd_bm"
                 . " from integrante_externo_pi t_i "
                 . " LEFT OUTER JOIN persona t_p ON (t_i.nro_docum=t_p.nro_docum and t_i.tipo_docum=t_p.tipo_docum) where t_i.pinvest=".$id_p
                 ." order by nombre,desde";

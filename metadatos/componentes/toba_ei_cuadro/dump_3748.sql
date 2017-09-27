@@ -229,7 +229,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3748', --objeto_cuadro
 	'3454', --objeto_cuadro_col
-	'nro_docum', --clave
+	'nro_docum2', --clave
 	'3', --orden
 	'Nro Documento', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
