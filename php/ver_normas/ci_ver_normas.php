@@ -587,13 +587,14 @@ class ci_ver_normas extends toba_ci
                 //si la designacion tiene designaciones asociadas, no la puede modificar
                 $bandera=$this->dep('datos')->tabla('norma')->esta_asociada_designacion($norma['id_norma']);
                 if($bandera){
-                    if(isset($datos['link'])){
-                        unset($datos['nro_norma']);
-                        unset($datos['tipo_norma']);
-                        unset($datos['emite_norma']);
-                        unset($datos['fecha']);
+                    unset($datos['nro_norma']);
+                    unset($datos['tipo_norma']);
+                    unset($datos['emite_norma']);
+                    unset($datos['fecha']);
+                    if(isset($datos['link'])){//modifica solo el link
                         $mensaje='Se ha modificado solo el link.';
-                    }else{
+                    }else{//solo modifica mensaje cambia el mensaje
+                        
                         $mensaje='Existen designaciones asociadas a esta Norma, no puede modificar!';
                     }
                     

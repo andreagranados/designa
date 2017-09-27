@@ -44,6 +44,7 @@ class dt_norma extends toba_datos_tabla
            $sql="select distinct id_designacion from designacion where id_norma=$id "
                 . " UNION "
                 . " select distinct id_designacion from norma_desig where id_norma=".$id;
+           
            $res= toba::db('designa')->consultar($sql);
            if(count($res)>0){
                return true;
