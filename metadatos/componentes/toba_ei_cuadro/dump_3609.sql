@@ -169,7 +169,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'11', --orden
 	'Desde', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
-	'7', --estilo
+	'col-num-p2', --estilo
 	NULL, --ancho
 	'8', --formateo
 	NULL, --vinculo_indice
@@ -200,7 +200,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'12', --orden
 	'Hasta', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
-	'7', --estilo
+	'col-num-p2', --estilo
 	NULL, --ancho
 	'8', --formateo
 	NULL, --vinculo_indice
@@ -262,7 +262,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'9', --orden
 	'SDD', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
-	'4', --estilo
+	'col-num-p2', --estilo
 	NULL, --ancho
 	'1', --formateo
 	NULL, --vinculo_indice
@@ -634,7 +634,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'17', --orden
 	'Lic SDD', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
-	'4', --estilo
+	'col-num-p2', --estilo
 	NULL, --ancho
 	'1', --formateo
 	NULL, --vinculo_indice

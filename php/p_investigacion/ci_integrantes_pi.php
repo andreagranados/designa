@@ -7,6 +7,7 @@ class ci_integrantes_pi extends designa_ci
         protected $s__listado;
         protected $s__denominacion;
         protected $s__dependencia;
+        protected $s__resol;
            
         function get_persona($id){   
         }
@@ -450,6 +451,7 @@ class ci_integrantes_pi extends designa_ci
             $cuadro->set_titulo(str_replace(':','' ,$pi['denominacion']).'-'.$pi['codigo'].'(ResCD: '.$pi['nro_resol'].')');
             $this->s__dependencia=$pi['uni_acad'];
             $this->s__denominacion=$pi['denominacion'];
+            $this->s__resol=$pi['nro_resol'];
             $this->s__listado=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
             $cuadro->set_datos($this->s__listado);
             }
@@ -533,7 +535,7 @@ class ci_integrantes_pi extends designa_ci
                    $datos[$i]=array( 'col2'=>trim($des['nombre']),'col3' => $des['cuil'],'col4' => $fec,'col5' => $des['tipo_sexo'],'col6' => $des['cat_invest'],'col7' => trim($des['titulo']),'col8' => trim($des['titulop']),'col10' =>$des['ua'],'col11' => $des['cat_invest_conicet'],'col12' => $des['funcion_p'],'col13' => trim($des['categoria']),'col14' => $des['carga_horaria']);
                     $i++;
                }    
-               $pdf->ezText('DEPENDENCIA DEL PROYECTO: '.$this->s__dependencia, 10);
+               $pdf->ezText('DEPENDENCIA DEL PROYECTO: '.$this->s__dependencia.'                                                                                                                                                                                                         Resol: '.$this->s__resol, 10);
                $pdf->ezText('DENOMINACION DEL PROYECTO: '.$this->s__denominacion, 10);
                $tg=utf8_decode("Título de Grado");
                $tp=utf8_decode("Título de Posgrado");
@@ -552,7 +554,8 @@ class ci_integrantes_pi extends designa_ci
                     //200,50
                     $imagen2 = toba::proyecto()->get_path().'/www/img/sein.jpg';
                     $imagen3 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
-                    $pdf->addJpegFromFile($imagen2, 680, 520, 70, 60);
+                   // $pdf->addJpegFromFile($imagen2, 680, 520, 70, 60);
+                    $pdf->addJpegFromFile($imagen2, 750, 520, 70, 60);
                     $pdf->addJpegFromFile($imagen3, 10, 525, 130, 40); 
                     
                     $pdf->closeObject(); 
