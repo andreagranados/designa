@@ -56,9 +56,10 @@ class dt_asignacion_materia extends toba_datos_tabla
            $where=' WHERE 1=1';
       }
       $sql="select * from (
-          select t_do.apellido||', '||t_do.nombre as docente_nombre, t_m.id_designacion,t_m.id_materia,t_m.modulo as id_modulo,t_do.legajo,t_m.anio,t_d.cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,t_a.desc_materia,t_mo.descripcion as modulo,t_pe.descripcion as periodo,t_r.desc_item as rol,t_p.uni_acad,t_p.cod_carrera,t_p.ordenanza,t_pr.id_estado,t_pr.link,substr(t_pr.observacion,0,10) as observacion
+          select t_do.apellido||', '||t_do.nombre as docente_nombre, t_m.id_designacion,t_de.iddepto,t_de.descripcion as departamento,t_m.id_materia,t_m.modulo as id_modulo,t_do.legajo,t_m.anio,t_d.cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,t_a.desc_materia,t_mo.descripcion as modulo,t_pe.descripcion as periodo,t_r.desc_item as rol,t_p.uni_acad,t_p.cod_carrera,t_p.ordenanza,t_pr.id_estado,t_pr.link,t_pr.observacion
             from asignacion_materia t_m
             LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_m.id_designacion)
+            LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
             LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
             LEFT OUTER JOIN materia t_a ON (t_m.id_materia=t_a.id_materia)
             LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_a.id_plan)

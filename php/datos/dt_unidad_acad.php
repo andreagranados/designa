@@ -7,7 +7,16 @@ class dt_unidad_acad extends toba_datos_tabla
 		$sql = "SELECT sigla, descripcion FROM unidad_acad ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
-
+        function get_descripcion ($sigla){
+            $sql="select descripcion from unidad_acad where sigla='".$sigla."'";
+            $resul= toba::db('designa')->consultar($sql);
+            if(count($resul)>0){
+                return trim($resul[0]['descripcion']);
+            }else{
+                return '';
+            }
+            
+        }
         function get_descripciones_ua($id_des=null)	{
             if(!is_null($id_des)){
                 $where=" LEFT JOIN unidad_acad t_u ON (t_d.uni_acad=t_u.sigla) WHERE t_d.id_designacion= ".$id_des;

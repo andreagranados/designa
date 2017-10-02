@@ -52,19 +52,33 @@ class dt_norma extends toba_datos_tabla
                return false;
            }
        }
-       //designaciones asociadas a id_norma por id_norma o por id_norma_cs
+       //designaciones asociadas a designacion por id_norma o con norma_desig
        function get_detalle($id_norma){
            $sql="select distinct b.*,quien_emite_norma,nombre_tipo,t_do.apellido||', '||t_do.nombre as docente from (
-                    select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,t_d.uni_acad from 
+                    select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,t_d.uni_acad,t_d.desde,t_d.hasta,'ALTA DESIG' as novedad from 
                        norma t_n
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma=t_n.id_norma)
                         where t_n.id_norma=$id_norma"
                    . " UNION "
-                   . "select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,t_d.uni_acad from 
+                   . "select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,t_d.uni_acad,t_d.desde,t_d.hasta,'ALTA DESIG' as novedad from 
                        norma_desig t_no
                         LEFT OUTER JOIN designacion t_d ON (t_d.id_norma=t_no.id_norma)
                         LEFT OUTER JOIN norma t_n ON (t_no.id_norma=t_n.id_norma)
                         where t_n.id_norma=$id_norma"
+                   . " UNION "
+                   . "  select t_no.id_norma,t_no.nro_norma,t_no.tipo_norma,t_no.emite_norma,t_no.fecha,t_d.cat_mapuche,t_d.id_docente,t_d.id_designacion,t_d.cat_estat||t_d.dedic as cat_estatuto,t_d.uni_acad ,t_n.desde,t_n.hasta, case when t_n.tipo_nov in (1,4) then 'BAJA' else 'LIC' end as novedad
+                        from designacion t_d, novedad t_n ,norma t_no
+                        WHERE 
+                        t_d.id_designacion=t_n.id_designacion 
+                        and t_n.tipo_nov in (1,2,4,5)
+                        and t_no.id_norma=$id_norma 
+                        and  t_d.uni_acad=t_no.uni_acad
+                        and  t_n.tipo_norma=t_no.tipo_norma
+                        and  t_n.tipo_emite=t_no.emite_norma
+                        and  textregexeq(substr(t_n.norma_legal,1,4),'^[[:digit:]]+(\.[[:digit:]]+)?$')
+                        and  cast(substr(t_n.norma_legal,1,4) as integer)=t_no.nro_norma 
+                        and  textregexeq(substr(t_n.norma_legal,6,4),'^[[:digit:]]+(\.[[:digit:]]+)?$')
+                        and cast(substr(t_n.norma_legal,6,4) as integer)=extract(year from t_no.fecha)    "
                    . ")b"
                    . "  LEFT OUTER JOIN docente t_do ON (b.id_docente=t_do.id_docente)
                         LEFT OUTER JOIN tipo_emite t_e ON (b.emite_norma=t_e.cod_emite)

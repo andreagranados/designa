@@ -17,7 +17,7 @@ class dt_designacion extends toba_datos_tabla
                 $where='';
             }
        
-       $sql="select a.id_designacion,case when a.id_docente is null then 'RESERVA: '||c.descripcion else b.apellido||b.nombre end as agente,b.legajo,a.nro_540,a.uni_acad,a.cat_estat||a.dedic as cat_estat,a.cat_mapuche,a.carac,a.desde,a.hasta "
+       $sql="select a.id_designacion,case when a.id_docente is null then 'RESERVA: '||c.descripcion else trim(b.apellido)||', '||trim(b.nombre) end as agente,b.legajo,a.nro_540,a.uni_acad,a.cat_estat||a.dedic as cat_estat,a.cat_mapuche,a.carac,a.desde,a.hasta "
                . " from designacion a"
                . " LEFT OUTER JOIN docente b ON (a.id_docente=b.id_docente)"
                . "  LEFT OUTER JOIN reserva c ON (a.id_reserva=c.id_reserva)"
