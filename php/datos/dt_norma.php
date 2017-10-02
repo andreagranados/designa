@@ -75,6 +75,7 @@ class dt_norma extends toba_datos_tabla
                         and  t_d.uni_acad=t_no.uni_acad
                         and  t_n.tipo_norma=t_no.tipo_norma
                         and  t_n.tipo_emite=t_no.emite_norma
+                        and length(trim(t_n.norma_legal))=9
                         and  textregexeq(substr(t_n.norma_legal,1,4),'^[[:digit:]]+(\.[[:digit:]]+)?$')
                         and  cast(substr(t_n.norma_legal,1,4) as integer)=t_no.nro_norma 
                         and  textregexeq(substr(t_n.norma_legal,6,4),'^[[:digit:]]+(\.[[:digit:]]+)?$')
