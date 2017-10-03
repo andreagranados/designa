@@ -49,7 +49,7 @@ class ci_certificacion_periodo extends toba_ci
 	}
         function vista_pdf(toba_vista_pdf $salida)
         {
-            $salida->set_papel_orientacion('landscape');
+            $salida->set_papel_orientacion('portrait');
             $salida->inicializar();
             $pdf = $salida->get_pdf();
            
@@ -120,13 +120,16 @@ class ci_certificacion_periodo extends toba_ci
                     }
                     
                 }
+                
                 $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => utf8_decode('Período'),'col4' => 'Hs','col5' => utf8_decode('Módulo')), 'ACTIVIDAD ACADEMICA', $opciones);
                 $pdf->ezText("\n", 7);
+                //busco la actividad en investigacion
+                //$inve=$this->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv($des['id_designacion'],$this->s__datos_filtro['anio']);
+                //$i=0;
+                
             }
             
-            //busco la actividad en investigacion
-            //$inve=$this->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv($this->s__agente['id_docente']);
-//          foreach ($inve as $i) {
+            //foreach ($inve as $i) {
 //              if($i['desde']){
 //              }
 //          }

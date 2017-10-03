@@ -386,7 +386,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4037', --objeto_cuadro_col
 	'cat_invest_conicet', --clave
 	'12', --orden
-	'Cat Inv CONICET', --titulo
+	'Categ CONICET', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

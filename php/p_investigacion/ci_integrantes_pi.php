@@ -542,7 +542,8 @@ class ci_integrantes_pi extends designa_ci
                $ua=utf8_decode('UA/Institución');
                $fn=utf8_decode('Función');
                $cat=utf8_decode('Categoría');
-               $pdf->ezTable($datos, array( 'col2'=>'<b>ApellidoyNombre</b>','col3' => '<b>Cuil</b>','col4' => '<b>FecNacim</b>','col5' => '<b>Sexo</b>','col6' => '<b>CategInvest</b>','col7' => '<b>'.$tg.'</b>','col8' => '<b>'.$tp.'</b>','col10' =>'<b>'.$ua.'</b>','col11' => '<b>Cat Inv CONICET</b>','col12' => '<b>'.$fn.'</b>','col13' => '<b>'.$cat.'</b>','col14' => '<b>Carga Horaria</b>'), $titulo, $opciones);
+               $catc=utf8_decode('Categoría CONICET');
+               $pdf->ezTable($datos, array( 'col2'=>'<b>ApellidoyNombre</b>','col3' => '<b>Cuil</b>','col4' => '<b>FecNacim</b>','col5' => '<b>Sexo</b>','col6' => '<b>CategInvest</b>','col7' => '<b>'.$tg.'</b>','col8' => '<b>'.$tp.'</b>','col10' =>'<b>'.$ua.'</b>','col11' => '<b>'.$catc.'</b>','col12' => '<b>'.$fn.'</b>','col13' => '<b>'.$cat.'</b>','col14' => '<b>Carga Horaria</b>'), $titulo, $opciones);
               
               //primero agrego la imagen de fondo porque sino pisa la tabla
                 foreach ($pdf->ezPages as $pageNum=>$id){ 

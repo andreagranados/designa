@@ -151,13 +151,22 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         return toba::db('designa')->consultar($sql);
     }
     //dado un docente, trae todos los proyectos de investigacion en los que haya participado
-    function sus_proyectos_inv($id_doc){
-        $sql="select t_d.id_designacion||'-'||t_d.cat_estat||t_d.dedic||t_d.carac||'-'||t_i.ua||'('||to_char(t_d.desde,'dd/mm/YYYY')||'-'||case when t_d.hasta is null then '' else to_char(t_d.hasta,'dd/mm/YYYY') end  ||')' as desig,t_p.uni_acad,t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd "
-                . " from integrante_interno_pi t_i"
-                . " LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv)"
-                . " LEFT OUTER JOIN designacion t_d  ON (t_i.id_designacion=t_d.id_designacion)"
-                . " where t_d.id_docente=".$id_doc
-                ." order by desde";
+    function sus_proyectos_inv($id_desig,$anio){
+        $sql="select t_d.id_designacion||'-'||t_d.cat_estat||t_d.dedic||t_d.carac||'-'||t_i.ua||'('||to_char(t_d.desde,'dd/mm/YYYY')||'-'||case when t_d.hasta is null then '' else to_char(t_d.hasta,'dd/mm/YYYY') end  ||')' as desig,t_p.uni_acad,t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd 
+                 from integrante_interno_pi t_i
+                 LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv)
+                 LEFT OUTER JOIN mocovi_periodo_presupuestario t_pp ON (t_pp.anio=$anio)
+                 LEFT OUTER JOIN designacion t_d  ON (t_i.id_designacion=t_d.id_designacion)
+                 where   (t_i.id_designacion =$id_desig or exists (select * from(select c.desig as d1,c.vinc as d2,d.vinc as d3,e.vinc as d4
+								from vinculo c
+								left outer join  vinculo d on(c.vinc=d.desig)
+								left outer join  vinculo e on(d.vinc=e.desig)
+								where c.desig=$id_desig)
+							sub 
+							where t_d.id_designacion=sub.d1 or t_d.id_designacion=sub.d2 or t_d.id_designacion=sub.d3 or t_d.id_designacion=sub.d4)
+                                                        )
+                        and t_i.desde<=fecha_fin and t_i.hasta>=fecha_inicio
+                 order by desde";
         return toba::db('designa')->consultar($sql);
     }
     //trae todos los docentes investigadores de la ua que ingresa como argumento
