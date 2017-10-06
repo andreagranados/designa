@@ -28,7 +28,6 @@ class ci_varios_proyectos_simultaneo extends toba_ci
 	//-----------------------------------------------------------------------------------
 	//---- cuadro -----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
-
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
             if (isset($this->s__where)) {
@@ -37,6 +36,5 @@ class ci_varios_proyectos_simultaneo extends toba_ci
 	}
 
 	
-
 }
 ?>

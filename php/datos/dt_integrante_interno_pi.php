@@ -206,8 +206,8 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         }else{
             $where='';
             }
-        $sql="select * from(
-            select trim(doc.apellido)||','||trim(doc.nombre) as docente,a.pinvest,pi.es_programa,pi.uni_acad,substr(pi.denominacion,1,50)||'...' as denominacion,a.funcion_p,a.carga_horaria,a.desde,a.hasta, c.pinvest,e.uni_acad as uni_acad2,substr(e.denominacion,1,50)||'...' as denom2,e.es_programa,c.funcion_p as funcion_p2,c.carga_horaria as cargah2,c.desde as desde2,c.hasta as hasta2
+        $sql="select distinct * from(
+            select trim(doc.apellido)||','||trim(doc.nombre) as docente,a.pinvest,pi.codigo,pi.es_programa,pi.uni_acad,substr(pi.denominacion,1,50)||'...' as denominacion,a.funcion_p,a.carga_horaria,a.desde,a.hasta, c.pinvest,e.uni_acad as uni_acad2,substr(e.denominacion,1,50)||'...' as denom2,e.codigo as codigo2,e.es_programa,c.funcion_p as funcion_p2,c.carga_horaria as cargah2,c.desde as desde2,c.hasta as hasta2
                 from integrante_interno_pi a,pinvestigacion pi, designacion b, docente doc,integrante_interno_pi c , designacion d, pinvestigacion e
                  where 
                 a.pinvest =pi.id_pinv

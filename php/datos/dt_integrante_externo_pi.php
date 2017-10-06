@@ -223,7 +223,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
          }else{
              $where='';
          }
-        $sql= "select * from (select distinct pi.uni_acad,substr(pi.denominacion,1,100)||'....' as denominacion,a.desde,a.hasta,director_de(pi.id_pinv)as director,p.apellido||', '||p.nombre as integrante,p.tipo_docum||':'||p.nro_docum as docum,funcion_p,carga_horaria,trim(doc.apellido)||','||trim(doc.nombre) as docente,des.cat_estat||des.dedic||'('||des.uni_acad||')'|| to_char(des.desde,'DD/MM/YYYY') as desig
+        $sql= "select * from (select distinct pi.uni_acad,substr(pi.denominacion,1,100)||'....' as denominacion,pi.codigo,a.desde,a.hasta,director_de(pi.id_pinv)as director,p.apellido||', '||p.nombre as integrante,p.tipo_docum||':'||p.nro_docum as docum,funcion_p,carga_horaria,trim(doc.apellido)||','||trim(doc.nombre) as docente,des.cat_estat||des.dedic||'('||des.uni_acad||')'|| to_char(des.desde,'DD/MM/YYYY') as desig
                 from integrante_externo_pi a,persona p,pinvestigacion pi,designacion des, docente doc
                 where a.tipo_docum=p.tipo_docum
                 and a.nro_docum=p.nro_docum
