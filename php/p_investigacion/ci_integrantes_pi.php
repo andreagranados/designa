@@ -175,6 +175,7 @@ class ci_integrantes_pi extends designa_ci
             if($this->s__mostrar_i==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('form_integrante_i')->descolapsar();
                 $form->ef('id_docente')->set_obligatorio('true');
+                $form->ef('id_designacion')->set_obligatorio('true');
                 $form->ef('funcion_p')->set_obligatorio('true');
                 $form->ef('carga_horaria')->set_obligatorio('true');
                 $form->ef('desde')->set_obligatorio('true');
@@ -219,13 +220,18 @@ class ci_integrantes_pi extends designa_ci
                         if($datos['desde']>=$datos['hasta']){
                             toba::notificacion()->agregar('La fecha desde debe ser menor a la fecha hasta!', 'error');   
                         }else{
-                            $datos['pinvest']=$pi['id_pinv'];
-                            $datos['ua']=$uni;
-                            $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-                            $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                            $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
-                            toba::notificacion()->agregar('El docente ha sido ingresado correctamente', 'info');   
-                            $this->s__mostrar_i=0;
+                            if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){                              
+                              //  $this->dep('form_integrante_i')->set_datos($datos);//no lo hace no se xq
+                                toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');       
+                            }else{
+                                $datos['pinvest']=$pi['id_pinv'];
+                                $datos['ua']=$uni;
+                                $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
+                                $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                                $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+                                toba::notificacion()->agregar('El docente ha sido ingresado correctamente', 'info');   
+                                $this->s__mostrar_i=0;
+                            }
                         }
                     }else{
                         if (!$bandera){
@@ -244,22 +250,26 @@ class ci_integrantes_pi extends designa_ci
             $ua=$this->controlador()->controlador()->dep('datos')->tabla('designacion')->get_uni_acad($datos['id_designacion']);
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $registro=$this->dep('datos')->tabla('integrante_interno_pi')->get();
-            //verificar que la modificacion no haga que se superpongan las fechas
-            $haysuperposicion=false;//no es igual al del alta porque no tengo que considerar el registro vigente$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion_modif($pi['id_pinv'],$datos['desde'],$datos['hasta'],$registro['id_designacion'],$registro['desde']);
-            if(!$haysuperposicion){
-                $datos['ua']=$ua;
-                $datos['pinvest']=$pi['id_pinv'];
-                $datos['check_inv']=0;//pierde el check si es que lo tuviera
-                $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-                $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                $this->s__mostrar_i=0;
-            
-                //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
-                $actual=$this->dep('datos')->tabla('integrante_interno_pi')->get();
-                $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($actual['id_designacion'],$actual['pinvest'],$actual['desde'],$datos['desde']);
-                toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
+            if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){//no puede ir fuera del periodo del proyecto
+                toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');                    
             }else{
-                toba::notificacion()->agregar('Hay superposicion de fechas', 'error');  
+                //verificar que la modificacion no haga que se superpongan las fechas
+                $haysuperposicion=false;//no es igual al del alta porque no tengo que considerar el registro vigente$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion_modif($pi['id_pinv'],$datos['desde'],$datos['hasta'],$registro['id_designacion'],$registro['desde']);
+                if(!$haysuperposicion){
+                    $datos['ua']=$ua;
+                    $datos['pinvest']=$pi['id_pinv'];
+                    $datos['check_inv']=0;//pierde el check si es que lo tuviera
+                    $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
+                    $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                    $this->s__mostrar_i=0;
+            
+                    //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
+                    $actual=$this->dep('datos')->tabla('integrante_interno_pi')->get();
+                    $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($actual['id_designacion'],$actual['pinvest'],$actual['desde'],$datos['desde']);
+                    toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
+                }else{
+                    toba::notificacion()->agregar('Hay superposicion de fechas', 'error');  
+                }
             }
         }
         function evt__form_integrante_i__baja($datos)

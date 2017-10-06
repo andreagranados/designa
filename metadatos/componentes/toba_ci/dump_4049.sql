@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[4006]--  SinInvestigación 
+--[4049]--  Docentes Como Externos 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -9,18 +9,18 @@
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, clase_proyecto, clase, punto_montaje, subclase, subclase_archivo, objeto_categoria_proyecto, objeto_categoria, nombre, titulo, colapsable, descripcion, fuente_datos_proyecto, fuente_datos, solicitud_registrar, solicitud_obj_obs_tipo, solicitud_obj_observacion, parametro_a, parametro_b, parametro_c, parametro_d, parametro_e, parametro_f, usuario, creacion, posicion_botonera) VALUES (
 	'designa', --proyecto
-	'4006', --objeto
+	'4049', --objeto
 	NULL, --anterior
 	NULL, --identificador
 	NULL, --reflexivo
 	'toba', --clase_proyecto
 	'toba_ci', --clase
 	'23', --punto_montaje
-	'ci_sin_investigacion', --subclase
-	'controles/sin_investigacion/ci_sin_investigacion.php', --subclase_archivo
+	'ci_docentes_como_externos', --subclase
+	'controles/docentes_como_externos/ci_docentes_como_externos.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
-	'SinInvestigación', --nombre
+	'Docentes Como Externos', --nombre
 	NULL, --titulo
 	'0', --colapsable
 	NULL, --descripcion
@@ -36,7 +36,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --parametro_e
 	NULL, --parametro_f
 	NULL, --usuario
-	'2017-06-13 13:56:11', --creacion
+	'2017-10-04 09:01:01', --creacion
 	'abajo'  --posicion_botonera
 );
 --- FIN Grupo de desarrollo 0
@@ -46,7 +46,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 ------------------------------------------------------------
 INSERT INTO apex_objeto_mt_me (objeto_mt_me_proyecto, objeto_mt_me, ev_procesar_etiq, ev_cancelar_etiq, ancho, alto, posicion_botonera, tipo_navegacion, botonera_barra_item, con_toc, incremental, debug_eventos, activacion_procesar, activacion_cancelar, ev_procesar, ev_cancelar, objetos, post_procesar, metodo_despachador, metodo_opciones) VALUES (
 	'designa', --objeto_mt_me_proyecto
-	'4006', --objeto_mt_me
+	'4049', --objeto_mt_me
 	NULL, --ev_procesar_etiq
 	NULL, --ev_cancelar_etiq
 	NULL, --ancho
@@ -74,9 +74,9 @@ INSERT INTO apex_objeto_mt_me (objeto_mt_me_proyecto, objeto_mt_me, ev_procesar_
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2847', --dep_id
-	'4006', --objeto_consumidor
-	'4007', --objeto_proveedor
+	'2900', --dep_id
+	'4049', --objeto_consumidor
+	'4051', --objeto_proveedor
 	'cuadro', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
@@ -86,9 +86,9 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2849', --dep_id
-	'4006', --objeto_consumidor
-	'4008', --objeto_proveedor
+	'2902', --dep_id
+	'4049', --objeto_consumidor
+	'4052', --objeto_proveedor
 	'datos', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
@@ -98,9 +98,9 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
-	'2850', --dep_id
-	'4006', --objeto_consumidor
-	'4009', --objeto_proveedor
+	'2899', --dep_id
+	'4049', --objeto_consumidor
+	'4050', --objeto_proveedor
 	'filtros', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
@@ -117,12 +117,12 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, identificador, orden, etiqueta, descripcion, tip, imagen_recurso_origen, imagen, objetos, eventos, subclase, subclase_archivo, template, template_impresion, punto_montaje) VALUES (
 	'designa', --objeto_ci_proyecto
-	'4006', --objeto_ci
-	'1660', --pantalla
+	'4049', --objeto_ci
+	'1672', --pantalla
 	'pant_inicial', --identificador
 	'1', --orden
 	'Pantalla Inicial', --etiqueta
-	'Por defecto muestra un Listado de docentes con dedicación parcial o exclusiva con designaciones vigentes en el período actual que no están en ningún Proyecto de Investigación (tipo 1)', --descripcion
+	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen
@@ -141,15 +141,15 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 ------------------------------------------------------------
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
 	'designa', --proyecto
-	'1660', --pantalla
-	'4006', --objeto_ci
-	'1', --orden
-	'2847'  --dep_id
+	'1672', --pantalla
+	'4049', --objeto_ci
+	'0', --orden
+	'2899'  --dep_id
 );
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
 	'designa', --proyecto
-	'1660', --pantalla
-	'4006', --objeto_ci
-	'0', --orden
-	'2850'  --dep_id
+	'1672', --pantalla
+	'4049', --objeto_ci
+	'1', --orden
+	'2900'  --dep_id
 );

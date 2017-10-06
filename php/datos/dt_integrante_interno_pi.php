@@ -200,6 +200,35 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         return toba::db('designa')->consultar($sql);
        
     }
+    function varios_simultaneos($filtro=null){
+        if(!is_null($filtro)){
+            $where=' WHERE '.$filtro;
+        }else{
+            $where='';
+            }
+        $sql="select * from(
+            select trim(doc.apellido)||','||trim(doc.nombre) as docente,a.pinvest,pi.es_programa,pi.uni_acad,substr(pi.denominacion,1,50)||'...' as denominacion,a.funcion_p,a.carga_horaria,a.desde,a.hasta, c.pinvest,e.uni_acad as uni_acad2,substr(e.denominacion,1,50)||'...' as denom2,e.es_programa,c.funcion_p as funcion_p2,c.carga_horaria as cargah2,c.desde as desde2,c.hasta as hasta2
+                from integrante_interno_pi a,pinvestigacion pi, designacion b, docente doc,integrante_interno_pi c , designacion d, pinvestigacion e
+                 where 
+                a.pinvest =pi.id_pinv
+                and a.id_designacion=b.id_designacion
+                and b.id_docente=doc.id_docente
+                and a.funcion_p<>'AS' and a.funcion_p<>'CO'
+                and a.desde is not null and a.hasta is not null--esto por las dudas
+                and c.desde is not null and c.hasta is not null--esto por las dudas
+            
+                and c.pinvest =e.id_pinv 
+                and c.id_designacion=d.id_designacion
+                and c.funcion_p<>'AS' and c.funcion_p<>'CO'
+                and c.pinvest<>a.pinvest
+                and b.id_docente=d.id_docente
+                and not((a.funcion_p='DP' and c.funcion_p='DpP') or (a.funcion_p='DpP' and c.funcion_p='DP'))
+                 and c.desde<a.hasta and c.hasta>a.desde
+                and pi.fec_hasta>'2017-10-04'
+                order by pi.uni_acad, doc.apellido,doc.nombre)sub   $where "
+                ;
+        return toba::db('designa')->consultar($sql);
+    }
     
 }
 

@@ -14,7 +14,7 @@ class dt_periodo extends toba_datos_tabla
 
 	function get_descripciones()
 	{
-		$sql = "SELECT id_periodo, descripcion FROM periodo ORDER BY descripcion";
+		$sql = "SELECT id_periodo, descripcion FROM periodo ORDER BY id_periodo";
 		return toba::db('designa')->consultar($sql);
 	}
 

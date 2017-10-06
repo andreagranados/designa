@@ -14,8 +14,7 @@ class dt_unidad_acad extends toba_datos_tabla
                 return trim($resul[0]['descripcion']);
             }else{
                 return '';
-            }
-            
+            } 
         }
         function get_descripciones_ua($id_des=null)	{
             if(!is_null($id_des)){

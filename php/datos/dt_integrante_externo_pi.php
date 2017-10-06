@@ -217,6 +217,28 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " order by apellido,nombre,id_pinv,desde";
         return toba::db('designa')->consultar($sql);  
     }
+    function get_docentes_como_externos($filtro=null){
+         if (isset($filtro)) {
+             $where=' WHERE '.$filtro;
+         }else{
+             $where='';
+         }
+        $sql= "select * from (select distinct pi.uni_acad,substr(pi.denominacion,1,100)||'....' as denominacion,a.desde,a.hasta,director_de(pi.id_pinv)as director,p.apellido||', '||p.nombre as integrante,p.tipo_docum||':'||p.nro_docum as docum,funcion_p,carga_horaria,trim(doc.apellido)||','||trim(doc.nombre) as docente,des.cat_estat||des.dedic||'('||des.uni_acad||')'|| to_char(des.desde,'DD/MM/YYYY') as desig
+                from integrante_externo_pi a,persona p,pinvestigacion pi,designacion des, docente doc
+                where a.tipo_docum=p.tipo_docum
+                and a.nro_docum=p.nro_docum
+                and pi.id_pinv=a.pinvest
+                --and  pi.uni_acad='FACA'
+                 --and pi.fec_desde ='2018-01-01'
+                and des.id_docente=doc.id_docente
+                and des.desde <= a.hasta and (des.hasta >= a.desde or des.hasta is null)--tiene una desig  docente durante su periodo de participacion
+                --and des.desde <= pi.fec_hasta and (des.hasta >= fec_desde or des.hasta is null)
+                and doc.tipo_docum=a.tipo_docum and doc.nro_docum=a.nro_docum
+            order by pi.uni_acad,denominacion) sub"
+                . "$where";
+       
+        return toba::db('designa')->consultar($sql);  
+    }
 }
 
 ?>

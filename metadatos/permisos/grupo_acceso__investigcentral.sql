@@ -56,12 +56,6 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	'designa', --proyecto
 	'investigcentral', --usuario_grupo_acc
 	NULL, --item_id
-	'3695'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'investigcentral', --usuario_grupo_acc
-	NULL, --item_id
 	'3730'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
@@ -128,7 +122,31 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	'designa', --proyecto
 	'investigcentral', --usuario_grupo_acc
 	NULL, --item_id
+	'3772'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigcentral', --usuario_grupo_acc
+	NULL, --item_id
+	'3773'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigcentral', --usuario_grupo_acc
+	NULL, --item_id
 	'3777'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigcentral', --usuario_grupo_acc
+	NULL, --item_id
+	'3779'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigcentral', --usuario_grupo_acc
+	NULL, --item_id
+	'3780'  --item
 );
 --- FIN Grupo de desarrollo 0
 

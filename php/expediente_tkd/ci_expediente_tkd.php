@@ -59,19 +59,23 @@ class ci_expediente_tkd extends toba_ci
             }else{
                $this->dep('formulario')->colapsar(); 
             }
-
-             if ($this->dep('datos')->tabla('impresion_540')->esta_cargada()) {
-			$form->set_datos($this->dep('datos')->tabla('impresion_540')->get());
-		}
+            if ($this->dep('datos')->tabla('impresion_540')->esta_cargada()) {
+                 $form->set_datos($this->dep('datos')->tabla('impresion_540')->get());
+	    }
 	}
 
 	
 	function evt__formulario__modificacion($datos)
 	{
+            $regexp = '/^[0-9]{5}\/[0-9]{3}-[0-9]{4}$/';
+            if ( !preg_match($regexp, $datos['expediente'], $matchFecha) ) {
+                toba::notificacion()->agregar('Expediente invalido. Ejemplo: 02117/000-2017','error');
+            }else{
 		$this->dep('datos')->tabla('impresion_540')->set($datos);
 		$this->dep('datos')->tabla('impresion_540')->sincronizar();
 		$this->resetear();
                 $this->s__mostrar=0;
+            }
 	}
 
 	
