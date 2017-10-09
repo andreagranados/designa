@@ -1,6 +1,15 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
+    function informe_actividad($filtro=array()){
+        $sql="select informe_actividad(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
+        toba::db('designa')->consultar($sql);
+        $sql="select a.*
+            from auxiliar a 
+            $where
+            order by agente,desde";
+        return toba::db('designa')->consultar($sql);
+    }
     function anexo1($filtro=array()){
         $where='';
         if (isset($filtro['id_departamento'])) {

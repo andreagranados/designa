@@ -34,12 +34,14 @@ class dt_pinvestigacion extends toba_datos_tabla
                     return false;//no hay superposicion
                 }
         }
-        function superposicion_modif ($id_proy,$desde,$hasta,$id_desig,$desdeactual){
+        function superposicion_modif ($id_proy,$doc,$desde,$hasta,$id_desig,$desdeactual){
              $sql="select * "
                      . " from integrante_interno_pi t_i "
                         . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
                         . " where t_i.pinvest=$id_proy "
-                        . " and t_d.id_docente=$doc "
+                        . " and t_d.id_docente=$doc"
+                     . " and t_i.desde<>'".$desdeactual."'"
+                     ." and t_i.id_designacion<>$id_desig"
                      . " and (('".$desde."'>= t_i.desde  and '".$desde."'<=t_i.hasta) or ('".$hasta."'>= t_i.desde  and '".$hasta."'<=t_i.hasta))";
              $resul=toba::db('designa')->consultar($sql);
              if(count($resul)>0){//hay superposicion
@@ -85,7 +87,7 @@ class dt_pinvestigacion extends toba_datos_tabla
             }
             //revisa en el periodo actual: designaciones correspondientes al periodo actual y proyectos vigentes
             //designaciones exclusivas y parciales
-            $sql = "select distinct a.id_docente,b.apellido||','||b.nombre as agente,b.legajo
+            $sql = "select distinct a.id_docente,b.apellido||','||b.nombre as agente,a.cat_estat||a.dedic as categ_estat,a.carac,a.desde,a.hasta,a.uni_acad,b.legajo
                     from designacion a, docente b, mocovi_periodo_presupuestario c
                     where 
                     a.id_docente=b.id_docente
@@ -200,8 +202,12 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $con="select sigla,descripcion from unidad_acad ";
                 $con = toba::perfil_de_datos()->filtrar($con);
                 $resul=toba::db('designa')->consultar($con);
+                if(count($resul)>1){//usuario de central
+                    $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 ";
+                }else{//usuario de una UA
                 //le agrego al desplegable la opcion 0 sin programa
-                $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 and uni_acad='".trim($resul[0]['sigla'])."'";
+                    $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 and uni_acad='".trim($resul[0]['sigla'])."'";
+                }
                 $res=toba::db('designa')->consultar($sql);
                 return toba::db('designa')->consultar($sql);
             }
@@ -275,7 +281,12 @@ class dt_pinvestigacion extends toba_datos_tabla
 		if (isset($filtro['uni_acad']['valor'])) {
 			$where .= " and t_p.uni_acad = ".quote($filtro['uni_acad']['valor']);   
 		}
-                
+                if (isset($filtro['fec_desde']['valor'])) {
+			$where .= " and t_p.fec_desde= ".quote($filtro['fec_desde']['valor']);   
+		}
+                if (isset($filtro['fec_hasta']['valor'])) {
+			$where .= " and t_p.fec_hasta= ".quote($filtro['fec_hasta']['valor']);   
+		}
                 if (isset($filtro['anio']['valor'])) {
 		    $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
                     $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
@@ -414,6 +425,16 @@ class dt_pinvestigacion extends toba_datos_tabla
             $sql="select to_char(fecha_ord_cs,'dd/mm/YYYY') as fecha_ord_cs from pinvestigacion where id_pinv=".$id_proyecto;
             $res= toba::db('designa')->consultar($sql);
             return $res[0]['fecha_ord_cs'];
+        }
+        function tiene_director($id_proyecto){
+            $sql="select  director_de(".$id_proyecto.") as director";
+            $res= toba::db('designa')->consultar($sql);
+            
+            if($res[0]['director']==''){
+                return 0;
+            }else{
+                return 1;
+            }
         }
 }
 ?>

@@ -1,6 +1,16 @@
 <?php
 class dt_impresion_540 extends toba_datos_tabla
 {
+        function get_anio($tkd){//retorna el anio de un tkd
+           $sql="select anio from impresion_540"
+                   . " where id=".$tkd;
+           $resul= toba::db('designa')->consultar($sql);
+           if(count($resul)>0){
+                return $resul[0]['anio'];
+            }else{
+                return 0;
+            }
+        }
         function get_control_pase($nro){
             $sql="select * from public_auditoria.logs_designacion a where a.nro_540=".$nro
                     . " and not exists (select * from designacion b"

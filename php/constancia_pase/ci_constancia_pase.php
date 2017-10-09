@@ -5,6 +5,7 @@ class ci_constancia_pase extends toba_ci
         protected $s__where;
         protected $s__listado;
         protected $s__unidad;
+        protected $s__anio;
         //-----------------------------------------------------------------------------------
 	//---- filtros ----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -40,6 +41,7 @@ class ci_constancia_pase extends toba_ci
                  $band=$this->dep('datos')->tabla('impresion_540')->get_control_pase($this->s__datos_filtro['nro_540']['valor']);
                  if($band){
                     $this->s__unidad=$this->dep('datos')->tabla('unidad_acad')->get_descripcion($this->s__datos_filtro['uni_acad']['valor']);
+                    $this->s__anio=$this->dep('datos')->tabla('impresion_540')->get_anio($this->s__datos_filtro['nro_540']['valor']);
                     $this->s__listado=$this->dep('datos')->tabla('impresion_540')->get_constancia($this->s__datos_filtro);
                    // print_r($this->s__listado);
                     $cuadro->set_datos($this->s__listado);
@@ -99,7 +101,7 @@ class ci_constancia_pase extends toba_ci
                    $i++;
                }   
                
-               $pdf->ezText('   TKD: '.$this->s__datos_filtro['nro_540']['valor'], 12);
+               $pdf->ezText('   TKD: '.$this->s__datos_filtro['nro_540']['valor'].'/'.$this->s__anio, 12);
                $pdf->ezText('   EXPEDIENTE: '.$this->s__listado[0]['expediente'], 12);
                $id=utf8_decode("ID Desig");
                $car=utf8_decode("Car");

@@ -217,6 +217,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " order by apellido,nombre,id_pinv,desde";
         return toba::db('designa')->consultar($sql);  
     }
+    //trae un listado de los integrantes_externos que tambien son docentes y tienen una designacion docente durante su periodo de participacion en el proy
     function get_docentes_como_externos($filtro=null){
          if (isset($filtro)) {
              $where=' WHERE '.$filtro;
@@ -228,17 +229,29 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 where a.tipo_docum=p.tipo_docum
                 and a.nro_docum=p.nro_docum
                 and pi.id_pinv=a.pinvest
-                --and  pi.uni_acad='FACA'
-                 --and pi.fec_desde ='2018-01-01'
                 and des.id_docente=doc.id_docente
                 and des.desde <= a.hasta and (des.hasta >= a.desde or des.hasta is null)--tiene una desig  docente durante su periodo de participacion
-                --and des.desde <= pi.fec_hasta and (des.hasta >= fec_desde or des.hasta is null)
                 and doc.tipo_docum=a.tipo_docum and doc.nro_docum=a.nro_docum
-            order by pi.uni_acad,denominacion) sub"
+               order by pi.uni_acad,denominacion) sub"
                 . "$where";
        
         return toba::db('designa')->consultar($sql);  
     }
+    function es_docente($des,$hast,$tipo,$nro_doc){
+        $sql="select * from docente doc, designacion d
+                where doc.id_docente=d.id_docente
+                and doc.nro_docum=$nro_doc
+                and doc.tipo_docum='".$tipo."'".
+                " and doc.legajo<>0 "
+                . " and d.desde <= '".$hast."' and (d.hasta >= '".$des."' or d.hasta is null)";
+        $res= toba::db('designa')->consultar($sql);  
+        if(count($res)>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+   
 }
 
 ?>

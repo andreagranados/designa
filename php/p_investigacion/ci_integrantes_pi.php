@@ -8,6 +8,7 @@ class ci_integrantes_pi extends designa_ci
         protected $s__denominacion;
         protected $s__dependencia;
         protected $s__resol;
+        protected $s__tiene_direct;
            
         function get_persona($id){   
         }
@@ -181,6 +182,7 @@ class ci_integrantes_pi extends designa_ci
                 $form->ef('desde')->set_obligatorio('true');
                 $form->ef('hasta')->set_obligatorio('true');
                 $form->ef('rescd')->set_obligatorio('true');
+                $form->ef('cat_investigador')->set_obligatorio('true');
                 if ($this->dep('datos')->tabla('integrante_interno_pi')->esta_cargada()) {
                      $datos=$this->dep('datos')->tabla('integrante_interno_pi')->get();
                      $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
@@ -210,7 +212,8 @@ class ci_integrantes_pi extends designa_ci
                 $uni=$this->dep('datos')->tabla('designacion')->get_ua($datos['id_designacion']); 
                 
                 if(($pi['uni_acad']!=$uni) and !(isset($datos['resaval']))){ 
-                     toba::notificacion()->agregar('Debe completar la Resol de aval porque es un integrante de otra facultad', 'error');  
+                     //toba::notificacion()->agregar('Debe completar la Resol de aval porque es un integrante de otra facultad', 'error');  
+                    throw new toba_error("Debe completar la Resol de aval porque es un integrante de otra facultad");
                 }else{
                     //controla que si el proyecto esta en estado I entonces no pueda cargar mas de un registro por docente
                     $bandera=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->control($datos['id_docente'],$pi['id_pinv'],$pi['estado']);
@@ -218,11 +221,12 @@ class ci_integrantes_pi extends designa_ci
                     
                     if($bandera && !$haysuperposicion){
                         if($datos['desde']>=$datos['hasta']){
-                            toba::notificacion()->agregar('La fecha desde debe ser menor a la fecha hasta!', 'error');   
+                            //toba::notificacion()->agregar('La fecha desde debe ser menor a la fecha hasta!', 'error');  
+                            throw new toba_error("La fecha desde debe ser menor a la fecha hasta!");
                         }else{
                             if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){                              
-                              //  $this->dep('form_integrante_i')->set_datos($datos);//no lo hace no se xq
-                                toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');       
+                                //toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');     
+                                throw new toba_error("Revise las fechas. Fuera del periodo del proyecto!");
                             }else{
                                 $datos['pinvest']=$pi['id_pinv'];
                                 $datos['ua']=$uni;
@@ -235,9 +239,11 @@ class ci_integrantes_pi extends designa_ci
                         }
                     }else{
                         if (!$bandera){
-                            toba::notificacion()->agregar('Este docente ya se encuentra. En un proyecto en estado Inicial solo puede cargar un registro por docente. ', 'error');     
+                             throw new toba_error("Este docente ya se encuentra. En un proyecto en estado Inicial solo puede cargar un registro por docente. ");
+                            //toba::notificacion()->agregar('Este docente ya se encuentra. En un proyecto en estado Inicial solo puede cargar un registro por docente. ', 'error');     
                         }else{
-                            toba::notificacion()->agregar('Hay superposicion de fechas ', 'error');     
+                           throw new toba_error("Hay superposicion de fechas");
+                           // toba::notificacion()->agregar('Hay superposicion de fechas ', 'error');     
                         }
                     }
                     
@@ -251,10 +257,11 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $registro=$this->dep('datos')->tabla('integrante_interno_pi')->get();
             if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){//no puede ir fuera del periodo del proyecto
-                toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');                    
+                //toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');                    
+                throw new toba_error("Revise las fechas. Fuera del periodo del proyecto!");
             }else{
                 //verificar que la modificacion no haga que se superpongan las fechas
-                $haysuperposicion=false;//no es igual al del alta porque no tengo que considerar el registro vigente$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion_modif($pi['id_pinv'],$datos['desde'],$datos['hasta'],$registro['id_designacion'],$registro['desde']);
+                $haysuperposicion=false;//no es igual al del alta porque no tengo que considerar el registro vigente$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion_modif($pi['id_pinv'],$datos['id_docente'],$datos['desde'],$datos['hasta'],$registro['id_designacion'],$registro['desde']);
                 if(!$haysuperposicion){
                     $datos['ua']=$ua;
                     $datos['pinvest']=$pi['id_pinv'];
@@ -268,7 +275,8 @@ class ci_integrantes_pi extends designa_ci
                     $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($actual['id_designacion'],$actual['pinvest'],$actual['desde'],$datos['desde']);
                     toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
                 }else{
-                    toba::notificacion()->agregar('Hay superposicion de fechas', 'error');  
+                    //toba::notificacion()->agregar('Hay superposicion de fechas', 'error');  
+                     throw new toba_error("Hay superposicion de fechas");
                 }
             }
         }
@@ -318,6 +326,7 @@ class ci_integrantes_pi extends designa_ci
                 $form->ef('desde')->set_obligatorio('true');
                 $form->ef('hasta')->set_obligatorio('true');
                 $form->ef('rescd')->set_obligatorio('true');
+                $form->ef('cat_invest')->set_obligatorio('true');
             }else{
                 $this->dep('form_integrante_e')->colapsar();
             }
@@ -337,7 +346,13 @@ class ci_integrantes_pi extends designa_ci
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('No pueden agregar participantes al proyecto', 'error');  
                 
-            }else{                 
+            }else{ 
+                $band=$this->dep('datos')->tabla('integrante_externo_pi')->es_docente($datos['desde'],$datos['hasta'],$datos['integrante'][0],$datos['integrante'][1]);
+                 if($band){
+                      //toba::notificacion()->agregar('Este integrante es docente, ingreselo en la solapa Participantes con Cargo Docente en UNCO');
+                      //$this->dep('datos')->tabla('integrante_externo_pi')->genera_error();//fuerzo error?para no perder los datos del formualrio                                    
+                      throw new toba_error("Este integrante es docente, ingreselo en la solapa Participantes con Cargo Docente en UNCO");
+                 } else{
                     $datos['pinvest']=$pi['id_pinv'];
                     $datos['nro_tabla']=1;
                     $datos['tipo_docum']=$datos['integrante'][0];
@@ -348,6 +363,7 @@ class ci_integrantes_pi extends designa_ci
                     $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
                     $this->s__mostrar_e=0;
                     toba::notificacion()->agregar('El integrante se ha dado de alta correctamente', 'info'); 
+                 }
             }
 	}
         function evt__form_integrante_e__baja($datos)
@@ -459,6 +475,7 @@ class ci_integrantes_pi extends designa_ci
                     }
                 }
             $cuadro->set_titulo(str_replace(':','' ,$pi['denominacion']).'-'.$pi['codigo'].'(ResCD: '.$pi['nro_resol'].')');
+            $this->s__tiene_direct=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->tiene_director($pi['id_pinv']);
             $this->s__dependencia=$pi['uni_acad'];
             $this->s__denominacion=$pi['denominacion'];
             $this->s__resol=$pi['nro_resol'];
@@ -501,7 +518,7 @@ class ci_integrantes_pi extends designa_ci
             
         }
         function vista_pdf(toba_vista_pdf $salida){
-              
+             if($this->s__tiene_direct==1){  
                 $dato=array();
                 $i=0;
                 //configuramos el nombre que tendrá el archivo pdf
@@ -571,6 +588,9 @@ class ci_integrantes_pi extends designa_ci
                     
                     $pdf->closeObject(); 
                 } 
+             }else{
+                 toba::notificacion()->agregar('No tiene director', 'error');    
+             }
         }
 	
 
