@@ -532,7 +532,7 @@ class ci_integrantes_pi extends designa_ci
                 $pdf->ezSetMargins(80, 50, 3, 3);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
-                $formato = 'Página {PAGENUM} de {TOTALPAGENUM}';
+                $formato = utf8_decode('Página {PAGENUM} de {TOTALPAGENUM}   ').utf8_decode('CInv: Categoría Investigador - Fn: Función - CH: Carga Horaria ');
                 //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
                 $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
                 //Luego definimos la ubicación de la fecha en el pie de página.
@@ -568,9 +568,9 @@ class ci_integrantes_pi extends designa_ci
                $tp=utf8_decode("Título de Posgrado");
                $ua=utf8_decode('UA/Institución');
                $fn=utf8_decode('Función');
-               $cat=utf8_decode('Categoría');
+               $cat=utf8_decode('Categ');
                $catc=utf8_decode('Cat CONICET');
-               $pdf->ezTable($datos, array( 'col2'=>'<b>ApellidoyNombre</b>','col3' => '<b>Cuil</b>','col4' => '<b>FecNacim</b>','col5' => '<b>Sexo</b>','col6' => '<b>CategInvest</b>','col7' => '<b>'.$tg.'</b>','col8' => '<b>'.$tp.'</b>','col10' =>'<b>'.$ua.'</b>','col11' => '<b>'.$catc.'</b>','col12' => '<b>'.$fn.'</b>','col13' => '<b>'.$cat.'</b>','col14' => '<b>Carga Horaria</b>'), $titulo, $opciones);
+               $pdf->ezTable($datos, array( 'col2'=>'<b>ApellidoyNombre</b>','col3' => '<b>Cuil</b>','col4' => '<b>FecNacim</b>','col5' => '<b>Sexo</b>','col6' => '<b>CInv</b>','col7' => '<b>'.$tg.'</b>','col8' => '<b>'.$tp.'</b>','col10' =>'<b>'.$ua.'</b>','col11' => '<b>'.$catc.'</b>','col12' => '<b>Fn</b>','col13' => '<b>'.$cat.'</b>','col14' => '<b>CH</b>'), $titulo, $opciones);
               
               //primero agrego la imagen de fondo porque sino pisa la tabla
                 foreach ($pdf->ezPages as $pageNum=>$id){ 
