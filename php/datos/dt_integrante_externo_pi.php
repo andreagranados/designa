@@ -174,7 +174,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                        )
                         and t_i.hasta=p.fec_hasta) "
                 ." UNION"
-                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,t_i.nombre_institucion as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
+                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,trim(t_i.nombre_institucion) as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
                 . " from integrante_externo_pi t_e"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_e.cat_invest)"
                 . " LEFT OUTER JOIN persona t_p ON (t_e.tipo_docum=t_p.tipo_docum and t_e.nro_docum=t_p.nro_docum)"
