@@ -553,32 +553,38 @@ class ci_integrantes_pi extends designa_ci
                     'outerLineThickness' => 0.7,
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
-                    'width' => 820
+                    'width' => 820,
+                    'cols' =>array('col2'=>array('justification'=>'center') ,'col3'=>array('justification'=>'center'),'col4'=>array('justification'=>'center') ,'col5'=>array('justification'=>'center'),'col6'=>array('justification'=>'center') ,'col7'=>array('justification'=>'center') ,'col8'=>array('justification'=>'center'),'col9'=>array('justification'=>'center') ,'col10'=>array('justification'=>'center') ,'col11'=>array('justification'=>'center') ,'col12'=>array('justification'=>'center'),'col13'=>array('justification'=>'center') ,'col14'=>array('justification'=>'center') )
                     );
-                 
-                // print_r($this->s__listado);  
-               foreach ($this->s__listado as $des) {
-                   $fec=date("d/m/Y",strtotime($des['fec_nacim']));
-                   $datos[$i]=array( 'col2'=>trim($des['nombre']),'col3' => $des['cuil'],'col4' => $fec,'col5' => $des['tipo_sexo'],'col6' => $des['cat_invest'],'col7' => trim($des['titulo']),'col8' => trim($des['titulop']),'col10' =>$des['ua'],'col11' => $des['cat_invest_conicet'],'col12' => $des['funcion_p'],'col13' => trim($des['categoria']),'col14' => $des['carga_horaria']);
-                    $i++;
-               }    
-               $pdf->ezText('DEPENDENCIA DEL PROYECTO: '.$this->s__dependencia.'                                                                                                                                                                                                         Resol: '.$this->s__resol, 10);
-               $pdf->ezText('DENOMINACION DEL PROYECTO: '.$this->s__denominacion, 10);
                $tg=utf8_decode("Título de Grado");
                $tp=utf8_decode("Título de Posgrado");
                $ua=utf8_decode('UA/Institución');
                $fn=utf8_decode('Función');
                $cat=utf8_decode('Categ');
                $catc=utf8_decode('Cat CONICET');
-               $pdf->ezTable($datos, array( 'col2'=>'<b>ApellidoyNombre</b>','col3' => '<b>Cuil</b>','col4' => '<b>FecNacim</b>','col5' => '<b>Sexo</b>','col6' => '<b>CInv</b>','col7' => '<b>'.$tg.'</b>','col8' => '<b>'.$tp.'</b>','col10' =>'<b>'.$ua.'</b>','col11' => '<b>'.$catc.'</b>','col12' => '<b>Fn</b>','col13' => '<b>'.$cat.'</b>','col14' => '<b>CH</b>'), $titulo, $opciones);
-              
+               $datos[$i]=array( 'col2'=>'<b>ApellidoyNombre</b>','col3' => '<b>Cuil</b>','col4' => '<b>FecNacim</b>','col5' => '<b>Sexo</b>','col6' => '<b>CInv</b>','col7' => '<b>'.$tg.'</b>','col8' => '<b>'.$tp.'</b>','col10' =>'<b>'.$ua.'</b>','col11' => '<b>'.$catc.'</b>','col12' => '<b>Fn</b>','col13' => '<b>'.$cat.'</b>','col14' => '<b>CH</b>');
+               $i++;
+                // print_r($this->s__listado);  
+               foreach ($this->s__listado as $des) {
+                   $fec=date("d/m/Y",strtotime($des['fec_nacim']));
+                   $datos[$i]=array( 'col2'=>trim($des['nombre']),'col3' => $des['cuil'],'col4' => $fec,'col5' => $des['tipo_sexo'],'col6' => $des['cat_invest'],'col7' => trim($des['titulo']),'col8' => trim($des['titulop']),'col10' =>$des['ua'],'col11' => $des['cat_invest_conicet'],'col12' => $des['funcion_p'],'col13' => trim($des['categoria']),'col14' => $des['carga_horaria']);
+                   $i++;
+               }   
+               $i=$i-1;
+               $pdf->ezText(' DEPENDENCIA DEL PROYECTO: '.$this->s__dependencia.'                                                                                                                                                                                                         Resol: '.$this->s__resol, 10);
+               $pdf->ezText(' DENOMINACION DEL PROYECTO: '.$this->s__denominacion, 10);
+               $pdf->ezText(' CANTIDAD DE INTEGRANTES: '.$i, 10);
+               
+               //$pdf->ezTable($datos, array( 'col2'=>'<b>ApellidoyNombre</b>','col3' => '<b>Cuil</b>','col4' => '<b>FecNacim</b>','col5' => '<b>Sexo</b>','col6' => '<b>CInv</b>','col7' => '<b>'.$tg.'</b>','col8' => '<b>'.$tp.'</b>','col10' =>'<b>'.$ua.'</b>','col11' => '<b>'.$catc.'</b>','col12' => '<b>Fn</b>','col13' => '<b>'.$cat.'</b>','col14' => '<b>CH</b>'), $titulo, $opciones);
+               $cols=array('col2'=>'<b>1</b>','col3' => '<b>2</b>','col4' => '<b>3</b>','col5' => '<b>4</b>','col6' => '<b>5</b>','col7' => '<b>6</b>','col8' => '<b>7</b>','col10' =>'<b>8</b>','col11' => '<b>9</b>','col12' => '<b>10</b>','col13' => '<b>11</b>','col14' => '<b>12</b>');
+               $pdf->ezTable($datos, array( 'col2'=>'<b>1</b>','col3' => '<b>2</b>','col4' => '<b>3</b>','col5' => '<b>4</b>','col6' => '<b>5</b>','col7' => '<b>6</b>','col8' => '<b>7</b>','col10' =>'<b>8</b>','col11' => '<b>9</b>','col12' => '<b>10</b>','col13' => '<b>11</b>','col14' => '<b>12</b>'), $titulo, $opciones);
               //primero agrego la imagen de fondo porque sino pisa la tabla
                 foreach ($pdf->ezPages as $pageNum=>$id){ 
                     $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
                     //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
                     $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
                     //x, y ,ancho y alto x' e 'y' son las coordenadas de la esquina inferior izquierda de la imagen
-                    $pdf->addJpegFromFile($imagen, 200, 40, 400, 400);
+                    $pdf->addJpegFromFile($imagen, 200, 38, 400, 400);//200, 40, 400, 400
                     //200,50
                     $imagen2 = toba::proyecto()->get_path().'/www/img/sein.jpg';
                     $imagen3 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';

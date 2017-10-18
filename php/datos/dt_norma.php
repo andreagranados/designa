@@ -84,7 +84,8 @@ class dt_norma extends toba_datos_tabla
                    . "  LEFT OUTER JOIN docente t_do ON (b.id_docente=t_do.id_docente)
                         LEFT OUTER JOIN tipo_emite t_e ON (b.emite_norma=t_e.cod_emite)
                         LEFT OUTER JOIN tipo_norma_exp c ON (b.tipo_norma=c.cod_tipo)
-                       where id_designacion is not null "
+                       where id_designacion is not null
+                       order by novedad,docente"
                  ;
       
 
@@ -125,7 +126,7 @@ class dt_norma extends toba_datos_tabla
            $sql="select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,quien_emite_norma,nombre_tipo,t_n.uni_acad,link
                         from norma t_n
                         LEFT OUTER JOIN tipo_emite b ON (t_n.emite_norma=b.cod_emite)
-                        LEFT OUTER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo)".$condicion     
+                        LEFT OUTER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo)".$condicion   
                   ;
 
            return toba::db('designa')->consultar($sql);

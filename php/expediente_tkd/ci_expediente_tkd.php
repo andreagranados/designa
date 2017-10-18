@@ -69,7 +69,8 @@ class ci_expediente_tkd extends toba_ci
 	{
             $regexp = '/^[0-9]{5}\/[0-9]{3}-[0-9]{4}$/';
             if ( !preg_match($regexp, $datos['expediente'], $matchFecha) ) {
-                toba::notificacion()->agregar('Expediente invalido. Ejemplo: 02117/000-2017','error');
+                $mensaje=utf8_decode("Expediente inválido. Ejemplo de formato válido: 02117/000-2017");
+                toba::notificacion()->agregar($mensaje,'error');
             }else{
 		$this->dep('datos')->tabla('impresion_540')->set($datos);
 		$this->dep('datos')->tabla('impresion_540')->sincronizar();

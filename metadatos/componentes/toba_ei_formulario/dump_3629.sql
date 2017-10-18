@@ -118,7 +118,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'3629', --objeto
 	'cancelar', --identificador
 	'Ca&ncelar', --etiqueta
-	'1', --maneja_datos
+	'0', --maneja_datos
 	NULL, --sobre_fila
 	NULL, --confirmacion
 	'ei-boton-canc', --estilo

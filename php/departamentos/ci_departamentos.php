@@ -7,6 +7,7 @@ class ci_departamentos extends toba_ci
         protected $s__alta_depto;
         protected $s__alta_area;
         protected $s__alta_orien;
+        protected $s__alta_direc;
 
 	//---- Filtro -----------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ class ci_departamentos extends toba_ci
             $this->pantalla()->tab("pant_area")->desactivar();	
             $this->pantalla()->tab("pant_orientaciones")->desactivar();	
             $this->pantalla()->tab("pant_final")->desactivar();	
+            $this->pantalla()->tab("pant_director")->desactivar();	
             if (isset($this->s__datos_filtro)) {
                 if($this->s__datos_filtro['idunidad_academica']['condicion']=='es_distinto_de'){
                     toba::notificacion()->agregar(utf8_decode('Seleccione la condición: es igual a'), 'info');    
@@ -57,6 +59,12 @@ class ci_departamentos extends toba_ci
              $this->set_pantalla('pant_area');
              $this->dep('datos')->tabla('departamento')->cargar($datos);
 	}
+        function evt__cuadro__susdirec($datos)
+	{
+            $this->dep('datos')->tabla('departamento')->cargar($datos);
+            $this->set_pantalla('pant_director');
+	}
+        
 
 	//---- Formulario -------------------------------------------------------------------
 
@@ -69,8 +77,8 @@ class ci_departamentos extends toba_ci
                 $this->dep('form_dpto')->colapsar();
               }
             if ($this->dep('datos')->tabla('departamento')->esta_cargada()) {
-			$form->set_datos($this->dep('datos')->tabla('departamento')->get());
-		}
+		$form->set_datos($this->dep('datos')->tabla('departamento')->get());
+	    }
 	}
 
 	
@@ -90,20 +98,21 @@ class ci_departamentos extends toba_ci
             if(!$band){
                 $this->dep('datos')->tabla('departamento')->eliminar_todo();
                 $this->dep('datos')->tabla('departamento')->resetear();
+                $this->s__alta_depto=0;
             }else{
                 toba::notificacion()->agregar('Debe eliminar primero las areas del departamento', 'info');
             }
 	}
         function evt__form_dpto__cancelar()
 	{
-            $this->controlador()->dep('datos')->tabla('departamento')->resetear();
+            $this->dep('datos')->tabla('departamento')->resetear();
             $this->s__alta_depto=0;
         }
         //agrega un nuevo departamento
         function evt__form_dpto__guardar($datos)
         {
-            $this->controlador()->dep('datos')->tabla('departamento')->set($datos);
-            $this->controlador()->dep('datos')->tabla('departamento')->sincronizar();
+            $this->dep('datos')->tabla('departamento')->set($datos);
+            $this->dep('datos')->tabla('departamento')->sincronizar();
             $this->s__alta_depto=0;
              
         }
@@ -111,30 +120,37 @@ class ci_departamentos extends toba_ci
 	{
         
             switch ($this->s__pantalla) {
-                case 'pant_edicion':$this->controlador()->dep('datos')->tabla('departamento')->resetear();
+                case 'pant_edicion':$this->dep('datos')->tabla('departamento')->resetear();
                                     $this->s__alta_depto = 1; break;
-                case 'pant_area':$this->controlador()->dep('datos')->tabla('area')->resetear();
+                case 'pant_area':$this->dep('datos')->tabla('area')->resetear();
                                     $this->s__alta_area = 1; break;
-                case 'pant_orientaciones':$this->controlador()->dep('datos')->tabla('orientacion')->resetear();
+                case 'pant_orientaciones':$this->dep('datos')->tabla('orientacion')->resetear();
                                     $this->s__alta_orien = 1; break;
+                case 'pant_director'://$this->dep('datos')->tabla('director_dpto')->resetear();
+                                    $this->s__alta_direc = 1; break;                
                     
             }
         }
         function evt__volver()
 	{
-       
+      
             switch ($this->s__pantalla) {
                
                 case 'pant_area':
-                    $this->controlador()->dep('datos')->tabla('departamento')->resetear();
+                    $this->dep('datos')->tabla('departamento')->resetear();
                     $this->s__alta_depto=0;
                     $this->set_pantalla('pant_edicion');
                     break;        
                 case 'pant_orientaciones':
-                    $this->controlador()->dep('datos')->tabla('area')->resetear();
+                    $this->dep('datos')->tabla('area')->resetear();
                     $this->s__alta_area=0;
                     $this->set_pantalla('pant_area');
-                break;
+                    break;
+                 case 'pant_director':
+                    $this->dep('datos')->tabla('director_dpto')->resetear();
+                    $this->s__alta_direc=0;
+                    $this->set_pantalla('pant_edicion');
+                    break;
             }
         }
         
@@ -181,7 +197,6 @@ class ci_departamentos extends toba_ci
             $this->pantalla()->tab("pant_edicion")->desactivar();	
             $this->pantalla()->tab("pant_orientaciones")->desactivar();	
             $dpto=$this->dep('datos')->tabla('departamento')->get();
-          
             $cuadro->set_datos($this->dep('datos')->tabla('area')->get_descripciones($dpto['iddepto']));
 	 
 	}
@@ -206,8 +221,8 @@ class ci_departamentos extends toba_ci
                 $this->dep('form_area')->colapsar();
               }
             if ($this->dep('datos')->tabla('area')->esta_cargada()) {
-			$form->set_datos($this->dep('datos')->tabla('area')->get());
-		}
+	        $form->set_datos($this->dep('datos')->tabla('area')->get());
+	     }
         }
         
 	function evt__form_area__modificacion($datos)
@@ -221,22 +236,30 @@ class ci_departamentos extends toba_ci
 
 	function evt__form_area__baja()
 	{
-		$this->dep('datos')->tabla('area')->eliminar_todo();
+            $ar=$this->dep('datos')->tabla('area')->get();
+            $band=$this->dep('datos')->tabla('area')->tiene_orientaciones($ar['idarea']);
+            if(!$band){
+                $this->dep('datos')->tabla('area')->eliminar_todo();
 		$this->dep('datos')->tabla('area')->resetear();
+                $this->s__alta_area=0;
+                toba::notificacion()->agregar('Se ha eliminado correctamente', 'info');
+            }else{
+                toba::notificacion()->agregar('Debe eliminar primero las orientaciones del area', 'info');
+            }
+		
 	}
         function evt__form_area__cancelar()
 	{
-            $this->controlador()->dep('datos')->tabla('area')->resetear();
+            $this->dep('datos')->tabla('area')->resetear();
             $this->s__alta_area=0;
         }
         //agrega una nueva area
         function evt__form_area__guardar($datos)
         {
-            
-            $dep=$this->controlador()->dep('datos')->tabla('departamento')->get();
+            $dep=$this->dep('datos')->tabla('departamento')->get();
             $datos['iddepto']=$dep['iddepto'];
-            $this->controlador()->dep('datos')->tabla('area')->set($datos);
-            $this->controlador()->dep('datos')->tabla('area')->sincronizar();
+            $this->dep('datos')->tabla('area')->set($datos);
+            $this->dep('datos')->tabla('area')->sincronizar();
             $this->s__alta_area=0;
         }
         
@@ -290,7 +313,7 @@ class ci_departamentos extends toba_ci
 	}
         function evt__form_orien__cancelar()
 	{
-            $this->controlador()->dep('datos')->tabla('orientacion')->resetear();
+            $this->dep('datos')->tabla('orientacion')->resetear();
             $this->s__alta_orien=0;
         }
         //agrega una nueva orientacion
@@ -298,9 +321,9 @@ class ci_departamentos extends toba_ci
         {
             $area=$this->dep('datos')->tabla('area')->get();
             $datos['idarea']=$area['idarea'];
-            $this->controlador()->dep('datos')->tabla('orientacion')->set($datos);
-            $this->controlador()->dep('datos')->tabla('orientacion')->sincronizar();
-            $this->controlador()->dep('datos')->tabla('orientacion')->resetear();   
+            $this->dep('datos')->tabla('orientacion')->set($datos);
+            $this->dep('datos')->tabla('orientacion')->sincronizar();
+            $this->dep('datos')->tabla('orientacion')->resetear();   
         }
         
         //--encabezados
@@ -343,6 +366,72 @@ class ci_departamentos extends toba_ci
                     $this->pantalla()->tab("pant_final")->desactivar();	
                 }
                 
+	}
+
+	//-----------------------------------------------------------------------------------
+	//---- cuadro_dir -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__cuadro_dir(toba_ei_cuadro $cuadro)
+	{
+            $this->pantalla()->tab("pant_area")->desactivar();	
+            $this->pantalla()->tab("pant_orientaciones")->desactivar();	
+            $depto=$this->dep('datos')->tabla('departamento')->get();
+            //print_r($depto);
+            $cuadro->set_datos($this->dep('datos')->tabla('director_dpto')->get_descripciones($depto));
+	}
+        
+        function evt__cuadro_dir__seleccion($datos){
+           $this->dep('datos')->tabla('director_dpto')->cargar($datos); 
+           $this->s__alta_direc=1;
+        }
+
+	//-----------------------------------------------------------------------------------
+	//---- form_direc -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form_direc(toba_ei_formulario $form)
+	{
+            if($this->s__alta_direc==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
+                $this->dep('form_direc')->descolapsar();
+            }	
+            else{
+                $this->dep('form_direc')->colapsar();
+              }
+            if ($this->dep('datos')->tabla('director_dpto')->esta_cargada()) {
+		$form->set_datos($this->dep('datos')->tabla('director_dpto')->get());
+	    }
+	}
+//agrega un nuevo director al dpto
+	function evt__form_direc__guardar($datos)
+	{
+            $dep=$this->dep('datos')->tabla('departamento')->get();
+            $datos['iddepto']=$dep['iddepto'];
+            $this->dep('datos')->tabla('director_dpto')->set($datos);
+            $this->dep('datos')->tabla('director_dpto')->sincronizar();
+            $this->dep('datos')->tabla('director_dpto')->resetear();   
+	}
+
+	function evt__form_direc__baja()
+	{
+            $this->dep('datos')->tabla('director_dpto')->eliminar_todo();
+            $this->dep('datos')->tabla('director_dpto')->resetear();
+            $this->s__alta_direc=0;
+	}
+
+	function evt__form_direc__modificacion($datos)
+	{
+            $this->dep('datos')->tabla('director_dpto')->set($datos);
+            $this->dep('datos')->tabla('director_dpto')->sincronizar();
+            $this->dep('datos')->tabla('director_dpto')->resetear();   
+            $this->s__alta_direc=0;
+            toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+	}
+
+	function evt__form_direc__cancelar()
+	{
+            $this->dep('datos')->tabla('director_dpto')->resetear();
+            $this->s__alta_direc=0;
 	}
 
 }

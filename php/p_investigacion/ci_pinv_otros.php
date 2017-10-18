@@ -94,7 +94,7 @@ class ci_pinv_otros extends designa_ci
                  $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fecha_ord_cs($id);
                  return $cod;
              }else{//si el $id es 0 significa que No es programa
-                 return "01/01/1999";
+                 return null;
              }
          
          }
@@ -309,6 +309,11 @@ class ci_pinv_otros extends designa_ci
             $datosp['objetivo']=$datos['objetivo']; 
             $datosp['observacion']=$datos['observacion']; 
             $datosp['disp_asent']=$datos['disp_asent']; 
+            $datosp['id_obj']=$datos['id_obj']; 
+            $datosp['id_disciplina']=$datos['id_disciplina']; 
+            $datosp['palabras_clave']=$datos['palabras_clave']; 
+            $datosp['resumen']=$datos['resumen']; 
+            
             switch ($datos['tipo']) {
                 case 0:$datosp['tipo']='PROIN'; break;
                 case 1:$datosp['tipo']='PIN1';break;

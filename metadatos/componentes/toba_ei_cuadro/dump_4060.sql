@@ -189,7 +189,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4154', --objeto_cuadro_col
 	'mat0', --clave
 	'5', --orden
-	'Mat1', --titulo
+	'M1', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -220,7 +220,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4155', --objeto_cuadro_col
 	'mat1', --clave
 	'6', --orden
-	'Mat2', --titulo
+	'M2', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -251,7 +251,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4156', --objeto_cuadro_col
 	'mat2', --clave
 	'7', --orden
-	'Mat3', --titulo
+	'M3', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -282,7 +282,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4157', --objeto_cuadro_col
 	'mat3', --clave
 	'8', --orden
-	'Mat4', --titulo
+	'M4', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -313,7 +313,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4158', --objeto_cuadro_col
 	'mat4', --clave
 	'9', --orden
-	'Mat5', --titulo
+	'M5', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -344,7 +344,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4159', --objeto_cuadro_col
 	'investig', --clave
 	'11', --orden
-	'Inv', --titulo
+	'I', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -375,7 +375,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4160', --objeto_cuadro_col
 	'extens', --clave
 	'12', --orden
-	'Ext', --titulo
+	'E', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -406,7 +406,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4161', --objeto_cuadro_col
 	'postgrado', --clave
 	'13', --orden
-	'Posgrado', --titulo
+	'P', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -437,7 +437,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4162', --objeto_cuadro_col
 	'tutorias', --clave
 	'14', --orden
-	'Tutorias', --titulo
+	'T', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -468,7 +468,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4163', --objeto_cuadro_col
 	'otros', --clave
 	'15', --orden
-	'Otros', --titulo
+	'O', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
@@ -530,7 +530,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4165', --objeto_cuadro_col
 	'mat5', --clave
 	'10', --orden
-	'Mat6', --titulo
+	'M6', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

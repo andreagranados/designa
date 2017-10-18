@@ -904,7 +904,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
                 $sql=$this->armar_consulta($pdia, $udia, $filtro['anio']);
                 
-                $sql=  "select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
+                $sql=  "select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,id_programa,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
                             . ",case when b.estado<>'B' then case when t_no.id_novedad is null then b.estado else 'L' end else 'B' end as estado  "//si tiene una baja o renuncia coloca B. Si tiene una licencia sin goce o cese coloca L
                             . " from ("
                             ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
@@ -938,6 +938,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                                         'id_departamento' => $ar[$i]['id_departamento'] ,
                                         'id_area' => $ar[$i]['id_area'] ,
                                         'id_orientacion' => $ar[$i]['id_orientacion'] ,
+                                        'id_programa' => $ar[$i]['id_programa'] ,
                                         'programa' => $ar[$i]['programa'] ,
                                         'costo' => $ar[$i]['costo'] ,
                                         'porc' => $ar[$i]['porc'] ,

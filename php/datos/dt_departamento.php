@@ -77,24 +77,22 @@ class dt_departamento extends toba_datos_tabla
         }
         //retorna true si el departamento que ingresa como parametro tiene areas y false en caso contrario
         function tiene_areas($id_dpto){
-            $sql = "select * from departamento where iddepto=".$id_dpto;  
+            $sql = "select * from area where iddepto=".$id_dpto;  
             $res = toba::db('designa')->consultar($sql);
-            
-            if(count($res[0])>0){
+            if(count($res)>0){
                 return true;
             }else{
                 return false;
             }
         }
         function get_listado_completo($where=null){
-            
             if(!is_null($where)){
                 $where=' WHERE '.$where;
                 }else{
                     $where='';
                 }
                 
-            $sql="select a.descripcion as departamento,b.descripcion as area,c.descripcion as orientacion"
+            $sql="select distinct a.descripcion as departamento,b.descripcion as area,c.descripcion as orientacion"
                     . " from (select * from departamento".$where.")a "
                     ." LEFT OUTER JOIN area b ON (a.iddepto=b.iddepto)"
                     . "LEFT OUTER JOIN orientacion c ON (b.idarea=c.idarea)"

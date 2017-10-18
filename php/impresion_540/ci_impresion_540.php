@@ -117,9 +117,9 @@ class ci_impresion_540 extends toba_ci
                 $pdf->ezSetMargins(80, 50, 3, 3);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
-                $formato = 'Página {PAGENUM} de {TOTALPAGENUM}'.utf8_decode('   CM: Categ Mapuche - CE: Categ Estatuto - Car: Carácter (I: Interino,R:Regular,S:Suplente,O:Otro)');
+                $formato = utf8_decode('Página {PAGENUM} de {TOTALPAGENUM}').'   CM: Categ Mapuche - CE: Categ Estatuto - Car: Carácter (I: Interino,R:Regular,S:Suplente,O:Otro)';
                 //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
-                $pdf->ezStartPageNumbers(500, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+                $pdf->ezStartPageNumbers(500, 20, 8, 'left', $formato, 1); //utf8_d_seguro($formato)
                 //Luego definimos la ubicación de la fecha en el pie de página.
                 $pdf->addText(600,20,8,date('d/m/Y h:i:s a')); 
                 //Configuración de Título.
@@ -144,22 +144,32 @@ class ci_impresion_540 extends toba_ci
                 $sum=0;
                 $sub=0;
                 $programa=$this->s__listado[0]['programa'];
-                
+                $impu=$this->dep('datos')->tabla('mocovi_programa')->get_imputacion($this->s__listado[0]['id_programa']);
+                //echo($impu);
+                $cont_asterisco=1;//nuevo para contar asteriscos. Uno por cada subprograma
+                $ver='('.str_pad('', $cont_asterisco, "*", STR_PAD_LEFT).')';//nuevo
+                $refe=$ver.$impu."\n";//nuevo;//nuevo para colocar a continuacion de la tabla las referencias
                 $comma_separated = implode(',', $sele);
                 $sql="update designacion set nro_540=".$numero." where id_designacion in (".$comma_separated .") and nro_540 is null";
                 toba::db('designa')->consultar($sql);
                 
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
-                    
+
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
+                        
                         if(strcmp($programa, $des['programa']) !== 0){//compara
+                          
+                            //$datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => round($sub,2));
                             $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
                             $sub=0; 
                             $programa=$des['programa'];
                             $i++;
+                            $cont_asterisco++;//nuevo
+                            $ver='('.str_pad('', $cont_asterisco, "*", STR_PAD_LEFT).')';//nuevo
+                            $impu=$this->dep('datos')->tabla('mocovi_programa')->get_imputacion($des['id_programa']);//nuevo
+                            $refe=$refe."\n".$ver.$impu;//nuevo
                             
                         }
-                        
                         $ayn=$des['docente_nombre'];
                         $sum=$sum+$des['costo'];
                         $sub=$sub+$des['costo'];
@@ -200,7 +210,8 @@ class ci_impresion_540 extends toba_ci
                         ///
                     }
                 }
-              
+                
+                //$datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => round($sub,2));
                 $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
                 $datos[$i+1]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
                           
@@ -213,6 +224,8 @@ class ci_impresion_540 extends toba_ci
                 $pdf->ezTable($datos, array( 'col2'=>'<b>Id</b>','col3' => '<b>Programa</b>','col4' => '<b>Porc</b>','col5' => '<b>Ap_y_Nombre</b>','col6' => '<b>Legajo</b>','col7' => '<b>CM</b>','col8' => '<b>CE</b>','col10' =>'<b>Car</b>','col11' => '<b>Desde</b>','col12' => '<b>Hasta</b>','col13' => '<b>Depart</b>','col14' => '<b>'.$area.'</b>','col15' => '<b>'.$orient.'</b>','col16' => '<b>Dias Lic</b>','col17' => '<b>Estado</b>','col18' => '<b>Costo</b>'), $titulo, $opciones);
                 //agrega texto al pdf. Los primeros 2 parametros son las coordenadas (x,y) el tercero es el tamaño de la letra, y el cuarto el string a agregar
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
+                $pdf->ezText(' ');
+                //$pdf->ezText($refe,'9');
                 //Encabezado: Logo Organización - Nombre 
                 //Recorremos cada una de las hojas del documento para agregar el encabezado
                  foreach ($pdf->ezPages as $pageNum=>$id){ 

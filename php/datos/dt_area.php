@@ -26,6 +26,15 @@ class dt_area extends toba_datos_tabla
 		ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
+        function tiene_orientaciones($idarea){
+            $sql = "select * from orientacion where idarea=".$idarea;  
+            $res = toba::db('designa')->consultar($sql);
+            if(count($res)>0){
+                return true;
+            }else{
+                return false;
+            }
+        }
 
 
 
