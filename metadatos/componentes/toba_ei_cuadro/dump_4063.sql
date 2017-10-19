@@ -167,7 +167,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4169', --objeto_cuadro_col
 	'resol', --clave
 	'5', --orden
-	'Resol', --titulo
+	'Resol CD', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

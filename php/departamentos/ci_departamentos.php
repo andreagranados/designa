@@ -61,8 +61,13 @@ class ci_departamentos extends toba_ci
 	}
         function evt__cuadro__susdirec($datos)
 	{
-            $this->dep('datos')->tabla('departamento')->cargar($datos);
-            $this->set_pantalla('pant_director');
+            $desc=$this->dep('datos')->tabla('departamento')->get_descripcion($datos['iddepto']);
+            if($desc=='SIN DEPARTAMENTO'){
+                toba::notificacion()->agregar('No corresponde directores', 'info');
+            }else{
+                $this->dep('datos')->tabla('departamento')->cargar($datos);
+                $this->set_pantalla('pant_director');
+            }
 	}
         
 
@@ -126,7 +131,8 @@ class ci_departamentos extends toba_ci
                                     $this->s__alta_area = 1; break;
                 case 'pant_orientaciones':$this->dep('datos')->tabla('orientacion')->resetear();
                                     $this->s__alta_orien = 1; break;
-                case 'pant_director'://$this->dep('datos')->tabla('director_dpto')->resetear();
+                case 'pant_director':
+                                    $this->dep('datos')->tabla('director_dpto')->resetear();
                                     $this->s__alta_direc = 1; break;                
                     
             }
@@ -170,6 +176,10 @@ class ci_departamentos extends toba_ci
         function conf__pant_orientaciones()
         {
             $this->s__pantalla = "pant_orientaciones";
+        }
+        function conf__pant_director()
+        {
+            $this->s__pantalla = "pant_director";
         }
 	//-----------------------------------------------------------------------------------
 	//---- JAVASCRIPT -------------------------------------------------------------------
@@ -405,11 +415,24 @@ class ci_departamentos extends toba_ci
 //agrega un nuevo director al dpto
 	function evt__form_direc__guardar($datos)
 	{
-            $dep=$this->dep('datos')->tabla('departamento')->get();
-            $datos['iddepto']=$dep['iddepto'];
-            $this->dep('datos')->tabla('director_dpto')->set($datos);
-            $this->dep('datos')->tabla('director_dpto')->sincronizar();
-            $this->dep('datos')->tabla('director_dpto')->resetear();   
+            if($datos['hasta']>$datos['desde']){
+                
+                $dep=$this->dep('datos')->tabla('departamento')->get();
+                $band=$this->dep('datos')->tabla('director_dpto')->control_superposicion($dep['iddepto'],$datos['desde'],$datos['hasta']);
+                if($band){
+                    $datos['iddepto']=$dep['iddepto'];
+                    $this->dep('datos')->tabla('director_dpto')->set($datos);
+                    $this->dep('datos')->tabla('director_dpto')->sincronizar();
+                    $this->dep('datos')->tabla('director_dpto')->resetear();   
+                    $this->s__alta_direc=0;
+                }else{
+                    throw new toba_error("Hay superposicion de fechas con alguno de los periodos cargados");
+                }
+                
+             }else{
+                throw new toba_error("La fecha hasta debe ser mayor a la desde");
+            }
+            
 	}
 
 	function evt__form_direc__baja()
@@ -421,11 +444,23 @@ class ci_departamentos extends toba_ci
 
 	function evt__form_direc__modificacion($datos)
 	{
-            $this->dep('datos')->tabla('director_dpto')->set($datos);
-            $this->dep('datos')->tabla('director_dpto')->sincronizar();
-            $this->dep('datos')->tabla('director_dpto')->resetear();   
-            $this->s__alta_direc=0;
-            toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+           if($datos['hasta']>$datos['desde']){
+               $dep=$this->dep('datos')->tabla('director_dpto')->get();//id_docente, iddepto, desde
+               
+               $band=$this->dep('datos')->tabla('director_dpto')->control_superposicion_modif($dep['id_docente'],$dep['iddepto'],$dep['desde'],$datos['desde'],$datos['hasta']);
+               if($band){
+                    $this->dep('datos')->tabla('director_dpto')->set($datos);
+                    $this->dep('datos')->tabla('director_dpto')->sincronizar();
+                    $this->dep('datos')->tabla('director_dpto')->resetear();   
+                    $this->s__alta_direc=0;
+                    toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+               }else{
+                    toba::notificacion()->agregar('Hay superposicion de fechas', 'info');
+               }
+              
+           }else{
+               toba::notificacion()->agregar('La fecha hasta debe ser mayor a la fecha desde', 'info');
+           }
 	}
 
 	function evt__form_direc__cancelar()

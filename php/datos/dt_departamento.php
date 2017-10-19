@@ -15,6 +15,11 @@ class dt_departamento extends toba_datos_tabla
                         . " ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
+        function get_descripcion($id_depto){//retorna la descripcion de un departamento
+            $sql="select descripcion from departamento where iddepto=".$id_depto;
+            $res = toba::db('designa')->consultar($sql);
+            return $res[0]['descripcion'];
+        }
         function get_departamentos($id_ua=null)
 	{
 		$where ="";
@@ -71,7 +76,14 @@ class dt_departamento extends toba_datos_tabla
                 }else{
                     $where='';
                 }
-            $sql="select * from departamento".$where. " order by descripcion"; 
+            $sql="select sub.*, trim(doc.apellido)||', '||trim(doc.nombre) as director from "
+                    . " (select d.*,max(di.desde) as desde from departamento d "
+                    . " LEFT OUTER JOIN director_dpto di ON (d.iddepto=di.iddepto)"
+                    . $where
+                    ." group by d.iddepto,d.idunidad_academica,d.descripcion)sub "
+                    . " LEFT OUTER JOIN director_dpto dr ON (dr.iddepto=sub.iddepto and sub.desde=dr.desde )"
+                    . " LEFT OUTER JOIN docente doc ON (doc.id_docente=dr.id_docente)"
+                    . "order by sub.descripcion"; 
             
             return toba::db('designa')->consultar($sql);
         }
