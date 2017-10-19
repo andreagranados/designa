@@ -8,7 +8,7 @@ class dt_asignacion_materia extends toba_datos_tabla
 		}
         $sql="select informe_actividad(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
         toba::db('designa')->consultar($sql);
-        $sql=" select a.*
+        $sql=" select a.*,a.id_designacion||'('||a.cat_estat||'-'||a.carac||')' as desig
                 from auxiliar a 
                 $where
                 order by agente"

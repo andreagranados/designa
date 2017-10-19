@@ -723,7 +723,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'Categ CONICET', --etiqueta
 	NULL, --etiqueta_estilo
 	'IP (Investigador Principal)<br>
-IA (Investigador Adjunto)<br>
+IAd (Investigador Adjunto)<br>
 II (Investigador Independiente)<br>
 IAs (Investigador Asistente)<br>
 IS (Investigador Superior)<br>
@@ -747,7 +747,7 @@ DOC (Doctoral)', --descripcion
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'IP,IA,II,IAs,IS,CPA,PDOC,DOC', --carga_lista
+	'IP,IAd,II,IAs,IS,CPA,PDOC,DOC', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	NULL, --carga_maestros
