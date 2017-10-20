@@ -48,7 +48,7 @@ class ci_programas extends toba_ci
 	//-----------------------------------------------------------------------------------
 
 	function evt__cuadro__seleccion($datos)
-	{
+	{ 
             //carga la asignacion de materia recien seleccionada
             $datos2['id_designacion']=$datos['id_designacion'];
             $datos2['id_materia']=$datos['id_materia'];
@@ -90,6 +90,7 @@ class ci_programas extends toba_ci
                 $this->dep('datos')->tabla('programa')->set($datos);
                 $this->dep('datos')->tabla('programa')->sincronizar();
                 toba::notificacion()->agregar('El programa se ha guardado correctamente','info');
+                $this->dep('datos')->tabla('programa')->resetear();
                 $this->set_pantalla('pant_inicial');
              }
             
