@@ -886,14 +886,15 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 if (isset($filtro['caracter'])) {
                     switch ($filtro['caracter']) {
                         case 'I':$where.= " AND (carac ='Interino' or carac ='Otro' or carac ='Suplente')";break;
-                        case 'R':$where.= " AND carac ='Regular'";break;
-                        
+                        case 'R':$where.= " AND carac ='Regular'";break; 
                     }
-                    
 		}
                 if (isset($filtro['id_programa'])) {
                     	$where.= " AND id_programa=".$filtro['id_programa'];
 		}
+                if (isset($filtro['estado'])) {
+                    $where.= " AND estado='".$filtro['estado']."'";
+                }
                 //me aseguro de colocar en estado B todas las designaciones que tienen baja
                 $sql2=" update designacion a set estado ='B' "
                         . " where estado<>'B' and uni_acad=".quote($filtro['uni_acad'])

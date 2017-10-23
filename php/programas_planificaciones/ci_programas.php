@@ -101,6 +101,7 @@ class ci_programas extends toba_ci
              $this->dep('datos')->tabla('programa')->set($datos);
              $this->dep('datos')->tabla('programa')->sincronizar();
              toba::notificacion()->agregar('Se ha modificado correctamente','info');
+             $this->set_pantalla('pant_inicial');
 	}
 
 	function evt__formulario__baja($datos)
