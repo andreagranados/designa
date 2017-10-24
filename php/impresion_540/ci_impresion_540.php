@@ -159,8 +159,8 @@ class ci_impresion_540 extends toba_ci
                         
                         if(strcmp($programa, $des['programa']) !== 0){//compara
                           
-                            //$datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => round($sub,2));
-                            $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+                            $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => round($sub,2));
+                            //$datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
                             $sub=0; 
                             $programa=$des['programa'];
                             $i++;
@@ -211,8 +211,8 @@ class ci_impresion_540 extends toba_ci
                     }
                 }
                 
-                //$datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => round($sub,2));
-                $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
+                $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => round($sub,2));
+                //$datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
                 $datos[$i+1]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
                           
             
@@ -225,7 +225,7 @@ class ci_impresion_540 extends toba_ci
                 //agrega texto al pdf. Los primeros 2 parametros son las coordenadas (x,y) el tercero es el tamaño de la letra, y el cuarto el string a agregar
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
                 $pdf->ezText(' ');
-                //$pdf->ezText($refe,'9');
+                $pdf->ezText($refe,'9');
                 //Encabezado: Logo Organización - Nombre 
                 //Recorremos cada una de las hojas del documento para agregar el encabezado
                  foreach ($pdf->ezPages as $pageNum=>$id){ 

@@ -2,8 +2,8 @@
 class dt_mocovi_programa extends toba_datos_tabla
 {
         function get_imputacion($id_prog){
-            $sql=" select '<b>'||nombre||'</b>'||' Programa: '||trim(to_char(programa ,'00'))||' SubPrograma: '||trim(to_char(sub_programa ,'00'))||' Actividad: '||trim(to_char(actividad ,'00'))||' Dependencia: '||trim(to_char(area ,'000'))||' SubDependencia: '||trim(to_char(sub_area ,'000'))||' SubSubDependencia:'||trim(to_char(sub_sub_area ,'000'))||' Fuente: '||trim(cast(fuente as text)) as impu"
-                    //. "|| area||' SubDependencia: '||sub_area||' SubSubDependencia: '||sub_sub_area||' Fuente:'||fuente"
+            $sql=//" select '<b>'||nombre||'</b>'||' Programa: '||trim(to_char(programa ,'00'))||' SubPrograma: '||trim(to_char(sub_programa ,'00'))||' Actividad: '||trim(to_char(actividad ,'00'))||' Dependencia: '||trim(to_char(area ,'000'))||' SubDependencia: '||trim(to_char(sub_area ,'000'))||' SubSubDependencia:'||trim(to_char(sub_sub_area ,'000'))||' Fuente: '||trim(cast(fuente as text)) as impu"
+                    "select '<b>'||nombre||'</b>'||' Programa: '||case when programa is not null then trim(to_char(programa ,'00'))else '' end ||' SubPrograma: '||case when sub_programa is not null then trim(to_char(sub_programa ,'00')) else '' end ||' Actividad: '||case when actividad is not null then trim(to_char(actividad ,'00')) else '' end ||' Dependencia: '||trim(to_char(area ,'000'))||' SubDependencia: '||trim(to_char(sub_area ,'000'))||' SubSubDependencia:'||trim(to_char(sub_sub_area ,'000'))||' Fuente: '||trim(cast(fuente as text)) as impu"
                     . " from mocovi_programa"
                     . " where id_programa=$id_prog";
             $res = toba::db('designa')->consultar($sql);

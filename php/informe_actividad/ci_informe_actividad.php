@@ -95,15 +95,15 @@ class ci_informe_actividad extends toba_ci
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
                 //Encabezado: Logo Organización - Nombre 
                 //Recorremos cada una de las hojas del documento para agregar el encabezado
-//                 foreach ($pdf->ezPages as $pageNum=>$id){ 
-//                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
-//                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
-//                    $imagen = toba::proyecto()->get_path().'/www/img/logo_sti.jpg';
-//                    $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
-//                    $pdf->addJpegFromFile($imagen, 10, 525, 70, 66); 
-//                    $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
-//                    $pdf->closeObject(); 
-//                }    
+                 foreach ($pdf->ezPages as $pageNum=>$id){ 
+                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                    //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+                    $imagen = toba::proyecto()->get_path().'/www/img/logo_sti.jpg';
+                    $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
+                    $pdf->addJpegFromFile($imagen, 10, 525, 70, 66); 
+                    $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
+                    $pdf->closeObject(); 
+                }    
       
             }
         }
