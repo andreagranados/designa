@@ -208,10 +208,10 @@ class ci_integrantes_pi extends designa_ci
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('No pueden agregar participantes al proyecto', 'error');  
                 
-            }else{ //pedir obligatorio campo resaval porque es un integrante de otra facultad
+            }else{ //pedir obligatorio campo resaval porque es un integrante de otra facultad, salvo los asesores que no necesitan aval
                 $uni=$this->dep('datos')->tabla('designacion')->get_ua($datos['id_designacion']); 
-                
-                if(($pi['uni_acad']!=$uni) and !(isset($datos['resaval']))){ 
+                //
+                if(trim($datos['funcion_p'])!='AS'and $pi['uni_acad']!=$uni and !(isset($datos['resaval']))){ 
                      //toba::notificacion()->agregar('Debe completar la Resol de aval porque es un integrante de otra facultad', 'error');  
                     throw new toba_error("Debe completar la Resol de aval porque es un integrante de otra facultad");
                 }else{

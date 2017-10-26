@@ -60,7 +60,7 @@ class ci_informe_actividad extends toba_ci
                 $pdf->ezSetMargins(80, 30, 3, 3);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
-                $formato = utf8_d_seguro('Página {PAGENUM} de {TOTALPAGENUM}   '.'M:Materia - I:Investigación - E:Extensión - P:Postgrado - T:Tutorías - O:Otros');
+                $formato = utf8_d_seguro('TKD # '.$this->s__datos_filtro['nro_540']['valor']."/".$this->s__datos_filtro['anio']['valor'].' Página {PAGENUM} de {TOTALPAGENUM}   '.'M:Materia - I:Investigación - E:Extensión - P:Postgrado - T:Tutorías - O:Otros');
                 //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
                 $pdf->ezStartPageNumbers(400, 20, 8, 'left', $formato, 1); 
                 //Luego definimos la ubicación de la fecha en el pie de página.

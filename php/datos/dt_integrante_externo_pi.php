@@ -16,6 +16,16 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         $sql=" update integrante_externo_pi set check_inv=0,rescd='".$resol."' where pinvest=".$pinv;
         toba::db('designa')->consultar($sql); 
     }
+    //modifica la fecha desde de los integrantes del proyecto
+    function modificar_fechadesde($pinv,$desde){
+        $sql=" update integrante_externo_pi set desde='".$desde."' where pinvest=".$pinv;
+        toba::db('designa')->consultar($sql); 
+    }
+    //modifica la fecha hasta de los integrantes del proyecto
+    function modificar_fechahasta($pinv,$hasta){
+        $sql=" update integrante_externo_pi set hasta='".$hasta."' where pinvest=".$pinv;
+        toba::db('designa')->consultar($sql); 
+    }
     function get_listado($id_p=null)
     {
         $sql="select t_i.pinvest, trim(t_p.apellido)||', '||trim(t_p.nombre) as nombre, t_p.tipo_docum,t_p.nro_docum,case when t_p.nro_docum<0 then docum_extran else cast(t_p.nro_docum as text) end as nro_docum2,t_p.tipo_sexo,t_p.fec_nacim,funcion_p,carga_horaria,desde,hasta,rescd,check_inv,rescd_bm"

@@ -41,6 +41,16 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         $sql=" update integrante_interno_pi set check_inv=0,rescd='".$resol."' where pinvest=".$pinv;
         toba::db('designa')->consultar($sql); 
     }
+    //modifica la fecha desde de los integrantes del proyecto
+    function modificar_fechadesde($pinv,$desde){
+        $sql=" update integrante_interno_pi set desde='".$desde."' where pinvest=".$pinv;
+        toba::db('designa')->consultar($sql); 
+    }
+    //modifica la fecha hasta de los integrantes del proyecto
+    function modificar_fechahasta($pinv,$hasta){
+        $sql=" update integrante_externo_pi set hasta='".$hasta."' where pinvest=".$pinv;
+        toba::db('designa')->consultar($sql); 
+    }
     //trae los integrantes docentes de la ua que ingresa que participan en proyectos de otras ua
     function get_participantes_externos($filtro=array()){
         

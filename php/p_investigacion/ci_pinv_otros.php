@@ -218,7 +218,7 @@ class ci_pinv_otros extends designa_ci
         //modificacion de datos principales del proyecto por la Unidad Académica
         function evt__formulario__modificacion($datos)
 	{    
-          
+          $mensaje='';
           $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
           if($pi['estado']<>'I'){
               toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
@@ -252,9 +252,19 @@ class ci_pinv_otros extends designa_ci
             }
             if(trim($datos['nro_resol'])<>trim($pi['nro_resol'])){//si modifica la resolucion del cd entonces automaticamente se modifica la res de los integrantes
                 $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
-                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
-                //idem externos $this->controlador()->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);                
+                $mensaje.=$mensaje."Se ha modificado la resol de los integrantes. ";
             }
+            if($datos['fec_desde']<>$pi['fec_desde']){//si modifica la fecha desde entonces modifica lo de los integrantes.
+                  $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
+                  $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
+                  $mensaje.=$mensaje."Se ha modificado la fecha desde de los integrantes";
+             }
+            if($datos['fec_hasta']<>$pi['fec_hasta']){//si modifica la fecha desde entonces modifica lo de los integrantes.
+                  $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_desde']);
+                  $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_desde']);
+                  $mensaje.=$mensaje."Se ha modificado la fecha hasta de los integrantes";
+             }
             //elimino lo que viene en codigo y ordenanza dado que no corresponde al perfil de la UA
             unset($datos['codigo']);
             unset($datos['nro_ord_cs']);
@@ -264,6 +274,10 @@ class ci_pinv_otros extends designa_ci
             unset($datos['fec_baja']);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+            if($mensaje!=''){
+                toba::notificacion()->agregar($mensaje, 'info');  
+            }
+            
           }
 	}
     //elimina un proyecto de investigacion

@@ -117,11 +117,11 @@ class ci_impresion_540 extends toba_ci
                 $pdf->ezSetMargins(80, 50, 3, 3);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
-                $formato = utf8_decode('Página {PAGENUM} de {TOTALPAGENUM}').'   CM: Categ Mapuche - CE: Categ Estatuto - Car: Carácter (I: Interino,R:Regular,S:Suplente,O:Otro)';
+                $formato = utf8_decode('TKD #'.$numero."/".$this->s__anio." de ".$this->s__datos_filtro['uni_acad'].' Página {PAGENUM} de {TOTALPAGENUM}').utf8_decode('   CM: Categ Mapuche - CE: Categ Estatuto - Car: Carácter (I: Interino,R:Regular,S:Suplente,O:Otro)');
                 //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
-                $pdf->ezStartPageNumbers(500, 20, 8, 'left', $formato, 1); //utf8_d_seguro($formato)
+                $pdf->ezStartPageNumbers(550, 20, 8, 'left', $formato, 1); //utf8_d_seguro($formato)
                 //Luego definimos la ubicación de la fecha en el pie de página.
-                $pdf->addText(600,20,8,date('d/m/Y h:i:s a')); 
+                $pdf->addText(700,20,8,date('d/m/Y h:i:s a')); 
                 //Configuración de Título.
                 $salida->titulo(utf8_d_seguro("Informe TKD #".$numero."/".$this->s__anio." de ".$this->s__datos_filtro['uni_acad']));
                
