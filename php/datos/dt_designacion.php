@@ -4,6 +4,15 @@ require_once 'consultas_mapuche.php';
 
 class dt_designacion extends toba_datos_tabla
 {
+   function control_actividad($designaciones=array(),$anio){
+       $band=true;
+       $i=0;$long=count($designaciones);
+       while($band and $i<=$long) {
+            $sql="select into auxi control_actividad(".$designaciones[$i].",".$anio.");";
+            toba::db('designa')->consultar($sql);
+            $i++;
+        }
+   } 
    function get_uni_acad($id_desig){
        $sql="select uni_acad from designacion where id_designacion=".$id_desig;
        $resul=toba::db('designa')->consultar($sql);

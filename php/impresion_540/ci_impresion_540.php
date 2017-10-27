@@ -302,8 +302,15 @@ class ci_impresion_540 extends toba_ci
 
 	function evt__cuadro__seleccion($datos)
 	{
-            if (isset($this->s__seleccionadas))
-                {$this->set_pantalla('pant_impresion');}
+            if (isset($this->s__seleccionadas)){
+                //print_r($this->s__seleccionadas);
+                //$band=$this->dep('datos')->tabla('designacion')->control_actividad($this->s__seleccionadas, $this->s__anio);
+                //if($band){
+                    $this->set_pantalla('pant_impresion');
+                //}else{
+                  //  toba::notificacion()->agregar('Hay designaciones seleccionadas que no tienen actividad.','info');
+                //}
+                }
             else{
                 $mensaje=utf8_decode('No hay designaciones seleccionadas para emitir número de ticket');
                 toba::notificacion()->agregar($mensaje,'info');

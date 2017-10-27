@@ -38,7 +38,10 @@ class ci_departamentos extends toba_ci
             $this->pantalla()->tab("pant_area")->desactivar();	
             $this->pantalla()->tab("pant_orientaciones")->desactivar();	
             $this->pantalla()->tab("pant_final")->desactivar();	
-            $this->pantalla()->tab("pant_director")->desactivar();	
+            $this->pantalla()->tab("pant_director")->desactivar();
+            $this->s__alta_direc=0;
+            $this->s__alta_area=0;
+            $this->s__alta_orien=0;
             if (isset($this->s__datos_filtro)) {
                 if($this->s__datos_filtro['idunidad_academica']['condicion']=='es_distinto_de'){
                     toba::notificacion()->agregar(utf8_decode('Seleccione la condición: es igual a'), 'info');    
@@ -162,7 +165,7 @@ class ci_departamentos extends toba_ci
         
 	function resetear()
 	{
-		$this->dep('datos')->resetear();
+            $this->dep('datos')->resetear();
 	}
  //--Pantallas
         function conf__pant_edicion()
@@ -206,6 +209,7 @@ class ci_departamentos extends toba_ci
 	{
             $this->pantalla()->tab("pant_edicion")->desactivar();	
             $this->pantalla()->tab("pant_orientaciones")->desactivar();	
+            $this->pantalla()->tab("pant_director")->desactivar();	
             $dpto=$this->dep('datos')->tabla('departamento')->get();
             $cuadro->set_datos($this->dep('datos')->tabla('area')->get_descripciones($dpto['iddepto']));
 	 
@@ -288,6 +292,7 @@ class ci_departamentos extends toba_ci
         function evt__cuadro_orien__seleccion($datos)
 	{
             $this->s__alta_orien=1; 
+            $this->pantalla()->tab("pant_director")->desactivar();	
             $area=$this->dep('datos')->tabla('area')->get();
             $datos['idarea']=$area['idarea'];
             $this->dep('datos')->tabla('orientacion')->cargar($datos);
@@ -370,6 +375,10 @@ class ci_departamentos extends toba_ci
            
             if (isset($this->s__where)) {
                 $this->pantalla()->tab("pant_final")->activar();	
+                $this->pantalla()->tab("pant_area")->desactivar();	
+                $this->pantalla()->tab("pant_director")->desactivar();	
+                $this->pantalla()->tab("pant_orientaciones")->desactivar();	
+                $this->s__alta_direc=0;
 		$cuadro->set_datos($this->dep('datos')->tabla('departamento')->get_listado_completo($this->s__where));
 		}
             else{
