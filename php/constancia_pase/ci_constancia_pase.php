@@ -66,7 +66,7 @@ class ci_constancia_pase extends toba_ci
                 $pdf->ezSetMargins(80, 50, 35, 35);//arriba, abajo, izq, derecha
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
-                $formato = utf8_decode('Página').' {PAGENUM} de {TOTALPAGENUM}'.utf8_decode(" Car: Carácter; Cat: Categoría");
+                $formato = 'TKD #'.$this->s__datos_filtro['nro_540']['valor'].'/'.$this->s__anio.utf8_decode('  Página').' {PAGENUM} de {TOTALPAGENUM}'.utf8_decode(" Car: Carácter; Cat: Categoría");
                 //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
                 $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
                 //Luego definimos la ubicación de la fecha en el pie de página.

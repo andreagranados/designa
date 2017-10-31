@@ -69,8 +69,9 @@ class dt_asignacion_materia extends toba_datos_tabla
       }else{
            $where=' WHERE 1=1';
       }
+      // reemplace t_a.des_materia por materias_conjunto(t_m.anio,t_m.id_periodo,t_d.uni_acad,t_m.id_materia)
       $sql="select * from (
-          select t_do.apellido||', '||t_do.nombre as docente_nombre, t_m.id_designacion,t_de.iddepto,t_de.descripcion as departamento,t_m.id_materia,t_m.modulo as id_modulo,t_do.legajo,t_m.anio,t_d.cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,t_a.desc_materia,t_mo.descripcion as modulo,t_pe.descripcion as periodo,t_r.desc_item as rol,t_p.uni_acad,t_p.cod_carrera,t_p.ordenanza,t_pr.id_estado,t_pr.link,t_pr.observacion
+          select t_do.apellido||', '||t_do.nombre as docente_nombre, t_m.id_designacion,t_de.iddepto,t_de.descripcion as departamento,t_m.id_materia,t_m.modulo as id_modulo,t_do.legajo,t_m.anio,t_d.cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,materias_conjunto(t_m.anio,t_m.id_periodo,t_d.uni_acad,t_m.id_materia) as desc_materia,t_mo.descripcion as modulo,t_pe.descripcion as periodo,t_r.desc_item as rol,t_p.uni_acad,t_p.cod_carrera,t_p.ordenanza,t_pr.id_estado,t_pr.link,t_pr.observacion
             from asignacion_materia t_m
             LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_m.id_designacion)
             LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
