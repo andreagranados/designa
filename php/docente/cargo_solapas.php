@@ -629,10 +629,14 @@ class cargo_solapas extends toba_ci
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $band=$this->controlador()->dep('datos')->tabla('conjunto')->control($datos['id_materia'],$datos['anio'],$datos['id_periodo'],$uni,$desig['id_designacion']);
             if($band){
-                $datos['id_designacion']=$desig['id_designacion'];
-                $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
-                $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
-                $this->s__alta_mate=0;//descolapsa el formulario de alta
+                 if ($datos['carga_horaria']>20){
+                     throw new toba_error("La carga horaria semanal no puede ser mayor a 20");
+                 }else{
+                    $datos['id_designacion']=$desig['id_designacion'];
+                    $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
+                    $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
+                    $this->s__alta_mate=0;//descolapsa el formulario de alta
+                 }
             }   else{
                  toba::notificacion()->agregar('Ya tiene asociada una materia del conjunto', 'info');
             }  
@@ -646,13 +650,15 @@ class cargo_solapas extends toba_ci
         }
         function evt__form_materias__modificacion($datos)
         {
-       
+            if ($datos['carga_horaria']>20){
+                toba::notificacion()->agregar('La carga horaria semanal no puede ser mayor a 20', 'info');
+            }else{
              $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
              $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
              toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
              $this->s__alta_mate=0;//descolapsa el formulario de alta
              $this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();
-          
+            }
         }
         function evt__form_materias__cancelar($datos)
         {
