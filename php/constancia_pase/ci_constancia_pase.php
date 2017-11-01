@@ -94,7 +94,11 @@ class ci_constancia_pase extends toba_ci
                 // print_r($this->s__listado);  
                foreach ($this->s__listado as $des) {
                    $fecdesde=date("d/m/Y",strtotime($des['desde']));
-                   $fechasta=date("d/m/Y",strtotime($des['hasta']));
+                   if(isset($des['hasta'])){
+                            $fechasta=date("d/m/Y",strtotime($des['hasta']));
+                        }else{
+                            $fechasta='';
+                        }
                    $norm=utf8_decode($des['norma']);
                    $nove=utf8_decode($des['novedad']);
                    $datos[$i]=array( 'col2'=>trim($des['agente']),'col3' => $des['legajo'],'col4' => $des['id_designacion'],'col5' => $des['norma'],'col6' => $des['cat_mapuche'],'col7' => $des['carac'],'col8' => $fecdesde,'col10' =>$fechasta,'col11' => $nove);
