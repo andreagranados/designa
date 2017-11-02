@@ -4,10 +4,10 @@
 ------------------------------------------------------------
 INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_acceso, descripcion, vencimiento, dias, hora_entrada, hora_salida, listar, permite_edicion, menu_usuario) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
-	'ExtensionConsulta', --nombre
+	'investigacion_consulta', --usuario_grupo_acc
+	'InvestigacionConsulta', --nombre
 	NULL, --nivel_acceso
-	'Extensión de solo Consulta', --descripcion
+	'Investigación Consulta Asentamientos', --descripcion
 	NULL, --vencimiento
 	NULL, --dias
 	NULL, --hora_entrada
@@ -24,75 +24,105 @@ INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_a
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'1'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'2'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'3635'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'3636'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
-	NULL, --item_id
-	'3685'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
-	NULL, --item_id
-	'3686'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'3687'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
-	'3689'  --item
+	'3730'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
-	'3692'  --item
+	'3731'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
-	'3726'  --item
+	'3732'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
-	'3755'  --item
+	'3735'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	NULL, --item_id
-	'3783'  --item
+	'3736'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigacion_consulta', --usuario_grupo_acc
+	NULL, --item_id
+	'3737'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigacion_consulta', --usuario_grupo_acc
+	NULL, --item_id
+	'3738'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigacion_consulta', --usuario_grupo_acc
+	NULL, --item_id
+	'3743'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigacion_consulta', --usuario_grupo_acc
+	NULL, --item_id
+	'3757'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigacion_consulta', --usuario_grupo_acc
+	NULL, --item_id
+	'3765'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigacion_consulta', --usuario_grupo_acc
+	NULL, --item_id
+	'3772'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'investigacion_consulta', --usuario_grupo_acc
+	NULL, --item_id
+	'3773'  --item
 );
 --- FIN Grupo de desarrollo 0
 
@@ -101,6 +131,6 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 ------------------------------------------------------------
 INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
 	'designa', --proyecto
-	'extensionconsulta', --usuario_grupo_acc
+	'investigacion_consulta', --usuario_grupo_acc
 	'2'  --restriccion_funcional
 );

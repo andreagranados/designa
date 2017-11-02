@@ -160,7 +160,25 @@ class dt_integrante_interno_pi extends toba_datos_tabla
        
         return toba::db('designa')->consultar($sql);
     }
-    //dado un docente, trae todos los proyectos de investigacion en los que haya participado
+    function  sus_proyectos_investigacion($id_docente){//trae todas las participaciones de proyectos como docente de la unco
+      $where='WHERE id_docente='.$id_docente;
+      $sql="select * from 
+          (select t_do.id_docente,t_d.cat_estat||t_d.dedic||'-'||t_d.carac as desig, t_p.codigo,t_p.denominacion,t_i.funcion_p,t_i.carga_horaria,t_p.uni_acad,t_i.desde,t_i.hasta,t_i.rescd 
+                from integrante_interno_pi t_i 
+                LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv) 
+                LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)
+                LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
+                UNION
+             select t_do.id_docente,'' as desig, t_p.codigo,t_p.denominacion,t_e.funcion_p,t_e.carga_horaria,t_p.uni_acad,t_e.desde,t_e.hasta,t_e.rescd 
+                from integrante_externo_pi t_e
+                LEFT OUTER JOIN pinvestigacion t_p ON (t_e.pinvest=t_p.id_pinv) 
+                LEFT OUTER JOIN persona t_pe ON (t_e.nro_docum=t_pe.nro_docum and t_e.tipo_docum=t_pe.tipo_docum)
+                LEFT OUTER JOIN docente t_do ON (t_do.nro_docum=t_pe.nro_docum and t_do.tipo_docum=t_pe.tipo_docum)
+                )sub
+                where id_docente=".$id_docente ." order by desde";  
+       return toba::db('designa')->consultar($sql);
+    }
+    //dado una designacion, trae todos los proyectos de investigacion en los que haya participado
     function sus_proyectos_inv($id_desig,$anio){
         $sql="select t_d.id_designacion||'-'||t_d.cat_estat||t_d.dedic||t_d.carac||'-'||t_i.ua||'('||to_char(t_d.desde,'dd/mm/YYYY')||'-'||case when t_d.hasta is null then '' else to_char(t_d.hasta,'dd/mm/YYYY') end  ||')' as desig,t_p.uni_acad,t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd 
                  from integrante_interno_pi t_i

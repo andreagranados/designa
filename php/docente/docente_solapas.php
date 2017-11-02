@@ -38,6 +38,7 @@ class docente_solapas extends toba_ci
 
     function conf__cuadro_curric(toba_ei_cuadro $cuadro)
     {
+        $this->pantalla()->tab("pant_porcentajes")->desactivar();	
         //recupero todo los titulos y los muestro
         $sql="select * from titulos_docente t_t LEFT JOIN titulo t_i ON (t_t.codc_titul=t_i.codc_titul) where t_t.id_docente=".$this->s__agente['id_docente'];
         $resul=toba::db('designa')->consultar($sql);
@@ -56,6 +57,7 @@ class docente_solapas extends toba_ci
     //
     function conf__cuadro_categorizacion(toba_ei_cuadro $cuadro)
     {
+       $this->pantalla()->tab("pant_porcentajes")->desactivar();	
        $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
        $cuadro->set_datos($this->controlador()->dep('datos')->tabla('categorizacion')->sus_categorizaciones($doc['id_docente'])); 
     }
@@ -157,6 +159,7 @@ class docente_solapas extends toba_ci
 	 */
     function conf__form_curric(toba_ei_formulario $form)
 	{
+            $this->pantalla()->tab("pant_porcentajes")->desactivar();	
             if($this->s__mostrar_fcurri==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('form_curric')->descolapsar();
                 $form->ef('codc_titul')->set_obligatorio('true');
@@ -277,7 +280,7 @@ class docente_solapas extends toba_ci
             $form->ef('nro_docum')->set_obligatorio('true');
             $form->ef('tipo_sexo')->set_obligatorio('true');
             $form->ef('cuil')->set_obligatorio('true');
-            
+            $this->pantalla()->tab("pant_porcentajes")->desactivar();	   
             if ($this->controlador()->dep('datos')->tabla('docente')->esta_cargada()){//porque se selecciono previamente un agente
 		$datos=$this->controlador()->dep('datos')->tabla('docente')->get();
                 //autocompleto el documento con ceros adelante hasta 8
@@ -292,11 +295,6 @@ class docente_solapas extends toba_ci
                         $this->pantalla()->tab("pant_porcentajes")->desactivar();
 		}
 	}
-        //boton que trae de siu-mapuche los datos del docente, los muestra en pantalla y pide el ok para actualizar
-	function evt__form_docente__modificacion($datos)
-        {
-           
-        }
         
         //da de alta un nuevo docente
         function evt__form_docente__guardar($datos)
@@ -313,8 +311,15 @@ class docente_solapas extends toba_ci
                 $datosc['id_docente']=$doc['id_docente'];      
                 $this->controlador()->dep('datos')->tabla('docente')->cargar($datosc);
             }else{
-                $mensaje='NO ESTA PERMITIDO MODIFICAR LOS DATOS DE UN DOCENTE CON LEGAJO. LOS MISMOS SERAN ACTUALIZADOS PERIODICAMENTE CON INFORMACIÓN SIU-MAPUCHE';
-                toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                $datos2['correo_personal']=$datos['correo_personal'];
+                $datos2['correo_institucional']=$datos['correo_institucional'];
+                $this->controlador()->dep('datos')->tabla('docente')->set($datos2);                   
+                $this->controlador()->dep('datos')->tabla('docente')->sincronizar();
+                $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
+                $datosc['id_docente']=$doc['id_docente'];      
+                $this->controlador()->dep('datos')->tabla('docente')->cargar($datosc);
+                $mensaje='SOLO SE PUEDE ACTUALIZAR CORREOS. NO ESTA PERMITIDO MODIFICAR OTROS DATOS DE UN DOCENTE QUE TIENE LEGAJO. LOS MISMOS SERAN ACTUALIZADOS PERIODICAMENTE CON INFORMACIÓN SIU-MAPUCHE';
+                toba::notificacion()->agregar(utf8_decode($mensaje), "info");
                }
             }
          
@@ -467,6 +472,7 @@ class docente_solapas extends toba_ci
 
     function conf__cuadro_pext(toba_ei_cuadro $cuadro)
     {
+       $this->pantalla()->tab("pant_porcentajes")->desactivar();	
        $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
        $datos=$this->controlador()->dep('datos')->tabla('integrante_interno_pe')->sus_proyectos_ext($doc['id_docente']);
        $cuadro->set_datos($datos);
@@ -477,8 +483,9 @@ class docente_solapas extends toba_ci
 
     function conf__cuadro_pinv(toba_ei_cuadro $cuadro)
     {
+       $this->pantalla()->tab("pant_porcentajes")->desactivar();	
        $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
-       $datos=$this->controlador()->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv($doc['id_docente']);
+       $datos=$this->controlador()->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_investigacion($doc['id_docente']);
        $cuadro->set_datos($datos);
     }
 }

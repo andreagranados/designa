@@ -335,4 +335,32 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	'0', --externa
 	'docente'  --tabla
 );
+INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
+	'designa', --objeto_proyecto
+	'3209', --objeto
+	'1832', --col_id
+	'correo_institucional', --columna
+	'C', --tipo
+	'0', --pk
+	'', --secuencia
+	'60', --largo
+	NULL, --no_nulo
+	'0', --no_nulo_db
+	'0', --externa
+	'docente'  --tabla
+);
+INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, columna, tipo, pk, secuencia, largo, no_nulo, no_nulo_db, externa, tabla) VALUES (
+	'designa', --objeto_proyecto
+	'3209', --objeto
+	'1833', --col_id
+	'correo_personal', --columna
+	'C', --tipo
+	'0', --pk
+	'', --secuencia
+	'60', --largo
+	NULL, --no_nulo
+	'0', --no_nulo_db
+	'0', --externa
+	'docente'  --tabla
+);
 --- FIN Grupo de desarrollo 0

@@ -60,14 +60,21 @@ class dt_novedad extends toba_datos_tabla
         function setear_baja($des,$hasta)
         {//busco las novedades de esa designacion con fecha hasta>a la fecha que ingresa
             $mensaje="";
-            $sql="select * from novedad where id_designacion=".$des." and tipo_nov in (2,5) and hasta>'".$hasta."'";
+            $sql="select * from novedad where id_designacion=".$des." and tipo_nov in (2,5) and hasta>'".$hasta."' and desde<'".$hasta."'";
             $resul=toba::db('designa')->consultar($sql);
             
             if (count($resul)>0){
                 $mensaje=" LA DESIGNACION TENIA LICENCIAS QUE EXCEDIAN LA FECHA DE LA BAJA";
+                $sql="update novedad set hasta='".$hasta."' where id_designacion=".$des." and  tipo_nov in (2,5) and hasta is not null and hasta>='".$hasta."' and desde<'".$hasta."'";
+                toba::db('designa')->consultar($sql);
             }
-            $sql="update novedad set hasta='".$hasta."' where id_designacion=".$des." and  tipo_nov in (2,5) and hasta is not null and hasta>='".$hasta."'";
-            toba::db('designa')->consultar($sql);
+            $sql="select * from novedad where id_designacion=".$des." and tipo_nov in (2,5) and desde>'".$hasta."'";
+            $resul2=toba::db('designa')->consultar($sql);
+            if (count($resul2)>0){
+                $mensaje.=" SE ELIMINARAN LAS NOVEDADES QUE QUEDAN FUERA DEL PERIODO DE LA DESIGNACION";
+                $sql="delete from novedad where id_designacion=$des and  tipo_nov in (2,5) and desde>'".$hasta."'";
+                toba::db('designa')->consultar($sql);
+            }
             if($mensaje<>""){
                 toba::notificacion()->agregar($mensaje,'info');
             }
