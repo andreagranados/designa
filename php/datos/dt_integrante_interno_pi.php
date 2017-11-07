@@ -76,7 +76,11 @@ class dt_integrante_interno_pi extends toba_datos_tabla
     function get_participantes($filtro=array()){
         $where=" WHERE ";
         if (isset($filtro['uni_acad']['valor'])) {
-            $where.= "  uni_acad = ".quote($filtro['uni_acad']['valor']);
+            if(trim($filtro['uni_acad']['valor'])=='ASMA'){//el usuario de ASMA puede ver los proyectos de FACA
+                $where.= "  (uni_acad = ".quote($filtro['uni_acad']['valor']). " or uni_acad = 'FACA')";
+            }else{
+                $where.= "  uni_acad = ".quote($filtro['uni_acad']['valor']);
+            }
          }
         if (isset($filtro['anio']['valor'])) {
             $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
