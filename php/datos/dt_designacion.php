@@ -864,7 +864,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 	         $where.= " AND uni_acad = ".quote($filtro['uni_acad']);
 		}
             $sql="select * from(
-                    select a.id_designacion,sum(porc) as suma 
+                    select a.id_designacion,sum(case when porc is null then 0 else porc end) as suma 
                         from designacion a
                         left outer join imputacion b on (a.id_designacion=b.id_designacion)
                         $where
@@ -1242,7 +1242,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 if (isset($filtro['id_departamento']['valor'])) {
 			$sql="select * from departamento where iddepto=".$filtro['id_departamento']['valor'];
                         $resul=toba::db('designa')->consultar($sql);
-                        $where.= " AND id_departamento =".quote($resul[0]['descripcion']);
+                        $where.= " AND (id_departamento like ".quote($resul[0]['descripcion'].'%')." or ".
+                        " id_departamento like ".quote('%'.$resul[0]['descripcion']).")";
 		}
                 if (isset($filtro['carac']['valor'])) {
                     switch ($filtro['carac']['valor']) {
@@ -1484,18 +1485,15 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         
         function armar_consulta($pdia,$udia,$anio){
             //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
-           $sql="(SELECT distinct t_d.id_designacion, trim(t_d1.apellido)||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
+            //reemplazo t_d3.descripcion as id_departamento por excepcion_departamento(t_d.id_designacion) t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion
+            // excepcion_departamento(t_d.id_designacion) as id_departamento, excepcion_area(t_d.id_designacion) as id_area, excepcion_orientacion(t_d.id_designacion) as id_orientacion
+           $sql="(SELECT distinct t_d.id_designacion, trim(t_d1.apellido)||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
                         0 as dias_lic, case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
                             FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
                             LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est) 
                             LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
                             LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
                             LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
-                            LEFT OUTER JOIN expediente as t_e ON (t_d.id_expediente = t_e.id_exp) 
-                            LEFT OUTER JOIN incentivo as t_i ON (t_d.tipo_incentivo = t_i.id_inc) 
-                            LEFT OUTER JOIN dedicacion_incentivo as t_di ON (t_d.dedi_incen = t_di.id_di) 
-                            LEFT OUTER JOIN cic_conicef as t_cc ON (t_d.cic_con = t_cc.id) 
-                            LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
                             LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
                             LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
                             LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
@@ -1522,10 +1520,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                             LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
                             LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
                             LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
-                            LEFT OUTER JOIN expediente as t_e ON (t_d.id_expediente = t_e.id_exp) 
-                            LEFT OUTER JOIN incentivo as t_i ON (t_d.tipo_incentivo = t_i.id_inc) 
-                            LEFT OUTER JOIN dedicacion_incentivo as t_di ON (t_d.dedi_incen = t_di.id_di) 
-                            LEFT OUTER JOIN cic_conicef as t_cc ON (t_d.cic_con = t_cc.id) 
                             LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
                             LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
                             LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
@@ -1556,10 +1550,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                             LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
                             LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
                             LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
-                            LEFT OUTER JOIN expediente as t_e ON (t_d.id_expediente = t_e.id_exp) 
-                            LEFT OUTER JOIN incentivo as t_i ON (t_d.tipo_incentivo = t_i.id_inc) 
-                            LEFT OUTER JOIN dedicacion_incentivo as t_di ON (t_d.dedi_incen = t_di.id_di) 
-                            LEFT OUTER JOIN cic_conicef as t_cc ON (t_d.cic_con = t_cc.id) 
                             LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
                             LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
                             LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
@@ -1593,10 +1583,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                             LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
                             LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
                             LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
-                            LEFT OUTER JOIN expediente as t_e ON (t_d.id_expediente = t_e.id_exp) 
-                            LEFT OUTER JOIN incentivo as t_i ON (t_d.tipo_incentivo = t_i.id_inc) 
-                            LEFT OUTER JOIN dedicacion_incentivo as t_di ON (t_d.dedi_incen = t_di.id_di) 
-                            LEFT OUTER JOIN cic_conicef as t_cc ON (t_d.cic_con = t_cc.id) 
                             LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
                             LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
                             LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 

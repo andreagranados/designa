@@ -155,7 +155,6 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
         }
         //calcula la cantidad de dias transcurridos entre 2 fechas
         function dias_transcurridos($fecha_i,$fecha_f){//strtotime convierte una cadena en formato de fecha
-            
             //el strtotime no funciona con dd/mm/YYYY
             $fecha_i = str_replace('/', '-', $fecha_i);
             $fecha_i=date('Y-m-d', strtotime($fecha_i));
@@ -333,7 +332,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             $res= toba::db('designa')->consultar($con);
             
             $gaste=$res[0]['monto'];
-                        
+                    
               //obtengo el credito de la UA para el periodo actual o presupuestando
             $sql="select sum(b.credito) as cred "
                      . " from mocovi_programa a, mocovi_credito b, mocovi_periodo_presupuestario m_e, unidad_acad d "
@@ -521,7 +520,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                     . " group by id_designacion,desde,hasta,uni_acad,costo_diario, id_programa,porc,dias_des"
                     . ")b";
             
-            
+            //print_r($con);
             $res= toba::db('designa')->consultar($con);
             
             $gaste=$res[0]['monto'];
@@ -535,6 +534,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             $sql = toba::perfil_de_datos()->filtrar($sql);
            
             $resul=toba::db('designa')->consultar($sql);
+            
             $tengo=0;
             if(count($resul)>0){
                  $tengo=$resul[0]['cred'];
