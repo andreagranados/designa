@@ -134,8 +134,7 @@ class ci_renovacion_interinos extends toba_ci
 	{
             
             $desig_origen=$this->dep('datos')->tabla('designacion')->get();
-            //renueva para el periodo presupuestando
-            
+            //renueva para el periodo presupuestando, ejemplo 2017 es el periodo actual y 2018 el periodo presupuestando
             $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
             if ($band){//si alcanza el credito
                             //agrega la nueva designacion

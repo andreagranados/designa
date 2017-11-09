@@ -745,7 +745,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3375', --objeto_cuadro
 	'2548', --objeto_cuadro_col
-	'estado', --clave
+	'est', --clave
 	'18', --orden
 	'Estado', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo

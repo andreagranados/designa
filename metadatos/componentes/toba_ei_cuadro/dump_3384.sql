@@ -665,7 +665,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3384', --objeto_cuadro
 	'2376', --objeto_cuadro_col
-	'nro_norma', --clave
+	'nro', --clave
 	'16', --orden
 	'Número', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
@@ -820,7 +820,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3384', --objeto_cuadro
 	'2545', --objeto_cuadro_col
-	'estado', --clave
+	'est', --clave
 	'19', --orden
 	'Estado', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
