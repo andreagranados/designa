@@ -1012,12 +1012,11 @@ class cargo_solapas extends toba_ci
             $this->controlador()->dep('datos')->tabla('novedad')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('novedad')->resetear();
             $this->s__alta_nov=0;
-            //cuando elimina la licencia tambien debe cambiar el estado de la designacion !!!!!!!
              //recupero la designacion a la cual corresponde la novedad
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $estado=$this->controlador()->dep('datos')->tabla('novedad')->estado_designacion($desig['id_designacion']);
-            $desig['estado']=$estado;
+            //no cambio el estado de la designacion porque estado L depende del periodo de la misma $estado=$this->controlador()->dep('datos')->tabla('novedad')->estado_designacion($desig['id_designacion']);
+            //$desig['estado']=$estado;
             $mensaje='';
            
             if ($desig['nro_540']!= null && $nove['tipo_nov']!=3){// si la designacion tiene tkd y estoy borrando una licencia que afecta credito

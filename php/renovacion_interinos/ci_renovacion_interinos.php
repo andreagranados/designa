@@ -140,7 +140,7 @@ class ci_renovacion_interinos extends toba_ci
                             //agrega la nueva designacion
                             $datos['uni_acad']= $desig_origen['uni_acad'];
                             $datos['id_docente']=$desig_origen['id_docente'];
-                            $datos['nro_cargo']=0;
+                            $datos['nro_cargo']=null;
                             $datos['nro_540']=null;
                             $datos['check_presup']=0;
                             $datos['check_academica']=0;
