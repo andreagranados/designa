@@ -273,6 +273,12 @@ class ci_pinv_otros extends designa_ci
             unset($datos['observacionscyt']);
             unset($datos['nro_resol_baja']);
             unset($datos['fec_baja']);
+//            $cadena = strtoupper($datos['denominacion']); 
+//            $cadena = str_replace("á", "Á", $cadena); 
+//            $cadena = str_replace("é", "É", $cadena); 
+//            $cadena = str_replace("í", "Í", $cadena); 
+//            $cadena = str_replace("ó", "Ó", $cadena); 
+//            $cadena = str_replace("ú", "Ú", $cadena); 
             $datos['denominacion']=strtoupper($datos['denominacion']);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
