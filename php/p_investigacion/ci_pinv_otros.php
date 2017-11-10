@@ -33,10 +33,10 @@ class ci_pinv_otros extends designa_ci
             return $salida; 
             
         }
-        function get_estados_pi(){
-             //si es de la unidad acad retorna solo I
-            return($this->controlador()->dep('datos')->tabla('estado_pi')->get_descripciones_perfil());
-        }
+//        function get_estados_pi(){
+//             //si es de la unidad acad retorna solo I
+//            return($this->controlador()->dep('datos')->tabla('estado_pi')->get_descripciones_perfil());
+//        }
         function get_estados_vi(){
              //si es de la unidad acad retorna solo S de solicitado
             return($this->controlador()->dep('datos')->tabla('estado_vi')->get_descripciones_perfil());
@@ -179,7 +179,8 @@ class ci_pinv_otros extends designa_ci
                 if(trim($resul[0]['sigla'])=='ASMA' or trim($resul[0]['sigla'])=='AUZA'){
                     $form->ef('disp_asent')->set_obligatorio(1);      
                 }
-                  //  $form->ef('estado')->set_solo_lectura(true);       
+                  //  $form->ef('estado')->set_solo_lectura(true);      
+                $componente->ef('estado')->set_solo_lectura(true);
             }
                  
 	}
@@ -272,6 +273,7 @@ class ci_pinv_otros extends designa_ci
             unset($datos['observacionscyt']);
             unset($datos['nro_resol_baja']);
             unset($datos['fec_baja']);
+            $datos['denominacion']=strtoupper($datos['denominacion']);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
             if($mensaje!=''){
@@ -312,7 +314,7 @@ class ci_pinv_otros extends designa_ci
             }
             $datosp['estado']='I';//el proyecto se ingresa por primera vez en estado I
             //$datosp['codigo']=$datos['codigo'];El codigo lo pone central
-            $datosp['denominacion']=$datos['denominacion'];
+            $datosp['denominacion']=strtoupper($datos['denominacion']);
             $datosp['nro_ord_cs']=$datos['nro_ord_cs'];
             $datosp['fecha_ord_cs']=$datos['fecha_ord_cs'];
             $datosp['duracion']=$datos['duracion'];

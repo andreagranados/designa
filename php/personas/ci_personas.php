@@ -97,7 +97,8 @@ class ci_personas extends toba_ci
                     }   
                 }
             if($inser){
-                
+                $datos['apellido']=strtoupper($datos['apellido']);//pasa a mayusculas
+                $datos['nombre']=strtoupper($datos['nombre']);//pasa a mayusculas
                 $datos['nro_tabla']=1;    
                 $this->dep('datos')->tabla('persona')->set($datos);
                 $this->dep('datos')->sincronizar();
@@ -108,8 +109,10 @@ class ci_personas extends toba_ci
 
 	function evt__formulario__modificacion($datos)
 	{
-		$this->dep('datos')->tabla('persona')->set($datos);
-		$this->dep('datos')->sincronizar();
+            $datos['apellido']=strtoupper($datos['apellido']);//pasa a mayusculas
+            $datos['nombre']=strtoupper($datos['nombre']);//pasa a mayusculas
+	    $this->dep('datos')->tabla('persona')->set($datos);
+	    $this->dep('datos')->sincronizar();
 		
 	}
 
