@@ -117,8 +117,8 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	NULL, --dao_parametros
 	NULL, --desplegable
 	NULL, --desplegable_activo
-	'1', --scroll
-	'250px', --scroll_alto
+	'0', --scroll
+	NULL, --scroll_alto
 	NULL, --cc_modo
 	NULL, --cc_modo_anidado_colap
 	NULL, --cc_modo_anidado_totcol
@@ -382,7 +382,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3431', --objeto_cuadro
 	'2519', --objeto_cuadro_col
-	'id_departamento', --clave
+	'departamento', --clave
 	'13', --orden
 	'Departamento', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
@@ -413,7 +413,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3431', --objeto_cuadro
 	'2520', --objeto_cuadro_col
-	'id_area', --clave
+	'area', --clave
 	'14', --orden
 	'Área', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
@@ -444,7 +444,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3431', --objeto_cuadro
 	'2521', --objeto_cuadro_col
-	'id_orientacion', --clave
+	'orientacion', --clave
 	'15', --orden
 	'Orientación', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo

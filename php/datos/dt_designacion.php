@@ -1477,10 +1477,14 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		if (isset($filtro['uni_acad'])) {
 			$where.= " AND uni_acad = ".quote($filtro['uni_acad']);
 		}
+                if (isset($filtro['id_departamento'])) {
+			$where.= " AND id_departamento = ".quote($filtro['id_departamento']);
+		}
+                print_r($filtro['id_departamento']);
                
               //designaciones sin licencia UNION designaciones c licencia 
 		$sql = "select * from (
-                    SELECT distinct t_d.id_designacion, t_d1.apellido||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_d.carac,t_c.descripcion as car, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, m_p.nombre as programa, t_t.porc, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia
+                    SELECT distinct t_d.id_designacion, t_d1.apellido||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_d.carac,t_c.descripcion as car, t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_d3.descripcion as departamento, t_a.descripcion as area, t_o.descripcion as orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, m_p.nombre as programa, t_t.porc, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia
                             FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
                             LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est) 
                             LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
