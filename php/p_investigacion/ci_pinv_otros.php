@@ -177,10 +177,11 @@ class ci_pinv_otros extends designa_ci
                 $resul=toba::db('designa')->consultar($sql);
               
                 if(trim($resul[0]['sigla'])=='ASMA' or trim($resul[0]['sigla'])=='AUZA'){
-                    $form->ef('disp_asent')->set_obligatorio(1);      
+                    $componente->ef('disp_asent')->set_obligatorio(1);      
                 }
-                  //  $form->ef('estado')->set_solo_lectura(true);      
-                $componente->ef('estado')->set_solo_lectura(true);
+                 //$componente->ef('estado')->set_obligatorio(0);     
+                $componente->ef('estado')->set_solo_lectura(true);//para que funcione no tiene que ser obligatorio 
+                $componente->ef('codigo')->set_solo_lectura(true); 
             }
                  
 	}

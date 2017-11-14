@@ -4,14 +4,40 @@ require_once 'consultas_mapuche.php';
 
 class dt_designacion extends toba_datos_tabla
 {
+//recorre las designaciones y para cada una verifica si tiene actividad
    function control_actividad($designaciones=array(),$anio){
+       $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
+       $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
        $band=true;
        $i=0;$long=count($designaciones);
-       while($band and $i<=$long) {
-            $sql="select into auxi control_actividad(".$designaciones[$i].",".$anio.");";
-            toba::db('designa')->consultar($sql);
+       print_r($designaciones);exit;
+       while($band and $i<$long) {
+            $sql="select distinct case when tipo_desig=1 then case when estado<>'B' and estado<>'L' then case when a.id_materia is not null then true else case when pi.id_designacion is not null then true else case when piv.id_designacion is not null then true else case when pe.id_designacion is not null then true else case when pev.id_designacion is not null then true else false end end end end end else false end else false end as control from(
+            select sub1.id_designacion,sub1.id_docente,sub1.tipo_desig ,case when nov.tipo_nov in (1,4) then 'B' else case when nov.tipo_nov in(2,5) then 'L' else estado end end as estado from
+            (select d.id_designacion,d.id_docente,d.tipo_desig,d.estado,max(id_novedad)as id_novedad from designacion d
+            left outer join novedad n on (d.id_designacion=n.id_designacion and n.desde<='".$udia."' and n.desde>='".$pdia."')
+            where d.id_designacion=$designaciones[$i]['id_designacion']
+            group by d.estado,d.id_docente,d.tipo_desig,d.id_designacion
+            )sub1
+            left outer join novedad nov on (nov.id_designacion=sub1.id_designacion)
+            )sub2
+
+            left outer join asignacion_materia a on (sub2.id_designacion=a.id_designacion and a.anio=$anio)
+            left outer join asignacion_tutoria t on (sub2.id_designacion=t.id_designacion and a.anio=$anio)
+            left outer join director_dpto i on (sub2.id_docente=i.id_docente and i.desde<=$udia and i.hasta>=$pdia)
+            left outer join integrante_interno_pi pi on (sub2.id_designacion=pi.id_designacion and pi.desde<='".$udia."' and pi.hasta>=$pdia)
+            left outer join integrante_interno_pe pe on (sub2.id_designacion=pe.id_designacion and pe.desde<='".$udia."' and pe.hasta>=$pdia)
+        --esto para el primer vinculo
+            left outer join vinculo vin on (vin.desig=sub2.id_designacion)
+            left outer join integrante_interno_pi piv on (vin.vinc=piv.id_designacion and piv.desde<='".$udia."' and piv.hasta>='".$pdia."')".
+            " left outer join integrante_interno_pe pev on (vin.vinc=pev.id_designacion and pev.desde<='".$udia."' and pev.hasta>='".$pdia."')";
+            $resul=toba::db('designa')->consultar($sql);
+            if(!$resul){
+                $band=false;
+            }
             $i++;
         }
+        return $band;
    } 
    function get_uni_acad($id_desig){
        $sql="select uni_acad from designacion where id_designacion=".$id_desig;

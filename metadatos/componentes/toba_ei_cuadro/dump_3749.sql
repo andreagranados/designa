@@ -189,7 +189,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3467', --objeto_cuadro_col
 	'titulo', --clave
 	'7', --orden
-	'Título de grado', --titulo
+	'Título de preg/grado', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

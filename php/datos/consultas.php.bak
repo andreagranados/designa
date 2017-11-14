@@ -19,7 +19,7 @@ class consultas
 			return $result[0]['desc_titul'];
 		}
 	}
-        //para los titulos de grado o pregrado
+        //para los titulos de grado
     static function get_titulos($filtro=null, $locale=null)
 	{
         //print_r($filtro);

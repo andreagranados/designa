@@ -425,10 +425,29 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                         }
                   } 
             } 
-           
-             
-            $cuesta_nuevo=$dias*$valor_categoria;
+            //dias licencia 
+            $sql="select id_designacion,sum((case when hasta>'".$udia."' then'".$udia."' else hasta end) - (case when desde<'".$pdia."' then '".$pdia."' else desde end)) as cant "
+                    . "from novedad"
+                    . " where  id_designacion= $id_vieja"
+                    . " and tipo_nov in (2,5)
+                        and desde<='".$udia."' and hasta>='".$pdia."'"
+                        ." and tipo_norma is not null 
+                        and tipo_emite is not null 
+                        and norma_legal is not null
+                        group by id_designacion";   
             
+            $licencias=toba::db('designa')->consultar($sql);
+            if(count($licencias)){
+                $diaslic=$licencias[0]['cant']+1;
+            }else{
+                $diaslic=0;
+            }
+            if($diaslic>$dias){
+                $diaslic=0;    
+                }
+            
+            $cuesta_nuevo=($dias-$diaslic)*$valor_categoria;
+            // print_r($cuesta_nuevo);exit;
                        
             //-----------CALCULO LO QUE GASTE sin considerar la designacion vieja
             
@@ -524,8 +543,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             $res= toba::db('designa')->consultar($con);
             
             $gaste=$res[0]['monto'];
-            //print_r($gaste);exit();
-            
+                       
             //sumo los creditos (correspondientes al periodo actual/presupuestando) de todos los programas asociados a la UA
             $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b,mocovi_periodo_presupuestario d,unidad_acad c "
                     . "where a.id_unidad=c.sigla and a.id_programa=b.id_programa"

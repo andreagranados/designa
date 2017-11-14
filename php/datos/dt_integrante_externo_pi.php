@@ -158,13 +158,18 @@ class dt_integrante_externo_pi extends toba_datos_tabla
     }
     function get_plantilla($id_p){
         
-        $sql="(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,b.desc_titul as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
+        $sql="(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
                 . " from  integrante_interno_pi t_i"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_i.cat_investigador)"
                 . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
                 ."  LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
                 . " LEFT OUTER JOIN funcion_investigador t_f ON (t_i.funcion_p=t_f.id_funcion) "
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
+                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+                                    from titulos_docente t_t , titulo t_u 
+                                    where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='PREG'
+                                    group by id_docente)  d
+                    ON (d.id_docente=t_do.id_docente)              "
                 . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
                                     from titulos_docente t_t , titulo t_u 
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD'
