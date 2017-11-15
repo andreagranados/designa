@@ -37,7 +37,7 @@ class dt_impresion_540 extends toba_datos_tabla
                 left outer join norma t_n on (t_d.id_norma=t_n.id_norma)
                 left outer join novedad t_no on (t_no.id_designacion=t_d.id_designacion and t_no.tipo_nov in (1,4))
                 left outer join novedad t_nol on (t_nol.id_designacion=t_d.id_designacion and t_nol.tipo_nov in (2,5) and t_nol.desde <= t_p.fecha_fin and (t_nol.hasta >= t_p.fecha_inicio or t_nol.hasta is null))"
-                .$where;
+                .$where." order by agente, desde";
               //print_r($sql);
               return toba::db('designa')->consultar($sql);
 		}   
