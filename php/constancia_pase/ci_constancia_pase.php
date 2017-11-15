@@ -82,7 +82,7 @@ class ci_constancia_pase extends toba_ci
                     'showLines'=>2,//coloca las lineas horizontales
                     'showHeadings' => true,//muestra el nombre de las columnas
                     'titleFontSize' => 12,
-                    'fontSize' => 9,
+                    'fontSize' => 8,
                     //'shadeCol' => array(1,1,1,1,1,1,1,1,1,1,1,1),
                    'shadeCol' => array(100,100,100),//darle color a las filas intercaladamente
                     'outerLineThickness' => 0.7,
