@@ -913,7 +913,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 //que sea una designacion vigente, dentro del periodo actual o anulado cuando le setean el hasta con el dia anterior al desde
 		$where=" WHERE ((a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)) or (a.desde>a.hasta and ".$filtro['anio']."=extract(year from a.hasta)))";
                 $where.=" AND  nro_540 is null";
-                          
+                $where2="";          
                 
 		if (isset($filtro['uni_acad'])) {
 			$where.= " AND uni_acad = ".quote($filtro['uni_acad']);
@@ -928,8 +928,14 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     	$where.= " AND id_programa=".$filtro['id_programa'];
 		}
                 if (isset($filtro['estado'])) {
-                    $where.= " AND estado='".$filtro['estado']."'";
+                    if($filtro['estado']=='A'){
+                        $where2.= " WHERE (estado='".$filtro['estado']."' or estado='R')";
+                    }else{
+                        $where2.= " WHERE estado='".$filtro['estado']."'";
+                    }
+                    
                 }
+               
                 //me aseguro de colocar en estado B todas las designaciones que tienen baja
                 $sql2=" update designacion a set estado ='B' "
                         . " where estado<>'B' and uni_acad=".quote($filtro['uni_acad'])
@@ -940,7 +946,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
                 $sql=$this->armar_consulta($pdia, $udia, $filtro['anio']);
                 
-                $sql=  "select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,id_programa,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
+                $sql=  "select * from ("
+                        ."select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,id_programa,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
                             . ",case when b.estado<>'B' then case when t_no.id_novedad is null then b.estado else 'L' end else 'B' end as estado  "//si tiene una baja o renuncia coloca B. Si tiene una licencia sin goce o cese coloca L
                             . " from ("
                             ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
@@ -949,6 +956,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                             ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
                             .") b "
                             . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
+                            //. $where2
+                            .")c $where2"
                             . " order by programa,docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                 $ar = toba::db('designa')->consultar($sql);
                 

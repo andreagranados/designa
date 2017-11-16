@@ -322,8 +322,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'3', --orden
 	'Carácter', --etiqueta
 	NULL, --etiqueta_estilo
-	'R - Regular <br>
- I - Interino /Extraordinario/Suplente<br>', --descripcion
+	'R (Regular) <br>
+ I (Interino /Extraordinario/Suplente)<br>', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -563,7 +563,9 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'5', --orden
 	'Estado', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'A (estado A ó R)</br>
+L (estado L)</br>
+B (estado B)</br>', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -581,7 +583,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'A,L,R,B', --carga_lista
+	'A,L,B', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	NULL, --carga_maestros

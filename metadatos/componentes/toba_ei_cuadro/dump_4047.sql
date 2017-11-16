@@ -59,7 +59,7 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	'0', --paginar
 	NULL, --tamano_pagina
 	'P', --tipo_paginado
-	'0', --mostrar_total_registros
+	'1', --mostrar_total_registros
 	'0', --eof_invisible
 	'Verique que el TKD tenga el Expediente en el que fue enviado y que las designaciones del TKD tengan Norma de Alta!!', --eof_customizado
 	'0', --siempre_con_titulo

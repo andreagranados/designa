@@ -11,25 +11,41 @@ class dt_impresion_540 extends toba_datos_tabla
                 return 0;
             }
         }
-        function get_control_pase($nro){
+        function get_control_pase($nro){//recibe el nro de tkd
             $sql="select * from public_auditoria.logs_designacion a where a.nro_540=".$nro
                     . " and not exists (select * from designacion b"
                     . "            where a.id_designacion=b.id_designacion"
                     . "            and b.nro_540=".$nro.")";//existen designaciones con ese tkd y ademas existen designaciones que tuvieron y ya no tienen ese tkd
         //print_r($sql);
+            
             $resul= toba::db('designa')->consultar($sql);
             if(count($resul)>0){
-                return false;
+                return 2;//false --designaciones que perdieron la norma
             }else{
-                return true;
-            }
+                $sql="select * from designacion where nro_540=".$nro." and id_norma is null";
+                $resul2= toba::db('designa')->consultar($sql);
+                if(count($resul2)>0){
+                    return 3;//false hay designaciones que no tienen la norma
+                } else{//si algunas de las designaciones del tkd tiene baja pero esa baja no tiene norma
+                    $sql="select * from designacion d, novedad n "
+                            . " where d.id_designacion=n.id_designacion and n.tipo_nov in (1,4)"
+                            . " and d.nro_540=".$nro." and (n.tipo_norma is null or n.tipo_emite is null and n.norma_legal is null)";
+                    $resul3= toba::db('designa')->consultar($sql);
+                    if(count($resul3)>0){
+                        return 4;//false hay bajas sin norma
+                    }else{
+                        return 1;//true
+                    }
+                    
+                }
+              } 
         }
         function get_constancia($filtro=null){
-            
+            //" and t_d.id_norma is not null and expediente is not null and expediente<>''"
             if (isset($filtro['nro_540']['valor'])) {
-                $where="WHERE nro_540=".$filtro['nro_540']['valor']." and t_d.id_norma is not null and expediente is not null and expediente<>''";
+                $where="WHERE nro_540=".$filtro['nro_540']['valor']." and expediente is not null and expediente<>''";//con esto aseguro que sino tiene expediente no salga nada en el cuadro
                 $sql="select distinct trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_d.id_designacion,cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,t_i.expediente ,substr(t_n.tipo_norma,1,3)||' '||substr(t_n.emite_norma,1,1)||substr(t_n.emite_norma,3,1)||' N'||chr(176)||':'||nro_norma as norma
-                , case when t_no.id_novedad is not null then 'B('||substr(t_no.tipo_norma,1,3)||' '||substr(t_no.tipo_emite,1,1)||substr(t_no.tipo_emite,3,1)||':'||trim(t_no.norma_legal)||')' else case when t_nol.id_novedad is not null then 'L('||substr(t_nol.tipo_norma,1,3)||' '||substr(t_nol.tipo_emite,1,1)||substr(t_nol.tipo_emite,3,1)||' N'||chr(176)||': '||trim(t_nol.norma_legal)||')' else '' end end as novedad
+                , case when t_no.id_novedad is not null then 'B('||substr(t_no.tipo_norma,1,3)||' '||substr(t_no.tipo_emite,1,1)||substr(t_no.tipo_emite,3,1)||':'||trim(t_no.norma_legal)||')' else case when t_nol.id_novedad is not null then 'L('||substr(t_nol.tipo_norma,1,3)||' '||substr(t_nol.tipo_emite,1,1)||substr(t_nol.tipo_emite,3,1)||': '||trim(t_nol.norma_legal)||')' else '' end end as novedad
                 from designacion t_d
                 left outer join docente t_do on (t_do.id_docente=t_d.id_docente)
                 left outer join impresion_540 t_i on (t_i.id=t_d.nro_540)

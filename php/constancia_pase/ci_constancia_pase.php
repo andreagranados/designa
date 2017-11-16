@@ -39,16 +39,20 @@ class ci_constancia_pase extends toba_ci
 	{
              if (isset($this->s__datos_filtro)) {
                  $band=$this->dep('datos')->tabla('impresion_540')->get_control_pase($this->s__datos_filtro['nro_540']['valor']);
-                 if($band){
-                    $this->s__unidad=$this->dep('datos')->tabla('unidad_acad')->get_descripcion($this->s__datos_filtro['uni_acad']['valor']);
-                    $this->s__anio=$this->dep('datos')->tabla('impresion_540')->get_anio($this->s__datos_filtro['nro_540']['valor']);
-                    $this->s__listado=$this->dep('datos')->tabla('impresion_540')->get_constancia($this->s__datos_filtro);
-                   // print_r($this->s__listado);
-                    $cuadro->set_datos($this->s__listado);
-                 }else{
-                     toba::notificacion()->agregar('Existen designaciones que han perdido el TKD', "error");
-                 }
-                
+                 switch ($band) {
+                    case 1:
+                        $this->s__unidad=$this->dep('datos')->tabla('unidad_acad')->get_descripcion($this->s__datos_filtro['uni_acad']['valor']);
+                        $this->s__anio=$this->dep('datos')->tabla('impresion_540')->get_anio($this->s__datos_filtro['nro_540']['valor']);
+                        $this->s__listado=$this->dep('datos')->tabla('impresion_540')->get_constancia($this->s__datos_filtro);
+                        // print_r($this->s__listado);
+                        $cuadro->set_datos($this->s__listado);
+                        break;
+                    case 2: toba::notificacion()->agregar('Existen designaciones que han perdido el TKD', "error");break;
+                    case 3: toba::notificacion()->agregar('Designaciones en el tkd sin norma de alta. Complete las normas de alta.', "error"); break;
+                    case 4: toba::notificacion()->agregar('Hay bajas sin norma. Complete las normas de bajas que figuran en el tkd', "error");   break;
+                     default:
+                         break;
+                 }   
            }
 	}
         function vista_pdf(toba_vista_pdf $salida){

@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3655]--  Informar Norma Legal 
+--[3655]--  Informar Norma de Alta de Designación 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -23,7 +23,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --actividad_buffer
 	NULL, --actividad_patron_proyecto
 	NULL, --actividad_patron
-	'Informar Norma Legal', --nombre
+	'Informar Norma de Alta de Designación', --nombre
 	NULL, --descripcion
 	'23', --punto_montaje
 	NULL, --actividad_accion
