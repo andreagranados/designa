@@ -1168,7 +1168,7 @@ class cargo_solapas extends toba_ci
             if($desig['hasta']!= null){
                 $udia=$desig['hasta'];
             }else{//la fecha hasta de la designacion es nula (cargo regular)
-                $udia=$this->controlador()->ultimo_dia_periodo(1);
+                $udia=$this->controlador()->ultimo_dia_periodo(2);
             }
             //verifico que este dentro del periodo de la designacion
             //permito ingresar como fecha de baja un dia antes de la fecha desde. Esto para anular designaciones
