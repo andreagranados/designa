@@ -129,7 +129,8 @@ class ci_impresion_540 extends toba_ci
                 //-- Cuadro con datos
                 $opciones = array(
                     'splitRows'=>0,
-                    'rowGap' => 0.7,//ancho de las filas
+                    'rowGap' => 0.5,//0.7ancho de las filas
+                    'colGap' => 2,
                     'showHeadings' => true,
                     'titleFontSize' => 10,
                     'fontSize' => 8,
@@ -137,7 +138,10 @@ class ci_impresion_540 extends toba_ci
                     'outerLineThickness' => 2,
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
-                    'width' => 820
+                    'width' => 820,//820
+                    'cols' =>array('col2' => array('width'=>35),'col3' => array('width'=>74),'col4' => array('width'=>28),'col5' => array('width'=>79),'col6' =>array('width'=>35),'col7' => array('width'=>30),'col8' => array('width'=>31),'col11' => array('width'=>51),'col12' => array('width'=>51),'col13' => array('width'=>62),'col14' => array('width'=>72),'col15' => array('width'=>68),'col16' => array('width'=>66),'col17' =>array('width'=>68))
+                    //'cols' =>array('col2' => array('width'=>50), 'col3' => array('width'=>82),'col4' => array('width'=>26),'col5' => array('width'=>73),'col6' =>array('width'=>35),'col7' => array('width'=>29),'col8' => array('width'=>29),'col10' => array('width'=>14),'col11' => array('width'=>50),'col12' => array('width'=>50),'col13' => array('width'=>64),'col14' => array('width'=>73),'col15' => array('width'=>70),'col16' => array('width'=>67),'col17' =>array('width'=>67),'col18' => array('width'=>56))
+                    //'cols' =>array('col2'=>array('justification'=>'center') ,'col3'=>array('justification'=>'center'),'col4'=>array('justification'=>'center') ,'col5'=>array('justification'=>'center'),'col6'=>array('justification'=>'center') ,'col7'=>array('justification'=>'center') ,'col8'=>array('justification'=>'center'),'col9'=>array('justification'=>'center') ,'col10'=>array('justification'=>'center') ,'col11'=>array('justification'=>'center') ,'col12'=>array('justification'=>'center'),'col13'=>array('justification'=>'center') ,'col14'=>array('justification'=>'center') )
                     );
 
                 $i=0;

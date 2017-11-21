@@ -8,8 +8,11 @@ class dt_asignacion_materia extends toba_datos_tabla
 		}
         $sql="select informe_actividad(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
         toba::db('designa')->consultar($sql);
-        $sql=" select a.*,a.id_designacion||'('||a.cat_estat||'-'||a.carac||')' as desig
+        $sql=" select a.*,a.id_designacion||'('||a.cat_estat||'-'||a.carac||')' as desig,d.descripcion as departamento,ar.descripcion as area,o.descripcion as orientacion
                 from auxiliar a 
+                left outer join departamento d on (a.id_departamento=d.iddepto)
+                left outer join area ar on (a.id_area=ar.idarea)
+                left outer join orientacion o on (a.id_orientacion=o.idorient and o.idarea =ar.idarea)
                 $where
                 order by agente"
                 ;
