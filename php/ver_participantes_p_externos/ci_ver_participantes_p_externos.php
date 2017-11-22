@@ -1,9 +1,9 @@
 <?php
-
-class ci_ver_participantes_p_externos extends toba_ci
+class ci_ver_part_p_externos extends toba_ci
 {
+    protected $s__where;
     protected $s__datos_filtro;
-        //-----------------------------------------------------------------------------------
+    	//-----------------------------------------------------------------------------------
 	//---- filtros ----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class ci_ver_participantes_p_externos extends toba_ci
 	{
             unset($this->s__datos_filtro);
             unset($this->s__where);
-	}	
+	}
         //-----------------------------------------------------------------------------------
 	//---- cuadro -----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -32,10 +32,10 @@ class ci_ver_participantes_p_externos extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
             if (isset($this->s__where)) {
-                $cuadro->set_datos($this->dep('datos')->tabla('integrante_interno_pi')->get_participantes_externos($this->s__datos_filtro));
+               $datos=$this->dep('datos')->tabla('integrante_interno_pi')->get_participantes_externos($this->s__datos_filtro);
+               $cuadro->set_datos($datos);
             }
 	}
-
 	
 
 }

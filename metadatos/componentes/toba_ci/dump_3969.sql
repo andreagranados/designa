@@ -16,7 +16,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba', --clase_proyecto
 	'toba_ci', --clase
 	'23', --punto_montaje
-	'ci_ver_participantes_p_externos', --subclase
+	'ci_ver_part_p_externos', --subclase
 	'ver_participantes_p_externos/ci_ver_participantes_p_externos.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
