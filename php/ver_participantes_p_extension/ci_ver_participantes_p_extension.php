@@ -31,9 +31,11 @@ class ci_ver_participantes_p_extension extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-            if (isset($this->s__where)) {
-                $cuadro->set_datos($this->dep('datos')->tabla('integrante_interno_pe')->get_participantes($this->s__datos_filtro));
+            if (isset($this->s__datos_filtro)) {
+                $datos=$this->dep('datos')->tabla('integrante_interno_pe')->get_participantes($this->s__datos_filtro);
+                $cuadro->set_datos($datos);     
             }
+           
 	}
 
 	
