@@ -259,18 +259,20 @@ class dt_designacion extends toba_datos_tabla
                     . " and b.nro_cargo <> 0 and b.nro_cargo is not null";
         $cargos=toba::db('designa')->consultar($sql);
             
-        if(count($cargos)>0){//si hay docentes 
-                $doc=array();
-                foreach ($cargos as $value) {
-                    $car[]=$value['nro_cargo'];
-        }
-        $conjunto=implode(",",$car);
+        if(count($cargos)>0){//si hay designaciones docentes con número de cargo 
+            $doc=array();
+            foreach ($cargos as $value) {
+                $car[]=$value['nro_cargo'];
+            }
+            if($ua=="ESCM"){
+              $ua2='IBMP';//en mapuche se cargan como IBMP
+            }else{
+              $ua2=$ua;  
+            };
+            $conjunto=implode(",",$car);
                 //recupero de mapuche los datos de los legajos
-        $datos_mapuche = consultas_mapuche::get_cargos_imputaciones($ua,$udia,$pdia,$conjunto);
- 
-        }
-        if(count($datos_mapuche)>0){
-                
+            $datos_mapuche = consultas_mapuche::get_cargos_imputaciones($ua2,$udia,$pdia,$conjunto);
+            if(count($datos_mapuche)>0){
             
             //recupero los cargos de mapuche de ese periodo y esa ua
             $sql=" CREATE LOCAL TEMP TABLE auxi(
@@ -299,7 +301,38 @@ class dt_designacion extends toba_datos_tabla
                 }else{
                     $concat="null";
                 }
-                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$filtro['uni_acad']['valor']."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",".$valor['porc_ipres'].",".$valor['codn_area'].",".$valor['codn_subar'].",".$valor['codn_subsubar'].",".$valor['codn_fuent'].",'".$valor['imputacion']."')";
+                if(isset($valor['porc_ipres'])){
+                    $porc=$valor['porc_ipres'];
+                }else{
+                    $porc="null";
+                }
+                if(isset($valor['codn_area'])){
+                    $are=$valor['codn_area'];
+                }else{
+                    $are="null";
+                }
+                if(isset($valor['codn_subar'])){
+                     $subar=$valor['codn_subar'];
+                 }else{
+                     $subar="null";
+                 }
+                 if(isset($valor['codn_subsubar'])){
+                     $subsubar=$valor['codn_subsubar'];
+                 }else{
+                     $subsubar="null";
+                 }
+                 if(isset($valor['codn_fuent'])){
+                     $fuent=$valor['codn_fuent'];
+                 }else{
+                     $fuent="null";
+                 }
+                 if(isset($valor['imputacion'])){
+                     $impu=$valor['imputacion'];
+                 }else{
+                     $impu="null";
+                 }
+        
+                $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$ua."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",".$porc.",".$are.",".$subar.",".$subsubar.",".$fuent.",'".$impu."')";
                 toba::db('designa')->consultar($sql);
             }
             $sql="select t_d.uni_acad,t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.id_designacion,t_d.nro_cargo, t_m.imputacion,trim(to_char(t_m.area ,'000'))||'-'||trim(to_char(t_m.sub_area,'000'))||'-'||trim(to_char(t_m.sub_sub_area,'000'))||'-'||trim(to_char(t_m.fuente,'00')) as abrev_mo,trim(to_char(codn_area ,'000'))||'-'||trim(to_char(codn_subar,'000'))||'-'||trim(to_char(codn_subsubar,'000'))||'-'||trim(to_char(codn_fuent,'00')) as abrev_mapu, t_mapu.imputacion as imputacion_mapu,t_d.cat_mapuche,t_d.carac,desde,hasta,t_i.porc,t_mapu.porc_ipres
@@ -318,9 +351,13 @@ class dt_designacion extends toba_datos_tabla
                     //. " or t_m.area is null or t_m.area<>t_mapu.codn_area or t_m.sub_area is null or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area is null or t_m.sub_sub_area<>t_mapu.codn_subsubar or t_m.fuente is null or t_m.fuente<>t_mapu.codn_fuent)";// or t_m.fuente<>t_mapu.codn_fuent)";
             $resul=toba::db('designa')->consultar($sql);
             return $resul;
-           } else{
+           }else{
                return array();
-           }
+           } 
+        }else{
+            return array();
+        }
+        
             
     }
     function get_comparacion($filtro){
