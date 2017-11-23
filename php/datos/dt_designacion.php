@@ -295,7 +295,7 @@ class dt_designacion extends toba_datos_tabla
                     imputacion		text
             );";
             toba::db('designa')->consultar($sql);
-            print_r($datos_mapuche);
+            
             foreach ($datos_mapuche as $valor) {
                 if(isset($valor['fec_baja'])){
                     $concat="'".$valor['fec_baja']."'";
