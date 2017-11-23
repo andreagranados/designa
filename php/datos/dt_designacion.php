@@ -295,6 +295,7 @@ class dt_designacion extends toba_datos_tabla
                     imputacion		text
             );";
             toba::db('designa')->consultar($sql);
+            print_r($datos_mapuche);
             foreach ($datos_mapuche as $valor) {
                 if(isset($valor['fec_baja'])){
                     $concat="'".$valor['fec_baja']."'";
@@ -333,8 +334,7 @@ class dt_designacion extends toba_datos_tabla
                  }
         
                 $sql=" insert into auxi values (null,".$valor['chkstopliq'].",'".$ua."',".$valor['nro_legaj'].",'". str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_cargo'].",'".$valor['codc_categ']."','".$valor['codc_carac']."','".$valor['fec_alta']."',".$concat.",".$porc.",".$are.",".$subar.",".$subsubar.",".$fuent.",'".$impu."')";
-                $resul=toba::db('designa')->consultar($sql);
-                print_r($resul);
+                toba::db('designa')->consultar($sql);
             }
             $sql="select t_d.uni_acad,t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.id_designacion,t_d.nro_cargo, t_m.imputacion,trim(to_char(t_m.area ,'000'))||'-'||trim(to_char(t_m.sub_area,'000'))||'-'||trim(to_char(t_m.sub_sub_area,'000'))||'-'||trim(to_char(t_m.fuente,'00')) as abrev_mo,trim(to_char(codn_area ,'000'))||'-'||trim(to_char(codn_subar,'000'))||'-'||trim(to_char(codn_subsubar,'000'))||'-'||trim(to_char(codn_fuent,'00')) as abrev_mapu, t_mapu.imputacion as imputacion_mapu,t_d.cat_mapuche,t_d.carac,desde,hasta,t_i.porc,t_mapu.porc_ipres
                     from designacion t_d
