@@ -37,7 +37,7 @@ class dt_en_conjunto extends toba_datos_tabla
                     . "  where t_c.id_conjunto=".$conj
                     ." and t_c.id_materia=t_m.id_materia"
                     . " and t_m.id_plan=t_p.id_plan";
-            
+            print_r($sql);
             return toba::db('designa')->consultar($sql);
         }
         function borrar_materias ($conj){
