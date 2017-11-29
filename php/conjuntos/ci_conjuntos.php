@@ -47,6 +47,7 @@ class ci_conjuntos extends toba_ci
 
 	function evt__cuadro__seleccion($datos)
 	{
+            print_r($datos);
             $this->dep('datos')->tabla('conjunto')->cargar($datos);
             $this->set_pantalla('pant_conjunto');
 	}
