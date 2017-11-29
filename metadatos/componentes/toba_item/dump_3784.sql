@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3784]--  Ver Vínculos 
+--[3784]--  Ver Viáticos 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -23,7 +23,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --actividad_buffer
 	NULL, --actividad_patron_proyecto
 	NULL, --actividad_patron
-	'Ver Vínculos', --nombre
+	'Ver Viáticos', --nombre
 	NULL, --descripcion
 	'23', --punto_montaje
 	NULL, --actividad_accion

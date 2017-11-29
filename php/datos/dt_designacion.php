@@ -240,9 +240,19 @@ class dt_designacion extends toba_datos_tabla
         $concatena=' ';
         if(isset($filtro['distinto'])){
              if($filtro['distinto']['valor']==1){//si contesto que si
-                 $concatena=" and ( t_m.sub_sub_area is null or t_m.sub_sub_area <>t_mapu.codn_subsubar"//sino le coloco el null el <> no funciona. El <> solo funciona cuando ambos no son nulos
-                    . " or t_m.area is null or t_m.area<>t_mapu.codn_area or t_m.sub_area is null or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area is null or t_m.sub_sub_area<>t_mapu.codn_subsubar or t_m.fuente is null or t_m.fuente<>t_mapu.codn_fuent)";// or t_m.fuente<>t_mapu.codn_fuent)";
-                 //$concatena=' and (t_mapu.codn_fuent is not null and t_m.area<>t_mapu.codn_area and t_m.sub_sub_area<>t_mapu.codn_subsubar and t_m.fuente is not null and t_m.sub_sub_area <>t_mapu.codn_subsubar and t_m.area<>t_mapu.codn_area and t_m.sub_area<>t_mapu.codn_subar and t_m.sub_sub_area<>t_mapu.codn_subsubar and t_m.fuente<>t_mapu.codn_fuent )';
+//                 $concatena=" and ( t_m.sub_sub_area is null or t_m.sub_sub_area <>t_mapu.codn_subsubar"//sino le coloco el null el <> no funciona. El <> solo funciona cuando ambos no son nulos
+//                    . " or t_m.area is null or t_m.area<>t_mapu.codn_area or t_m.sub_area is null or t_m.sub_area<>t_mapu.codn_subar or t_m.sub_sub_area is null or t_m.sub_sub_area<>t_mapu.codn_subsubar or t_m.fuente is null or t_m.fuente<>t_mapu.codn_fuent)";// or t_m.fuente<>t_mapu.codn_fuent)";
+//                 $concatena=' and ((t_mapu.codn_fuent is not null and t_m.fuente is not null and t_m.fuente<>t_mapu.codn_fuent)
+//                                   or
+//                                   (and t_m.area is not null and t_mapu.codn_area is not null and t_m.area<>t_mapu.codn_area )
+//                                   or 
+//                                   (and t_m.sub_area is not null and t_mapu.codn_subar is not null and t_m.sub_area<>t_mapu.codn_subar)
+//                                   or
+//                                   (and t_m.sub_sub_area is not null and t_mapu.codn_subsubar is not null and t_m.sub_sub_area<>t_mapu.codn_subsubar)
+//                                   or
+//                                   (t_mapu.codn_fuent is not null and t_m.fuente is null)
+//                                   or 
+//                                   (t_mapu.codn_fuent is null and t_m.fuente is not null) )';
              }
             
         }

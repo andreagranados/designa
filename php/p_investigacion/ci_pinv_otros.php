@@ -9,7 +9,7 @@ class ci_pinv_otros extends designa_ci
         protected $s__mostrar_form_tiene;
         protected $s__datos_filtro;
         protected $s__datos;
-        
+        protected $s__datos_cd;
         //evento implicito que no se muestra en un boton
         //sirve para ocultar el ef suplente
         function evt__formulario__modif($datos)
@@ -274,13 +274,7 @@ class ci_pinv_otros extends designa_ci
             unset($datos['observacionscyt']);
             unset($datos['nro_resol_baja']);
             unset($datos['fec_baja']);
-//            $cadena = strtoupper($datos['denominacion']); 
-//            $cadena = str_replace("á", "Á", $cadena); 
-//            $cadena = str_replace("é", "É", $cadena); 
-//            $cadena = str_replace("í", "Í", $cadena); 
-//            $cadena = str_replace("ó", "Ó", $cadena); 
-//            $cadena = str_replace("ú", "Ú", $cadena); 
-            $datos['denominacion']=strtoupper($datos['denominacion']);
+            $datos['denominacion']=mb_strtoupper($datos['denominacion']);//strtoupper($datos['denominacion']);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
             if($mensaje!=''){
@@ -321,7 +315,7 @@ class ci_pinv_otros extends designa_ci
             }
             $datosp['estado']='I';//el proyecto se ingresa por primera vez en estado I
             //$datosp['codigo']=$datos['codigo'];El codigo lo pone central
-            $datosp['denominacion']=strtoupper($datos['denominacion']);
+            $datosp['denominacion']=mb_strtoupper($datos['denominacion']);
             $datosp['nro_ord_cs']=$datos['nro_ord_cs'];
             $datosp['fecha_ord_cs']=$datos['fecha_ord_cs'];
             $datosp['duracion']=$datos['duracion'];
@@ -519,8 +513,8 @@ class ci_pinv_otros extends designa_ci
         function evt__cuadro_viatico__seleccion($datos)
 	{ 
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
+            if($pi['estado']<>'A'){//solo en estado A puede modificar
+                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Activo(A)', 'error');   
             }else{
                 $this->s__mostrar_v=1;
                 $this->controlador()->dep('datos')->tabla('viatico')->cargar($datos);
@@ -530,7 +524,15 @@ class ci_pinv_otros extends designa_ci
         function conf__form_viatico(toba_ei_formulario $form)
 	{
              if($this->s__mostrar_v==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
-                $this->dep('form_viatico')->descolapsar();
+                $this->dep('form_viatico')->descolapsar(); 
+                $form->ef('tipo')->set_obligatorio('true');
+                $form->ef('estado')->set_obligatorio('true');
+                $form->ef('fecha_solicitud')->set_obligatorio('true');
+                $form->ef('id_designacion')->set_obligatorio('true');
+                $form->ef('origen')->set_obligatorio('true');
+                $form->ef('destino')->set_obligatorio('true');
+                $form->ef('fecha_salida')->set_obligatorio('true');
+                $form->ef('fecha_regreso')->set_obligatorio('true');
              }else{
                 $this->dep('form_viatico')->colapsar();
              }
@@ -542,48 +544,72 @@ class ci_pinv_otros extends designa_ci
                  $datos2['fecha_salida'][2]=trim(substr($datos['fecha_salida'],10,6));//'12:00';
                  unset($datos2['fecha_regreso']);
                  $datos2['fecha_regreso'][0]=substr($datos['fecha_regreso'],0,10);//'2017-01-01';
-                 $datos2['fecha_regreso'][2]=trim(substr($datos['fecha_regreso'],10,6));//'12:00';
+                 $datos2['fecha_regreso'][2]=trim(substr($datos['fecha_regreso'],10,6));//'12:00';                 
                  $form->set_datos($datos2);
             }
+            
 	}
-      
-        function evt__form_viatico__alta($datos)
+//        function ajax__get_cant_dias($parametros,toba_ajax_respuesta $respuesta){
+//            //if (isset($fs[0]) && isset($fs[1]) && isset($fr[0]) && isset($fr[1])){
+//            $respuesta->agregar_cadena('param1', 'Este es el primer parámetro');
+//            $respuesta->agregar_cadena('param2', 'Este es el segundo parámetro');
+//            $respuesta->agregar_cadena('param3', 'Este es el tercer parámetro');
+//            //}
+//        }
+//        function get_cant_dias($fs,$fr){
+//            //utilizo la variabla s__cant_dias
+//            if(isset ($fs[0]) && isset ($fs[1]) && isset($fr[0]) && isset($fr[1])){// si las fechas tienen datos entonces calcula y retorna
+//                 return 4;
+//            }
+//           
+//        }
+//        function evt__form_viatico__calcula($datos)
+//        {
+//            print_r($datos);
+//            $this->s__datos_cd=$this->get_cant_dias($datos['fecha_salida'],$datos['fecha_regreso']);  
+//        }
+        function evt__form_viatico__alta($datos)//alta de un viatico
 	{
-            $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];
-            $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
-            $datos['fecha_salida']=$fec;
-            $datos['fecha_regreso']=$fecr;
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();         
-            $datos['id_proyecto']=$pi['id_pinv'];
-            $datos['nro_tab']=13;
-            $datos['estado']='S';//cuando se ingresa un viatico el mismo se registra como S
-            $mensaje="";
-            if($datos['es_nacional']==1){//si es nacional
-                if($datos['cant_dias']>5){
-                    $mensaje="Nacional hasta 5 dias";
-                }
-            }else{
-                 if($datos['cant_dias']>7){
-                    $mensaje="Internacional hasta 7 dias";
-                 }
-            }
-             
-            if($mensaje==""){
-                $fecha = strtotime($datos['fecha_solicitud']);
-                $anio=date("Y",$fecha);
-                $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias($pi['id_pinv'],$anio,$datos['cant_dias']);
-                if($band){//verifica que no supere los 14 dias anuales
-                    $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
-                    $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
-                    $this->controlador()->dep('datos')->tabla('viatico')->resetear();
-                    $this->s__mostrar_v=0;
+         $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+         if($pi['estado']<>'A'){
+               toba::notificacion()->agregar('El proyecto debe estar ACTIVO para ingresar viaticos ', 'error');  
+          }else{
+                $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];
+                $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
+                $datos['fecha_salida']=$fec;
+                $datos['fecha_regreso']=$fecr;
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();         
+                $datos['id_proyecto']=$pi['id_pinv'];
+                $datos['nro_tab']=13;
+                $datos['estado']='S';//cuando se ingresa un viatico el mismo se registra como S
+                $mensaje="";
+                if($datos['es_nacional']==1){//si es nacional
+                    if($datos['cant_dias']>5){
+                        $mensaje="Nacional hasta 5 dias";
+                    }
                 }else{
-                    toba::notificacion()->agregar('Supera los 14 dias anuales', 'error');  
+                     if($datos['cant_dias']>7){
+                        $mensaje="Internacional hasta 7 dias";
+                     }
                 }
-            }else{
-                toba::notificacion()->agregar($mensaje, 'error');  
-            }
-          
+             
+                if($mensaje==""){
+                    $fecha = strtotime($datos['fecha_solicitud']);
+                    $anio=date("Y",$fecha);
+                    $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias($pi['id_pinv'],$anio,$datos['cant_dias']);
+                    if($band){//verifica que no supere los 14 dias anuales
+                        $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
+                        $this->controlador()->dep('datos')->tabla('viatico')->resetear();
+                        $this->s__mostrar_v=0;
+                    }else{
+                        toba::notificacion()->agregar('Supera los 14 dias anuales', 'error');  
+                    }
+                }else{
+                    toba::notificacion()->agregar($mensaje, 'error');  
+                }
+              
+          }
 	}
         //boton modificacion para central. Solo modifica fecha de presentacion, expediente de pago, fecha de pago, estado
         function evt__form_viatico__modificacion($datos)
@@ -599,56 +625,66 @@ class ci_pinv_otros extends designa_ci
         //boton modificacion para la ua
         function evt__form_viatico__modificacion_ua($datos)
 	{
-         $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];  //Array ( [0] => 2017-01-01 [1] => 10:10 ) ) 
-         $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
-         $datos['fecha_salida']=$fec;
-         $datos['fecha_regreso']=$fecr;
-         $est=$this->controlador()->dep('datos')->tabla('viatico')->get();
-         if($est['estado']=='S'){     
-            $mensaje="";
-            unset($datos['estado']);//la ua no puede modificar el estado de un viatico
-            unset($datos['fecha_present_certif']);
-            unset($datos['expediente_pago']);
-            unset($datos['fecha_pago']);
-            if($datos['es_nacional']==1){//si es nacional
-                if($datos['cant_dias']>5){
-                    $mensaje="Nacional hasta 5 dias";
-                }
-            }else{
-                 if($datos['cant_dias']>7){
-                    $mensaje="Internacional hasta 7 dias";
-                }
-            }
-            if($mensaje==""){
-                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $fecha = strtotime($datos['fecha_solicitud']);
-                $anio=date("Y",$fecha);
-                $via=$this->controlador()->dep('datos')->tabla('viatico')->get();
-                $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_modif($pi['id_pinv'],$anio,$datos['cant_dias'],$via['id_viatico']);
-                if($band){//verifica que no supere los 14 dias anuales
-                    $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
-                    $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
-                    
-                }else{
-                    toba::notificacion()->agregar('Supera los 14 dias anuales', 'error');  
-                }
-            }else{
-                toba::notificacion()->agregar($mensaje, 'error');  
-            }
+          $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+          if($pi['estado']<>'A'){
+               toba::notificacion()->agregar('El proyecto debe estar ACTIVO para modificar viaticos ', 'error');  
           }else{
-             toba::notificacion()->agregar('El viatico no puede ser alterado porque ha sido aprobado o rechazado por la SCyT', 'error');  
-           } 
+                $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];  //Array ( [0] => 2017-01-01 [1] => 10:10 ) ) 
+                $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
+                $datos['fecha_salida']=$fec;
+                $datos['fecha_regreso']=$fecr;
+                $est=$this->controlador()->dep('datos')->tabla('viatico')->get();
+                if($est['estado']=='S'){     
+                    $mensaje="";
+                    unset($datos['estado']);//la ua no puede modificar el estado de un viatico
+                    unset($datos['fecha_present_certif']);
+                    unset($datos['expediente_pago']);
+                    unset($datos['fecha_pago']);
+                    if($datos['es_nacional']==1){//si es nacional
+                        if($datos['cant_dias']>5){
+                            $mensaje="Nacional hasta 5 dias";
+                        }
+                    }else{
+                        if($datos['cant_dias']>7){
+                            $mensaje="Internacional hasta 7 dias";
+                        }
+                    }
+                    if($mensaje==""){
+                        $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                        $fecha = strtotime($datos['fecha_solicitud']);
+                        $anio=date("Y",$fecha);
+                        $via=$this->controlador()->dep('datos')->tabla('viatico')->get();
+                        $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_modif($pi['id_pinv'],$anio,$datos['cant_dias'],$via['id_viatico']);
+                        if($band){//verifica que no supere los 14 dias anuales
+                            $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
+                            $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
+                            
+                        }else{
+                            toba::notificacion()->agregar('Supera los 14 dias anuales', 'error');  
+                        }
+                    }else{
+                        toba::notificacion()->agregar($mensaje, 'error');  
+                    }
+                }else{
+                    toba::notificacion()->agregar('El viatico no puede ser alterado porque ha sido aprobado o rechazado por la SCyT', 'error');  
+                }   
+          }  
+        
 	}
         function evt__form_viatico__baja()
 	{
-         $est=$this->controlador()->dep('datos')->tabla('viatico')->get();
-         if($est['estado']=='S'){  
-            $this->controlador()->dep('datos')->tabla('viatico')->eliminar_todo();
-            $this->controlador()->dep('datos')->tabla('viatico')->resetear();
-         }else{
-            toba::notificacion()->agregar('El viatico no puede ser eliminado porque ha sido aprobado o rechazado por la SCyT', 'error');      
-         }
-            
+          $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+          if($pi['estado']<>'A'){
+               toba::notificacion()->agregar('El proyecto debe estar ACTIVO para modificar viaticos ', 'error');  
+          }else{
+               $est=$this->controlador()->dep('datos')->tabla('viatico')->get();
+                if($est['estado']=='S'){  
+                    $this->controlador()->dep('datos')->tabla('viatico')->eliminar_todo();
+                    $this->controlador()->dep('datos')->tabla('viatico')->resetear();
+                }else{
+                    toba::notificacion()->agregar('El viatico no puede ser eliminado porque ha sido aprobado o rechazado por la SCyT', 'error');      
+                }
+              }
 	}
         function evt__form_viatico__cancelar()
 	{
@@ -776,7 +812,16 @@ class ci_pinv_otros extends designa_ci
                     case "pant_winsip":break;
                     case "pant_subsidios": toba::notificacion()->agregar('Se ingresan desde SCyT', 'error');  break;   
                     case "pant_estimulos":break;   
-                    case "pant_viaticos":$this->s__mostrar_v=1;$this->controlador()->dep('datos')->tabla('viatico')->resetear();break;
+                    case "pant_viaticos":
+                                        $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                                        if($pi['estado']<>'A'){
+                                            toba::notificacion()->agregar('El proyecto debe estar ACTIVO para ingresar viaticos ', 'error'); 
+                                        }else{
+                                            $this->s__mostrar_v=1;
+                                            $this->controlador()->dep('datos')->tabla('viatico')->resetear();
+                                        }
+                                        
+                                        break;
                  }
             }
 //         $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();

@@ -7,23 +7,7 @@ class dt_incentivo extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	function get_listado()
+        function get_listado()
 	{
 		$sql = "SELECT
 			t_i.id_inc,

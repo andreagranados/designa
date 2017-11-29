@@ -1,5 +1,5 @@
 <?php
-class ci_ver_subsidios extends toba_ci
+class ci_ver_viaticos extends toba_ci
 {
 	protected $s__datos_filtro;
         protected $s__where;
@@ -18,8 +18,6 @@ class ci_ver_subsidios extends toba_ci
 	{
 		$this->s__datos_filtro = $datos;
                 $this->s__where = $this->dep('filtros')->get_sql_where();
-                //actualiza el estado de los que estan vencidos
-                $this->dep('datos')->tabla('subsidio')->actualiza_vencidos();
 	}
 
 	function evt__filtros__cancelar()
@@ -28,22 +26,16 @@ class ci_ver_subsidios extends toba_ci
                 unset($this->s__where);
 	}
 
-	//---- Cuadro -----------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+	//---- cuadro -----------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__where)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('subsidio')->get_listado($this->s__where));
+            if (isset($this->s__where)) {
+                $cuadro->set_datos($this->dep('datos')->tabla('viatico')->get_viaticos($this->s__where));
 		} 
 	}
 
-	function evt__cuadro__seleccion($datos)
-	{
-		$this->dep('datos')->cargar($datos);
-	}
-
-	
-
 }
-
 ?>

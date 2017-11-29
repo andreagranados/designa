@@ -1,6 +1,24 @@
 <?php
 class dt_viatico extends toba_datos_tabla
 {
+     function get_viaticos($filtro=null){
+        if(!is_null($filtro)){
+            $where=' and '.$filtro;
+        }else{
+            $where='';
+        }
+        $sql=" select * from (select trim(doc.apellido)||', '||doc.nombre as agente, i.codigo,i.uni_acad,t.desc_item as tipov,v.fecha_salida,v.fecha_regreso,v.cant_dias,v.estado "
+                . " from viatico v"
+                . " left outer join pinvestigacion i on (v.id_proyecto=i.id_pinv)"
+                . " left outer join designacion d on (d.id_designacion=v.id_designacion)"
+                . " left outer join docente doc on (d.id_docente=doc.id_docente)"
+                 . " left outer join tipo t on (v.nro_tab=t.nro_tabla and v.tipo=t.desc_abrev)"
+                . ")sub, unidad_acad u"
+                . " where  u.sigla=sub.uni_acad $where";
+        $sql = toba::perfil_de_datos()->filtrar($sql);
+        return toba::db('designa')->consultar($sql);
+ 
+     }
      function get_listado($id_p,$filtro=null){
         
         $where="";
