@@ -197,6 +197,7 @@ class ci_integrantes_pi extends designa_ci
                 $datos=$this->dep('datos')->tabla('integrante_interno_pi')->get();
 		$docente=$this->dep('datos')->tabla('designacion')->get_docente($datos['id_designacion']);             
                 $datos['id_docente']=$docente;
+                $datos['cat_invest_conicet']=trim($datos['cat_invest_conicet']);
                 $form->set_datos($datos);
             }
              
@@ -332,6 +333,7 @@ class ci_integrantes_pi extends designa_ci
             }
             if ($this->dep('datos')->tabla('integrante_externo_pi')->esta_cargada()) {
                 $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get();
+                $datos['cat_invest_conicet']=trim($datos['cat_invest_conicet']);
 		$persona=$this->dep('datos')->tabla('persona')->get_datos($datos['tipo_docum'],$datos['nro_docum']);             
                 if(count($persona)>0){
                     $datos['integrante']=$persona[0]['nombre'];
