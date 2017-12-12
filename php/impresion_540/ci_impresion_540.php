@@ -84,7 +84,7 @@ class ci_impresion_540 extends toba_ci
             //$datos_novedad=$this->dep('datos')->tabla('designacion')->get_novedad(3338,$this->s__anio);
            // print_r($datos_novedad);exit;
             if (isset($this->s__seleccionadas)){//si selecciono para imprimir
-                     
+                   
                 //genero un nuevo numero de 540
              
                 toba::db()->abrir_transaccion();
@@ -147,8 +147,21 @@ class ci_impresion_540 extends toba_ci
                 $i=0;
                 $sum=0;
                 $sub=0;
-                $programa=$this->s__listado[0]['programa'];
-                $impu=$this->dep('datos')->tabla('mocovi_programa')->get_imputacion($this->s__listado[0]['id_programa']);
+                //recupero el primer programa
+                $bandera=true;
+                $k=0;
+                $long=count($this->s__listado) ;
+                //aqui busco el primer programa 
+                while($bandera && $k<$long) {//recorro cada designacion del listado
+                    if (in_array($this->s__listado[$k]['id_designacion'], $sele)){
+                        $bandera=false;
+                        $programa=$this->s__listado[$k]['programa'];
+                        $impu=$this->dep('datos')->tabla('mocovi_programa')->get_imputacion($this->s__listado[$k]['id_programa']);
+                    }
+                    $k++;
+                    }
+                //$programa=$this->s__listado[0]['programa'];
+                //$impu=$this->dep('datos')->tabla('mocovi_programa')->get_imputacion($this->s__listado[0]['id_programa']);
                 //echo($impu);
                 $cont_asterisco=1;//nuevo para contar asteriscos. Uno por cada subprograma
                 $ver='('.str_pad('', $cont_asterisco, "*", STR_PAD_LEFT).')';//nuevo

@@ -9,6 +9,8 @@ class ci_integrantes_pi extends designa_ci
         protected $s__dependencia;
         protected $s__resol;
         protected $s__tiene_direct;
+        protected $s__estado;
+        protected $s__anio;
            
         function get_persona($id){   
         }
@@ -481,6 +483,8 @@ class ci_integrantes_pi extends designa_ci
             $this->s__dependencia=$pi['uni_acad'];
             $this->s__denominacion=$pi['denominacion'];
             $this->s__resol=$pi['nro_resol'];
+            $this->s__estado=$pi['estado'];
+            $this->s__anio=date("Y",strtotime($pi['fec_desde']));
             $this->s__listado=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
             $cuadro->set_datos($this->s__listado);
             }
@@ -530,7 +534,7 @@ class ci_integrantes_pi extends designa_ci
                 $salida->inicializar();
                 
                 $pdf = $salida->get_pdf();
-               
+                               
                 $pdf->ezSetMargins(80, 50, 3, 3);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
@@ -584,9 +588,22 @@ class ci_integrantes_pi extends designa_ci
                 foreach ($pdf->ezPages as $pageNum=>$id){ 
                     $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
                     //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
-                    $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
+                    //si el estado es I entoces marca de agua sino el logo de la unco
+                    if($this->s__anio < 2018){
+                        $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
+                        $pdf->addJpegFromFile($imagen, 100, 35, 700, 400);
+                    }else{
+                        if($this->s__estado=='I' or $this->s__estado=='N' or $this->s__estado=='X'){
+                            $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
+                            $pdf->addJpegFromFile($imagen, 100, 35, 700, 400);
+                        }else{
+                            $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
+                            $pdf->addJpegFromFile($imagen, 200, 38, 400, 400);//200, 40, 400, 400
+                        }
+                    }
+                    ////$imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
                     //x, y ,ancho y alto x' e 'y' son las coordenadas de la esquina inferior izquierda de la imagen
-                    $pdf->addJpegFromFile($imagen, 200, 38, 400, 400);//200, 40, 400, 400
+                    
                     //200,50
                     $imagen2 = toba::proyecto()->get_path().'/www/img/sein.jpg';
                     $imagen3 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
