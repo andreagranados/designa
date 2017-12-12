@@ -615,8 +615,8 @@ class dt_designacion extends toba_datos_tabla
             $sql="select id_norma,tipo_desig from designacion where id_designacion=$id_des";
             $res=toba::db('designa')->consultar($sql);
             if($res[0]['tipo_desig']==1){
-                if($res[0]['id_norma'] != null){//si la designacion tiene norma entonces la guarda en norma_desig
-                    $sql="select * from norma_desig where id_norma=".$id_norma." and id_designacion=".$id_des;
+                if($res[0]['id_norma'] != null){//si la designacion ya tiene una norma entonces la guarda en norma_desig
+                    $sql="select * from norma_desig where id_norma=".$res[0]['id_norma']." and id_designacion=".$id_des;
                     $res2=toba::db('designa')->consultar($sql);
                     if(count($res2)==0){//no existe entonces la agrega
                         $sql="INSERT INTO norma_desig(id_norma, id_designacion) VALUES(".$res[0]['id_norma'].",".$id_des.")";
