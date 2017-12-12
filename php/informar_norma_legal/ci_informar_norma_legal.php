@@ -3,7 +3,11 @@ class ci_informar_norma_legal extends toba_ci
 {
 	protected $s__datos_filtro;
         protected $s__listado;
-       
+        
+        function get_xxx(){
+           
+        }
+        
         function credito ($ua){
              return $this->dep('datos')->tabla('unidad_acad')->credito($ua);;
             
@@ -86,8 +90,6 @@ class ci_informar_norma_legal extends toba_ci
              }
 
 	}
-
-
 
 	function evt__formulario__cancelar()
 	{

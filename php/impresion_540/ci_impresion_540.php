@@ -147,11 +147,10 @@ class ci_impresion_540 extends toba_ci
                 $i=0;
                 $sum=0;
                 $sub=0;
-                //recupero el primer programa
+                //recupero el primer programa de los seleccionados
                 $bandera=true;
                 $k=0;
                 $long=count($this->s__listado) ;
-                //aqui busco el primer programa 
                 while($bandera && $k<$long) {//recorro cada designacion del listado
                     if (in_array($this->s__listado[$k]['id_designacion'], $sele)){
                         $bandera=false;

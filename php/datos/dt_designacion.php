@@ -622,7 +622,6 @@ class dt_designacion extends toba_datos_tabla
                         $sql="INSERT INTO norma_desig(id_norma, id_designacion) VALUES(".$res[0]['id_norma'].",".$id_des.")";
                         toba::db('designa')->consultar($sql);
                     }
-                    
                 }
             }
             
