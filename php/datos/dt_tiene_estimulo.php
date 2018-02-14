@@ -12,8 +12,8 @@ class dt_tiene_estimulo extends toba_datos_tabla
         }else{
             $where='';
          }
-         $sql = "SELECT
-			t_i.uni_acad as ua,
+         $sql = "SELECT * from (SELECT
+			t_i.uni_acad,
                         t_i.codigo,
                         t_i.denominacion,
                         t_e.fecha_pagado,
@@ -30,9 +30,11 @@ class dt_tiene_estimulo extends toba_datos_tabla
 			tiene_estimulo as t_s
                         LEFT OUTER JOIN estimulo t_e ON (t_s.resolucion=t_e.resolucion and t_s.expediente=t_e.expediente)
                         LEFT OUTER JOIN pinvestigacion t_i ON (t_i.id_pinv=t_s.id_proyecto)
-                        $where
+                        ) sub
+                 $where
                             
 		";
+
 		return toba::db('designa')->consultar($sql);
     }
     //devuelve 1 si existen objetos referenciando a este estimulo 

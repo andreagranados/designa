@@ -2,25 +2,28 @@
 class ci_ver_estimulos extends toba_ci
 {
         protected $s__where;
+        protected $s__datos_filtro;
 
 
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtros(toba_ei_filtro $filtro)
 	{
-		if (isset($this->s__where)) {
-			$filtro->set_datos($this->s__where);
+		if (isset($this->s__datos_filtro)) {
+			$filtro->set_datos($this->s__datos_filtro);
 		}
 	}
 
 	function evt__filtros__filtrar($datos)
 	{
-		$this->s__where = $this->dep('filtros')->get_sql_where();
+            $this->s__datos_filtro = $datos;	
+            $this->s__where = $this->dep('filtros')->get_sql_where();
 	}
 
 	function evt__filtros__cancelar()
 	{
-		unset($this->s__where);
+            unset($this->s__where);
+            unset($this->s__datos_filtro);
 	}
 
 	//---- Cuadro -----------------------------------------------------------------------

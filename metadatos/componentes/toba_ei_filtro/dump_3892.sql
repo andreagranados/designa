@@ -193,8 +193,8 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'opciones', --tipo
 	'anio', --nombre
 	'anio', --expresion
-	'Año', --etiqueta
-	NULL, --descripcion
+	'Período', --etiqueta
+	'Considera la fecha de inicio y de fin del período seleccionado (es decir, desde 01/02 del año que selecciona hasta el 31/01 del año siguiente)', --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'2', --orden

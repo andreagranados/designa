@@ -290,7 +290,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 if (isset($filtro['anio']['valor'])) {
 		    $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
                     $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
-                    $where.=" and fec_desde <='".$udia."' and fec_hasta >='".$pdia."' ";
+                    $where.=" and fec_desde <='".$udia."' and fec_hasta >='".$pdia."' ";                     
 		}
                 if (isset($filtro['denominacion']['valor'])) {
                     switch ($filtro['denominacion']['condicion']) {

@@ -524,6 +524,7 @@ class ci_integrantes_pi extends designa_ci
             
         }
         function vista_pdf(toba_vista_pdf $salida){
+           
              if($this->s__tiene_direct==1){  
                 $dato=array();
                 $i=0;
@@ -597,8 +598,19 @@ class ci_integrantes_pi extends designa_ci
                             $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
                             $pdf->addJpegFromFile($imagen, 100, 35, 700, 400);
                         }else{
-                            $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
-                            $pdf->addJpegFromFile($imagen, 200, 38, 400, 400);//200, 40, 400, 400
+                            
+                            if($this->s__estado=='F'){
+                                $imagen= toba::proyecto()->get_path().'/www/img/fondo_fin.jpg';
+                                $pdf->addJpegFromFile($imagen, 200, 38, 400, 400);
+                            }else{
+                                if($this->s__estado=='B'){
+                                    $imagen= toba::proyecto()->get_path().'/www/img/fondo_baja.jpg';
+                                    $pdf->addJpegFromFile($imagen, 200, 38, 400, 400);
+                                }else{
+                                    $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
+                                    $pdf->addJpegFromFile($imagen, 200, 38, 400, 400);//200, 40, 400, 400} }
+                                }
+                            }
                         }
                     }
                     ////$imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
