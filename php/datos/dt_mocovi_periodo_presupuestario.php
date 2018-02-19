@@ -130,26 +130,40 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
         }
         //hay solo un periodo actual a la vez
         //hay solo un periodo presupuestando a la vez
+        //activo_para_carga_presupuestando si esta activo significa que pueden abm designaciones
         function pertenece_periodo($desde,$hasta){
             
             $sql="select fecha_inicio,fecha_fin from mocovi_periodo_presupuestario where actual";
             $actual=toba::db('designa')->consultar($sql);
             $sql="select fecha_inicio,fecha_fin from mocovi_periodo_presupuestario where presupuestando";
             $pres=toba::db('designa')->consultar($sql);
+           
+            
             $salida=false;
             if(count($actual)>0){//si existe el periodo actual
                 if($desde<=$actual[0]['fecha_fin'] && ($hasta>=$actual[0]['fecha_inicio'] || $hasta == null)){//si pertenece al periodo actual
                     $salida = true;
+                    //la designacion corresponde al periodo actual entonces me fijo si esta controlando ese periodo
+                    $sql="select activo_para_carga_presupuestando from mocovi_periodo_presupuestario where actual";
+                    $controlando=toba::db('designa')->consultar($sql);
                     
                 }else{//sino pertenece al periodo actual pregunto si pertenece al periodo presupuestando
                     if(count($pres)>0){
                         if($desde<=$pres[0]['fecha_fin'] && ($hasta>=$pres[0]['fecha_inicio'] || $hasta == null)){
                             $salida=true;
+                            //la designacion corresponde al periodo presupuestando entonces me fijo si esta controlando ese periodo
+                            $sql="select activo_para_carga_presupuestando from mocovi_periodo_presupuestario where presupuestando";
+                            $controlando=toba::db('designa')->consultar($sql);
                         }
                     }
                 } 
-            }
-            
+            }//para poder modificar debe cumplir las dos cosas. Que pertenezca al periodo actual y al presupuestando, y que este activo el activo_para_carga_presupuestando
+            $salida=$salida && ($controlando['0']['activo_para_carga_presupuestando']);
+//            if($salida){
+//                print_r('verdadero');exit;
+//            }else{
+//                print_r('falso');exit;
+//            }
             return $salida;
   
         }

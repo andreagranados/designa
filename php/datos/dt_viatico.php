@@ -73,6 +73,44 @@ class dt_viatico extends toba_datos_tabla
             return true;
         }
     }
+    function get_tipo_actividad($id_v){
+        $sql='select * from viatico v, tipo t '
+                . ' where v.id_viatico='.$id_v
+                . ' and v.nro_tab=t.nro_tabla'
+                . ' and v.tipo=t.desc_abrev';
+        $resul=toba::db('designa')->consultar($sql);
+        return $resul[0]['desc_item'];//no hago ningun chequeo porque este dato es obligatorio y siempre esta
+    }
+    function get_medio_transporte($id_v){
+        $sql='select * from viatico v, tipo t '
+                . ' where v.id_viatico='.$id_v
+                . ' and v.nro_tab2=t.nro_tabla'
+                . ' and v.medio_transporte=t.desc_abrev';
+        $resul=toba::db('designa')->consultar($sql);
+       
+        if(count($resul)>0){
+            return $resul[0]['desc_item'];
+        }else{
+            return ' ';
+        }
+        
+    }
+    function get_destinatario($id_v){
+        $sql="select doc.apellido||' '||doc.nombre as destina  from viatico v, designacion d, docente doc "
+                . ' where v.id_viatico='.$id_v
+                . ' and v.id_designacion=d.id_designacion'
+                . ' and doc.id_docente=d.id_docente';
+        $resul=toba::db('designa')->consultar($sql);
+        return $resul[0]['destina'];//tambien es obligatorio y siempre tiene valor
+    }
+     function get_destinatario_cuil($id_v){
+        $sql="select doc.nro_cuil1||'-'||doc.nro_cuil||'-'||nro_cuil2 as cuil  from viatico v, designacion d, docente doc "
+                . ' where v.id_viatico='.$id_v
+                . ' and v.id_designacion=d.id_designacion'
+                . ' and doc.id_docente=d.id_docente';
+        $resul=toba::db('designa')->consultar($sql);
+        return $resul[0]['cuil'];//tambien es obligatorio y siempre tiene valor
+    }
 }
 
 ?>

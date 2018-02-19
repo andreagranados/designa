@@ -949,12 +949,13 @@ class cargo_solapas extends toba_ci
 	}
         function evt__form_licencia__alta($datos)
 	{
+          $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+          $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
+          if($vale){
             //solo puede seleccionar tipo_nov 2 , 3 o 5 que son las licencias o cese
             //recupero la designacion a la cual corresponde la novedad
-            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
             //$desig['estado']='L'; le saco esta linea porque el estado L depende del periodo 
-            
             $mensaje="";
             //las licencias con goce no afectan el credito entonces no pierde tkd
             if($desig['nro_540']!=null && $datos['tipo_nov']!=3){//si tiene tkd pierde el tkd y no estoy ingresando una L con goce
@@ -999,22 +1000,28 @@ class cargo_solapas extends toba_ci
                 }else{
                     toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
                 }
-              
             }
-	}
+          }else{
+              throw new toba_error(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'));
+              //toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'),'info');
+          }
+        }
 
 	/**
 	 * Atrapa la interacci�n del usuario con el bot�n asociado
 	 */
 	function evt__form_licencia__baja()
-	{
+	{ 
+          //recupero la designacion a la cual corresponde la novedad
+          $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+          $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+          $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
+          if($vale){
             $nove=$this->controlador()->dep('datos')->tabla('novedad')->get();
             $this->controlador()->dep('datos')->tabla('novedad')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('novedad')->resetear();
             $this->s__alta_nov=0;
-             //recupero la designacion a la cual corresponde la novedad
-            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+             
             //no cambio el estado de la designacion porque estado L depende del periodo de la misma $estado=$this->controlador()->dep('datos')->tabla('novedad')->estado_designacion($desig['id_designacion']);
             //$desig['estado']=$estado;
             $mensaje='';
@@ -1034,7 +1041,10 @@ class cargo_solapas extends toba_ci
                 toba::notificacion()->agregar($mensaje,'info'); 
             }
             
-            
+          }else{
+              throw new toba_error(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'));
+              //toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'),'info');
+          } 
 	}
 
 	/**
@@ -1043,6 +1053,11 @@ class cargo_solapas extends toba_ci
 	 */
 	function evt__form_licencia__modificacion($datos)
 	{
+         //para chequeo que este dentro del periodo de la designacion
+         $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+         $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+         $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
+         if($vale){
             if ($datos['hasta']<$datos['desde']){
                 toba::notificacion()->agregar('La fecha hasta debe ser mayor a la fecha desde','error');
             }else{
@@ -1050,10 +1065,6 @@ class cargo_solapas extends toba_ci
                if ( !preg_match($regenorma, $datos['norma_legal'], $matchFecha) ) {
                 toba::notificacion()->agregar('Norma Invalida.','error');
                }else{
-                //chequeo que este dentro del periodo de la designacion
-                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-               
                 //si modifica algo que efecte al credito de una designacion con tkd entonces pierde el tkd
                 $mensaje='';
                 if ($desig['nro_540']!=null){
@@ -1102,9 +1113,11 @@ class cargo_solapas extends toba_ci
                 }else{
                     toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
                 }
-
             }  
            }
+         }else{
+             toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'),'info');
+         }
 	}
         function evt__form_licencia__cancelar($datos)
         {
@@ -1149,11 +1162,13 @@ class cargo_solapas extends toba_ci
         }
         function evt__form_baja__alta($datos)
         {
-            //solo puede seleccionar tipo_nov 1 o 4 que son la baja o la renuncia
-            //recupero la designacion a la cual corresponde la novedad
-            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            
+        //solo puede seleccionar tipo_nov 1 o 4 que son la baja o la renuncia
+        //recupero la designacion a la cual corresponde la novedad
+        $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+        $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+        
+        $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
+        if($vale){//si la designacion esta dentro del periodo presupuestando/actual y ademas no estan controlando el periodo al que pertenece
             $desig['estado']='B';
             //si la designacion tiene tkd entonces pasa a historico y pierde el tkd
             $mensaje='';
@@ -1198,19 +1213,25 @@ class cargo_solapas extends toba_ci
             }else{
                 toba::notificacion()->agregar(utf8_decode('La fecha de BAJA/RENUNCIA debe estar dentro del período de la designación'),'error');
             }
- 
+        }else{
+            toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'),'info');
+        }
         }
         //eliminacion de una baja o renuncia
         //si elimino una baja o renuncia de una designacion con numero de tkd, entonces pasa a historico y pierde tkd
         function evt__form_baja__baja()
         {
+         //cuando elimina la licencia tambien debe cambiar el estado de la designacion !!!!!!!
+         //recupero la designacion a la cual corresponde la novedad
+         $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+         $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
+         if($vale){
+            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            //elimino la novedad
             $this->controlador()->dep('datos')->tabla('novedad_baja')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('novedad_baja')->resetear();
             $this->s__alta_novb=0;
-            //cuando elimina la licencia tambien debe cambiar el estado de la designacion !!!!!!!
-             //recupero la designacion a la cual corresponde la novedad
-            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+           
            
             $estado=$this->controlador()->dep('datos')->tabla('novedad')->estado_designacion($desig['id_designacion']);
             $desig['estado']=$estado;
@@ -1229,12 +1250,16 @@ class cargo_solapas extends toba_ci
                 
             if($mensaje!='') {
                 toba::notificacion()->agregar($mensaje,'info');
-            }   
+            }  
+         }else{
+             toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período la que corresponde al designación.'),'info'); 
+         }
         }
         function evt__form_baja__modificacion($datos)
         {
-           //chequeo que este dentro del periodo de la designacion
-                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+         $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+         $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
+         if($vale){
                 $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $mensaje='';
               
@@ -1248,7 +1273,7 @@ class cargo_solapas extends toba_ci
                         $mensaje=utf8_decode('La designación ha perdido su número tkd. ');
                     }
                 }
-                
+                //chequeo que este dentro del periodo de la designacion
                 if($desig['hasta']!= null){
                     $udia=$desig['hasta'];
                 }else{//fecha hasta de la designacion es nula
@@ -1274,7 +1299,9 @@ class cargo_solapas extends toba_ci
                 }else{
                         toba::notificacion()->agregar(utf8_decode('La fecha de la BAJA/RENUNCIA debe estar dentro del período de la designación'),'error');
                     }
-                
+          }else{
+              toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período la que corresponde al designación.'),'info'); 
+          }    
         }
         function evt__form_baja__cancelar($datos)
         {

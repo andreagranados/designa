@@ -436,5 +436,30 @@ class dt_pinvestigacion extends toba_datos_tabla
                 return 1;
             }
         }
+        function get_director($id_proy){
+            $sql="select  director_de(".$id_proy.") as director";
+            $res= toba::db('designa')->consultar($sql);
+            
+            if($res[0]['director']==''){
+                return '';
+            }else{
+                return $res[0]['director'];
+            }
+        }
+        function get_funcion($id_p,$id_desig){
+            //primero obtengo la ultima fecha con la que el docente esta en el proyecto, 
+            //luego obtengo la funcion
+            $sql="select t.funcion_p from 
+                   (select id_docente,pinvest, max(i.hasta)as hasta from integrante_interno_pi i, designacion d
+                    where i.pinvest=".$id_p
+                    ." and i.id_designacion=".$id_desig
+                    ." and i.id_designacion=d.id_designacion
+                    group by id_docente,pinvest)sub 
+                    inner join integrante_interno_pi t on (t.pinvest=sub.pinvest and t.hasta=sub.hasta)  
+                    inner join designacion d on (d.id_designacion=t.id_designacion and d.id_docente=sub.id_docente )"; 
+            $res= toba::db('designa')->consultar($sql);
+            return $res[0]['funcion_p'];
+        }
 }
+         
 ?>

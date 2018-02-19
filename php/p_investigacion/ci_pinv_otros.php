@@ -582,6 +582,7 @@ class ci_pinv_otros extends designa_ci
                 $datos['id_proyecto']=$pi['id_pinv'];
                 $datos['nro_tab']=13;
                 $datos['estado']='S';//cuando se ingresa un viatico el mismo se registra como S
+                $datos['nro_tab2']=14;
                 $mensaje="";
                 if($datos['es_nacional']==1){//si es nacional
                     if($datos['cant_dias']>5){
@@ -947,5 +948,11 @@ class ci_pinv_otros extends designa_ci
             
             
         }
+        //ESTE METODO LO DEFINI EN EL CONTROLADOR aqui no lo toma
+//       function vista_pdf(toba_vista_pdf $salida){
+//            
+//        }
+      
+	
 }
 ?>

@@ -51,9 +51,13 @@ class dt_tipo extends toba_datos_tabla
         }
         function get_viaticos()
 	{
-		$sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=13 ORDER BY desc_item";
-		return toba::db('designa')->consultar($sql);
-                
+            $sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=13 ORDER BY desc_item";
+            return toba::db('designa')->consultar($sql);       
 	}
+        function get_medio_transporte()
+        {
+            $sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=14 ORDER BY desc_item";
+            return toba::db('designa')->consultar($sql);    
+        }
 }
 ?>

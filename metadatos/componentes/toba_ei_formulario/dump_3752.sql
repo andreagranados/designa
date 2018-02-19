@@ -270,9 +270,9 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'fecha_pago', --identificador
 	'ef_editable_fecha', --elemento_formulario
 	'fecha_pago', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'2', --orden
+	'3', --orden
 	'Fecha Pago', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -352,7 +352,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'observaciones', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'3', --orden
+	'4', --orden
 	'Observaciones', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -432,7 +432,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'monto', --columnas
 	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'4', --orden
+	'5', --orden
 	'Monto', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -512,7 +512,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'resolucion', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'5', --orden
+	'6', --orden
 	'Resolución', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -592,7 +592,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'expediente', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'6', --orden
+	'7', --orden
 	'Expediente', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -670,9 +670,9 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'fecha_rendicion', --identificador
 	'ef_editable_fecha', --elemento_formulario
 	'fecha_rendicion', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'7', --orden
+	'2', --orden
 	'Fecha rendición', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
