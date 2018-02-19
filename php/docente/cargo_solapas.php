@@ -63,8 +63,7 @@ class cargo_solapas extends toba_ci
                         $designacion['suplente']=$suple['id_desig'];
                     }
                     $componente->set_datos($designacion);
-            } else {
-			
+            } else {	
                 //debo deshabilitar las pantallas de norma, imputacion, materias, cargo de gestion
                 //dado que la designacion aun no ha sido dada de alta
                 $this->pantalla()->tab("pant_norma")->desactivar();
@@ -73,8 +72,7 @@ class cargo_solapas extends toba_ci
                 $this->pantalla()->tab("pant_materias")->desactivar();
                 $this->pantalla()->tab("pant_gestion")->desactivar();
                 $this->pantalla()->tab("pant_novedad")->desactivar();
-                $this->pantalla()->tab("pant_novedad_b")->desactivar();
-                              
+                $this->pantalla()->tab("pant_novedad_b")->desactivar();           
 		}
                 
         } 
@@ -171,7 +169,7 @@ class cargo_solapas extends toba_ci
                     
                 }
             }else{//esta intentando ingresar una designacion que no pertenece al periodo actual ni al periodo presup
-                 $mensaje='LA DESIGNACION DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
+                 $mensaje='Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.';
                  toba::notificacion()->agregar(utf8_decode($mensaje), "error");
             }
          }
@@ -217,7 +215,7 @@ class cargo_solapas extends toba_ci
                             }
                         }
                         }else{
-                            toba::notificacion()->agregar("NO PUEDE ELIMINAR UNA DESIGNACION SI ESTA NO PERTENECER AL PERIODO ACTUAL/PRESUPUESTANDO", 'error'); 
+                            toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'), 'error'); 
                         }
                     }
                 }else{
@@ -231,18 +229,18 @@ class cargo_solapas extends toba_ci
 	{
          $nuevafecha = strtotime ( '-1 day' , strtotime ( $datos['desde'] ) );
          $nuevafecha = date ( 'Y-m-j' , $nuevafecha );
-         
-         if($datos['hasta']!=null && $datos['hasta']==$nuevafecha){//si hasta <>null and hasta=desde-1 es una anulacion
-              $vale=true;
-         }else{
-             if($datos['hasta'] !=null && $datos['hasta']<$datos['desde']){//verifica que la fecha hasta>desde
-                 $vale=false;
-                 $mensaje='La fecha hasta debe ser mayor que la desde';
-             }else{//si pertenece al periodo actual o al periodo presupuestando
-                 $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
-                 $mensaje='LA DESIGNACION DEBE PERTENECER AL PERIODO ACTUAL O AL PERIODO PRESUPUESTANDO';
-             }
+         $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
+         if(!$vale){//no puede modifica porque estan controlando o no pertenece al periodo presupuestando o actual
+            $mensaje=utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'); 
+         }else{//puede modificar
+             if(!($datos['hasta']!=null && $datos['hasta']==$nuevafecha)){//sino es anulacion //si hasta <>null and hasta=desde-1 es una anulacion
+                 if($datos['hasta'] !=null && $datos['hasta']<$datos['desde']){//verifica que la fecha hasta>desde
+                    $vale=false;
+                    $mensaje='La fecha hasta debe ser mayor que la desde';
+                }
+             }//puede modificar y corresponde a una anulacion entonces vale es true
          }
+
          if($vale){
             //--recupero la designacion que se desea modificar 
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
@@ -944,8 +942,8 @@ class cargo_solapas extends toba_ci
                 $this->dep('form_licencia')->colapsar();
               }
             if ($this->controlador()->dep('datos')->tabla('novedad')->esta_cargada()) {
-			$form->set_datos($this->controlador()->dep('datos')->tabla('novedad')->get());
-		} 
+		$form->set_datos($this->controlador()->dep('datos')->tabla('novedad')->get());
+	    } 
 	}
         function evt__form_licencia__alta($datos)
 	{
