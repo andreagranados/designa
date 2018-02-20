@@ -80,8 +80,7 @@ class ci_p_investigacion extends toba_ci
         }
         function vista_pdf(toba_vista_pdf $salida){
          if ($this->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-            $pi=$this->dep('datos')->tabla('pinvestigacion')->get(); 
-            if($pi['estado']=='A'){
+                $pi=$this->dep('datos')->tabla('pinvestigacion')->get(); 
                 if ($this->dep('datos')->tabla('viatico')->esta_cargada()) {
                    $vi=$this->dep('datos')->tabla('viatico')->get();
                    if($vi['estado']=='A'){//solo si el viatico esta aprobado
@@ -98,8 +97,9 @@ class ci_p_investigacion extends toba_ci
                         //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                         //Primero definimos la plantilla para el número de página.
                         $formato = utf8_decode('Página {PAGENUM} de {TOTALPAGENUM} ');
+                        
                         //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
-                        $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+                        //$pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
                         //Luego definimos la ubicación de la fecha en el pie de página.
                         $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
                         //Configuración de Título.
@@ -107,19 +107,15 @@ class ci_p_investigacion extends toba_ci
                         $titulo="   ";
                         $opciones = array(
                             'splitRows'=>0,
-                            'rowGap' => 1,//, the space between the text and the row lines on each row
-                            // 'lineCol' => (r,g,b) array,// defining the colour of the lines, default, black.
-                            'showLines'=>2,//coloca las lineas horizontales
-                            'showHeadings' => true,//muestra el nombre de las columnas
-                            'titleFontSize' => 12,
-                            'fontSize' => 8,
-                            //'shadeCol' => array(1,1,1,1,1,1,1,1,1,1,1,1),
-                            'shadeCol' => array(100,100,100),//darle color a las filas intercaladamente
-                            'outerLineThickness' => 0.7,
-                            'innerLineThickness' => 0.7,
+                            'rowGap' => 0,
+                            'showHeadings' => true,
+                            'titleFontSize' => 9,
+                            'fontSize' => 10,
+                            'shadeCol' => array(0,0,0),
+                            'outerLineThickness' => 0,
+                            'innerLineThickness' => 0,
                             'xOrientation' => 'center',
-                            'width' => 820//,
-                            //'cols' =>array('col2'=>array('justification'=>'center') ,'col3'=>array('justification'=>'center'),'col4'=>array('justification'=>'center') ,'col5'=>array('justification'=>'center'),'col6'=>array('justification'=>'center') ,'col7'=>array('justification'=>'center') ,'col8'=>array('justification'=>'center'),'col9'=>array('justification'=>'center') ,'col10'=>array('justification'=>'center') ,'col11'=>array('justification'=>'center') ,'col12'=>array('justification'=>'center'),'col13'=>array('justification'=>'center') ,'col14'=>array('justification'=>'center') )
+                            'width' => 500
                         );
 
                         $tipo_ac=$this->dep('datos')->tabla('viatico')->get_tipo_actividad($vi['id_viatico']);
@@ -133,30 +129,50 @@ class ci_p_investigacion extends toba_ci
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
-                        $pdf->ezText('         NOMBRE DEL PROYECTO: '.$pi['denominacion'], 10);
-                        $pdf->ezText('         UNIDAD ACADEMICA: '.$pi['uni_acad'], 10);
-                        $pdf->ezText('         CODIGO DEL PROYECTO: '.$pi['codigo'], 10);
-                        $pdf->ezText('         DIRECTOR DEL PROYECTO: '.$dire, 10);
-                        $pdf->ezText('         TIPO DE ACTIVIDAD: '.$tipo_ac, 10);
-                        $pdf->ezText('         NOMBRE DE LA ACTIVIDAD: '.$vi['nombre_actividad'], 10);
-                        $pdf->ezText('         DESTINATARIO: '.$desti, 10);
-                        $pdf->ezText('         CUIL: '.$cuil, 10);
-                        $pdf->ezText('         FUNCION: '.$fn, 10);
-                        $pdf->ezText('         DESTINO: '.$vi['destino'], 10);
-                        $pdf->ezText('         MEDIO DE TRANSPORTE: '.$mt, 10);
-                        $pdf->ezText('         SALIDA EFECTIVA: '.date("d/m/Y H:i",strtotime($vi['fecha_salida'])).' hs', 10);//date("d/m/Y",strtotime($des['fec_nacim']))
-                        $pdf->ezText('         REGRESO EFECTIVO: '.date("d/m/Y H:i",strtotime($vi['fecha_regreso'])).' hs' , 10);
-                        $pdf->ezText(' ------------------------------LIQUIDACION DE GASTOS ----------------------------', 10);
-                        $pdf->ezText('         DIAS A LIQUIDAR: '.$vi['cant_dias'], 10);
-                        $pdf->ezText('         VIATICOS DIARIOS $: ', 10);
-                        $pdf->ezText('         SON $: ', 10);
+                        $pdf->ezText('                 <b>NOMBRE DEL PROYECTO: </b>'.$pi['denominacion'], 10);
+                        $pdf->ezText('                 <b>UNIDAD ACADEMICA: </b>'.$pi['uni_acad'], 10);
+                        $pdf->ezText('                 <b>CODIGO DEL PROYECTO: </b>'.$pi['codigo'], 10);
+                        $pdf->ezText('                 <b>DIRECTOR DEL PROYECTO: </b>'.$dire, 10);
+                        $pdf->ezText('                 <b>TIPO DE ACTIVIDAD: </b>'.$tipo_ac, 10);
+                        $pdf->ezText('                 <b>NOMBRE DE LA ACTIVIDAD: </b>'.$vi['nombre_actividad'], 10);
+                        $pdf->ezText('                 <b>DESTINATARIO: </b>'.$desti, 10);
+                        $pdf->ezText('                 <b>CUIL: </b>'.$cuil, 10);
+                        $pdf->ezText('                 <b>FUNCION: </b>'.$fn, 10);
+                        $pdf->ezText('                 <b>DESTINO: </b>'.$vi['destino'], 10);
+                        $pdf->ezText('                 <b>MEDIO DE TRANSPORTE: </b>'.$mt, 10);
+                        $pdf->ezText('                 <b>SALIDA EFECTIVA: </b>'.date("d/m/Y H:i",strtotime($vi['fecha_salida'])).' hs', 10);//date("d/m/Y",strtotime($des['fec_nacim']))
+                        $pdf->ezText('                 <b>REGRESO EFECTIVO: </b>'.date("d/m/Y H:i",strtotime($vi['fecha_regreso'])).' hs' , 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('                  ------------------------------------------------------ LIQUIDACION DE GASTOS ------------------------------------------------------', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('                 <b>DIAS A LIQUIDAR: </b>'.$vi['cant_dias'], 10);
+                        $pdf->ezText('                 <b>VIATICOS DIARIOS $:</b> '.$montov, 10);
+                        $pdf->ezText('                 <b>SON $: </b> '.$vi['cant_dias']*$montov, 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
-                        $pdf->ezText('         AUTORIZACIONES: ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('                 <b>AUTORIZACIONES:</b> ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->addText(40 ,80,10,'......................'); 
+                        $pdf->addText(40 ,70,10,'SOLICITANTE'); 
+                        $pdf->addText(240,80,10,'....................................'); 
+                        $pdf->addText(240,70,10,'DIRECTOR/CO-DIRECTOR'); 
+                        $pdf->addText(240,60,10,'     DEL PROYECTO');
+                        $pdf->addText(450,80,10,'...................................'); 
+                        $pdf->addText(450,70,10,'  SECRETARIO DE'); 
+                        $pdf->addText(450,60,10,'CIENCIA Y TECNICA'); 
+                        //$pdf->ezText('                 <b>........................                         ..............................................                      ..............................................</b> ', 10);
+                        //$pdf->ezText('                 <b>SOLICITANTE                         DIRECTOR/CO-DIRECTOR                       SECRETARIO DE </b> ', 10);
+                        //$pdf->ezText('                 <b>                                                     DEL PROYECTO                                      CIENCIA Y TECNICA </b> ', 10);
                    }
                  }
-                
-            } 
             }     
          }       
 

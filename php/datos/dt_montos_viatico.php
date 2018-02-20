@@ -8,7 +8,7 @@ class dt_montos_viatico extends toba_datos_tabla
                     where sub.fec=m.fecha
                     ";
             $resul = toba::db('designa')->consultar($sql);
-            return  $resu[0]['monto'];
+            return  $resul[0]['monto'];
         }
 }
 ?>

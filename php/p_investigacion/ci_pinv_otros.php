@@ -536,8 +536,11 @@ class ci_pinv_otros extends designa_ci
              }else{
                 $this->dep('form_viatico')->colapsar();
              }
-             if ($this->controlador()->dep('datos')->tabla('viatico')->esta_cargada()) {
+             if ($this->controlador()->dep('datos')->tabla('viatico')->esta_cargada()){
                  $datos=$this->controlador()->dep('datos')->tabla('viatico')->get();
+                 if($datos['estado']<>'A'){//el boton imprimir solo aparece si el viatico esta aprobado
+                     $form->eliminar_evento('imprimir');
+                 }
                  $datos2=$datos;
                  unset($datos2['fecha_salida']);
                  $datos2['fecha_salida'][0]=substr($datos['fecha_salida'],0,10);//'2017-01-01';
@@ -546,8 +549,7 @@ class ci_pinv_otros extends designa_ci
                  $datos2['fecha_regreso'][0]=substr($datos['fecha_regreso'],0,10);//'2017-01-01';
                  $datos2['fecha_regreso'][2]=trim(substr($datos['fecha_regreso'],10,6));//'12:00';                 
                  $form->set_datos($datos2);
-            }
-            
+            } 
 	}
 //        function ajax__get_cant_dias($parametros,toba_ajax_respuesta $respuesta){
 //            //if (isset($fs[0]) && isset($fs[1]) && isset($fr[0]) && isset($fr[1])){
@@ -572,7 +574,7 @@ class ci_pinv_otros extends designa_ci
 	{
          $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
          if($pi['estado']<>'A'){
-               toba::notificacion()->agregar('El proyecto debe estar ACTIVO para ingresar viaticos ', 'error');  
+               throw new toba_error("El proyecto debe estar ACTIVO para ingresar viaticos");
           }else{
                 $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];
                 $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
@@ -604,10 +606,10 @@ class ci_pinv_otros extends designa_ci
                         $this->controlador()->dep('datos')->tabla('viatico')->resetear();
                         $this->s__mostrar_v=0;
                     }else{
-                        toba::notificacion()->agregar('Supera los 14 dias anuales', 'error');  
+                        throw new toba_error('Supera los 14 dias anuales');
                     }
                 }else{
-                    toba::notificacion()->agregar($mensaje, 'error');  
+                    throw new toba_error($mensaje);
                 }
               
           }
@@ -944,9 +946,7 @@ class ci_pinv_otros extends designa_ci
                     }
                     $cuadro->set_datos($this->controlador()->dep('datos')->tabla('pinvestigacion')->sus_subproyectos($pi['id_pinv']));
                     }
-            
-            
-            
+ 
         }
         //ESTE METODO LO DEFINI EN EL CONTROLADOR aqui no lo toma
 //       function vista_pdf(toba_vista_pdf $salida){

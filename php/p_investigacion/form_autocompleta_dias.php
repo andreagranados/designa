@@ -22,11 +22,13 @@ class form_autocompleta_dias extends toba_ei_formulario
                     /*paso a string y recupero la fecha*/
                     var fs1=fs.toString();
                     var fs2=fs1.substr(0,10);
-                    var hs=fs1.substr(12,5);
+                    var hs=Number(fs1.substr(11,2));/*recupero la hora de salida*/
+                    var ms=Number(fs1.substr(14,2));/*recupero los minutos de salida*/
                      
                     var fr1=fr.toString();
                     var fr2=fr1.substr(0,10);
-                    var hr=fr1.substr(12,5);
+                    var hr=Number(fr1.substr(11,2));
+                    var mr=Number(fr1.substr(14,2));/*recupero los minutos de regreso*/
                     
                     var fecha1=fs2.split('/');
                     var fecha2=fr2.split('/');
@@ -37,7 +39,17 @@ class form_autocompleta_dias extends toba_ei_formulario
                         /* la diferencia entre las dos fechas, la dividimos entre 86400 segundos*/
                         /* que tiene un dia, y posteriormente entre 1000 ya que estamos*/
                         /* trabajando con milisegundos.*/
-                        var dif = ((ffecha2-ffecha1)/86400)/1000;
+                        /*var dif = ((ffecha2-ffecha1)/86400)/1000;
+                        alert(ms);*/
+                        if(hs<12 & (hr>12 | (hr==12 & mr>0))){
+                            dif=(((ffecha2-ffecha1)/86400)/1000)+1;
+                        }else{
+                            if((hs<12 & hr<12) | ((hr>12 | (hr==12 & mr>0)) & (hs>12 | (hs==12 & ms>0)))){
+                                dif=(((ffecha2-ffecha1)/86400)/1000)+0.5;
+                            }else{
+                                dif=(((ffecha2-ffecha1)/86400)/1000);
+                            }
+                        }
                         /*alert(dif);*/
                         this.ef('cant_dias').set_estado(dif);
                     }else{
