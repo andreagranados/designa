@@ -34,7 +34,7 @@ class ci_ver_viaticos extends toba_ci
 	{
             if (isset($this->s__where)) {
                 $cuadro->set_datos($this->dep('datos')->tabla('viatico')->get_viaticos($this->s__where));
-		} 
+	    } 
 	}
 
 }

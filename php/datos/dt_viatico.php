@@ -7,7 +7,7 @@ class dt_viatico extends toba_datos_tabla
         }else{
             $where='';
         }
-        $sql=" select * from (select trim(doc.apellido)||', '||doc.nombre as agente, i.codigo,i.uni_acad,t.desc_item as tipov,v.fecha_salida,v.fecha_regreso,v.cant_dias,v.estado "
+        $sql=" select * from (select trim(doc.apellido)||', '||doc.nombre as agente, i.codigo,i.uni_acad,t.desc_item as tipov,v.fecha_salida,v.fecha_regreso,v.cant_dias,v.estado,v.fecha_solicitud,v.expediente_pago "
                 . " from viatico v"
                 . " left outer join pinvestigacion i on (v.id_proyecto=i.id_pinv)"
                 . " left outer join designacion d on (d.id_designacion=v.id_designacion)"

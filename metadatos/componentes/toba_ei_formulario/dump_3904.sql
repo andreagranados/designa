@@ -625,7 +625,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'memo_solicitud', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'8', --orden
+	'9', --orden
 	'Memo solicitud', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -705,7 +705,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'memo_certificados', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'9', --orden
+	'10', --orden
 	'Memo certificados', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -785,7 +785,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'es_nacional', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'10', --orden
+	'11', --orden
 	'Es nacional', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -945,7 +945,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'fecha_present_certif', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'11', --orden
+	'7', --orden
 	'Fecha present certif', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -1105,7 +1105,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'id_designacion', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
-	'7', --orden
+	'8', --orden
 	'Destinatario', --etiqueta
 	NULL, --etiqueta_estilo
 	NULL, --descripcion
@@ -1199,10 +1199,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --estado_defecto
 	'0', --solo_lectura
 	'0', --solo_lectura_modificacion
-	'get_estados_vi', --carga_metodo
+	'get_descripciones', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
-	NULL, --carga_dt
+	'4024', --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente

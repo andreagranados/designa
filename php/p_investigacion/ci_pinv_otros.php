@@ -33,14 +33,11 @@ class ci_pinv_otros extends designa_ci
             return $salida; 
             
         }
-//        function get_estados_pi(){
-//             //si es de la unidad acad retorna solo I
-//            return($this->controlador()->dep('datos')->tabla('estado_pi')->get_descripciones_perfil());
+//eliminar
+//        function get_estados_vi(){
+//             //si es de la unidad acad retorna solo S de solicitado
+//            return($this->controlador()->dep('datos')->tabla('estado_vi')->get_descripciones_perfil());
 //        }
-        function get_estados_vi(){
-             //si es de la unidad acad retorna solo S de solicitado
-            return($this->controlador()->dep('datos')->tabla('estado_vi')->get_descripciones_perfil());
-        }
         function get_codigo($id){//recibe el programa
              if($id!=0){//pertenece a un programa entonces el codigo es el del programa
                  $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_codigo($id);
@@ -526,7 +523,7 @@ class ci_pinv_otros extends designa_ci
              if($this->s__mostrar_v==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('form_viatico')->descolapsar(); 
                 $form->ef('tipo')->set_obligatorio('true');
-                $form->ef('estado')->set_obligatorio('true');
+                //$form->ef('estado')->set_obligatorio('true');
                 $form->ef('fecha_solicitud')->set_obligatorio('true');
                 $form->ef('id_designacion')->set_obligatorio('true');
                 $form->ef('origen')->set_obligatorio('true');
@@ -550,26 +547,13 @@ class ci_pinv_otros extends designa_ci
                  $datos2['fecha_regreso'][2]=trim(substr($datos['fecha_regreso'],10,6));//'12:00';                 
                  $form->set_datos($datos2);
             } 
+            $perfil = toba::usuario()->get_perfil_datos();
+            if ($perfil != null) {//si tiene perfil de datos entonces solo lectura campo estado
+                $form->ef('estado')->set_solo_lectura(true);//para que funcione no tiene que ser obligatorio 
+            }
+            
 	}
-//        function ajax__get_cant_dias($parametros,toba_ajax_respuesta $respuesta){
-//            //if (isset($fs[0]) && isset($fs[1]) && isset($fr[0]) && isset($fr[1])){
-//            $respuesta->agregar_cadena('param1', 'Este es el primer parámetro');
-//            $respuesta->agregar_cadena('param2', 'Este es el segundo parámetro');
-//            $respuesta->agregar_cadena('param3', 'Este es el tercer parámetro');
-//            //}
-//        }
-//        function get_cant_dias($fs,$fr){
-//            //utilizo la variabla s__cant_dias
-//            if(isset ($fs[0]) && isset ($fs[1]) && isset($fr[0]) && isset($fr[1])){// si las fechas tienen datos entonces calcula y retorna
-//                 return 4;
-//            }
-//           
-//        }
-//        function evt__form_viatico__calcula($datos)
-//        {
-//            print_r($datos);
-//            $this->s__datos_cd=$this->get_cant_dias($datos['fecha_salida'],$datos['fecha_regreso']);  
-//        }
+
         function evt__form_viatico__alta($datos)//alta de un viatico
 	{
          $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
@@ -623,7 +607,7 @@ class ci_pinv_otros extends designa_ci
             $datos2['fecha_pago']=$datos['fecha_pago'];
             $this->controlador()->dep('datos')->tabla('viatico')->set($datos2);
             $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
-                    
+            toba::notificacion()->agregar('Modificacion exitosa. Solo modifica estado, expediente de pago, fecha de pago y fecha de presentac certif.', 'info');         
         }
         //boton modificacion para la ua
         function evt__form_viatico__modificacion_ua($datos)
@@ -669,7 +653,7 @@ class ci_pinv_otros extends designa_ci
                         toba::notificacion()->agregar($mensaje, 'error');  
                     }
                 }else{
-                    toba::notificacion()->agregar('El viatico no puede ser alterado porque ha sido aprobado o rechazado por la SCyT', 'error');  
+                    toba::notificacion()->agregar('El viatico no puede ser alterado porque ya ha sido Aprobado/Rechazado por la SCyT', 'error');  
                 }   
           }  
         
@@ -685,7 +669,7 @@ class ci_pinv_otros extends designa_ci
                     $this->controlador()->dep('datos')->tabla('viatico')->eliminar_todo();
                     $this->controlador()->dep('datos')->tabla('viatico')->resetear();
                 }else{
-                    toba::notificacion()->agregar('El viatico no puede ser eliminado porque ha sido aprobado o rechazado por la SCyT', 'error');      
+                    toba::notificacion()->agregar('El viatico no puede ser eliminado porque ya ha sido Aprobado/Rechazado por la SCyT', 'error');      
                 }
               }
 	}
