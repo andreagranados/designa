@@ -101,7 +101,7 @@ class ci_p_investigacion extends toba_ci
                         //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
                         //$pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
                         //Luego definimos la ubicación de la fecha en el pie de página.
-                        $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
+                        $pdf->addText(380,20,8,'Mocovi - Designaciones '.date('d/m/Y h:i:s a')); 
                         //Configuración de Título.
                         $salida->titulo(utf8_d_seguro('UNIVERSIDAD NACIONAL DEL COMAHUE'.chr(10).'SECRETARÍA DE CIENCIA Y TÉCNICA'.chr(10).'SOLICITUD DE ANTICIPO DE VIÁTICOS '));    
                         $titulo="   ";
@@ -125,7 +125,8 @@ class ci_p_investigacion extends toba_ci
                         $dias=$vi['cant_dias'];
                         $dire=$this->dep('datos')->tabla('pinvestigacion')->get_director($vi['id_proyecto']);
                         $montov=$this->dep('datos')->tabla('montos_viatico')->get_monto_viatico();
-                        $fn=$this->dep('datos')->tabla('pinvestigacion')->get_funcion($vi['id_proyecto'],$vi['id_designacion']);
+                        $fn=$this->dep('datos')->tabla('pinvestigacion')->get_categ($vi['id_proyecto'],$vi['id_designacion']);
+                        $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
@@ -133,11 +134,13 @@ class ci_p_investigacion extends toba_ci
                         $pdf->ezText('                 <b>UNIDAD ACADEMICA: </b>'.$pi['uni_acad'], 10);
                         $pdf->ezText('                 <b>CODIGO DEL PROYECTO: </b>'.$pi['codigo'], 10);
                         $pdf->ezText('                 <b>DIRECTOR DEL PROYECTO: </b>'.$dire, 10);
+                        $pdf->ezText('  ', 10);
                         $pdf->ezText('                 <b>TIPO DE ACTIVIDAD: </b>'.$tipo_ac, 10);
                         $pdf->ezText('                 <b>NOMBRE DE LA ACTIVIDAD: </b>'.$vi['nombre_actividad'], 10);
                         $pdf->ezText('                 <b>DESTINATARIO: </b>'.$desti, 10);
                         $pdf->ezText('                 <b>CUIL: </b>'.$cuil, 10);
                         $pdf->ezText('                 <b>FUNCION: </b>'.$fn, 10);
+                        $pdf->ezText('  ', 10);
                         $pdf->ezText('                 <b>DESTINO: </b>'.$vi['destino'], 10);
                         $pdf->ezText('                 <b>MEDIO DE TRANSPORTE: </b>'.$mt, 10);
                         $pdf->ezText('                 <b>SALIDA EFECTIVA: </b>'.date("d/m/Y H:i",strtotime($vi['fecha_salida'])).' hs', 10);//date("d/m/Y",strtotime($des['fec_nacim']))
@@ -154,23 +157,42 @@ class ci_p_investigacion extends toba_ci
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
+                        $pdf->ezText('  ', 10);
                         $pdf->ezText('                 <b>AUTORIZACIONES:</b> ', 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
-                        $pdf->addText(40 ,80,10,'......................'); 
+                        $pdf->addText(40 ,80,10,'..........................'); 
                         $pdf->addText(40 ,70,10,'SOLICITANTE'); 
-                        $pdf->addText(240,80,10,'....................................'); 
+                        $pdf->addText(240,80,10,'........................................'); 
                         $pdf->addText(240,70,10,'DIRECTOR/CO-DIRECTOR'); 
                         $pdf->addText(240,60,10,'     DEL PROYECTO');
                         $pdf->addText(450,80,10,'...................................'); 
                         $pdf->addText(450,70,10,'  SECRETARIO DE'); 
                         $pdf->addText(450,60,10,'CIENCIA Y TECNICA'); 
-                        //$pdf->ezText('                 <b>........................                         ..............................................                      ..............................................</b> ', 10);
-                        //$pdf->ezText('                 <b>SOLICITANTE                         DIRECTOR/CO-DIRECTOR                       SECRETARIO DE </b> ', 10);
-                        //$pdf->ezText('                 <b>                                                     DEL PROYECTO                                      CIENCIA Y TECNICA </b> ', 10);
+                        //Recorremos cada una de las hojas del documento para agregar el encabezado
+                        foreach ($pdf->ezPages as $pageNum=>$id){ 
+                            $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                            //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+                            $imagen = toba::proyecto()->get_path().'/www/img/logo_uc.jpg';
+                            $imagen2 = toba::proyecto()->get_path().'/www/img/sein.jpg';
+                            $pdf->addJpegFromFile($imagen, 30, 715, 70, 66); 
+                            $pdf->addJpegFromFile($imagen2, 450, 715, 70, 66);
+                            $pdf->closeObject(); 
+                        }                             
                    }
                  }
             }     
