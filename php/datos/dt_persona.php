@@ -64,10 +64,10 @@ class dt_persona extends toba_datos_tabla
                     $where='';
                 }
 	    $sql = " select sub.id_persona,max(descripcion) as descripcion from 
-                    (SELECT trim(p.tipo_docum)||p.nro_docum as id_persona,trim(apellido)||', '||trim(nombre) as descripcion 
+                    (SELECT trim(p.tipo_docum)||p.nro_docum as id_persona,trim(apellido)||', '||trim(nombre)||'('||nro_docum||')' as descripcion 
                         FROM persona p
                     UNION
-                    SELECT trim(d.tipo_docum)||d.nro_docum as id_persona,trim(apellido)||', '||trim(nombre) as descripcion 
+                    SELECT trim(d.tipo_docum)||d.nro_docum as id_persona,(trim(apellido)||', '||trim(nombre)||'('||nro_cuil1||'-'||nro_cuil||'-'||nro_cuil2||')' ) as descripcion 
                         FROM docente d
                     )sub
                     $where
