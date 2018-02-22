@@ -16,6 +16,34 @@ class ci_pinv_otros extends designa_ci
         {
             $this->s__datos = $datos;
         }
+        function get_cant_dias($fs, $fr){
+            $fsa=substr($fs, 0, 10);//fecha de salida
+            $fre=substr($fr, 0, 10);//fecha de regreso
+//            $dias=date("d",$fsa); // día del mes en número
+//            $mess=date("m",$fsa); // número del mes de 01 a 12
+//            $anos=date("Y",$fsa);
+            
+            $hfs = intval(substr($fs, 11, 2)) ;//hora de fecha de salida
+            $hfr = intval(substr($fr, 11, 2)) ;//hora de fecha de regreso
+            $mfs = intval(substr($fs, 14, 2)) ;//minutos de fecha de salida
+            $mfr = intval(substr($fr, 14, 2)) ;//minutos de fecha de regreso
+            $a= date_create($fsa);
+            $b= date_create($fre);
+            $intervalo = date_diff($a, $b);
+            $dif=$intervalo->days;
+            //print_r($dif);exit;//diferencia de dias
+            if($hfs<12 and ($hfr>12 or ($hfr==12 and $mfr>0))){
+                $dif=($intervalo->days)+1;
+            }else{
+               if(($hfs<12 and $hfr<12) or (($hfr>12 or ($hfr==12 and $mfr>0)) and ($hfs>12 or ($hfs==12 and $mfs>0)))){
+                    $dif=($intervalo->days)+0.5;
+                }else{
+                    $dif=$intervalo->days;
+                }
+            }
+             
+            return $dif;
+        }
         function get_listado_docentes(){
             $salida=array();
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
@@ -525,6 +553,8 @@ class ci_pinv_otros extends designa_ci
                 $form->ef('tipo')->set_obligatorio('true');
                 //$form->ef('estado')->set_obligatorio('true');
                 $form->ef('fecha_solicitud')->set_obligatorio('true');
+                $form->ef('nombre_actividad')->set_obligatorio('true');
+                $form->ef('medio_transporte')->set_obligatorio('true');
                 $form->ef('id_designacion')->set_obligatorio('true');
                 $form->ef('origen')->set_obligatorio('true');
                 $form->ef('destino')->set_obligatorio('true');
@@ -569,6 +599,10 @@ class ci_pinv_otros extends designa_ci
                 $datos['nro_tab']=13;
                 $datos['estado']='S';//cuando se ingresa un viatico el mismo se registra como S
                 $datos['nro_tab2']=14;
+                //estos datos si bien estan en el formulario, la ua no puede tocarlos
+                unset($datos['fecha_present_certif']);
+                unset($datos['expediente_pago']);
+                unset($datos['fecha_pago']);
                 $mensaje="";
                 if($datos['es_nacional']==1){//si es nacional
                     if($datos['cant_dias']>5){
@@ -579,10 +613,12 @@ class ci_pinv_otros extends designa_ci
                         $mensaje="Internacional hasta 7 dias";
                      }
                 }
-             
-                if($mensaje==""){
+                $calculo=$this->get_cant_dias($datos['fecha_salida'],$datos['fecha_regreso']);
+                if($datos['cant_dias']<=$calculo){
+                   if($mensaje==""){
                     $fecha = strtotime($datos['fecha_solicitud']);
                     $anio=date("Y",$fecha);
+                    
                     $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias($pi['id_pinv'],$anio,$datos['cant_dias']);
                     if($band){//verifica que no supere los 14 dias anuales
                         $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
@@ -592,10 +628,12 @@ class ci_pinv_otros extends designa_ci
                     }else{
                         throw new toba_error('Supera los 14 dias anuales');
                     }
-                }else{
+                  }else{
                     throw new toba_error($mensaje);
+                  } 
+                }else{
+                   throw new toba_error('La cantidad de dias debe ser menor o igual a: '.$calculo.'. Por favor, corrija e intente guardar nuevamente.');
                 }
-              
           }
 	}
         //boton modificacion para central. Solo modifica fecha de presentacion, expediente de pago, fecha de pago, estado

@@ -9,7 +9,7 @@ class form_autocompleta_dias extends toba_ei_formulario
                         var fs = this.ef('fecha_salida').get_estado();
                         console.log(fecha_salida);/*muestra un mensaje en la consola*/
                         if (fs != '') {
-                            this.cascadas_cambio_maestro('fs');/*Un ef indica que su valor cambio y por lo tanto sus esclavos deben refrescarse*/
+                          /*  this.cascadas_cambio_maestro('fs');*//*Un ef indica que su valor cambio y por lo tanto sus esclavos deben refrescarse*/
 			}else{
                             this.ef('cant_dias').set_estado('0');
                         }
@@ -51,14 +51,23 @@ class form_autocompleta_dias extends toba_ei_formulario
                             }
                         }
                         /*alert(dif);*/
-                        this.ef('cant_dias').set_estado(dif);
+                        var texto='Corresponden '.concat(dif).concat(' dias?');
+                        var mensaje=confirm(texto); 
+                        if (mensaje) {
+                            this.ef('cant_dias').set_estado(dif);
+                            alert('gracias');
+                        }else{
+                            /*var person = prompt('Ingrese cant dias: ', '');
+                               this.ef('cant_dias').set_estado(person);
+                               */
+                            
+                            }
+                        /*this.ef('cant_dias').set_estado(dif);*/
                     }else{
                         alert('La fecha de regreso debe ser mayor a la fecha de salida');
                     }
                    
                     
-                    
-                    /* this.ef('cant_dias').set_estado('2');*/
                 }
                 
                         ";

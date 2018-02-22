@@ -16,8 +16,8 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba', --clase_proyecto
 	'toba_ei_formulario', --clase
 	'23', --punto_montaje
-	'form_autocompleta_dias', --subclase
-	'p_investigacion/form_autocompleta_dias.php', --subclase_archivo
+	NULL, --subclase
+	NULL, --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'P Investigacion - CI - ci_pinv_otros - form_viatico', --nombre
