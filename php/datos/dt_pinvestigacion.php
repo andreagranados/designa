@@ -287,6 +287,13 @@ class dt_pinvestigacion extends toba_datos_tabla
                 if (isset($filtro['fec_hasta']['valor'])) {
 			$where .= " and t_p.fec_hasta= ".quote($filtro['fec_hasta']['valor']);   
 		}
+                if(isset($filtro['respon'])){
+                    if($filtro['respon']['valor']==1){
+                        $where.=' and id_respon_sub is not null ';
+                    }else{
+                        $where.=' and id_respon_sub is null ';
+                    }
+                }
                 if (isset($filtro['anio']['valor'])) {
 		    $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
                     $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
@@ -351,6 +358,7 @@ class dt_pinvestigacion extends toba_datos_tabla
 			t_p.objetivo,
                         t_p.estado,
                         t_p.tipo,
+                        t_p.id_respon_sub,
                         director_de(t_p.id_pinv) as director,
                         codirector_de(t_p.id_pinv) as codirector
                        
