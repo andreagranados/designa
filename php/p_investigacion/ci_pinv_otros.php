@@ -834,9 +834,9 @@ class ci_pinv_otros extends designa_ci
                  }
          }else{//es usuario de la unidad academica
               switch ($this->s__pantalla) {
-                    case "pant_winsip":break;
+                    case "pant_winsip":toba::notificacion()->agregar('Se ingresan desde SCyT', 'error');break;
                     case "pant_subsidios": toba::notificacion()->agregar('Se ingresan desde SCyT', 'error');  break;   
-                    case "pant_estimulos":break;   
+                    case "pant_estimulos":toba::notificacion()->agregar('Se ingresan desde SCyT', 'error');break;   
                     case "pant_viaticos":
                                         $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                                         if($pi['estado']<>'A'){

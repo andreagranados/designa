@@ -17,6 +17,7 @@ class ci_certificacion_periodo extends toba_ci
 
 	function evt__filtro__filtrar($datos)
 	{
+            $this->s__agente=$datos;
             $this->s__datos_filtro = $datos;
 	}
 
@@ -31,22 +32,11 @@ class ci_certificacion_periodo extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-            $this->pantalla()->tab("pant_certif")->desactivar();
             if (isset($this->s__datos_filtro)) {
 		$cuadro->set_datos($this->dep('datos')->tabla('docente')->get_docente($this->s__datos_filtro));
 		} 
 	}
 
-	function evt__cuadro__seleccion($datos)
-	{
-            $this->s__agente=$datos;//[id_docente] => 49
-            $this->set_pantalla('pant_certif');
-	}
-        
-        function conf__pant_certif(toba_ei_pantalla $pantalla)
-	{
-            $this->pantalla()->tab("pant_inicial")->desactivar();
-	}
         function vista_pdf(toba_vista_pdf $salida)
         {
             $salida->set_papel_orientacion('portrait');
@@ -86,7 +76,7 @@ class ci_certificacion_periodo extends toba_ci
            
             $ag=$this->dep('datos')->tabla('docente')->get_agente($this->s__agente['id_docente']);
             $leg=$this->dep('datos')->tabla('docente')->get_legajo($this->s__agente['id_docente']);
-            //recupero las designaciones del periodo previamente seleccionado
+//           //recupero las designaciones del periodo previamente seleccionado
             $desig=$this->dep('datos')->tabla('docente')->get_designaciones_periodo($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
             $pdf->ezText("\n", 7);
             $texto="Docente: <b>".$ag."</b> Legajo ".$leg;
@@ -124,21 +114,23 @@ class ci_certificacion_periodo extends toba_ci
                 $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => utf8_decode('Período'),'col4' => 'Hs','col5' => utf8_decode('Módulo')), 'ACTIVIDAD ACADEMICA', $opciones);
                 $pdf->ezText("\n", 7);
                 //busco la actividad en investigacion
-                //$inve=$this->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv($des['id_designacion'],$this->s__datos_filtro['anio']);
-                //$i=0;
+                $inve=$this->dep('datos')->tabla('integrante_interno_pi')->get_proyinv_docente($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
+                $i=0;
+                foreach ($inve as $in) {
+                    $datosi[$i]=array('col1'=>'<b>Proyecto:</b>'.$in['denominacion']);
+                    $i++;
+                    $datosi[$i]=array('col1'=>'<b>Codigo: </b>'.$in['codigo']);
+                    $i++;
+                    $datosi[$i]=array('col1'=>'<b>Funcion: </b>'.$in['funcion_p'].' Categoria:'.$in['categ']);
+                    $i++;
+                    $datosi[$i]=array('col1'=>'<b>Desde: </b>'.date_format(date_create($in['desde']),'d/m/Y').' Hasta: '.date_format(date_create($in['hasta']),'d/m/Y'));
+                    $i++;
+                    $datosi[$i]=array('col1'=>'<b>Hs Semanales: </b>'.$in['carga_horaria']);
+                  }
                 
             }
             
-            //foreach ($inve as $i) {
-//              if($i['desde']){
-//              }
-//          }
-            $datos = array(
-                array('col1' => 1, 'col2' => 2,'col3' => 2,'col4' => 2,'col5' => 2),
-                array('col1' => 3, 'col2' => 4,'col3' => 2,'col4' => 2,'col5' => 2),
-              );
-            
-          //  $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => 'Periodo','col4' => 'Hs','col5' => 'Módulo'), 'INVESTIGACION', $opciones);
+            $pdf->ezTable($datosi, array('col1'=>''), 'INVESTIGACION', $opciones);
             
             $pdf->ezText("\n\n\n", 10);
             

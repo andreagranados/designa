@@ -48,16 +48,16 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
 	'designa', --proyecto
-	'3128', --evento_id
+	'3295', --evento_id
 	'3911', --objeto
-	'seleccion', --identificador
-	NULL, --etiqueta
+	'pdf', --identificador
+	'imprimir', --etiqueta
 	'1', --maneja_datos
 	'1', --sobre_fila
 	NULL, --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
-	'instanciar.gif', --imagen
+	'impresora.png', --imagen
 	'0', --en_botonera
 	NULL, --ayuda
 	'1', --orden
@@ -66,18 +66,18 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --defecto
 	NULL, --display_datos_cargados
 	NULL, --grupo
-	NULL, --accion
+	'V', --accion
 	NULL, --accion_imphtml_debug
 	NULL, --accion_vinculo_carpeta
 	NULL, --accion_vinculo_item
 	NULL, --accion_vinculo_objeto
-	NULL, --accion_vinculo_popup
+	'0', --accion_vinculo_popup
 	NULL, --accion_vinculo_popup_param
 	NULL, --accion_vinculo_target
 	NULL, --accion_vinculo_celda
-	NULL, --accion_vinculo_servicio
+	'vista_pdf', --accion_vinculo_servicio
 	'0', --es_seleccion_multiple
-	'0'  --es_autovinculo
+	'1'  --es_autovinculo
 );
 --- FIN Grupo de desarrollo 0
 

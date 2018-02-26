@@ -182,6 +182,21 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 where id_docente=".$id_docente ." order by desde";  
        return toba::db('designa')->consultar($sql);
     }
+    //ussado por la certificacion
+    //trae todos los proyectos de investigacion en los que esta el docente dentro del año correspondiente
+    function get_proyinv_docente($id_docente,$anio){
+        $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
+        $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
+        $sql="select i.funcion_p,i.desde,i.hasta,carga_horaria,d.cat_estat||d.dedic as categ,p.codigo,p.denominacion
+                from integrante_interno_pi i, designacion d, pinvestigacion p
+                where i.id_designacion=d.id_designacion
+                and d.id_docente=".$id_docente
+                ." and p.id_pinv=pinvest"
+                ." and i.desde<='".$udia."' and (i.hasta>='".$pdia."' or i.hasta is null)
+            order by i.desde";
+       
+        return toba::db('designa')->consultar($sql);
+    }
     //dado una designacion, trae todos los proyectos de investigacion en los que haya participado
     function sus_proyectos_inv($id_desig,$anio){
         $sql="select t_d.id_designacion||'-'||t_d.cat_estat||t_d.dedic||t_d.carac||'-'||t_i.ua||'('||to_char(t_d.desde,'dd/mm/YYYY')||'-'||case when t_d.hasta is null then '' else to_char(t_d.hasta,'dd/mm/YYYY') end  ||')' as desig,t_p.uni_acad,t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd 
