@@ -6,13 +6,21 @@ class dt_tiene_estimulo extends toba_datos_tabla
                 . " where a.id_proyecto=".$id_p;
         return toba::db('designa')->consultar($sql);
     }
-    function get_listado_filtro($where=null){
+    function get_listado_filtro($filtro=null){
+       
+        $con="select sigla from unidad_acad ";
+        $con = toba::perfil_de_datos()->filtrar($con);
+        $resul=toba::db('designa')->consultar($con);
+        $where = " WHERE 1=1 ";
+        if(count($resul)<=1){//es usuario de una unidad academica
+                    $where.=" and uni_acad = ".quote($resul[0]['sigla']);
+                }//sino es usuario de la central no filtro a menos que haya elegido
+         
         if(!is_null($where)){
-            $where=' WHERE '.$where;
-        }else{
-            $where='';
-         }
-         $sql = "SELECT * from (SELECT
+            $where.=' and '.$filtro;
+        }
+       
+        $sql = "SELECT * from (SELECT
 			t_i.uni_acad,
                         t_i.codigo,
                         t_i.denominacion,
