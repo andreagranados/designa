@@ -468,6 +468,35 @@ class dt_pinvestigacion extends toba_datos_tabla
             $res= toba::db('designa')->consultar($sql);
             return $res[0]['categ'];
         }
+        function get_minimo_integrantes($filtro=null){
+           
+            if(!is_null($filtro)){
+              $where=' and '.$filtro;
+            }else{
+                $where='';
+            }
+            $sql="select p.codigo,p.uni_acad,p.denominacion,p.fec_desde,p.fec_hasta from 
+                (select id_pinv,sum(cant)as cant from 
+                (select id_pinv,count(distinct d.id_docente) as cant
+                from integrante_interno_pi i, pinvestigacion p, designacion d
+                where i.pinvest=p.id_pinv
+                and i.id_designacion=d.id_designacion
+                and i.hasta=p.fec_hasta
+                group by id_pinv
+                    UNION
+                select id_pinv,count(distinct i.nro_docum) as cant
+                from integrante_externo_pi i, pinvestigacion p
+                where i.pinvest=p.id_pinv
+                and i.hasta=p.fec_hasta
+                group by id_pinv
+            )sub
+            group by id_pinv)sub2, pinvestigacion p
+            where cant<5
+            and sub2.id_pinv=p.id_pinv
+            $where
+            order by uni_acad";
+             return toba::db('designa')->consultar($sql);
+        }
 }
          
 ?>
