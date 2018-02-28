@@ -31,7 +31,9 @@ class ci_minimo_integrantes extends toba_ci
 
 	function conf__cuadro(designa_ei_cuadro $cuadro)
 	{
+            if (isset($this->s__where)) {
              $cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_minimo_integrantes($this->s__where));
+            }
 	}
 
 	
