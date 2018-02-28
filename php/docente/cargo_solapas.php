@@ -229,18 +229,18 @@ class cargo_solapas extends toba_ci
 	{
          $nuevafecha = strtotime ( '-1 day' , strtotime ( $datos['desde'] ) );
          $nuevafecha = date ( 'Y-m-j' , $nuevafecha );
-         $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
-         if(!$vale){//no puede modifica porque estan controlando o no pertenece al periodo presupuestando o actual
-            $mensaje=utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'); 
-         }else{//puede modificar
-             if(!($datos['hasta']!=null && $datos['hasta']==$nuevafecha)){//sino es anulacion //si hasta <>null and hasta=desde-1 es una anulacion
-                 if($datos['hasta'] !=null && $datos['hasta']<$datos['desde']){//verifica que la fecha hasta>desde
+         $vale=true;
+         if(!($datos['hasta']!=null && $datos['hasta']==$nuevafecha)){//sino es anulacion //si hasta <>null and hasta=desde-1 es una anulacion
+                if($datos['hasta'] !=null && $datos['hasta']<$datos['desde']){//verifica que la fecha hasta>desde
                     $vale=false;
                     $mensaje='La fecha hasta debe ser mayor que la desde';
+                }else{
+                    $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
+                    $mensaje=utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'); 
                 }
              }//puede modificar y corresponde a una anulacion entonces vale es true
-         }
-
+          //si es anulacion lo deja hacer   
+       
          if($vale){
             //--recupero la designacion que se desea modificar 
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
