@@ -475,26 +475,25 @@ class dt_pinvestigacion extends toba_datos_tabla
             }else{
                 $where='';
             }
-            $sql="select p.codigo,p.uni_acad,p.denominacion,p.fec_desde,p.fec_hasta from 
-                (select id_pinv,sum(cant)as cant from 
-                (select id_pinv,count(distinct d.id_docente) as cant
+            $sql="select * from 
+                (SELECT p.codigo,p.denominacion,p.uni_acad,p.fec_desde,p.fec_hasta,sub1.id_pinv,(case when cant1 is null then 0 else cant1 end)+(case when cant2 is null then 0 else cant2 end)as cant FROM(select id_pinv,count(distinct d.id_docente) as cant1
                 from integrante_interno_pi i, pinvestigacion p, designacion d
                 where i.pinvest=p.id_pinv
                 and i.id_designacion=d.id_designacion
                 and i.hasta=p.fec_hasta
-                group by id_pinv
-                    UNION
-                select id_pinv,count(distinct i.nro_docum) as cant
+                group by id_pinv)SUB1
+                    FULL OUTER JOIN
+                (select id_pinv,count(distinct i.nro_docum) as cant2
                 from integrante_externo_pi i, pinvestigacion p
                 where i.pinvest=p.id_pinv
                 and i.hasta=p.fec_hasta
-                group by id_pinv
-            )sub
-            group by id_pinv)sub2, pinvestigacion p
-            where cant<5
-            and sub2.id_pinv=p.id_pinv
-            $where
-            order by uni_acad";
+                group by id_pinv)SUB2 ON (SUB1.ID_PINV=SUB2.ID_PINV)
+                left outer join pinvestigacion p on (sub1.id_pinv=p.id_pinv)
+                )sub3
+	
+                where sub3.cant<5
+                $where
+                order by uni_acad";
              return toba::db('designa')->consultar($sql);
         }
 }
