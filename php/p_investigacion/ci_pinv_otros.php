@@ -691,7 +691,7 @@ class ci_pinv_otros extends designa_ci
                         toba::notificacion()->agregar($mensaje, 'error');  
                     }
                 }else{
-                    toba::notificacion()->agregar('El viatico no puede ser alterado porque ya ha sido Aprobado/Rechazado por la SCyT', 'error');  
+                    toba::notificacion()->agregar(utf8_decode('El viático no puede ser alterado porque ya ha sido Aprobado/Rechazado por la SCyT'), 'error');  
                 }   
           }  
         
@@ -700,14 +700,16 @@ class ci_pinv_otros extends designa_ci
 	{
           $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
           if($pi['estado']<>'A'){
-               toba::notificacion()->agregar('El proyecto debe estar ACTIVO para modificar viaticos ', 'error');  
+               toba::notificacion()->agregar(utf8_decode('El proyecto debe estar ACTIVO para modificar viáticos '), 'error');  
           }else{
-               $est=$this->controlador()->dep('datos')->tabla('viatico')->get();
+                $est=$this->controlador()->dep('datos')->tabla('viatico')->get();
                 if($est['estado']=='S'){  
                     $this->controlador()->dep('datos')->tabla('viatico')->eliminar_todo();
                     $this->controlador()->dep('datos')->tabla('viatico')->resetear();
+                    $this->s__mostrar_v=0;
+                    toba::notificacion()->agregar(utf8_decode('El viático se ha eliminado correctamente','info'));
                 }else{
-                    toba::notificacion()->agregar('El viatico no puede ser eliminado porque ya ha sido Aprobado/Rechazado por la SCyT', 'error');      
+                    toba::notificacion()->agregar(utf8_decode('El viático no puede ser eliminado porque ya ha sido Aprobado/Rechazado por la SCyT'), 'error');      
                 }
               }
 	}

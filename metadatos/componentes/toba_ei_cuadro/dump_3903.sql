@@ -166,7 +166,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3903', --objeto_cuadro
 	'3834', --objeto_cuadro_col
 	'fecha_solicitud', --clave
-	'3', --orden
+	'4', --orden
 	'Fecha solicitud', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -259,7 +259,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3903', --objeto_cuadro
 	'3837', --objeto_cuadro_col
 	'destinatario', --clave
-	'5', --orden
+	'3', --orden
 	'Destinatario', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -290,7 +290,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3903', --objeto_cuadro
 	'3838', --objeto_cuadro_col
 	'memo_solicitud', --clave
-	'4', --orden
+	'10', --orden
 	'Memo solicitud', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -321,7 +321,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3903', --objeto_cuadro
 	'3839', --objeto_cuadro_col
 	'memo_certificados', --clave
-	'10', --orden
+	'9', --orden
 	'Memo certificados', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -352,7 +352,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3903', --objeto_cuadro
 	'3840', --objeto_cuadro_col
 	'es_nacional', --clave
-	'6', --orden
+	'5', --orden
 	'Es nacional', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'0', --estilo
@@ -414,7 +414,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3903', --objeto_cuadro
 	'3842', --objeto_cuadro_col
 	'fecha_present_certif', --clave
-	'9', --orden
+	'8', --orden
 	'Fecha present certif', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -476,12 +476,12 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3903', --objeto_cuadro
 	'4222', --objeto_cuadro_col
 	'fecha_salida', --clave
-	'8', --orden
+	'6', --orden
 	'Fecha de Salida', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'7', --estilo
 	NULL, --ancho
-	'8', --formateo
+	'18', --formateo
 	NULL, --vinculo_indice
 	NULL, --no_ordenar
 	NULL, --mostrar_xls

@@ -38,7 +38,7 @@ class dt_viatico extends toba_datos_tabla
         }
         $sql="select id_viatico,id_proyecto, nro_tab, tipo, fecha_solicitud, fecha_pago, 
                 expediente_pago, case when c.nro_docum is not null then trim(c.apellido)||', '||trim(c.nombre) else trim(p.apellido)||', '||trim(p.nombre) end as destinatario, memo_solicitud, memo_certificados, 
-                case when es_nacional=1 then 'SI' else 'NO' end as es_nacional, cant_dias, fecha_present_certif, a.observaciones, a.estado 
+                case when es_nacional=1 then 'SI' else 'NO' end as es_nacional, cant_dias, fecha_present_certif,fecha_salida, a.observaciones, a.estado 
                 from viatico a
                 left outer join docente c on (a.nro_docum_desti=c.nro_docum)
                 left outer join persona p on (a.nro_docum_desti=p.nro_docum)
