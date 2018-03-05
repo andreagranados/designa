@@ -66,7 +66,6 @@ class ci_p_investigacion extends toba_ci
 	}
         function conf__form_encabezado(toba_ei_formulario $form)
 	{
-           
             if ($this->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
                 $this->s__nombrep=$pi['denominacion'];
@@ -74,8 +73,6 @@ class ci_p_investigacion extends toba_ci
                 $this->s__ua=$pi['uni_acad'];
                 $texto=$pi['denominacion']." (".$pi['codigo'].") de: ".$pi['uni_acad'];
                 $form->set_titulo($texto);
-                
-                
             }        
         }
         function vista_pdf(toba_vista_pdf $salida){
@@ -125,28 +122,28 @@ class ci_p_investigacion extends toba_ci
                         $dias=$vi['cant_dias'];
                         $dire=$this->dep('datos')->tabla('pinvestigacion')->get_director($vi['id_proyecto']);
                         $montov=$this->dep('datos')->tabla('montos_viatico')->get_monto_viatico();
-                        $fn=$this->dep('datos')->tabla('pinvestigacion')->get_categ($vi['id_proyecto'],$vi['id_designacion']);
+                        $fn=$this->dep('datos')->tabla('pinvestigacion')->get_categ($vi['id_proyecto'],$vi['nro_docum_desti']);
                         $pdf->ezText("\n\n\n\n", 10);
                         $pdf->ezText('<b>NOMBRE DEL PROYECTO: </b>'.$pi['denominacion'], 10);
-                        $pdf->ezText('<b>UNIDAD ACADEMICA: </b>'.$pi['uni_acad'], 10);
-                        $pdf->ezText('<b>CODIGO DEL PROYECTO: </b>'.$pi['codigo'], 10);
+                        $pdf->ezText('<b>'.utf8_d_seguro('UNIDAD ACADÉMICA: ').'</b>'.$pi['uni_acad'], 10);
+                        $pdf->ezText('<b>'.utf8_d_seguro('CÓDIGO DEL PROYECTO: ').'</b>'.$pi['codigo'], 10);
                         $pdf->ezText('<b>DIRECTOR DEL PROYECTO: </b>'.$dire, 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('<b>TIPO DE ACTIVIDAD: </b>'.$tipo_ac, 10);
                         $pdf->ezText('<b>NOMBRE DE LA ACTIVIDAD: </b>'.$vi['nombre_actividad'], 10);
                         $pdf->ezText('<b>DESTINATARIO: </b>'.$desti, 10);
                         $pdf->ezText('<b>CUIL: </b>'.$cuil, 10);
-                        $pdf->ezText('<b>FUNCION: </b>'.$fn, 10);
+                        $pdf->ezText('<b>'.utf8_d_seguro('CATEGORÍA: ') .'</b>'.$fn, 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('<b>DESTINO: </b>'.$vi['destino'], 10);
                         $pdf->ezText('<b>MEDIO DE TRANSPORTE: </b>'.$mt, 10);
                         $pdf->ezText('<b>SALIDA EFECTIVA: </b>'.date("d/m/Y H:i",strtotime($vi['fecha_salida'])).' hs', 10);//date("d/m/Y",strtotime($des['fec_nacim']))
                         $pdf->ezText('<b>REGRESO EFECTIVO: </b>'.date("d/m/Y H:i",strtotime($vi['fecha_regreso'])).' hs' , 10);
                         $pdf->ezText('  ', 10);
-                        $pdf->ezText('------------------------------------------------------ LIQUIDACION DE GASTOS ------------------------------------------------------', 10);
+                        $pdf->ezText(utf8_d_seguro('------------------------------------------------------ LIQUIDACIÓN DE GASTOS ------------------------------------------------------'), 10);
                         $pdf->ezText('  ', 10);
-                        $pdf->ezText('<b>DIAS A LIQUIDAR: </b>'.$vi['cant_dias'], 10);
-                        $pdf->ezText('<b>VIATICOS DIARIOS $:</b> '.$montov, 10);
+                        $pdf->ezText('<b>'.utf8_d_seguro('DÍAS A LIQUIDAR: ').'</b>'.$vi['cant_dias'], 10);
+                        $pdf->ezText('<b>'.utf8_d_seguro('VIÁTICOS DIARIOS: ').'</b> '.$montov, 10);
                         $pdf->ezText('<b>SON $: </b> '.$vi['cant_dias']*$montov, 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
@@ -178,15 +175,15 @@ class ci_p_investigacion extends toba_ci
                         $pdf->addText(240,60,10,'     DEL PROYECTO');
                         $pdf->addText(450,80,10,'...................................'); 
                         $pdf->addText(450,70,10,'  SECRETARIO DE'); 
-                        $pdf->addText(450,60,10,'CIENCIA Y TECNICA'); 
+                        $pdf->addText(450,60,10,utf8_d_seguro('CIENCIA Y TÉCNICA')); 
                         //Recorremos cada una de las hojas del documento para agregar el encabezado
                         foreach ($pdf->ezPages as $pageNum=>$id){ 
                             $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
                             //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
                             $imagen = toba::proyecto()->get_path().'/www/img/logo_uc.jpg';
                             $imagen2 = toba::proyecto()->get_path().'/www/img/sein.jpg';
-                            $pdf->addJpegFromFile($imagen, 30, 715, 70, 66); 
-                            $pdf->addJpegFromFile($imagen2, 450, 715, 70, 66);
+                            $pdf->addJpegFromFile($imagen, 40, 715, 70, 66); 
+                            $pdf->addJpegFromFile($imagen2, 480, 715, 70, 66);
                             $pdf->closeObject(); 
                         }                             
                    }

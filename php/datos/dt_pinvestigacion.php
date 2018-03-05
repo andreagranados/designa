@@ -113,16 +113,33 @@ class dt_pinvestigacion extends toba_datos_tabla
         //retorna todos los integrantes internos de un proyecto menos IA,IE,DE
         //solo los que podrian ser los destinatarios de los viaticos
         function get_integrantes_resp_viatico($id_proy){
-             $sql="select max(a.id_designacion) as id_designacion,trim(c.apellido)||', '||trim(c.nombre) as agente "
+//             $sql="select max(a.id_designacion) as id_designacion,trim(c.apellido)||', '||trim(c.nombre) as agente "
+//                    . " from integrante_interno_pi a"
+//                    . " LEFT OUTER JOIN designacion b ON (a.id_designacion=b.id_designacion)"
+//                    . " LEFT OUTER JOIN docente c ON (c.id_docente=b.id_docente)"
+//                    . " where pinvest=".$id_proy
+//                    ." and funcion_p <>'IA' and funcion_p<>'IE' and funcion_p<>'DE'"
+//                    ." group by agente"
+//                    ." order by agente"
+//                    ;
+             //retorna todos los integrantes del proyecto, sean docentes o no
+            $sql="select nro_docum as doc_destinatario,trim(c.apellido)||', '||trim(c.nombre) as agente "
                     . " from integrante_interno_pi a"
+                    . " LEFT OUTER JOIN pinvestigacion p ON (p.id_pinv=a.pinvest)"
                     . " LEFT OUTER JOIN designacion b ON (a.id_designacion=b.id_designacion)"
                     . " LEFT OUTER JOIN docente c ON (c.id_docente=b.id_docente)"
                     . " where pinvest=".$id_proy
-                    ." and funcion_p <>'IA' and funcion_p<>'IE' and funcion_p<>'DE'"
-                    ." group by agente"
+                    . " and a.hasta=p.fec_hasta "
+                    ." UNION "
+                    . " select e.nro_docum as id_destinatario,trim(e.apellido)||', '||trim(e.nombre) as agente  
+		from integrante_externo_pi a           
+		LEFT OUTER JOIN pinvestigacion p ON (p.id_pinv=a.pinvest)
+		LEFT OUTER JOIN persona e ON (e.nro_docum=a.nro_docum and e.tipo_docum=a.tipo_docum)
+		 where a.pinvest=". $id_proy
+		."  and  a.hasta=p.fec_hasta"
+		."  and e.nro_docum>0 "
                     ." order by agente"
                     ;
-            
             return toba::db('designa')->consultar($sql);
         }
         //retorna listado de todos los integrantes internos de un proyecto
@@ -454,17 +471,31 @@ class dt_pinvestigacion extends toba_datos_tabla
                 return $res[0]['director'];
             }
         }
-        function get_categ($id_p,$id_desig){
+        function get_categ($id_p,$nro_doc){
+            //al momento de imprimir toma la ultima fecha con la que esta asociado al proyecto
             //primero obtengo la ultima fecha con la que el docente esta en el proyecto, 
             //luego obtengo la funcion
-            $sql="select d.cat_estat||d.dedic as categ from 
-                   (select id_docente,pinvest, max(i.hasta)as hasta from integrante_interno_pi i, designacion d
-                    where i.pinvest=".$id_p
-                    ." and i.id_designacion=".$id_desig
-                    ." and i.id_designacion=d.id_designacion
-                    group by id_docente,pinvest)sub 
-                    inner join integrante_interno_pi t on (t.pinvest=sub.pinvest and t.hasta=sub.hasta)  
-                    inner join designacion d on (d.id_designacion=t.id_designacion and d.id_docente=sub.id_docente )"; 
+            $sql="select distinct doc.nro_docum,  case when doc.nro_docum is not null then cat_estat||dedic else  '-' end as categ  from (
+                    select nro_docum,pinvest,max(hasta) as hasta from (
+                        select nro_docum,pinvest,i.hasta
+                        from integrante_interno_pi i, designacion d, docente doc
+                        where i.pinvest=$id_p
+                        and i.id_designacion=d.id_designacion
+                        and d.id_docente=doc.id_docente
+                        and doc.nro_docum=$nro_doc
+                    UNION
+                        select p.nro_docum,pinvest,i.hasta from integrante_externo_pi i, persona p
+                        where i.pinvest=$id_p
+                        and p.nro_docum=i.nro_docum
+                        and p.nro_docum=$nro_doc
+                ) sub  
+                group by nro_docum,pinvest
+            )sub2              
+
+            left outer join integrante_interno_pi t on (t.pinvest=sub2.pinvest and t.hasta=sub2.hasta) 
+            left outer join designacion d on (t.id_designacion=d.id_designacion ) 
+            left outer join docente doc on (d.id_docente=doc.id_docente and doc.nro_docum=sub2.nro_docum) 
+            left outer join persona p on (p.nro_docum=sub2.nro_docum)"; 
             $res= toba::db('designa')->consultar($sql);
             return $res[0]['categ'];
         }

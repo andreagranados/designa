@@ -496,7 +496,7 @@ class ci_pinv_otros extends designa_ci
 	{
             unset($this->s__datos_filtro);
         }
-        
+        //trae listado de personas integrantes del proyecto como responsables del cobro de viaticos
         function get_integrantes(){
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
@@ -531,7 +531,7 @@ class ci_pinv_otros extends designa_ci
                 }else{
                     $f=array();
                 }
-                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('viatico')->get_listado($pi['id_pinv'],$f));
+            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('viatico')->get_listado($pi['id_pinv'],$f));
             }
             
 	}
@@ -551,11 +551,11 @@ class ci_pinv_otros extends designa_ci
              if($this->s__mostrar_v==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('form_viatico')->descolapsar(); 
                 $form->ef('tipo')->set_obligatorio('true');
-                //$form->ef('estado')->set_obligatorio('true');
+                //$form->ef('estado')->set_obligatorio('true');// comento para que funcione el solo lectura
                 $form->ef('fecha_solicitud')->set_obligatorio('true');
                 $form->ef('nombre_actividad')->set_obligatorio('true');
                 $form->ef('medio_transporte')->set_obligatorio('true');
-                $form->ef('id_designacion')->set_obligatorio('true');
+                $form->ef('nro_docum_desti')->set_obligatorio('true');
                 $form->ef('origen')->set_obligatorio('true');
                 $form->ef('destino')->set_obligatorio('true');
                 $form->ef('fecha_salida')->set_obligatorio('true');
@@ -645,7 +645,7 @@ class ci_pinv_otros extends designa_ci
             $datos2['fecha_pago']=$datos['fecha_pago'];
             $this->controlador()->dep('datos')->tabla('viatico')->set($datos2);
             $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
-            toba::notificacion()->agregar('Modificacion exitosa. Solo modifica estado, expediente de pago, fecha de pago y fecha de presentac certif.', 'info');         
+            toba::notificacion()->agregar('Modificacion exitosa. SCyT solo modifica estado, expediente de pago, fecha de pago y fecha de presentac certif.', 'info');         
         }
         //boton modificacion para la ua
         function evt__form_viatico__modificacion_ua($datos)

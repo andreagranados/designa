@@ -1100,9 +1100,9 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'8885', --objeto_ei_formulario_fila
 	'3904', --objeto_ei_formulario
 	'designa', --objeto_ei_formulario_proyecto
-	'id_designacion', --identificador
+	'nro_docum_desti', --identificador
 	'ef_combo', --elemento_formulario
-	'id_designacion', --columnas
+	'nro_docum_desti', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'8', --orden
@@ -1127,7 +1127,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --carga_sql
 	'designa', --carga_fuente
 	NULL, --carga_lista
-	'id_designacion', --carga_col_clave
+	'doc_destinatario', --carga_col_clave
 	'agente', --carga_col_desc
 	NULL, --carga_maestros
 	'0', --carga_cascada_relaj
