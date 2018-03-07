@@ -15,7 +15,17 @@ class dt_estado_vi extends toba_datos_tabla
                  $sql="select * from estado_vi ";
             }
             return toba::db('designa')->consultar($sql);
-    }
+       }
+       //dado un id de estado retorna la descripcion
+       function get_descripcion($estado){
+           if(isset($estado)){
+                $sql="select descripcion from estado_vi where id_estado='".$estado."'";
+                $resul= toba::db('designa')->consultar($sql);
+                return $resul[0]['descripcion'];
+           }else{
+               return '';
+           }
+       }
 }
 
 ?>

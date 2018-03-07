@@ -123,6 +123,8 @@ class ci_p_investigacion extends toba_ci
                         $dire=$this->dep('datos')->tabla('pinvestigacion')->get_director($vi['id_proyecto']);
                         $montov=$this->dep('datos')->tabla('montos_viatico')->get_monto_viatico();
                         $fn=$this->dep('datos')->tabla('pinvestigacion')->get_categ($vi['id_proyecto'],$vi['nro_docum_desti']);
+                        //el monto del viatico se setea al momento de imprimir la planilla
+                        $this->dep('datos')->tabla('viatico')->modifica_monto($vi['id_viatico'],$montov);
                         $pdf->ezText("\n\n\n\n", 10);
                         $pdf->ezText('<b>NOMBRE DEL PROYECTO: </b>'.$pi['denominacion'], 10);
                         $pdf->ezText('<b>'.utf8_d_seguro('UNIDAD ACADÉMICA: ').'</b>'.$pi['uni_acad'], 10);

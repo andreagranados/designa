@@ -132,6 +132,10 @@ class dt_viatico extends toba_datos_tabla
         $sql="update viatico set expediente_pago='".$datos['expediente_pago']."' where id_viatico=".$id_viatico;
         toba::db('designa')->consultar($sql);
     }
+    function modifica_monto($id_viatico,$monto){
+        $sql="update viatico set monto=".$monto." where id_viatico=".$id_viatico;
+        toba::db('designa')->consultar($sql);
+    }
 }
 
 ?>

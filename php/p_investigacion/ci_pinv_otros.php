@@ -652,14 +652,14 @@ class ci_pinv_otros extends designa_ci
 	{
           $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
           if($pi['estado']<>'A'){
-               toba::notificacion()->agregar('El proyecto debe estar ACTIVO para modificar viaticos ', 'error');  
+               toba::notificacion()->agregar(utf8_decode('El proyecto debe estar ACTIVO para modificar viáticos '), 'error');  
           }else{
                 $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];  //Array ( [0] => 2017-01-01 [1] => 10:10 ) ) 
                 $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
                 $datos['fecha_salida']=$fec;
                 $datos['fecha_regreso']=$fecr;
-                $est=$this->controlador()->dep('datos')->tabla('viatico')->get();
-                if($est['estado']=='S'){     
+                $via=$this->controlador()->dep('datos')->tabla('viatico')->get();
+                if($via['estado']=='S'){     
                     $mensaje="";
                     unset($datos['estado']);//la ua no puede modificar el estado de un viatico
                     unset($datos['fecha_present_certif']);
@@ -675,23 +675,22 @@ class ci_pinv_otros extends designa_ci
                         }
                     }
                     if($mensaje==""){
-                        $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                         $fecha = strtotime($datos['fecha_solicitud']);
                         $anio=date("Y",$fecha);
-                        $via=$this->controlador()->dep('datos')->tabla('viatico')->get();
                         $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_modif($pi['id_pinv'],$anio,$datos['cant_dias'],$via['id_viatico']);
                         if($band){//verifica que no supere los 14 dias anuales
                             $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
                             $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
                             
                         }else{
-                            toba::notificacion()->agregar('Supera los 14 dias anuales', 'error');  
+                            toba::notificacion()->agregar(utf8_decode('Supera los 14 días anuales'), 'error');  
                         }
                     }else{
                         toba::notificacion()->agregar($mensaje, 'error');  
                     }
                 }else{
-                    toba::notificacion()->agregar(utf8_decode('El viático no puede ser alterado porque ya ha sido Aprobado/Rechazado por la SCyT'), 'error');  
+                    $mensaje=$this->controlador()->dep('datos')->tabla('estado_vi')->get_descripcion($via['estado']);
+                    toba::notificacion()->agregar(utf8_decode('El viático no puede ser modificado porque SCyT lo ha pasado a estado: '.$mensaje), 'error');  
                 }   
           }  
         
@@ -700,7 +699,7 @@ class ci_pinv_otros extends designa_ci
 	{
           $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
           if($pi['estado']<>'A'){
-               toba::notificacion()->agregar(utf8_decode('El proyecto debe estar ACTIVO para modificar viáticos '), 'error');  
+               toba::notificacion()->agregar(utf8_decode('El proyecto debe estar ACTIVO para poder modificar viáticos '), 'error');  
           }else{
                 $est=$this->controlador()->dep('datos')->tabla('viatico')->get();
                 if($est['estado']=='S'){  
