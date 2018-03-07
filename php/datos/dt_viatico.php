@@ -15,9 +15,9 @@ class dt_viatico extends toba_datos_tabla
 //                 . " left outer join tipo t on (v.nro_tab=t.nro_tabla and v.tipo=t.desc_abrev)"
 //                . ")sub, unidad_acad u"
 //                . " where  u.sigla=sub.uni_acad $where";
-        $sql=" select agente,codigo,uni_acad,tipov,estado,fecha_solicitud,fecha_salida,fecha_regreso,cant_dias,expediente_pago,fecha_pago 
+        $sql=" select agente,codigo,uni_acad,tipov,estado,fecha_solicitud,fecha_salida,fecha_regreso,cant_dias,expediente_pago,fecha_pago,id_viatico,destino
                 from (                
-                select case when doc.nro_docum is not null then trim(doc.apellido)||', '||doc.nombre else pe.apellido||pe.nombre end  as agente,i.codigo,i.uni_acad,t.desc_item as tipov,v.fecha_salida,v.fecha_regreso,v.cant_dias,v.estado,v.fecha_solicitud,v.expediente_pago,v.fecha_pago
+                select case when doc.nro_docum is not null then trim(doc.apellido)||', '||doc.nombre else trim(pe.apellido)||', '||trim(pe.nombre) end  as agente,id_viatico,i.codigo,i.uni_acad,t.desc_item as tipov,v.fecha_salida,v.fecha_regreso,v.cant_dias,v.estado,v.fecha_solicitud,v.expediente_pago,v.fecha_pago,destino
                     from viatico v
                     left outer join pinvestigacion i on (v.id_proyecto=i.id_pinv)
                     left outer join docente doc on (doc.nro_docum=v.nro_docum_desti)
@@ -25,6 +25,7 @@ class dt_viatico extends toba_datos_tabla
                     left outer join persona pe on (pe.nro_docum=v.nro_docum_desti)  
                     )   sub, unidad_acad u
                 where  u.sigla=sub.uni_acad $where";
+       
         $sql = toba::perfil_de_datos()->filtrar($sql);
         return toba::db('designa')->consultar($sql);
      }
@@ -122,6 +123,14 @@ class dt_viatico extends toba_datos_tabla
                 . ' where v.id_viatico='.$id_v;
         $resul=toba::db('designa')->consultar($sql);
         return $resul[0]['cuil'];//tambien es obligatorio y siempre tiene valor
+    }
+    function modificar_viatico($id_viatico,$datos=array()){
+        if(isset($datos['fecha_pago'])){
+             $sql="update viatico set fecha_pago='".$datos['fecha_pago']."' where id_viatico=".$id_viatico;
+             toba::db('designa')->consultar($sql);
+        }
+        $sql="update viatico set expediente_pago='".$datos['expediente_pago']."' where id_viatico=".$id_viatico;
+        toba::db('designa')->consultar($sql);
     }
 }
 
