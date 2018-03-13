@@ -1325,6 +1325,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         //junto a todas las designaciones que son reserva
         function get_listado_estactual($filtro=array())
 	{
+                $concat='';
                 if (isset($filtro['anio']['valor'])) {
                 	$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
                         $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
@@ -1334,7 +1335,17 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $where2="";//es para filtrar por estado. Lo hago al final de todo
 		if (isset($filtro['uni_acad']['valor'])) {
 			$where.= "AND uni_acad = ".quote($filtro['uni_acad']['valor']);
+                        $concat=quote($filtro['uni_acad']['valor']);
 		}
+                //si el usuario esta asociado a un perfil de datos
+                $con="select sigla from unidad_acad ";
+                $con = toba::perfil_de_datos()->filtrar($con);
+                $resul=toba::db('designa')->consultar($con);
+                if(count($resul)<=1){//es usuario de una unidad academica
+                    $where.=" and uni_acad = ".quote($resul[0]['sigla']);
+                    $concat=quote($resul[0]['sigla']);//para hacer el update de baja
+                }
+            //
                 if (isset($filtro['id_departamento']['valor'])) {
 			$sql="select * from departamento where iddepto=".$filtro['id_departamento']['valor'];
                         $resul=toba::db('designa')->consultar($sql);
@@ -1361,13 +1372,15 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     $resul=toba::db('designa')->consultar($sql);
                     $where.= " AND programa =".quote($resul[0]['nombre']);
                   }
-               
+             
                  //me aseguro de colocar en estado B todas las designaciones que tienen baja
+               if($concat!=''){   
                 $sql2=" update designacion a set estado ='B' "
-                        . " where estado<>'B' and uni_acad=".quote($filtro['uni_acad'])
+                        . " where estado<>'B' and uni_acad=".$concat
                      ." and exists (select * from novedad b
                         where a.id_designacion=b.id_designacion 
                         and (b.tipo_nov=1 or b.tipo_nov=4))";
+               }
                //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
                 $sql=$this->armar_consulta($pdia,$udia,$filtro['anio']['valor']);
 		//si el estado de la designacion es  B entonces le pone estado B, si es <>B se fija si tiene licencia sin goce o cese
@@ -1387,7 +1400,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 //                        .$where2
 //                            . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                $sql= "select * from("
-                       . "select sub2.*,case when t_no.tipo_nov in (1,4) then 'B('||t_no.tipo_norma||':'||t_no.norma_legal||')' else case when t_no.tipo_nov in (2,5) then 'L('||t_no.tipo_norma||':'||t_no.norma_legal||')'  else sub2.estado end end as est,t_i.expediente "
+                       . "select sub2.*,case when t_no.tipo_nov in (1,4) then 'B('||coalesce(t_no.tipo_norma,'')||':'||coalesce(t_no.norma_legal,'')||')' else case when t_no.tipo_nov in (2,5) then 'L('||t_no.tipo_norma||':'||t_no.norma_legal||')'  else sub2.estado end end as est,t_i.expediente "
                        . " ,case when t_nor.id_norma is null then '' else case when t_nor.link is not null or t_nor.link <>'' then '<a href='||chr(39)||t_nor.link||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||t_nor.nro_norma||'</a>' else cast(t_nor.nro_norma as text) end end as nro "
                        . "from ("
                        ."select sub.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, sub.desde, sub.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,sub.emite_norma, sub.nro_norma,sub.tipo_norma,nro_540,sub.observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,costo,max(t_no.id_novedad) as id_novedad from ("

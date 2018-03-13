@@ -214,7 +214,7 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'designa', --proyecto
 	'1486', --pantalla
 	'3387', --objeto_ci
-	'1', --orden
+	'2', --orden
 	'2175'  --dep_id
 );
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (

@@ -46,7 +46,7 @@ class ci_informe_estado_actual extends toba_ci
 	{
 		unset($this->s__datos_filtro);
 	}
-
+       
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
