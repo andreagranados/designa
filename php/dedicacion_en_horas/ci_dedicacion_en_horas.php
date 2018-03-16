@@ -31,7 +31,7 @@ class ci_dedicacion_en_horas extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
-                    $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_dedicacion_horas($this->s__where,$this->s__datos_filtro));
+                    $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_dedicacion_horas($this->s__datos_filtro));
 		} 
 	}
 

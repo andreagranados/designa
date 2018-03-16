@@ -658,53 +658,46 @@ class dt_designacion extends toba_datos_tabla
             $resul=toba::db('designa')->consultar($sql);
             return $resul[0]['fecha_inicio'];
         }
-        function get_dedicacion_horas($where=null,$filtro=array())
+        function get_dedicacion_horas($filtro=array())
 	{
-               
                 $anio=$filtro['anio']['valor'];
                 $pdia=$this->primer_dia_periodo_anio($filtro['anio']['valor']);
                 $udia=$this->ultimo_dia_periodo_anio($filtro['anio']['valor']);
-                //si el where trae en la condicion: "estado=" entonces lo saco
-                $p=null;
-                $p=strpos(trim($where),'estado');
+              
                 $where3=" WHERE 1=1";
                 if (isset($filtro['legajo'])) {
 			$where3.= " and legajo = ".$filtro['legajo']['valor'];
 		}
-                if($p!= null){//tiene en la condicion "estado="
-                     $z=strlen($where)-16;     
-                     $where2=substr($where , 0,$z);
-                     if (isset($filtro['estado'])) {//si tiene valor
-                        switch ($filtro['estado']['valor']) {
-                            case 1:     $where3=" and hs_total<hs_desig ";    break;
-                            case 2:     $where3=" and hs_total>hs_desig ";    break;
-                            case 3:     $where3=" and hs_total=hs_desig ";    break;
-                            default:
-                                break;
+                if (isset($filtro['clase'])) {//si tiene valor
+                        switch ($filtro['clase']['valor']) {
+                            case 1:     $where3.=" and hs_total < hs_desig ";    break;
+                            case 2:     $where3.=" and hs_total > hs_desig ";    break;
+                            case 3:     $where3.=" and hs_total = hs_desig ";    break;
+                            default:   break;
                             }
-                        }
+                } 
+                if (isset($filtro['iddepto']['valor'])) {
+                    $where3.=" and iddepto=".$filtro['iddepto']['valor'];
                 }
-                
                 $sql="select dedicacion_horas(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
                 toba::db('designa')->consultar($sql);
                 //,sum((case when a.hs_mat is not null then a.hs_mat else 0 end) + (case when a.hs_pi is not null then a.hs_pi else 0 end)+(case when a.hs_pe is not null then a.hs_pe else 0 end)+(case when a.hs_post is not null then a.hs_post else 0 end)+(case when a.hs_tut is not null then a.hs_tut else 0 end)+(case when a.hs_otros is not null then a.hs_otros else 0 end)) as hs_total 
                 $sql="select * from("
                         . "select a.*,sum((case when a.hs_mat is not null then a.hs_mat else 0 end) + (case when a.hs_pi is not null then a.hs_pi else 0 end)+(case when a.hs_pe is not null then a.hs_pe else 0 end)+(case when a.hs_post is not null then a.hs_post else 0 end)+(case when a.hs_tut is not null then a.hs_tut else 0 end)+(case when a.hs_otros is not null then a.hs_otros else 0 end)) as hs_total from ("
-                        . " select distinct case when t_b.id_novedad is not null then 'B' else (case when t_n.id_novedad is null then 'A' else 'L' end) end as estado,t_d.uni_acad,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.carac,t_de.descripcion as depart,t_a.descripcion as area,t_o.descripcion as orientacion,a.* "
+                        . " select distinct case when t_b.id_novedad is not null then 'B' else (case when t_n.id_novedad is null then 'A' else 'L' end) end as estado,t_d.uni_acad,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.carac,t_de.iddepto,t_de.descripcion as depart,t_a.descripcion as area,t_o.descripcion as orientacion,a.* "
                         . "from auxiliar a "
                         . " LEFT OUTER JOIN designacion t_d ON (a.id_designacion=t_d.id_designacion)"
                         . " LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)"
                         . " LEFT OUTER JOIN area t_a ON (t_d.id_area=t_a.idarea)"
                         . " LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_o.idarea=t_a.idarea) "
-                        . " LEFT OUTER JOIN novedad t_n ON (t_n.id_designacion=t_d.id_designacion and t_n.tipo_nov in (2,3,5) and  t_n.desde <= '2017-01-30' and (t_n.hasta >= '2016-02-01' or t_n.hasta is null)) "
-                        . " LEFT OUTER JOIN novedad t_b ON (t_b.id_designacion=t_d.id_designacion and t_b.tipo_nov in (1,4) and  (t_b.desde >= '2016-02-01' and t_b.desde<='2017-01-31')) "
+                        . " LEFT OUTER JOIN novedad t_n ON (t_n.id_designacion=t_d.id_designacion and t_n.tipo_nov in (2,3,5) and  t_n.desde <= '".$udia."' and t_n.hasta >= '".$pdia."' ) "
+                        . " LEFT OUTER JOIN novedad t_b ON (t_b.id_designacion=t_d.id_designacion and t_b.tipo_nov in (1,4) ) "
                         .")a "
-                        . " group by agente,uni_acad,cat_mapuche,cat_estat,dedic,carac,depart,area,orientacion,legajo,id_designacion,estado,desde,hasta,hs_desig,hs_mat,hs_pi,hs_pe,hs_post,hs_otros ,hs_tut"
+                        . " group by agente,uni_acad,cat_mapuche,cat_estat,dedic,carac,iddepto,depart,area,orientacion,legajo,id_designacion,estado,desde,hasta,hs_desig,hs_mat,hs_pi,hs_pe,hs_post,hs_otros ,hs_tut"
                         . ")c $where3";
+                
                 $res=toba::db('designa')->consultar($sql);
-               
                 return $res;
-
         }
    
         
