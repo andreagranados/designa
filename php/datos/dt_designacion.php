@@ -671,7 +671,7 @@ class dt_designacion extends toba_datos_tabla
               
                 $where3=" WHERE 1=1";
                 if (isset($filtro['legajo'])) {
-			$where3.= " and legajo = ".$filtro['legajo']['valor'];
+			$where3.= " and c.legajo = ".$filtro['legajo']['valor'];
 		}
                 if (isset($filtro['clase'])) {//si tiene valor
                         switch ($filtro['clase']['valor']) {
@@ -682,7 +682,7 @@ class dt_designacion extends toba_datos_tabla
                             }
                 } 
                 if (isset($filtro['iddepto']['valor'])) {
-                    $where3.=" and iddepto=".$filtro['iddepto']['valor'];
+                    $where3.=" and c.iddepto=".$filtro['iddepto']['valor'];
                 }
                 $sql="select dedicacion_horas(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
                 toba::db('designa')->consultar($sql);
