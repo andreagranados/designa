@@ -687,7 +687,7 @@ class dt_designacion extends toba_datos_tabla
                 $sql="select dedicacion_horas(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
                 toba::db('designa')->consultar($sql);
                 //,sum((case when a.hs_mat is not null then a.hs_mat else 0 end) + (case when a.hs_pi is not null then a.hs_pi else 0 end)+(case when a.hs_pe is not null then a.hs_pe else 0 end)+(case when a.hs_post is not null then a.hs_post else 0 end)+(case when a.hs_tut is not null then a.hs_tut else 0 end)+(case when a.hs_otros is not null then a.hs_otros else 0 end)) as hs_total 
-                $sql="select c.*,s.dir from("
+                $sql="select c.* from("
                         . "select a.*,sum((case when a.hs_mat is not null then a.hs_mat else 0 end) + (case when a.hs_pi is not null then a.hs_pi else 0 end)+(case when a.hs_pe is not null then a.hs_pe else 0 end)+(case when a.hs_post is not null then a.hs_post else 0 end)+(case when a.hs_tut is not null then a.hs_tut else 0 end)+(case when a.hs_otros is not null then a.hs_otros else 0 end)) as hs_total from ("
                         . " select distinct case when t_b.id_novedad is not null then 'B' else (case when t_n.id_novedad is null then 'A' else 'L' end) end as estado,t_d.uni_acad,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.carac,t_de.iddepto,t_de.descripcion as depart,t_a.descripcion as area,t_o.descripcion as orientacion,a.* "
                         . "from auxiliar a "
@@ -700,17 +700,17 @@ class dt_designacion extends toba_datos_tabla
                         .")a "
                         . " group by agente,id_docente,uni_acad,cat_mapuche,cat_estat,dedic,carac,iddepto,depart,area,orientacion,legajo,id_designacion,estado,desde,hasta,hs_desig,hs_mat,hs_pi,hs_pe,hs_post,hs_otros ,hs_tut"
                         . ")c "
-                        ." left outer join (select o.id_docente,d.iddepto,descripcion||'('||idunidad_academica||')' as dir from 
-                            (select iddepto,max(hasta)as hasta
-                                from director_dpto 
-                                where desde<='".$udia."' and hasta>='".$pdia."'
-                                group by iddepto --agrupo por departamento para obtener el ultimo director
-                            )sub, director_dpto e, departamento d, docente o
-                        where sub.iddepto=e.iddepto
-                        and sub.hasta=e.hasta
-                        and e.iddepto=d.iddepto
-                        and e.id_docente=o.id_docente   )s
-                            on (c.id_docente=s.id_docente)"
+//                        ." left outer join (select o.id_docente,d.iddepto,descripcion||'('||idunidad_academica||')' as dir from 
+//                            (select iddepto,max(hasta)as hasta
+//                                from director_dpto 
+//                                where desde<='".$udia."' and hasta>='".$pdia."'
+//                                group by iddepto --agrupo por departamento para obtener el ultimo director
+//                            )sub, director_dpto e, departamento d, docente o
+//                        where sub.iddepto=e.iddepto
+//                        and sub.hasta=e.hasta
+//                        and e.iddepto=d.iddepto
+//                        and e.id_docente=o.id_docente   )s
+//                            on (c.id_docente=s.id_docente)"
                         . " $where3"
                         . " order by agente";
                 

@@ -3,7 +3,6 @@ class ci_comparacion_sdd_mapuche extends toba_ci
 {
 	protected $s__datos_filtro;
         protected $s__where;
-        protected $s__valor;
         //----Filtros ----------------------------------------------------------------------
         
         function conf__filtros(toba_ei_filtro $filtro)
