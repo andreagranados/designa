@@ -3,7 +3,7 @@ class ci_comparacion_sdd_mapuche extends toba_ci
 {
 	protected $s__datos_filtro;
         protected $s__where;
-
+        protected $s__valor;
         //----Filtros ----------------------------------------------------------------------
         
         function conf__filtros(toba_ei_filtro $filtro)
@@ -47,13 +47,14 @@ class ci_comparacion_sdd_mapuche extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
-	           $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_comparacion($this->s__datos_filtro));
-		} 
+            if (isset($this->s__datos_filtro)) {
+	          $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_comparacion($this->s__datos_filtro));
+            }   
 	}
 
         function evt__cuadro__editar($datos)
 	{
+            
             $cargo=$this->dep('datos')->tabla('designacion')->su_cargo($datos['id_designacion']);
             if(!is_null($cargo)){//sino es nulo entonces 
                 $datos['nro_cargo']=null;

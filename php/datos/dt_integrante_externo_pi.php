@@ -239,7 +239,9 @@ class dt_integrante_externo_pi extends toba_datos_tabla
          }else{
              $where='';
          }
-        $sql= "select * from (select distinct pi.uni_acad,substr(pi.denominacion,1,100)||'....' as denominacion,pi.codigo,a.desde,a.hasta,director_de(pi.id_pinv)as director,p.apellido||', '||p.nombre as integrante,p.tipo_docum||':'||p.nro_docum as docum,funcion_p,carga_horaria,trim(doc.apellido)||','||trim(doc.nombre) as docente,des.cat_estat||des.dedic||'('||des.uni_acad||')'|| to_char(des.desde,'DD/MM/YYYY') as desig
+        $sql= "select * from (select t_p.*,case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as director
+            from (select distinct pi.id_pinv,pi.fec_hasta,pi.uni_acad,substr(pi.denominacion,1,100)||'....' as denominacion,pi.codigo,a.desde,a.hasta
+            ,p.apellido||', '||p.nombre as integrante,p.tipo_docum||':'||p.nro_docum as docum,funcion_p,carga_horaria,trim(doc.apellido)||','||trim(doc.nombre) as docente,des.cat_estat||des.dedic||'('||des.uni_acad||')'|| to_char(des.desde,'DD/MM/YYYY') as desig
                 from integrante_externo_pi a,persona p,pinvestigacion pi,designacion des, docente doc
                 where a.tipo_docum=p.tipo_docum
                 and a.nro_docum=p.nro_docum
@@ -247,9 +249,18 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 and des.id_docente=doc.id_docente
                 and des.desde <= a.hasta and (des.hasta >= a.desde or des.hasta is null)--tiene una desig  docente durante su periodo de participacion
                 and doc.tipo_docum=a.tipo_docum and doc.nro_docum=a.nro_docum
-               order by pi.uni_acad,denominacion) sub"
-                . "$where";
-       
+               order by pi.uni_acad,denominacion
+               ) t_p"
+                //esto es para obtener el director
+               ." left outer join integrante_interno_pi id2 on (id2.pinvest=t_p.id_pinv and (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') and t_p.fec_hasta=id2.hasta)
+                left outer join designacion t_d2 on (t_d2.id_designacion=id2.id_designacion)    
+                left outer join docente t_do2 on (t_do2.id_docente=t_d2.id_docente)  
+                        
+                left outer join integrante_externo_pi id3 on (id3.pinvest=t_p.id_pinv and (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) and t_p.fec_hasta=id3.hasta)
+                left outer join persona t_d3 on (t_d3.tipo_docum=id3.tipo_docum and t_d3.nro_docum=id3.nro_docum) 
+                )sub"
+               . "$where";
+    
         return toba::db('designa')->consultar($sql);  
     }
     function es_docente($des,$hast,$tipo,$nro_doc){

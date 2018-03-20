@@ -187,9 +187,9 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3595', --objeto_cuadro
 	'2978', --objeto_cuadro_col
-	'dedic', --clave
+	'dir', --clave
 	'7', --orden
-	'Dedic', --titulo
+	'Direc Dpto', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho
