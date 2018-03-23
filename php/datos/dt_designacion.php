@@ -681,6 +681,14 @@ class dt_designacion extends toba_datos_tabla
                             default:   break;
                             }
                 } 
+                if (isset($filtro['dedicacion'])) {//si tiene valor
+                        switch ($filtro['dedicacion']['valor']) {
+                            case 'S':     $where3.=" and cat_mapuche like '%1' ";    break;
+                            case 'P':     $where3.=" and cat_mapuche like '%S'";    break;
+                            case 'E':     $where3.=" and cat_mapuche like '%E'";    break;
+                            default:   break;
+                            }
+                } 
                 if (isset($filtro['iddepto']['valor'])) {
                     $where3.=" and c.iddepto=".$filtro['iddepto']['valor'];
                 }
@@ -698,7 +706,7 @@ class dt_designacion extends toba_datos_tabla
                         . " LEFT OUTER JOIN novedad t_n ON (t_n.id_designacion=t_d.id_designacion and t_n.tipo_nov in (2,3,5) and  t_n.desde <= '".$udia."' and t_n.hasta >= '".$pdia."' ) "
                         . " LEFT OUTER JOIN novedad t_b ON (t_b.id_designacion=t_d.id_designacion and t_b.tipo_nov in (1,4) ) "
                         .")a "
-                        . " group by agente,id_docente,uni_acad,cat_mapuche,cat_estat,dedic,carac,iddepto,depart,area,orientacion,legajo,id_designacion,estado,desde,hasta,hs_desig,hs_mat,hs_pi,hs_pe,hs_post,hs_otros ,hs_tut"
+                        . " group by agente,id_docente,uni_acad,cat_mapuche,cat_estat,dedic,carac,iddepto,depart,area,orientacion,legajo,id_designacion,estado,desde,hasta,dias_trab,hs_desig,hs_mat,hs_pi,hs_pe,hs_post,hs_otros ,hs_tut"
                         . ")c "
                         ." left outer join (select o.id_docente,d.iddepto,descripcion||'('||idunidad_academica||')' as dir from 
                             (select iddepto,max(hasta)as hasta

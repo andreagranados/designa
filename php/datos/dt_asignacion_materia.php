@@ -755,5 +755,12 @@ class dt_asignacion_materia extends toba_datos_tabla
         return $resul;  
         
      }
+     function get_asignacion_materia($id_mat,$anio){
+         $sql="select * from asignacion_materia t_m "
+                 . "where t_m.id_materia=".$id_mat
+                 ." and anio=".$anio
+                 ." order by id_periodo,modulo";
+         return toba::db('designa')->consultar($sql);
+     }
 }
 ?>

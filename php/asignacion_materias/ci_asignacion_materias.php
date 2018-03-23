@@ -100,24 +100,7 @@ class ci_asignacion_materias extends toba_ci
             $this->s__mostrar_ml=1;
 	}
 
-	//-----------------------------------------------------------------------------------
-	//---- JAVASCRIPT -------------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function extender_objeto_js()
-	{
-		echo "
-		//---- Eventos ---------------------------------------------
-		
-		{$this->objeto_js}.evt__guardar = function()
-		{
-		}
-		
-		{$this->objeto_js}.evt__volver = function()
-		{
-		}
-		";
-	}
+	
 	//-----------------------------------------------------------------------------------
 	//---- form_asigna ------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -134,13 +117,8 @@ class ci_asignacion_materias extends toba_ci
                 $this->dep('form_asigna')->colapsar();
             }
            if (isset($this->s__anio)) {
-                $where=" and t_m.anio=".$this->s__anio;
-                //$mat siempre va a tener valor porque la materia la selecciono en una pantalla anterior
                 $mat=$this->dep('datos')->tabla('materia')->get();
-                //muestra solo las asignaciones correspondientes a la UA que corresponde
-                $sql="select * from asignacion_materia t_m where t_m.id_materia=".$mat['id_materia'].$where." order by id_designacion,modulo";
-                $res=toba::db('designa')->consultar($sql);
-                
+                $res=$this->dep('datos')->tabla('asignacion_materia')->get_asignacion_materia($mat['id_materia'],$this->s__anio);                
             }else{
                 $res=array();
             }

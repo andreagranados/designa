@@ -23,26 +23,23 @@ class dt_materia extends toba_datos_tabla
             $resul = toba::db('designa')->consultar($sql);
             return $resul[0]['id_plan'];
         }
-        function es_externa($id_mat){
-            $sql="select * from materia t_m, plan_estudio t_p, unidad_acad t_u "
-                    . "where t_m.id_plan=t_p.id_plan "
-                    . " and t_p.uni_acad=t_u.sigla ";
-            $sql = toba::perfil_de_datos()->filtrar($sql);
-            $resul = toba::db('designa')->consultar($sql);
-            $esta=false;
-            $i=0;
-            $long=count($resul);
-            while (!$esta && $i<$long) {
-                if($resul[$i]['id_materia']==$id_mat){
-                    $esta=true;    
-                }else{$i++;
-                }   
+        function es_externa($id_mat){//es externa si la materia corresponde a una UA distinta al del usuario
+            $con="select sigla from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con); 
+            $salida=false;
+            if(count($resul)<=1){//es usuario de una unidad academica
+                $sql="select uni_acad from materia t_m, plan_estudio t_p"
+                        . "where t_m.id_plan=t_p.id_plan"
+                        . "and id_materia=".$id_mat;
+                $mat=toba::db('designa')->consultar($sql); 
+                if($resul[0]['sigla']=$mat[0]['uni_acad']){
+                    $salida=false;//no es externa
+                }else{
+                    $salida=true;//es externa
+                }
             }
-            if ($esta){//no es externa
-                return false;
-            }else{//es externa
-                return true;
-            }
+            return $salida;
         }
         //combo de materias para asociar a una designacion 
         function get_listado_materias($id_plan=null)
