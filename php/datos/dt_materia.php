@@ -30,8 +30,8 @@ class dt_materia extends toba_datos_tabla
             $salida=false;
             if(count($resul)<=1){//es usuario de una unidad academica
                 $sql="select uni_acad from materia t_m, plan_estudio t_p"
-                        . "where t_m.id_plan=t_p.id_plan"
-                        . "and id_materia=".$id_mat;
+                        . " where t_m.id_plan=t_p.id_plan"
+                        . " and id_materia=".$id_mat;
                 $mat=toba::db('designa')->consultar($sql); 
                 if($resul[0]['sigla']=$mat[0]['uni_acad']){
                     $salida=false;//no es externa

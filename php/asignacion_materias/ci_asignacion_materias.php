@@ -10,7 +10,6 @@ class ci_asignacion_materias extends toba_ci
 
          function ini__operacion()
 	{
-	     
              $this->dep('datos')->tabla('asignacion_materia')->cargar(); 
              $this->dep('datos')->tabla('mocovi_periodo_presupuestario')->cargar();
 	}
@@ -95,7 +94,6 @@ class ci_asignacion_materias extends toba_ci
 //evento implicito, boton mostrar. Lo coloco para que la variable s__anio tome valor
 	function evt__form_materia__modificacion($datos)
 	{
-          
             $this->s__anio=$datos['anio'];
             $this->s__mostrar_ml=1;
 	}
@@ -113,6 +111,7 @@ class ci_asignacion_materias extends toba_ci
                 $form->ef('id_periodo')->set_obligatorio(true);
                 $form->ef('rol')->set_obligatorio(true);
                 $form->ef('modulo')->set_obligatorio(true);
+                $form->ef('carga_horaria')->set_obligatorio(true);
             }else{
                 $this->dep('form_asigna')->colapsar();
             }
@@ -126,6 +125,14 @@ class ci_asignacion_materias extends toba_ci
             $form->set_datos($res);
                
 	}
+//        function evt__form_asigna__guardar($datos){
+//            $mat=$this->dep('datos')->tabla('materia')->get();
+//            $datos['id_materia']=$mat['id_materia'];
+//            $datos['nro_tab8']=8;
+//            $datos['anio']=$this->s__anio;
+//            $this->dep('datos')->tabla('asignacion_materia')->procesar_filas($datos);
+//            $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
+//        }
         function evt__form_asigna__modificacion($datos)
 	{
             $this->s__guardar=$datos;
@@ -154,9 +161,9 @@ class ci_asignacion_materias extends toba_ci
                 
             }
           }
-//            $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
-//	    $this->dep('datos')->tabla('asignacion_materia')->resetear();
-//            $this->dep('datos')->tabla('asignacion_materia')->cargar();//despues de guarda actualiza
+////            $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
+////	    $this->dep('datos')->tabla('asignacion_materia')->resetear();
+////            $this->dep('datos')->tabla('asignacion_materia')->cargar();//despues de guarda actualiza
 	}
 
 
@@ -180,7 +187,6 @@ class ci_asignacion_materias extends toba_ci
             if($this->s__mostrar_ml==0){//mientras no este el formulario ml
                 //$form->eliminar_evento('modificacion');
                 $pantalla->eliminar_evento('guardar');
-                
             }else{
                 $pantalla->agregar_evento('guardar');
             }

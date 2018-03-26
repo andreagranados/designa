@@ -352,7 +352,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3482', --objeto_cuadro
 	'2694', --objeto_cuadro_col
 	'modulo', --clave
-	'15', --orden
+	'16', --orden
 	'Módulo', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -383,7 +383,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3482', --objeto_cuadro
 	'2695', --objeto_cuadro_col
 	'periodo', --clave
-	'16', --orden
+	'15', --orden
 	'Período', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
