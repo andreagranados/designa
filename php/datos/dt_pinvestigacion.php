@@ -464,7 +464,15 @@ class dt_pinvestigacion extends toba_datos_tabla
             return $res[0]['fecha_ord_cs'];
         }
         function tiene_director($id_proyecto){
-            $sql="select  director_de(".$id_proyecto.") as director";
+            $sql="select case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as director
+                    from pinvestigacion as t_p
+                left outer join integrante_interno_pi id2 on (id2.pinvest=t_p.id_pinv and (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') and t_p.fec_hasta=id2.hasta)
+                left outer join designacion t_d2 on (t_d2.id_designacion=id2.id_designacion)    
+                left outer join docente t_do2 on (t_do2.id_docente=t_d2.id_docente)  
+                        
+                left outer join integrante_externo_pi id3 on (id3.pinvest=t_p.id_pinv and (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) and t_p.fec_hasta=id3.hasta)
+                left outer join persona t_d3 on (t_d3.tipo_docum=id3.tipo_docum and t_d3.nro_docum=id3.nro_docum) 
+                where t_p.id_pinv=".$id_proyecto;
             $res= toba::db('designa')->consultar($sql);
             
             if($res[0]['director']==''){
@@ -474,7 +482,15 @@ class dt_pinvestigacion extends toba_datos_tabla
             }
         }
         function get_director($id_proy){
-            $sql="select  director_de(".$id_proy.") as director";
+            $sql="select case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as director
+                    from pinvestigacion as t_p
+                left outer join integrante_interno_pi id2 on (id2.pinvest=t_p.id_pinv and (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') and t_p.fec_hasta=id2.hasta)
+                left outer join designacion t_d2 on (t_d2.id_designacion=id2.id_designacion)    
+                left outer join docente t_do2 on (t_do2.id_docente=t_d2.id_docente)  
+                        
+                left outer join integrante_externo_pi id3 on (id3.pinvest=t_p.id_pinv and (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) and t_p.fec_hasta=id3.hasta)
+                left outer join persona t_d3 on (t_d3.tipo_docum=id3.tipo_docum and t_d3.nro_docum=id3.nro_docum) 
+                where t_p.id_pinv=".$id_proy;
             $res= toba::db('designa')->consultar($sql);
             
             if($res[0]['director']==''){
@@ -570,24 +586,32 @@ class dt_pinvestigacion extends toba_datos_tabla
         }
         //string concatenando los integrantes menos director y codirector
         function  get_sus_integrantes($id_p){
+            $sql="select tipo from pinvestigacion where id_pinv=".$id_p;
+            $restipo=toba::db('designa')->consultar($sql);
+           
+            if($restipo[0]['tipo']!='PROIN'){
+                $concat=" where pinvest=".$id_p;
+            }else{
+                $concat=" where pinvest in (select id_proyecto from subproyecto s where s.id_programa=".$id_p.")";
+            }
             $sql="select distinct trim(c.apellido)||', '||trim(initcap(c.nombre)) as agente "
                     . " from integrante_interno_pi a"
                     . " LEFT OUTER JOIN pinvestigacion p ON (p.id_pinv=a.pinvest)"
                     . " LEFT OUTER JOIN designacion b ON (a.id_designacion=b.id_designacion)"
                     . " LEFT OUTER JOIN docente c ON (c.id_docente=b.id_docente)"
-                    . " where pinvest=".$id_p
+                    . $concat
                     ." and a.hasta=p.fec_hasta "
-                    . " and a.funcion_p<>'DP' and a.funcion_p<>'DE' and a.funcion_p<>'D' and a.funcion_p<>'C' and a.funcion_p<>'CE'"
+                    . " and a.funcion_p<>'DP' and a.funcion_p<>'DE' and a.funcion_p<>'D' and a.funcion_p<>'DpP' and a.funcion_p<>'C' and a.funcion_p<>'CE'"
                     . " UNION "
                     . " select distinct trim(b.apellido)||', '||trim(initcap(b.nombre)) as agente "
                     . " from integrante_externo_pi a"
                     . " LEFT OUTER JOIN pinvestigacion p ON (p.id_pinv=a.pinvest) "
                     . " LEFT OUTER JOIN persona b ON (a.tipo_docum=b.tipo_docum and a.nro_docum=b.nro_docum)"
-                    . " where pinvest=".$id_p
+                    . $concat
                     ." and a.hasta=p.fec_hasta"
-                    . " and a.funcion_p<>'DP' and a.funcion_p<>'DE' and a.funcion_p<>'D' and a.funcion_p<>'C' and a.funcion_p<>'CE'"
-                    ." order by agente"
-                    ;
+                    . " and a.funcion_p<>'DP' and a.funcion_p<>'DE' and a.funcion_p<>'D' and a.funcion_p<>'DpP' and a.funcion_p<>'C' and a.funcion_p<>'CE'"
+                    ." order by agente";
+        
             $resul=toba::db('designa')->consultar($sql);
           
             $salida='';
@@ -599,10 +623,10 @@ class dt_pinvestigacion extends toba_datos_tabla
         
         }
         function get_proyectos_programa($id_p){
-            $sql="select p.denominacion,
-                case when t_do2.apellido is not null then t_do2.apellido||', '||t_do2.nombre else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as dire
+            $sql="select replace(p.denominacion,chr(10),'') as denominacion,
+                case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(initcap(t_do2.nombre)) else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(initcap(t_d3.nombre))  else '' end end as dire
                 ,case when t_do2.apellido is not null then t_do2.tipo_sexo else case when t_d3.apellido is not null then t_d3.tipo_sexo else '' end end as sexod
-                ,case when t_do4.apellido is not null then t_do4.apellido||', '||t_do4.nombre else case when t_c3.apellido is not null then trim(t_c3.apellido)||', '||trim(t_c3.nombre)  else '' end end as cod
+                ,case when t_do4.apellido is not null then trim(t_do4.apellido)||', '||trim(initcap(t_do4.nombre)) else case when t_c3.apellido is not null then trim(t_c3.apellido)||', '||trim(initcap(t_c3.nombre))  else '' end end as cod
                 ,case when t_do4.apellido is not null then t_do4.tipo_sexo else case when t_c3.apellido is not null then t_c3.tipo_sexo  else '' end end as sexoc
                 from subproyecto s
                 LEFT OUTER JOIN  pinvestigacion p ON (s.id_proyecto=p.id_pinv)

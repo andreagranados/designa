@@ -6,33 +6,18 @@ class ci_asignacion_materias extends toba_ci
         protected $s__anio;
         protected $s__guardar;
         protected $s__where;
+        
+        protected $s__datos_fil;
+        protected $s__mostrar;
        
-
-         function ini__operacion()
-	{
-             $this->dep('datos')->tabla('asignacion_materia')->cargar(); 
-             $this->dep('datos')->tabla('mocovi_periodo_presupuestario')->cargar();
-	}
 
 //trae las designaciones de la UA que corresponden al periodo del año seleccionado previamente
         function get_designaciones(){
            
             if ($this->s__anio!=null) {
-               
-                $pdia=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->primer_dia_periodo_anio($this->s__anio);
-                $udia=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->ultimo_dia_periodo_anio($this->s__anio);
-               
-                $sql="select distinct t_d.id_designacion,case when t_d.id_norma is null then (t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||')') else t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||'-'||t_no.nro_norma||'/'|| extract(year from t_no.fecha)||')' end as descripcion "
-                    . " from designacion t_d LEFT OUTER JOIN norma t_no ON (t_d.id_norma=t_no.id_norma), docente t_d1, unidad_acad t_u"
-                    . " where t_d.id_docente=t_d1.id_docente "
-                    . " and t_d.uni_acad=t_u.sigla "
-                    . "and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta is null)"
-                        . " order by descripcion";
-                $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
-                
-                return toba::db('designa')->consultar($sql);
+               $res=$this->dep('datos')->tabla('designacion')->get_designaciones_asig_materia($this->s__anio);
+               return $res;
             }
-            
         }
 
 	//---- Filtro -----------------------------------------------------------------------
@@ -60,9 +45,9 @@ class ci_asignacion_materias extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado_completo($this->s__where));
-		} 
+            if (isset($this->s__where)) {
+		$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado_completo($this->s__where));
+            } 
 	}
         //selecciona una materia 
         function evt__cuadro__asignar($datos)
@@ -75,122 +60,138 @@ class ci_asignacion_materias extends toba_ci
             $this->dep('datos')->tabla('plan_estudio')->cargar($plan);
             $this->set_pantalla('pant_asignacion');
 	}
-        //-----------------------------------------------------------------------------------
-	//---- form_materia -----------------------------------------------------------------
+
+//
+//
+//	function evt__volver()
+//	{
+//            
+//            $this->dep('datos')->tabla('asignacion_materia')->resetear();
+//            $this->dep('datos')->tabla('materia')->resetear();
+//            unset($this->s__anio);
+//            $this->s__mostrar_ml=0;
+//            $this->set_pantalla('pant_edicion');
+//	}
+
+
+	//-----------------------------------------------------------------------------------
+	//---- fil --------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	function conf__form_materia(toba_ei_formulario $form)
+	function conf__fil(toba_ei_filtro $filtro)
 	{
-             //[id_materia] => 1122 [id_plan]
-            if ($this->dep('datos')->tabla('materia')->esta_cargada()) {
-               	$form->set_datos($this->dep('datos')->tabla('materia')->get());
-                $plan=$this->dep('datos')->tabla('plan_estudio')->get();
-                $plan['anio']=$this->s__anio;
-                $form->set_datos($plan);
-		}
-            if($this->s__mostrar_ml==1){$form->eliminar_evento('modificacion');}
-           
+            if (isset($this->s__datos_fil)) {
+		 $filtro->set_datos($this->s__datos_fil);
+	    }
 	}
-//evento implicito, boton mostrar. Lo coloco para que la variable s__anio tome valor
-	function evt__form_materia__modificacion($datos)
+
+	function evt__fil__filtrar($datos)
 	{
-            $this->s__anio=$datos['anio'];
-            $this->s__mostrar_ml=1;
+            $this->s__datos_fil = $datos;
+            $this->s__anio=$datos['anio']['valor'];
+            $this->s__mostrar=0;
 	}
 
-	
+	function evt__fil__cancelar()
+	{
+            unset($this->s__datos_fil);
+	}
+
 	//-----------------------------------------------------------------------------------
-	//---- form_asigna ------------------------------------------------------------------
+	//---- cuadro_mat -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	function conf__form_asigna(toba_ei_formulario_ml $form)
+	function conf__cuadro_mat(toba_ei_cuadro $cuadro)
 	{
-            if($this->s__mostrar_ml==1){
-                $this->dep('form_asigna')->descolapsar();
-                $form->ef('id_designacion')->set_obligatorio(true);
-                $form->ef('id_periodo')->set_obligatorio(true);
-                $form->ef('rol')->set_obligatorio(true);
-                $form->ef('modulo')->set_obligatorio(true);
-                $form->ef('carga_horaria')->set_obligatorio(true);
-            }else{
-                $this->dep('form_asigna')->colapsar();
-            }
-           if (isset($this->s__anio)) {
+            if (isset($this->s__datos_fil)) {
                 $mat=$this->dep('datos')->tabla('materia')->get();
-                $res=$this->dep('datos')->tabla('asignacion_materia')->get_asignacion_materia($mat['id_materia'],$this->s__anio);                
-            }else{
-                $res=array();
-            }
-            
-            $form->set_datos($res);
-               
+	        $cuadro->set_datos($this->dep('datos')->tabla('asignacion_materia')->get_asignacion_materia($mat['id_materia'],$this->s__datos_fil['anio']['valor']));
+		} 
 	}
-//        function evt__form_asigna__guardar($datos){
-//            $mat=$this->dep('datos')->tabla('materia')->get();
-//            $datos['id_materia']=$mat['id_materia'];
-//            $datos['nro_tab8']=8;
-//            $datos['anio']=$this->s__anio;
-//            $this->dep('datos')->tabla('asignacion_materia')->procesar_filas($datos);
-//            $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
-//        }
-        function evt__form_asigna__modificacion($datos)
+        function evt__cuadro_mat__editar($seleccion)
 	{
-            $this->s__guardar=$datos;
-        }
-
-	
-         //boton de la pantalla
-        function evt__guardar()
+            $this->dep('datos')->tabla('asignacion_materia')->cargar($seleccion);
+            $this->s__mostrar=1;
+	}
+  //boton de la pantalla
+        function evt__agregar()
 	{	
-          // print_r($this->s__guardar);exit();
-          if(isset($this->s__guardar)){
-            $mat=$this->dep('datos')->tabla('materia')->get(); 
-            foreach ($this->s__guardar as $key=>$value) {
-               $value['nro_tab8']=8;
-               $value['id_materia']=$mat['id_materia'];
-               $value['anio']=$this->s__anio;
-               $value['elemento']=$key;
-               $es_ext=$this->dep('datos')->tabla('materia')->es_externa($mat['id_materia']);
-               if($es_ext){$value['externa']=1;}
-                 else{$value['externa']=0;}
-                switch ($value['apex_ei_analisis_fila']) {
-                    case 'M':  $this->dep('datos')->tabla('asignacion_materia')->modificar($value); break;
-                    case 'B':  $this->dep('datos')->tabla('asignacion_materia')->eliminar($value); break;
-                    case 'A':  $this->dep('datos')->tabla('asignacion_materia')->agregar($value); break;
-                }
-                
-            }
-          }
-////            $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
-////	    $this->dep('datos')->tabla('asignacion_materia')->resetear();
-////            $this->dep('datos')->tabla('asignacion_materia')->cargar();//despues de guarda actualiza
-	}
-
-
-	function evt__volver()
-	{
-            
-            $this->dep('datos')->tabla('asignacion_materia')->resetear();
-            $this->dep('datos')->tabla('materia')->resetear();
-            unset($this->s__anio);
-            $this->s__mostrar_ml=0;
-            $this->set_pantalla('pant_edicion');
-	}
-
-
-	//-----------------------------------------------------------------------------------
-	//---- Configuraciones --------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function conf__pant_asignacion(toba_ei_pantalla $pantalla)
-	{
-            if($this->s__mostrar_ml==0){//mientras no este el formulario ml
-                //$form->eliminar_evento('modificacion');
-                $pantalla->eliminar_evento('guardar');
+            if(isset($this->s__anio)){
+                $this->s__mostrar=1;
+                $this->dep('datos')->tabla('asignacion_materia')->resetear();
             }else{
-                $pantalla->agregar_evento('guardar');
+                toba::notificacion()->agregar('Debe seleccionar un año y filtrar', 'info'); 
+            }
+            
+	}
+        //-----------------------------------------------------------------------------------
+	//---- formulario -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+        function conf__formulario(toba_ei_formulario $form)
+	{
+            if($this->s__mostrar==1){
+                $this->dep('formulario')->descolapsar();
+                $form->ef('carga_horaria')->set_obligatorio('true');
+                $form->ef('id_designacion')->set_obligatorio('true');
+                $form->ef('modulo')->set_obligatorio('true');
+                $form->ef('id_periodo')->set_obligatorio('true');
+                $form->ef('rol')->set_obligatorio('true');
+            }else{
+                $this->dep('formulario')->colapsar();
+            }
+  
+            if ($this->dep('datos')->tabla('asignacion_materia')->esta_cargada()) {
+                $datos=$this->dep('datos')->tabla('asignacion_materia')->get();
+                $form->set_datos($datos);
+	    }
+	}
+
+
+	function evt__formulario__alta($datos)
+	{
+            $mat=$this->dep('datos')->tabla('materia')->get();
+            $datos['nro_tab8']=8;
+            $datos['anio']=$this->s__anio;
+            $datos['id_materia']=$mat['id_materia'];
+            $this->dep('datos')->tabla('asignacion_materia')->set($datos);
+            $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
+            $this->s__mostrar=0;
+            toba::notificacion()->agregar('El registro se ha ingresado correctamente, año: '. $this->s__anio, 'info');  
+	}
+
+	function evt__formulario__baja()
+	{
+            $this->dep('datos')->tabla('asignacion_materia')->eliminar_todo();
+            $this->dep('datos')->tabla('asignacion_materia')->resetear();
+            $this->s__mostrar=0;
+            toba::notificacion()->agregar('El registro se ha eliminado correctamente', 'info');  
+	}
+
+	function evt__formulario__modificacion($datos)
+	{
+            $this->dep('datos')->tabla('asignacion_materia')->set($datos);
+            $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
+            $this->s__mostrar=0;
+	}
+
+	function evt__formulario__cancelar()
+	{
+            $this->s__mostrar=0;
+            $this->dep('datos')->tabla('asignacion_materia')->resetear();
+	}
+        function conf__form(toba_ei_formulario $form)
+	{
+             if ($this->dep('datos')->tabla('materia')->esta_cargada()) {
+                $mat=$this->dep('datos')->tabla('materia')->get();
+                $texto=$mat['desc_materia'];
+                if($this->dep('datos')->tabla('plan_estudio')->esta_cargada()){
+                     $plan=$this->dep('datos')->tabla('plan_estudio')->get();
+                     $texto.=' de '.$plan['desc_carrera'];
+                }
+                $form->set_titulo($texto);
             }
 	}
+	
 
 }
 ?>

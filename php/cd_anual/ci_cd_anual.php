@@ -30,7 +30,7 @@ class ci_cd_anual extends toba_ci
             $uni=$proyectos[0]['ue'];
             $pdf->ezText("-----------------------------------------------------------------------------------------------------------------------", 12);
             $texto='<b>'.$proyectos[0]['ue'].'</b>';
-            $pdf->ezText($texto,22,array('justification'=>'centre'));
+            $pdf->ezText($texto,22,array('justification'=>'center'));
             $pdf->ezText("-----------------------------------------------------------------------------------------------------------------------", 12);
             //solo vienen programas y proyectos, no los subproyectos
             foreach ($proyectos as $pi) {
@@ -80,7 +80,7 @@ class ci_cd_anual extends toba_ci
                 $pdf->ezText("\n", 7);
                 //aqui si es programa va distinto
                 if($pi['tipo']=='PROIN' ){
-                    $pp=$integrantes=$this->dep('datos')->tabla('pinvestigacion')->get_proyectos_programa($pi['id_pinv']);;
+                    $pp=$this->dep('datos')->tabla('pinvestigacion')->get_proyectos_programa($pi['id_pinv']);;
                     $texto='DENOMINACION DE LOS PROYECTOS DE PROGRAMA: ';
                     $pdf->ezText($texto,12);
                     $pdf->ezText("\n", 4);

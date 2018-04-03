@@ -69,11 +69,23 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3464', --objeto_consumidor
 	'3414', --objeto_proveedor
 	'asignacion_materia', --identificador
-	'0', --parametros_a
-	'200000000', --parametros_b
+	'1', --parametros_a
+	'1', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
 	'1'  --orden
+);
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
+	'2942', --dep_id
+	'3464', --objeto_consumidor
+	'3220', --objeto_proveedor
+	'designacion', --identificador
+	'1', --parametros_a
+	'1', --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	'4'  --orden
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
@@ -86,18 +98,6 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	NULL, --parametros_c
 	NULL, --inicializar
 	'2'  --orden
-);
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
-	'2273', --dep_id
-	'3464', --objeto_consumidor
-	'3359', --objeto_proveedor
-	'mocovi_periodo_presupuestario', --identificador
-	'1', --parametros_a
-	'200000000', --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
-	'4'  --orden
 );
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto

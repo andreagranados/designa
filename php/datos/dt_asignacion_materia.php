@@ -253,48 +253,8 @@ class dt_asignacion_materia extends toba_datos_tabla
             }else{
                 return false;
             }
-        }
-        function modificar($datos){//recibe los valores nuevos
-            
-            if(!isset($datos['carga_horaria'])){
-                $con="null";
-            }else{
-                $con=$datos['carga_horaria'];
-            }
-            //aqui los ordeno por el mismo criterio que cuando los muestro en form_asigna para poder identificar cual es el que voy a modificar
-            $sql="select * from asignacion_materia where id_materia=".$datos['id_materia']." and anio=".$datos['anio']." order by id_designacion,modulo";
-            $res=toba::db('designa')->consultar($sql);
-            $sql="update asignacion_materia set id_designacion=".$datos['id_designacion'].",id_materia=".$datos['id_materia'].",modulo=".$datos['modulo'].",carga_horaria=".$con.",rol='".$datos['rol']."',id_periodo=".$datos['id_periodo']." where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$res[$datos['elemento']]['modulo']." and anio=".$datos['anio'];
-            
-            toba::db('designa')->consultar($sql);
-        }
-        function eliminar($datos){
-           
-            $sql="select * from asignacion_materia where id_materia=".$datos['id_materia']." and anio=".$datos['anio']." order by id_designacion,modulo";
-            $res=toba::db('designa')->consultar($sql);
-            
-            $sql="delete from asignacion_materia where id_designacion=".$res[$datos['elemento']]['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$res[$datos['elemento']]['modulo']." and anio=".$datos['anio'];
-            toba::db('designa')->consultar($sql);
-        }
-        
-        function agregar($datos){
-            //primero verifico que no se encuentre
-            $sql="select * from asignacion_materia where id_designacion=".$datos['id_designacion']." and id_materia=".$datos['id_materia']." and modulo=".$datos['modulo']." and anio=".$datos['anio'];
-            $res=toba::db('designa')->consultar($sql);
-            
-            if(count($res)>0){
-                toba::notificacion()->agregar('YA SE ENCUENTRA', "error");
-            }else{
-
-                if(!isset($datos['carga_horaria'])){
-                    $con="null";
-                }else{
-                    $con=$datos['carga_horaria'];
-                }
-                $sql="insert into asignacion_materia (id_designacion, id_materia, nro_tab8, rol,id_periodo,modulo,carga_horaria,anio,externa) values(".$datos['id_designacion'].",".$datos['id_materia'].",".$datos['nro_tab8'].",'".$datos['rol']."',".$datos['id_periodo'].",".$datos['modulo'].",".$con.",".$datos['anio'].",".$datos['externa'].")";
-                toba::db('designa')->consultar($sql);
-            }
-        }
+        }    
+     
 	function get_listado($filtro=array())
 	{
 		$where = array();
@@ -756,10 +716,45 @@ class dt_asignacion_materia extends toba_datos_tabla
         
      }
      function get_asignacion_materia($id_mat,$anio){
-         $sql="select * from asignacion_materia t_m "
-                 . "where t_m.id_materia=".$id_mat
-                 ." and anio=".$anio
-                 ." order by id_periodo,modulo";
+//         $sql="select trim(t_doc.apellido)||', '||trim(t_doc.nombre) as agente,t_s.cat_estat||t_s.dedic||'-'||t_s.carac||' desde:'||t_s.desde||'('||t_s.id_designacion||')' as designacion,t_m.id_designacion,t_m.modulo,t_m.id_materia,t_m.anio,t_m.carga_horaria,t_p.descripcion as periodo,t_o.descripcion as desmodulo from asignacion_materia t_m "
+//                 . " left outer join designacion t_s on (t_m.id_designacion=t_s.id_designacion)"
+//                 . " left outer join docente t_doc on (t_s.id_docente=t_doc.id_docente)"
+//                 . " left outer join periodo t_p on (t_m.id_periodo=t_p.id_periodo)"
+//                 . " left outer join modulo t_o on (t_m.modulo=t_o.id_modulo)"
+//                 . " where t_m.anio=".$anio
+//                 . " and t_m.id_materia =".$id_mat
+//                ;
+         $sql="select sub2.id_designacion,sub2.id_materia,sub2.id_periodo,p.descripcion as periodo,sub2.agente,sub2.designacion,sub2.carga_horaria,sub2.rol,sub2.id_designacion,sub2.modulo,mo.descripcion as desmodulo,sub2.anio from 
+                (select  distinct m.id_materia,case when sub.id_conjunto is not null then sub.id_periodo else t.id_periodo end as id_periodo,
+                case when sub.id_conjunto is not null then sub.designacion else d.cat_estat||d.dedic||'-'||d.carac||' desde:'||to_char(d.desde,'DD/MM/YYYY')||'('||d.id_designacion||')'  end as designacion, 
+                case when sub.id_conjunto is not null then sub.agente else o.apellido||', '||o.nombre end as agente, 
+                case when sub.id_conjunto is not null then  sub.carga_horaria else t.carga_horaria end,
+                case when sub.modulo is not null then  sub.modulo else t.modulo end as modulo,
+                case when sub.rol is not null then  sub.rol else t.rol end as rol,
+                case when sub.id_designacion is not null then sub.id_designacion else t.id_designacion end as id_designacion,
+                case when sub.anio is not null then sub.anio else t.anio end as anio
+                from materia m
+                left outer join en_conjunto e on (m.id_materia=e.id_materia)
+                left outer join conjunto c on (c.id_conjunto=e.id_conjunto )
+                left outer join mocovi_periodo_presupuestario v on (c.id_periodo_pres=v.id_periodo and v.anio=".$anio." )
+                left outer join (select t_m.anio,t_c.id_conjunto,t_d.id_designacion,t_do.apellido||', '||t_do.nombre as agente,t_d.cat_estat||t_d.dedic||'-'||t_d.carac||' desde:'||to_char(t_d.desde,'DD/MM/YYYY')||'('||t_d.id_designacion||')' as designacion,t_a.id_periodo,t_a.carga_horaria,t_a.modulo,t_a.rol
+                                from conjunto t_c
+                                left outer join mocovi_periodo_presupuestario t_m on (t_c.id_periodo_pres=t_m.id_periodo)
+                                left outer join en_conjunto t_e on (t_c.id_conjunto=t_e.id_conjunto)
+                                left outer join asignacion_materia t_a on (t_a.id_materia=t_e.id_materia and t_a.id_periodo=t_c.id_periodo and t_a.anio=t_m.anio )
+                                left outer join designacion t_d on (t_d.id_designacion=t_a.id_designacion )
+                                left outer join docente t_do on (t_do.id_docente=t_d.id_docente )
+                                where t_a.id_materia is not null)sub on (sub.id_conjunto=c.id_conjunto)
+                left outer join asignacion_materia t on (t.id_materia=m.id_materia and t.anio=".$anio."  )
+                left outer join designacion d on (t.id_designacion=d.id_designacion)
+                left outer join docente o on (o.id_docente=d.id_docente)		
+                where m.id_materia=".$id_mat
+               ." )sub2"
+               . " left outer join periodo p on (p.id_periodo=sub2.id_periodo)"
+               . " left outer join modulo mo on (mo.id_modulo=sub2.modulo)"   
+               ." where sub2.id_periodo is not null"
+               ." order by sub2.id_periodo,sub2.modulo"  ;
+      
          return toba::db('designa')->consultar($sql);
      }
 }
