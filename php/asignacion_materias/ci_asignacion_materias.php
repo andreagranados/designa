@@ -2,7 +2,6 @@
 class ci_asignacion_materias extends toba_ci
 {
 	protected $s__datos_filtro;
-        protected $s__mostrar_ml;
         protected $s__anio;
         protected $s__guardar;
         protected $s__where;
@@ -61,17 +60,15 @@ class ci_asignacion_materias extends toba_ci
             $this->set_pantalla('pant_asignacion');
 	}
 
-//
-//
-//	function evt__volver()
-//	{
-//            
-//            $this->dep('datos')->tabla('asignacion_materia')->resetear();
-//            $this->dep('datos')->tabla('materia')->resetear();
-//            unset($this->s__anio);
-//            $this->s__mostrar_ml=0;
-//            $this->set_pantalla('pant_edicion');
-//	}
+	function evt__volver()
+	{
+            
+            $this->dep('datos')->tabla('asignacion_materia')->resetear();
+            $this->dep('datos')->tabla('materia')->resetear();
+            unset($this->s__anio);
+            $this->s__mostrar=0;
+            $this->set_pantalla('pant_edicion');
+	}
 
 
 	//-----------------------------------------------------------------------------------

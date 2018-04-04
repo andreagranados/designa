@@ -233,6 +233,7 @@ class ci_integrantes_pi extends designa_ci
                             }else{
                                 $datos['pinvest']=$pi['id_pinv'];
                                 $datos['ua']=$uni;
+                                $datos['check_inv']=0;
                                 $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
                                 $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
                                 $this->dep('datos')->tabla('integrante_interno_pi')->resetear();

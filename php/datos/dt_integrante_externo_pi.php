@@ -157,7 +157,12 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         return toba::db('designa')->consultar($sql);
     }
     function get_plantilla($id_p){
-        
+        $concat='';
+        $sql="select estado from pinvestigacion where id_pinv=".$id_p;
+        $resul= toba::db('designa')->consultar($sql); 
+        if($resul[0]['estado']=='A'){
+            $concat=' and check_inv=1 ';
+        }
         $sql="(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
                 . " from  integrante_interno_pi t_i"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_i.cat_investigador)"
@@ -187,7 +192,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                        select id_pinv from pinvestigacion
                                       where id_pinv=".$id_p." 
                                        )
-                        and t_i.hasta=p.fec_hasta) "
+                        and t_i.hasta=p.fec_hasta $concat) "
                 ." UNION"
                 . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,trim(t_i.nombre_institucion) as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
                 . " from integrante_externo_pi t_e"
@@ -205,7 +210,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                        select id_pinv from pinvestigacion
                                       where id_pinv=".$id_p."  
                                        )"
-                   ." and t_e.hasta=p.fec_hasta)"
+                   ." and t_e.hasta=p.fec_hasta $concat)"
                 . " order by orden";
         //union con los integrantes externos
         return toba::db('designa')->consultar($sql);  
