@@ -958,13 +958,19 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             if (isset($filtro['uni_acad'])) {
 	         $where.= " AND uni_acad = ".quote($filtro['uni_acad']);
 		}
-            $sql="select * from(
+            $sql="select id_designacion from(
                     select a.id_designacion,sum(case when porc is null then 0 else porc end) as suma 
                         from designacion a
                         left outer join imputacion b on (a.id_designacion=b.id_designacion)
                         $where
                         group by a.id_designacion) b"
-                    . " where suma<100";
+                    . " where suma<100"
+                    . " UNION"
+               . "select a.id_designacion"
+                   . " from designacion a
+                        left outer join imputacion b on (a.id_designacion=b.id_designacion)
+                        $where"
+                    . " and b.porc=0";
            
             $resul=toba::db('designa')->consultar($sql);
             if(count($resul)>0){//si encuentra casos entonces retorna true
