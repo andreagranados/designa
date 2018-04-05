@@ -966,7 +966,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         group by a.id_designacion) b"
                     . " where suma<100"
                     . " UNION"
-               . "select a.id_designacion"
+               . " select a.id_designacion"
                    . " from designacion a
                         left outer join imputacion b on (a.id_designacion=b.id_designacion)
                         $where"
