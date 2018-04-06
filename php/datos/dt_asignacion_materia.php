@@ -724,7 +724,7 @@ class dt_asignacion_materia extends toba_datos_tabla
 //                 . " where t_m.anio=".$anio
 //                 . " and t_m.id_materia =".$id_mat
 //                ;
-         $sql="select sub2.id_designacion,sub2.id_materia,sub2.id_periodo,p.descripcion as periodo,sub2.agente,sub2.designacion,sub2.carga_horaria,sub2.rol,sub2.id_designacion,sub2.modulo,mo.descripcion as desmodulo,sub2.anio from 
+         $sql="select sub2.id_designacion,sub2.id_materia,sub2.id_periodo,p.descripcion as periodo,sub2.agente,sub2.designacion,sub2.carga_horaria,t.desc_item as rol,sub2.id_designacion,sub2.modulo,mo.descripcion as desmodulo,sub2.anio from 
                 (select  distinct m.id_materia,case when sub.id_conjunto is not null then sub.id_periodo else t.id_periodo end as id_periodo,
                 case when sub.id_conjunto is not null then sub.designacion else d.cat_estat||d.dedic||'-'||d.carac||' desde:'||to_char(d.desde,'DD/MM/YYYY')||'('||d.id_designacion||')'  end as designacion, 
                 case when sub.id_conjunto is not null then sub.agente else o.apellido||', '||o.nombre end as agente, 
@@ -751,7 +751,8 @@ class dt_asignacion_materia extends toba_datos_tabla
                 where m.id_materia=".$id_mat
                ." )sub2"
                . " left outer join periodo p on (p.id_periodo=sub2.id_periodo)"
-               . " left outer join modulo mo on (mo.id_modulo=sub2.modulo)"   
+               . " left outer join modulo mo on (mo.id_modulo=sub2.modulo)"
+               . " left outer join tipo t on (t.nro_tabla=8 and t.desc_abrev=sub2.rol)"   
                ." where sub2.id_periodo is not null"
                  . " and anio=".$anio
                ." order by sub2.id_periodo,sub2.modulo"  ;
