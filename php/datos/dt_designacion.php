@@ -1755,8 +1755,15 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                            	AND t_d.tipo_desig=2 
                            	AND t_d.id_reserva = t_r.id_reserva                            	
                              )";
-            
-            return $sql;
+            $sql2="SELECT sub1.id_designacion,sub1.docente_nombre,sub1.legajo,sub1.nro_cargo,sub1.anio_acad,sub1.desde,sub1.hasta,sub1.cat_mapuche, sub1.cat_mapuche_nombre,
+                    sub1.cat_estat, sub1.dedic, sub1.carac,case when sub2.id_designacion is not null  then sub2.dpto else sub1.id_departamento end as id_departamento,case when sub2.id_designacion is not null then sub2.area else sub1.id_area end as id_area,case when sub2.id_designacion is not null then sub2.orientacion else sub1.id_orientacion end as id_orientacion
+                    , sub1.uni_acad, sub1.emite_norma, sub1.nro_norma, sub1.tipo_norma, sub1.nro_540, sub1.observaciones, sub1.id_programa, sub1.programa, sub1.porc, sub1.costo_diario, sub1.check_presup, sub1.licencia, sub1.estado, sub1.dias_lic, sub1.dias_des
+                  FROM (".$sql.")sub1"
+                    . " LEFT OUTER JOIN (select d.id_designacion,excepcion_departamento(a.id_designacion)as dpto,excepcion_area(a.id_designacion) as area,excepcion_orientacion(a.id_designacion) as orientacion
+                        from designacion d,dao_designa a 
+                        where d.desde <='".$udia."' and (d.hasta>='".$pdia."' or d.hasta is null)
+                        and a.id_designacion=d.id_designacion)sub2 ON (sub1.id_designacion=sub2.id_designacion)";
+            return $sql2;
         }
         function get_totales($filtro=array())
         {
