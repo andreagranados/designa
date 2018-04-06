@@ -753,6 +753,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                . " left outer join periodo p on (p.id_periodo=sub2.id_periodo)"
                . " left outer join modulo mo on (mo.id_modulo=sub2.modulo)"   
                ." where sub2.id_periodo is not null"
+                 . " and anio=".$anio
                ." order by sub2.id_periodo,sub2.modulo"  ;
       
          return toba::db('designa')->consultar($sql);
