@@ -54,10 +54,15 @@ class ci_asignacion_materias extends toba_ci
             //cargo la materia y el plan
             $this->dep('datos')->tabla('materia')->cargar($datos);
             $dat=$this->dep('datos')->tabla('materia')->get();
-            $plan=array();
-            $plan['id_plan']=$dat['id_plan'];
-            $this->dep('datos')->tabla('plan_estudio')->cargar($plan);
-            $this->set_pantalla('pant_asignacion');
+            if(isset($dat['id_departamento'])){
+                $plan=array();
+                $plan['id_plan']=$dat['id_plan'];
+                $this->dep('datos')->tabla('plan_estudio')->cargar($plan);
+                $this->set_pantalla('pant_asignacion');
+            }else{
+                toba::notificacion()->agregar('La materia debe tener asignado el DEPARTAMENTO al que pertenece. Complete desde la operacion: Actualizacion->Materias', 'info'); 
+            }
+            
 	}
 
 	function evt__volver()

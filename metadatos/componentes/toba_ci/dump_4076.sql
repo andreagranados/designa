@@ -23,7 +23,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'MinimoIntegrantes', --nombre
 	NULL, --titulo
 	'0', --colapsable
-	NULL, --descripcion
+	'Listado de los proyectos que tienen menos de 5 integrantes.', --descripcion
 	NULL, --fuente_datos_proyecto
 	NULL, --fuente_datos
 	NULL, --solicitud_registrar
