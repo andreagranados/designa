@@ -937,6 +937,7 @@ class cargo_solapas extends toba_ci
                 $form->ef('tipo_norma')->set_obligatorio('true');
                 $form->ef('tipo_emite')->set_obligatorio('true');
                 $form->ef('norma_legal')->set_obligatorio('true');
+                $form->ef('porcen')->set_obligatorio('true');
             }
             else{
                 $this->dep('form_licencia')->colapsar();
@@ -946,7 +947,7 @@ class cargo_solapas extends toba_ci
 	    } 
 	}
         function evt__form_licencia__alta($datos)
-	{
+	{ 
           $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
           $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
           if($vale){
@@ -985,10 +986,8 @@ class cargo_solapas extends toba_ci
                         $this->controlador()->dep('datos')->tabla('designacion')->set($desig);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                         //guardo la licencia    
-                        if($datos['tipo_nov']==2){//si es una LSGH
-                            $datos['nro_tab10']=10;
-                            $datos['sub_tipo']='NORM';
-                        }
+                        $datos['nro_tab10']=10;
+                        $datos['sub_tipo']='NORM';
                         $datos['id_designacion']=$desig['id_designacion'];
                         $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
                         $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
@@ -1074,7 +1073,7 @@ class cargo_solapas extends toba_ci
                             $pierde=1;
                         }
                     }else{//si modifica tipo de la licencia o los periodos
-                        if($datos['tipo_nov']!=$nove['tipo_nov']||$datos['desde']!=$nove['desde']||$datos['hasta']!=$nove['hasta']){//efecta credito
+                        if($datos['tipo_nov']!=$nove['tipo_nov']||$datos['desde']!=$nove['desde']||$datos['hasta']!=$nove['hasta']||$datos['porcen']!=$nove['porcen']){//efecta credito
                             $pierde=1;
                         }else{//no tenia norma y le coloca o al reves la tenia y le saca algo
                             if((($nove['tipo_norma']==null || $nove['tipo_emite']==null || $nove['norma_legal']==null) && $datos['tipo_norma']!=null && $datos['tipo_emite']!=null && $datos['norma_legal']!=null) or ($nove['tipo_norma']!=null && $nove['tipo_emite']!=null && $nove['norma_legal']!=null && ($datos['tipo_norma']==null || $datos['tipo_emite']==null || $datos['norma_legal']==null)))  {
@@ -1203,6 +1202,7 @@ class cargo_solapas extends toba_ci
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                       //guarda la novedad  
                     $datos['id_designacion']=$desig['id_designacion'];
+                    $datos['porcen']=1;
                     $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
                     $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
                     $this->s__alta_novb=0;//descolapsa el formulario de alta
