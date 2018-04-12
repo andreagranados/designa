@@ -134,9 +134,9 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3437', --objeto_cuadro
 	'2553', --objeto_cuadro_col
-	'descripcion', --clave
+	'desc', --clave
 	'1', --orden
-	'Nombre', --titulo
+	'Nombre Actividad', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'0', --estilo
 	NULL, --ancho
