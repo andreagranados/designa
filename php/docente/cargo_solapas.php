@@ -529,7 +529,8 @@ class cargo_solapas extends toba_ci
 	function evt__filtro_materias__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
-                $this->s__where = $this->dep('filtro_materias')->get_sql_where();    
+                $this->s__where = $this->dep('filtro_materias')->get_sql_where();  
+                $this->s__alta_mate=0;
 	}
 
 	function evt__filtro_materias__cancelar()

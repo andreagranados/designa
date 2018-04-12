@@ -291,7 +291,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'3319', --objeto_cuadro
 	'2252', --objeto_cuadro_col
-	'modulo', --clave
+	'moddes', --clave
 	'7', --orden
 	'Módulo', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
