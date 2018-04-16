@@ -48,24 +48,25 @@ class dt_conjunto extends toba_datos_tabla
                 }else{
                     $where='';
                 }
-                $sql = "select c.*,count(distinct t_e.id_materia) as cant_mat from (select * from (SELECT
-			t_c.id_conjunto,
-			t_c.descripcion,
-                        t_c.ua,
-                        t_m.anio,
-                        t_p.descripcion as id_periodo_nombre,
-                        t_c.id_periodo
-			
-                        FROM
-			conjunto as t_c 
-                        LEFT OUTER JOIN mocovi_periodo_presupuestario t_m ON (t_c.id_periodo_pres=t_m.id_periodo )
-                        LEFT OUTER JOIN periodo t_p ON (t_p.id_periodo=t_c.id_periodo)
-
-		)b	
-		$where )c LEFT OUTER JOIN en_conjunto t_e 
-                    ON (t_e.id_conjunto=c.id_conjunto)
-		group by c.id_conjunto,c.descripcion,c.ua,c.anio,c.id_periodo_nombre,c.id_periodo";
-		
+                //CUANDO ESTEMOS VERSION 9.1 DE POSTGRES
+//		$sql="select c.id_conjunto,c.descripcion,o.anio,c.ua,p.descripcion as id_periodo_nombre,string_agg(m.desc_materia||'('||pp.cod_carrera||' de '||pp.uni_acad||')',' ,') as mat_conj
+//                        from conjunto c
+//                        left outer join en_conjunto e on (c.id_conjunto=e.id_conjunto)
+//                        left outer join materia m on (m.id_materia=e.id_materia)
+//                        left outer join plan_estudio pp on (m.id_plan=pp.id_plan)
+//                        left outer join periodo p on (c.id_periodo=p.id_periodo)
+//                        left outer join mocovi_periodo_presupuestario o on (o.id_periodo=c.id_periodo_pres)
+//                        $where
+//                    group by c.id_conjunto,o.anio,c.descripcion,c.ua,p.descripcion          
+//                    order by p.descripcion,c.descripcion";
+                $sql="select c.id_conjunto,c.descripcion,o.anio,c.ua,p.descripcion as id_periodo_nombre,COUNT(distinct e.id_materia) as cant_mat
+                        from conjunto c
+                        left outer join en_conjunto e on (c.id_conjunto=e.id_conjunto)
+                        left outer join periodo p on (c.id_periodo=p.id_periodo)
+                        left outer join mocovi_periodo_presupuestario o on (o.id_periodo=c.id_periodo_pres)
+                        $where
+                    group by c.id_conjunto,o.anio,c.descripcion,c.ua,p.descripcion          
+                    order by p.descripcion,c.descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
 

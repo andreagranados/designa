@@ -17,6 +17,7 @@ class ci_materias extends toba_ci
 	function evt__filtro__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
+                $this->s__mostrar=0;
 	}
 
 	function evt__filtro__cancelar()

@@ -30,7 +30,7 @@ class ci_ver_conjuntos extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
+		if (isset($this->s__where)) {
                    $cuadro->set_datos($this->dep('datos')->tabla('conjunto')->get_listado($this->s__where));
 		} 
 	}
