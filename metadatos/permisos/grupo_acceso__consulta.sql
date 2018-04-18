@@ -7,7 +7,7 @@ INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_a
 	'consulta', --usuario_grupo_acc
 	'Consulta', --nombre
 	NULL, --nivel_acceso
-	'Para Consulta', --descripcion
+	'Para consulta', --descripcion
 	NULL, --vencimiento
 	NULL, --dias
 	NULL, --hora_entrada
@@ -123,12 +123,6 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	'consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'3702'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'consulta', --usuario_grupo_acc
-	NULL, --item_id
-	'3704'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
