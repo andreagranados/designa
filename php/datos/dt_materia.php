@@ -114,7 +114,7 @@ class dt_materia extends toba_datos_tabla
 			$sql = sql_concatenar_where($sql, $where);
 		}
                     
-                $sql=$sql." order by t_m.id_plan,orden_materia,anio_segunplan,periodo_dictado";
+                $sql=$sql." order by t_m.id_plan,anio_segunplan,periodo_dictado";
                 
 		return toba::db('designa')->consultar($sql);
 	}
