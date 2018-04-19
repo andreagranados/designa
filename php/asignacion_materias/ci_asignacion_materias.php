@@ -122,7 +122,7 @@ class ci_asignacion_materias extends toba_ci
                 $this->s__mostrar=1;
                 $this->dep('datos')->tabla('asignacion_materia')->resetear();
             }else{
-                toba::notificacion()->agregar('Debe seleccionar un año y filtrar', 'info'); 
+                toba::notificacion()->agregar(utf8_d_seguro('Debe seleccionar un año y filtrar'), 'info'); 
             }
             
 	}
@@ -151,6 +151,7 @@ class ci_asignacion_materias extends toba_ci
 
 	function evt__formulario__alta($datos)
 	{
+            //$res=$this->dep('datos')->tabla('designacion')->get_control_desig_periodo($this->s__anio,$datos['id_designacion'],$datos['id_periodo']);
             $mat=$this->dep('datos')->tabla('materia')->get();
             $datos['nro_tab8']=8;
             $datos['anio']=$this->s__anio;
@@ -158,7 +159,7 @@ class ci_asignacion_materias extends toba_ci
             $this->dep('datos')->tabla('asignacion_materia')->set($datos);
             $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
             $this->s__mostrar=0;
-            toba::notificacion()->agregar('El registro se ha ingresado correctamente, año: '. $this->s__anio, 'info');  
+            toba::notificacion()->agregar(utf8_d_seguro('El registro se ha ingresado correctamente, año: '. $this->s__anio), 'info');  
 	}
 
 	function evt__formulario__baja()

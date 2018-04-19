@@ -105,6 +105,29 @@ class dt_persona extends toba_datos_tabla
 		ORDER BY apellido,nombre";
 		return toba::db('designa')->consultar($sql);
 	}
+        //solo trae las personas cuyo apellido comienza con a
+        function get_listado_comienzan_a()
+        {
+            $sql="SELECT
+                                        t_p.apellido,
+                                        t_p.nombre,
+                                        t_p.nro_tabla,
+                                        t_p.tipo_docum,
+                                        t_p.nro_docum,
+                                        case when t_p.tipo_docum='EXTR' then t_p.docum_extran else cast (t_p.nro_docum as text) end as nro_documento,
+                                        t_p.tipo_sexo,
+                                        t_p1.nombre as pais_nacim_nombre,
+                                        t_p2.descripcion_pcia as pcia_nacim_nombre,
+                                        t_p.fec_nacim
+                                    
+                                    FROM
+                                    persona as t_p	
+                                    LEFT OUTER JOIN pais as t_p1 ON (t_p.pais_nacim = t_p1.codigo_pais)
+                                    LEFT OUTER JOIN provincia as t_p2 ON (t_p.pcia_nacim = t_p2.codigo_pcia)
+                                    where t_p.apellido like 'A%'
+                                    order by apellido,nombre;";
+            return toba::db('designa')->consultar($sql);
+        }
        
         function get_datos($tipo,$nro){
             $sql="select trim(apellido)||', '||trim(nombre) as nombre from persona"

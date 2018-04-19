@@ -402,7 +402,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'3', --orden
 	'Módulo', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Agrupe con el mismo modulo a todos los docentes que comparten el mismo grupo de alumnos', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -562,7 +562,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'5', --orden
 	'Rol', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Responsable: cuando dicta la teoría de la materia<br>
+Otro: en cualquier otro caso', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo

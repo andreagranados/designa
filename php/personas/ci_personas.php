@@ -37,9 +37,9 @@ class ci_personas extends toba_ci
             $cuadro->desactivar_modo_clave_segura();
             if (isset($this->s__where)) {
                 $cuadro->set_datos($this->dep('datos')->tabla('persona')->get_listado($this->s__where));
-            }//else{
-               // $cuadro->set_datos($this->dep('datos')->tabla('persona')->get_listado());
-            //}
+            }else{
+                $cuadro->set_datos($this->dep('datos')->tabla('persona')->get_listado_comienzan_a());
+            }
 	}
 
 	function evt__cuadro__seleccion($datos)

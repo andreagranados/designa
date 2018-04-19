@@ -2056,7 +2056,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             
         }
         function get_designaciones_asig_materia($anio){
-           
             $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
             $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
                
@@ -2067,12 +2066,57 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         . " LEFT OUTER JOIN norma t_no ON (t_d.id_norma=t_no.id_norma), docente t_d1, unidad_acad t_u"
                     . " where t_d.id_docente=t_d1.id_docente "
                     . " and t_d.uni_acad=t_u.sigla "
+                    . " and not(t_d.hasta is not null and t_d.desde>t_d.hasta)"//descarto que se anulo
                     . " and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta is null)"
                     . " order by descripcion";
+          
             $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
             return toba::db('designa')->consultar($sql);
-            }
+        }
+        function get_control_desig_periodo($anio,$id_desig,$id_periodo){
+            $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
+            $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
             
+            $sql="select d.id_designacion,"
+                    . "(case when d.hasta is null then '".$udia."' else case when d.hasta>'".$udia."' then '".$udia."' else d.hasta end end) -(case when d.desde<'".$pdia."' then '".$pdia."' else d.desde end )+1 as dias_des 
+                ,case when sum((n.hasta-n.desde)+1) is null then 0 else sum((n.hasta-n.desde)+1) end as dias_lic
+                from designacion d
+                LEFT OUTER JOIN novedad n ON (d.id_designacion=n.id_designacion and n.tipo_nov in (2,3,5) and n.desde <='".$udia."' and n.hasta>='".$pdia."')
+                where d.id_designacion=$id_desig
+                group by d.id_designacion,d.desde,d.hasta";
+            //$band=1; la designacion tiene mas de 300 dias de licencia o cese temporal de haberes
+            $resul= toba::db('designa')->consultar($sql);
+            $band=0;//0 indica que esta permitido
+            
+            if(($resul[0]['dias_des']-$resul[0]['dias_lic'])<=5){//si tiene mas de 300 dias de lic entonces no puede asignarle materia
+                $band=1;
+            }else{
+                $medio=new Datetime(CONCAT($anio,'-',7,'-',31));
+                //obtengo todas las licencias de la designacion dentro del periodo
+                $sql="select d.id_designacion,n.desde,n.hasta
+                      from designacion d, novedad n 
+                      where d.id_designacion=n.id_designacion 
+                      and n.tipo_nov in (2,3,5) 
+                      and n.desde <='".$udia."' and n.hasta>='".$pdia."'
+                      and  d.id_designacion=$id_desig";
+                $resul= toba::db('designa')->consultar($sql);
+                if(count($resul)>0){//si la designacion tiene licencias obtengo la primer y ultima fecha
+                    $fdesde=$resul[0]['desde'];
+                    $fhasta=$resul[0]['hasta'];
+                    foreach ($array as $value) {
+                        $fhasta=$value['hasta'];    
+                    }
+                    if($id_periodo==1 and $fdesde<=$pdia and $fhasta>=$medio){//si ingresa 1CUAT y tiene licencia en ese periodo entonces no
+                        $band=2;//tiene licencia en el primer cuatrimestre
+                    }else{
+                        if($id_periodo==2 and $fdesde<=$medio and $fhasta>=$udia){
+                            
+                        }
+                    }
+                }
+                
+            }
+        }
         
 }
 ?>
