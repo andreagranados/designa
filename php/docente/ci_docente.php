@@ -353,6 +353,7 @@ class ci_docente extends toba_ci
 	{
             $id = toba::memoria()->get_parametro('id_designacion');
             $tipo = toba::memoria()->get_parametro('tipo');
+            $anio= toba::memoria()->get_parametro('anio');
             if(isset($id)){
                 
                 $sql="select * from designacion where id_designacion=".$id;
@@ -362,7 +363,7 @@ class ci_docente extends toba_ci
                 $this->dep('datos')->tabla('docente')->cargar($datos);
                 $dd['id_designacion']=$res[0]['id_designacion'];
                 $this->dep('datos')->tabla('designacion')->cargar($dd);
-                      
+                  
                 $desig = $this->dep('datos')->tabla('designacion')->get();//obtengo la designacion recien cargada
                         
                 if ($desig['id_norma'] <> null){//si tiene la norma del cd 
@@ -384,6 +385,19 @@ class ci_docente extends toba_ci
                 }else{//es una reserva
                     $datosr['id_reserva']=$res[0]['id_reserva'];
                     $this->dep('datos')->tabla('reserva')->cargar($datosr);
+                    $per=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->get_periodo($anio);
+                    $datosa['id_periodo']=$per;
+                    $this->dep('datos')->tabla('mocovi_periodo_presupuestario')->cargar($datosa);
+                    $datosres['id_reserva']=$id;
+                    $this->dep('datos')->tabla('reserva_ocupada_por')->cargar($datosres);
+                    //obtengo la imputacion
+                    $imp=$this->dep('datos')->tabla('imputacion')->imputaciones($id);//solo va a retornar una imput porque es una reserva
+                    if(count($imp)>0){
+                        $imput['id_designacion']=$id;
+                        $imput['id_programa']=$imp[0]['id_programa'];
+                        $this->dep('datos')->tabla('imputacion')->cargar($imput);    
+                    }
+                    
                     $this->set_pantalla('pant_reserva');
                 }
      

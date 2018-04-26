@@ -26,4 +26,15 @@ INSERT INTO apex_dimension_gatillo (proyecto, dimension, gatillo, tipo, orden, t
 	NULL, --tabla_gatillo
 	NULL  --ruta_tabla_rel_dim
 );
+INSERT INTO apex_dimension_gatillo (proyecto, dimension, gatillo, tipo, orden, tabla_rel_dim, columnas_rel_dim, tabla_gatillo, ruta_tabla_rel_dim) VALUES (
+	'designa', --proyecto
+	'17', --dimension
+	'23', --gatillo
+	'directo', --tipo
+	'1', --orden
+	'departamento', --tabla_rel_dim
+	'iddepto', --columnas_rel_dim
+	NULL, --tabla_gatillo
+	NULL  --ruta_tabla_rel_dim
+);
 --- FIN Grupo de desarrollo 0

@@ -68,7 +68,8 @@ class ci_informe_estado_actual extends toba_ci
 	{
             $tipo=$this->dep('datos')->tabla('designacion')->tipo($datos['id_designacion']);
             $parametros['tipo']=$tipo;
-            $parametros['id_designacion']=$datos['id_designacion'];          
+            $parametros['id_designacion']=$datos['id_designacion'];   
+            $parametros['anio']=$this->s__datos_filtro['anio']['valor'];   
             toba::vinculador()->navegar_a('designa',3636,$parametros);
             
 	}

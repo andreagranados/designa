@@ -123,4 +123,11 @@ INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, d
 	'Centro Regional Universitario Bariloche', --descripcion
 	NULL  --listar
 );
+INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
+	'designa', --proyecto
+	'27', --usuario_perfil_datos
+	'FISICA', --nombre
+	'FISICA', --descripcion
+	NULL  --listar
+);
 --- FIN Grupo de desarrollo 0

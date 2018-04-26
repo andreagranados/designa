@@ -34,29 +34,20 @@ class dt_categ_siu extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
                 
         }
-        function get_descripciones_categ($id_categ=null){
-            //id_categ que ingresa es el numero retornado por el popup
-            print_r($id_categ);
-            $where="";
-            //si selecciono algo en el popup entonces viene un numero
-            if($id_categ>='0' && $id_categ<='40'){// si es numero
-                $sql="select * from categ_siu as t_cs ORDER BY descripcion";
-                $resul=toba::db('designa')->consultar($sql);
-                $id_categ=$resul[$id_categ]['codigo_siu'];
-            }
-            //print_r($cod);
-            
-            
-            if(isset($id_categ)){
-                $where=" where codigo_siu='".$id_categ."'";
-             }
-            $sql = "SELECT
-			t_cs.codigo_siu,
-			t_cs.descripcion
-		FROM
-			categ_siu as t_cs $where ORDER BY descripcion";
-          //print_r($sql);
-            return toba::db('designa')->consultar($sql);
+        //dada una categoria siu retorna la dedicacion correspondiente a la categoria estatuto
+        function get_dedicacion_categoria($cat_siu){
+            $long=  strlen(trim($cat_siu));
+            $dedic=  substr($cat_siu, $long-1, $long);
+            $dedicacion=0;    
+            switch ($dedic) {
+                    case '1': $dedicacion=3;   break;
+                    case 'S': $dedicacion=2;   break;
+                    case 'E': $dedicacion=1;   break;
+                    case 'H': $dedicacion=4;   break;
+                    default:
+                        break;
+                }
+            return($dedicacion);
         }
         function get_categoria($id){
             if ($id>='0' and $id<='2000'){//es un elemento seleccionado del popup
@@ -74,7 +65,6 @@ class dt_categ_siu extends toba_datos_tabla
             }
         }
         function get_descripcion_categoria($cat){
-            
                 $sql="SELECT
 			t_cs.codigo_siu,
 			t_cs.descripcion
@@ -82,12 +72,8 @@ class dt_categ_siu extends toba_datos_tabla
 			categ_siu as t_cs
                         where escalafon='D'
                         and t_cs.codigo_siu='".$cat."'";
-		
                 $resul=toba::db('designa')->consultar($sql);
-            
                 return $resul[0]['descripcion'];
-            
-            
         }
 }
 ?>

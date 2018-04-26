@@ -986,7 +986,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
 		
                 //que sea una designacion vigente, dentro del periodo actual o anulado cuando le setean el hasta con el dia anterior al desde
-		$where=" WHERE ((a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)) or (a.desde>a.hasta and ".$filtro['anio']."=extract(year from a.hasta)))";
+		$where=" WHERE ((desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)) or (desde>hasta and ".$filtro['anio']."=extract(year from hasta)))";
                 $where.=" AND  nro_540 is null";
                 $where2="";          
                 
@@ -1021,19 +1021,30 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
                 $sql=$this->armar_consulta($pdia, $udia, $filtro['anio']);
                 
+//                $sql=  "select * from ("
+//                        ."select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,id_programa,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
+//                            . ",case when b.estado<>'B' then case when t_no.id_novedad is null then b.estado else 'L' end else 'B' end as estado  "//si tiene una baja o renuncia coloca B. Si tiene una licencia sin goce o cese coloca L
+//                            . " from ("
+//                            ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
+//                            " from (".$sql.") a"
+//                            .$where
+//                            ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
+//                            .") b "
+//                            . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
+//                            .")c $where2"
+//                            . " order by programa,docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                 $sql=  "select * from ("
-                        ."select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,id_programa,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
+                        ."select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,b.nro_540,b.observaciones,id_programa,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then case when tipo_desig=2 then costo_reserva(b.id_designacion,(dias_des*costo_diario*porc/100),".$filtro['anio'].") else ((dias_des-dias_lic)*costo_diario*porc/100) end else 0 end as costo"
                             . ",case when b.estado<>'B' then case when t_no.id_novedad is null then b.estado else 'L' end else 'B' end as estado  "//si tiene una baja o renuncia coloca B. Si tiene una licencia sin goce o cese coloca L
                             . " from ("
-                            ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
-                            " from (".$sql.") a"
-                            .$where
-                            ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
+                            . " select a.tipo_desig,a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad,a.desde,a.hasta,a.cat_mapuche,a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento,a.id_area,a.id_orientacion,a.uni_acad,a.emite_norma,a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,id_programa,programa,porc,a.costo_diario,a.check_presup,licencia,a.dias_des,a.dias_lic"
+                            . " from (".$sql.") a"
+                            .  $where
                             .") b "
                             . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
-                            //. $where2
                             .")c $where2"
-                            . " order by programa,docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
+                            . " order by programa,docente_nombre"; 
+               
                 $ar = toba::db('designa')->consultar($sql);
                 
                 $datos = array();
@@ -1234,13 +1245,9 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                        . " ,case when t_nor.id_norma is null then '' else case when t_nor.link is not null or t_nor.link <>'' then '<a href='||chr(39)||t_nor.link||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||t_nor.nro_norma||'</a>' else cast(t_nor.nro_norma as text) end end as nro "
                        . "from ("
                        ."select sub.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, sub.desde, sub.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,sub.emite_norma, sub.nro_norma,sub.tipo_norma,nro_540,sub.observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,costo,max(t_no.id_novedad) as id_novedad from ("
-                        ."select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, b.nro_norma,b.tipo_norma,nro_540,b.observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
-                            ." from ("
-                            ." select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
-                            " from (".$sql.") a"
-                            .$where
-                            ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
-                            .") b "
+                        ."select distinct id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, desde, hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,tipo_norma,nro_540,observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then case when tipo_desig=2 then costo_reserva(id_designacion,(dias_des*costo_diario*porc/100),$anio) else ((dias_des-dias_lic)*costo_diario*porc/100) end else 0 end as costo"
+                        ." from (".$sql.") a"
+                        .$where
                        . " )sub"
                        . " LEFT OUTER JOIN novedad t_no ON (sub.id_designacion=t_no.id_designacion and t_no.desde<='".$udia."' and (t_no.hasta is null or t_no.hasta>='".$pdia."' ))"
                        . " GROUP BY  sub.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, sub.desde,sub.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,sub.emite_norma, sub.nro_norma,sub.tipo_norma,nro_540,sub.observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,costo"  
@@ -1420,17 +1427,17 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 //                        . " LEFT JOIN novedad t_n ON (b.id_designacion=t_n.id_designacion and t_n.tipo_nov in (1,4) )"
 //                        .$where2
 //                            . " order by docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
-               $sql= "select * from("
-                       . "select sub2.*,case when t_no.tipo_nov in (1,4) then 'B('||coalesce(t_no.tipo_norma,'')||':'||coalesce(t_no.norma_legal,'')||')' else case when t_no.tipo_nov in (2,5) then 'L('||t_no.tipo_norma||':'||t_no.norma_legal||')'  else sub2.estado end end as est,t_i.expediente "
+        //sql="select * from ( "
+                 $sql= "select id_designacion,docente_nombre,legajo,nro_cargo,anio_acad,desde,hasta,cat_mapuche,cat_mapuche_nombre,cat_estat,dedic,carac,check_presup,id_departamento,id_area,id_orientacion,uni_acad,emite_norma,nro_norma,tipo_norma,nro_540,observaciones,estado,porc,dias_lic,programa,costo_vale as costo,est,expediente,nro from("
+                       . "select sub2.*,case when t_no.tipo_nov in (1,4) then 'B('||coalesce(t_no.tipo_norma,'')||':'||coalesce(t_no.norma_legal,'')||')' else case when t_no.tipo_nov in (2,5) then 'L('||t_no.tipo_norma||':'||t_no.norma_legal||')'  else sub2.estado end end as est,t_i.expediente,case when d.tipo_desig=2 then costo_reserva(d.id_designacion,costo,".$filtro['anio']['valor'].") else costo end as costo_vale "
                        . " ,case when t_nor.id_norma is null then '' else case when t_nor.link is not null or t_nor.link <>'' then '<a href='||chr(39)||t_nor.link||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||t_nor.nro_norma||'</a>' else cast(t_nor.nro_norma as text) end end as nro "
                        . "from ("
                        ."select sub.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, sub.desde, sub.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,sub.emite_norma, sub.nro_norma,sub.tipo_norma,nro_540,sub.observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,costo,max(t_no.id_novedad) as id_novedad from ("
                         ."select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, b.nro_norma,b.tipo_norma,nro_540,b.observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
                             ." from ("
-                            ." select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
+                            ." select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,a.dias_lic".
                             " from (".$sql.") a"
-                            .$where
-                            ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
+                            .$where    
                             .") b "
                        . " )sub"
                        . " LEFT OUTER JOIN novedad t_no ON (sub.id_designacion=t_no.id_designacion and t_no.desde<='".$udia."' and (t_no.hasta is null or t_no.hasta>='".$pdia."' ))"
@@ -1443,9 +1450,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                        . ")sub3"
                        .$where2
                             . " order by docente_nombre,desde";
-               //print_r($sql);
+               
                 return toba::db('designa')->consultar($sql);
-    
 	}
          function get_listado_reservas($filtro=array())
 	{
@@ -1640,97 +1646,127 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         
         function armar_consulta($pdia,$udia,$anio){
             //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
-            //reemplazo t_d3.descripcion as id_departamento por excepcion_departamento(t_d.id_designacion) t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion
-            // excepcion_departamento(t_d.id_designacion) as id_departamento, excepcion_area(t_d.id_designacion) as id_area, excepcion_orientacion(t_d.id_designacion) as id_orientacion
-           $sql="(SELECT distinct t_d.id_designacion, trim(t_d1.apellido)||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac,t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
-                        0 as dias_lic, case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
-                            FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
+//           $sql="(SELECT distinct t_d.id_designacion, trim(t_d1.apellido)||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac,t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
+//                        0 as dias_lic, case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
+//                            FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
+//                            LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est) 
+//                            LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
+//                            LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
+//                            LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
+//                            LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
+//                            LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
+//                            LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
+//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
+//                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
+//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( m_e.anio=".$anio.")".
+//                            "LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
+//                            docente as t_d1,
+//                            caracter as t_c,
+//                            unidad_acad as t_ua 
+//                            
+//                        WHERE t_d.id_docente = t_d1.id_docente
+//                            AND t_d.carac = t_c.id_car 
+//                            AND t_d.uni_acad = t_ua.sigla 
+//                            AND t_d.tipo_desig=1 
+//                            AND not exists(SELECT * from novedad t_no
+//                                            where t_no.id_designacion=t_d.id_designacion
+//                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 or t_no.tipo_nov=5)))
+//                        UNION
+//                        (SELECT distinct t_d.id_designacion, trim(t_d1.apellido)||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
+//                            0 as dias_lic, case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
+//                            FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
+//                            LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est) 
+//                            LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
+//                            LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
+//                            LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
+//                            LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
+//                            LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
+//                            LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
+//                            LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
+//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
+//                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
+//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_e.anio=".$anio.")".
+//                            "LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
+//                            docente as t_d1,
+//                            caracter as t_c,
+//                            unidad_acad as t_ua,
+//                            novedad as t_no 
+//                            
+//                        WHERE t_d.id_docente = t_d1.id_docente
+//                            AND t_d.carac = t_c.id_car 
+//                            AND t_d.uni_acad = t_ua.sigla 
+//                            AND t_d.tipo_desig=1 
+//                            AND t_no.id_designacion=t_d.id_designacion
+//                            AND (((t_no.tipo_nov=2 or t_no.tipo_nov=5 ) AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
+//                                  OR (t_no.tipo_nov=1 or t_no.tipo_nov=4))
+//                             )
+//                        UNION
+//                               (SELECT distinct t_d.id_designacion, trim(t_d1.apellido)||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac,t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
+//                        sum((case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen ) as dias_lic,
+//                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
+//                            FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
+//                            LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est) 
+//                            LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
+//                            LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
+//                            LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
+//                            LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
+//                            LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
+//                            LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
+//                            LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
+//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
+//                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
+//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_e.anio=".$anio.")".
+//                            "LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
+//                            docente as t_d1,
+//                            caracter as t_c,
+//                            unidad_acad as t_ua,
+//                            novedad as t_no 
+//                            
+//                        WHERE t_d.id_docente = t_d1.id_docente
+//                            	AND t_d.carac = t_c.id_car 
+//                            	AND t_d.uni_acad = t_ua.sigla 
+//                           	AND t_d.tipo_desig=1 
+//                           	AND t_no.id_designacion=t_d.id_designacion 
+//                           	AND (t_no.tipo_nov=2 or t_no.tipo_nov=5) 
+//                           	AND t_no.tipo_norma is not null 
+//                           	AND t_no.tipo_emite is not null 
+//                           	AND t_no.norma_legal is not null
+//                        GROUP BY t_d.id_designacion,docente_nombre,t_d1.legajo,t_d.nro_cargo,anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, cat_mapuche_nombre, cat_estat, dedic,t_c.descripcion , t_d3.descripcion , t_a.descripcion , t_o.descripcion ,t_d.uni_acad, t_m.quien_emite_norma, t_n.nro_norma, t_x.nombre_tipo , t_d.nro_540, t_d.observaciones, m_p.nombre, t_t.id_programa, t_t.porc,m_c.costo_diario,  check_presup, licencia,t_d.estado   	
+//                             )".
+            //--sino tiene novedad entonces dias_lic es 0 case when t_no.id_novedad is null 
+            //--si tiene novedad tipo 2,5 y no tiene norma entonces dias_lic es 0
+           $sql=" SELECT distinct t_d.id_designacion,t_d.tipo_desig, trim(t_d1.apellido)||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac,t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
+                         sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
+                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
+                            FROM designacion as t_d 
+                            LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
                             LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est) 
                             LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
                             LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
                             LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
+                            LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
                             LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
                             LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
                             LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
                             LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
                             LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( m_e.anio=".$anio.")".
-                            "LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_e.anio=".$anio.")
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo)
+                            LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.tipo_norma is not null 
+                           					and t_no.tipo_emite is not null 
+                           					and t_no.norma_legal is not null 
+                           					and t_no.desde<='".$udia."' and t_no.hasta>='".$pdia."'),
                             docente as t_d1,
                             caracter as t_c,
                             unidad_acad as t_ua 
-                            
                         WHERE t_d.id_docente = t_d1.id_docente
                             AND t_d.carac = t_c.id_car 
                             AND t_d.uni_acad = t_ua.sigla 
                             AND t_d.tipo_desig=1 
-                            AND not exists(SELECT * from novedad t_no
-                                            where t_no.id_designacion=t_d.id_designacion
-                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 or t_no.tipo_nov=5)))
-                        UNION
-                        (SELECT distinct t_d.id_designacion, trim(t_d1.apellido)||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
-                            0 as dias_lic, case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
-                            FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
-                            LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est) 
-                            LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
-                            LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
-                            LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
-                            LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
-                            LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
-                            LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
-                            LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
-                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
-                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_e.anio=".$anio.")".
-                            "LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
-                            docente as t_d1,
-                            caracter as t_c,
-                            unidad_acad as t_ua,
-                            novedad as t_no 
-                            
-                        WHERE t_d.id_docente = t_d1.id_docente
-                            AND t_d.carac = t_c.id_car 
-                            AND t_d.uni_acad = t_ua.sigla 
-                            AND t_d.tipo_desig=1 
-                            AND t_no.id_designacion=t_d.id_designacion
-                            AND (((t_no.tipo_nov=2 or t_no.tipo_nov=5 ) AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
-                                  OR (t_no.tipo_nov=1 or t_no.tipo_nov=4))
-                             )
-                        UNION
-                               (SELECT distinct t_d.id_designacion, trim(t_d1.apellido)||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac,t_d3.descripcion as id_departamento,t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
-                        sum((case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen ) as dias_lic,
-                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
-                            FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
-                            LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est) 
-                            LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma) 
-                            LEFT OUTER JOIN tipo_emite as t_m ON (t_n.emite_norma = t_m.cod_emite) 
-                            LEFT OUTER JOIN tipo_norma_exp as t_x ON (t_x.cod_tipo = t_n.tipo_norma) 
-                            LEFT OUTER JOIN tipo_emite as t_te ON (t_d.emite_cargo_gestion = t_te.cod_emite)
-                            LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
-                            LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
-                            LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
-                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
-                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_e.anio=".$anio.")".
-                            "LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
-                            docente as t_d1,
-                            caracter as t_c,
-                            unidad_acad as t_ua,
-                            novedad as t_no 
-                            
-                        WHERE t_d.id_docente = t_d1.id_docente
-                            	AND t_d.carac = t_c.id_car 
-                            	AND t_d.uni_acad = t_ua.sigla 
-                           	AND t_d.tipo_desig=1 
-                           	AND t_no.id_designacion=t_d.id_designacion 
-                           	AND (t_no.tipo_nov=2 or t_no.tipo_nov=5) 
-                           	AND t_no.tipo_norma is not null 
-                           	AND t_no.tipo_emite is not null 
-                           	AND t_no.norma_legal is not null
-                        GROUP BY t_d.id_designacion,docente_nombre,t_d1.legajo,t_d.nro_cargo,anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, cat_mapuche_nombre, cat_estat, dedic,t_c.descripcion , t_d3.descripcion , t_a.descripcion , t_o.descripcion ,t_d.uni_acad, t_m.quien_emite_norma, t_n.nro_norma, t_x.nombre_tipo , t_d.nro_540, t_d.observaciones, m_p.nombre, t_t.id_programa, t_t.porc,m_c.costo_diario,  check_presup, licencia,t_d.estado   	
-                             )
-                    UNION
-                            (SELECT distinct t_d.id_designacion, 'RESERVA'||': '||t_r.descripcion as docente_nombre, 0, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
+                            GROUP BY t_d.id_designacion,t_d.tipo_desig,docente_nombre,t_d1.legajo,t_d.nro_cargo,anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, cat_mapuche_nombre, cat_estat, dedic,t_c.descripcion , t_d3.descripcion , t_a.descripcion , t_o.descripcion ,t_d.uni_acad, t_m.quien_emite_norma, t_n.nro_norma, t_x.nombre_tipo , t_d.nro_540, t_d.observaciones, m_p.nombre, t_t.id_programa, t_t.porc,m_c.costo_diario,  check_presup, licencia,t_d.estado   	".
+
+                   " UNION
+                            (SELECT distinct t_d.id_designacion,t_d.tipo_desig, 'RESERVA'||': '||t_r.descripcion as docente_nombre, 0, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_c.descripcion as carac, t_d3.descripcion as id_departamento, t_a.descripcion as id_area, t_o.descripcion as id_orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, t_t.id_programa, m_p.nombre as programa, t_t.porc,m_c.costo_diario, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia,t_d.estado,
                             0 as dias_lic,
                             case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des                             
                             FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
@@ -1755,7 +1791,8 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                            	AND t_d.tipo_desig=2 
                            	AND t_d.id_reserva = t_r.id_reserva                            	
                              )";
-            $sql2="SELECT sub1.id_designacion,sub1.docente_nombre,sub1.legajo,sub1.nro_cargo,sub1.anio_acad,sub1.desde,sub1.hasta,sub1.cat_mapuche, sub1.cat_mapuche_nombre,
+           //esto es para las designaciones que tienen mas de un departamento,area,orientacion
+            $sql2="SELECT sub1.id_designacion,sub1.tipo_desig,sub1.docente_nombre,sub1.legajo,sub1.nro_cargo,sub1.anio_acad,sub1.desde,sub1.hasta,sub1.cat_mapuche, sub1.cat_mapuche_nombre,
                     sub1.cat_estat, sub1.dedic, sub1.carac,case when sub2.id_designacion is not null  then sub2.dpto else sub1.id_departamento end as id_departamento,case when sub2.id_designacion is not null then sub2.area else sub1.id_area end as id_area,case when sub2.id_designacion is not null then sub2.orientacion else sub1.id_orientacion end as id_orientacion
                     , sub1.uni_acad, sub1.emite_norma, sub1.nro_norma, sub1.tipo_norma, sub1.nro_540, sub1.observaciones, sub1.id_programa, sub1.programa, sub1.porc, sub1.costo_diario, sub1.check_presup, sub1.licencia, sub1.estado, sub1.dias_lic, sub1.dias_des
                   FROM (".$sql.")sub1"
@@ -1799,19 +1836,26 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 
             $sql=$this->armar_consulta($pdia, $udia, $filtro['anio']);           
           
+//            $con="select * into temp auxi from ("
+//                    ."select uni_acad,id_programa,programa,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end )as monto  "
+//                   . " from ("
+//                    . "select id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,programa,dias_des,sum(dias_lic) as dias_lic "
+//                    . "from ("
+//                   . "select id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,programa,dias_des,dias_lic "
+//                    . "from (".$sql.")b"
+//                    . ")a"
+//                    . $where
+//                    . " GROUP BY id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,programa,dias_des"
+//                    .")a group by uni_acad,id_programa,programa"
+//                    . ")b, unidad_acad c where b.uni_acad=c.sigla";
             $con="select * into temp auxi from ("
-                    ."select uni_acad,id_programa,programa,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end )as monto  "
-                   . " from ("
-                    . "select id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,programa,dias_des,sum(dias_lic) as dias_lic "
-                    . "from ("
-                   . "select id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,programa,dias_des,dias_lic "
-                    . "from (".$sql.")b"
-                    . ")a"
+                    ."select uni_acad,id_programa,programa,sum(case when (dias_des-dias_lic)>=0 then case when tipo_desig=2 then costo_reserva(id_designacion,(dias_des*costo_diario*porc/100),".$filtro['anio'].") else (dias_des-dias_lic)*costo_diario*porc/100 end else 0 end )as monto  "
+                    . " from ("
+                    . " select b.tipo_desig,b.id_designacion,b.desde,b.hasta,b.uni_acad,b.costo_diario,b.porc,b.id_programa,b.programa,b.dias_des,b.dias_lic "
+                    . " from (".$sql.")b"
                     . $where
-                    . " GROUP BY id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,programa,dias_des"
                     .")a group by uni_acad,id_programa,programa"
                     . ")b, unidad_acad c where b.uni_acad=c.sigla";
-           
             toba::db('designa')->consultar($con);
             
             //obtengo el credito de cada programa para cada facultad
@@ -1860,9 +1904,9 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         reserva as t_r
                         WHERE t_d.id_reserva = t_r.id_reserva 
                                  AND t_d.tipo_desig=2 ";
-           
+           //aqui reemplace sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end )as monto  por la llamada a la funcion costo_reserva
             $conr="select * into temp auxir from ("
-                    ."select uni_acad,id_programa,nombre as programa,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end )as monto  "
+                    ."select uni_acad,id_programa,nombre as programa,sum(case when (dias_des-dias_lic)>=0 then costo_reserva(id_designacion,(dias_des*costo_diario*porc/100),".$filtro['anio'].") else 0 end )as monto  "
                     . " from (".$sqlr.") a"
                     . $where
                     ." group by uni_acad,id_programa,nombre"
@@ -1879,7 +1923,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             toba::db('designa')->consultar($conf);
             $conf="select * from auxif $where3";
            
-            //---
             return toba::db('designa')->consultar($conf);
             
         }
@@ -2076,47 +2119,83 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         function get_control_desig_periodo($anio,$id_desig,$id_periodo){
             $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
             $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
-            
-            $sql="select d.id_designacion,"
+            $band=0;//0 indica que esta permitido
+            $medio=new Datetime(CONCAT($anio,'-',7,'-',31));
+           //suma la cantidad de dias de licencia de la designacion en el año correspond 
+            $sql="select d.id_designacion,d.desde,d.hasta,"
                     . "(case when d.hasta is null then '".$udia."' else case when d.hasta>'".$udia."' then '".$udia."' else d.hasta end end) -(case when d.desde<'".$pdia."' then '".$pdia."' else d.desde end )+1 as dias_des 
                 ,case when sum((n.hasta-n.desde)+1) is null then 0 else sum((n.hasta-n.desde)+1) end as dias_lic
                 from designacion d
                 LEFT OUTER JOIN novedad n ON (d.id_designacion=n.id_designacion and n.tipo_nov in (2,3,5) and n.desde <='".$udia."' and n.hasta>='".$pdia."')
                 where d.id_designacion=$id_desig
                 group by d.id_designacion,d.desde,d.hasta";
-            //$band=1; la designacion tiene mas de 300 dias de licencia o cese temporal de haberes
-            $resul= toba::db('designa')->consultar($sql);
-            $band=0;//0 indica que esta permitido
             
-            if(($resul[0]['dias_des']-$resul[0]['dias_lic'])<=5){//si tiene mas de 300 dias de lic entonces no puede asignarle materia
+            $resul= toba::db('designa')->consultar($sql);
+            if(($resul[0]['dias_des']-$resul[0]['dias_lic'])>0){
+                $dias_trab=$resul[0]['dias_des']-$resul[0]['dias_lic'];
+            }else{
+                $dias_trab=$resul[0]['dias_des'];
+            }        
+            if($dias_trab<5){//si tiene mas de 300 dias de lic entonces no puede asignarle materia
                 $band=1;
             }else{
-                $medio=new Datetime(CONCAT($anio,'-',7,'-',31));
-                //obtengo todas las licencias de la designacion dentro del periodo
-                $sql="select d.id_designacion,n.desde,n.hasta
-                      from designacion d, novedad n 
-                      where d.id_designacion=n.id_designacion 
-                      and n.tipo_nov in (2,3,5) 
-                      and n.desde <='".$udia."' and n.hasta>='".$pdia."'
-                      and  d.id_designacion=$id_desig";
-                $resul= toba::db('designa')->consultar($sql);
-                if(count($resul)>0){//si la designacion tiene licencias obtengo la primer y ultima fecha
-                    $fdesde=$resul[0]['desde'];
-                    $fhasta=$resul[0]['hasta'];
-                    foreach ($array as $value) {
-                        $fhasta=$value['hasta'];    
-                    }
-                    if($id_periodo==1 and $fdesde<=$pdia and $fhasta>=$medio){//si ingresa 1CUAT y tiene licencia en ese periodo entonces no
-                        $band=2;//tiene licencia en el primer cuatrimestre
-                    }else{
-                        if($id_periodo==2 and $fdesde<=$medio and $fhasta>=$udia){
-                            
-                        }
-                    }
+                if( $resul[0]['dias_des']<=183 and ($id_periodo==3 or $id_periodo==4) ){
+                    $band=2;//esta designado por menos de un año 
+                }else{
+                    if($resul[0]['dias_des']<=30 and ($id_periodo==1 or $id_periodo==2) ){
+                        $band=3;//designado por menos de un cuatrimestre
+                    }//falta controlar que este designado 1cuat y la activida
                 }
-                
+            }
+            return $band;
+        }
+        //trae un listado de las designaciones interinas que pueden estar ocupando la reserva
+        function get_designaciones_ocupa_reserva($anio){
+            $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
+            $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
+               
+            $sql="select distinct t_d.id_designacion,"
+                   // . " case when t_d.id_norma is null then (t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||')') else t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||'-'||t_no.nro_norma||'/'|| extract(year from t_no.fecha)||')' end as descripcion "
+                    . " trim(t_d1.apellido)||', '||trim(t_d1.nombre)||' '||t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'(id:'||t_d.id_designacion||') '||' desde: '||to_char(t_d.desde,'DD/MM/YYYY')||' '||coalesce(t_no.emite_norma,'')||case when t_no.nro_norma is not null then ': ' else '' end||coalesce(cast(t_no.nro_norma as text),'')||case when t_no.nro_norma is not null then '/' else '' end||coalesce(cast(extract(year from t_no.fecha) as text),'') as descripcion"
+                    . " from designacion t_d "
+                        . " LEFT OUTER JOIN norma t_no ON (t_d.id_norma=t_no.id_norma), docente t_d1, unidad_acad t_u"
+                    . " where t_d.id_docente=t_d1.id_docente "
+                    . " and t_d.uni_acad=t_u.sigla "
+                    . " and not(t_d.hasta is not null and t_d.desde>t_d.hasta)"//descarto que se anulo
+                    . " and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta is null)"
+                    . " and t_d.carac='I' "
+                    . " and not exists (select * from novedad t_no where t_no.id_designacion=t_d.id_designacion"
+                    . "                 and t_no.tipo_nov in (2,3,5) "
+                    . "                 and t_no.desde<'".$udia."' and t_no.hasta>'".$pdia."')"
+                    . " order by descripcion";
+          
+            $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
+            return toba::db('designa')->consultar($sql);
+        }
+        //retorna true si la designacion ocupa una reserva y false en caso contrario
+        function ocupa_reserva($id_desig){
+            $sql="select * from reserva_ocupada_por where id_designacion=".$id_desig;
+            $res= toba::db('designa')->consultar($sql);
+            if(count($res)>0){
+                return true;
+            }else{
+                return false;
             }
         }
-        
+        //cuando se asigna la reserva caen las designaciones interinas asociadas aun cuando la fecha desde sea mas grande que la fecha hasta
+        function baja_de_interinos($id_desig,$fec){
+            
+            $sql="select id_designacion from reserva_ocupada_por"
+                    . " where id_reserva=".$id_desig;
+            $res= toba::db('designa')->consultar($sql);
+            if(count($res)>0){
+                $cadena_desig=implode(",",$res[0]);
+                $fecha = date($fec);
+                $nuevafecha = strtotime ( '-1 day' , strtotime ( $fecha ) ) ;
+                $nuevafecha = date ( 'Y-m-j' , $nuevafecha );
+                $sql="update designacion set hasta='".$nuevafecha."' where id_designacion in(".$cadena_desig.")";
+                toba::db('designa')->consultar($sql);
+            }
+        }
 }
 ?>

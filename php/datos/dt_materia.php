@@ -205,13 +205,12 @@ class dt_materia extends toba_datos_tabla
 
         function get_listado_completo($where=null)
         {
-
 		if(!is_null($where)){
-                    $where=' and  '.$where;
+                    $where=' where  '.$where;
                 }else{
                     $where='';
                 }
-		$sql = "SELECT
+		$sql = "select * from(SELECT
 			t_m.id_materia,
 			t_pe.cod_carrera as id_plan,
 			t_m.desc_materia,
@@ -220,6 +219,7 @@ class dt_materia extends toba_datos_tabla
 			t_m.horas_semanales,
 			t_p.descripcion as periodo_dictado,
 			t_p1.descripcion as periodo_dictado_real_nombre,
+                        t_d.iddepto,
 			t_d.descripcion as id_departamento,
 			t_ma.descripcion as id_area,
 			t_o.descripcion as id_orientacion,
@@ -229,14 +229,15 @@ class dt_materia extends toba_datos_tabla
                         t_pe.desc_carrera,
                         t_pe.ordenanza
 		FROM
-			materia as t_m	LEFT OUTER JOIN periodo as t_p ON (t_m.periodo_dictado = t_p.id_periodo)
+			materia as t_m	
+                        LEFT OUTER JOIN periodo as t_p ON (t_m.periodo_dictado = t_p.id_periodo)
 			LEFT OUTER JOIN periodo as t_p1 ON (t_m.periodo_dictado_real = t_p1.id_periodo)
 			LEFT OUTER JOIN departamento as t_d ON (t_m.id_departamento = t_d.iddepto)
                         LEFT OUTER JOIN area as t_ma ON (t_m.id_area = t_ma.idarea) 
                         LEFT OUTER JOIN orientacion as t_o ON (t_m.id_orientacion = t_o.idorient and t_o.idarea=t_ma.idarea) ,
 			plan_estudio as t_pe
 		WHERE
-				t_m.id_plan = t_pe.id_plan
+				t_m.id_plan = t_pe.id_plan)sub
                  $where               
 		";
                                

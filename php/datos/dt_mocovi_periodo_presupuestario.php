@@ -38,14 +38,18 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
         }
 	function get_descripciones()
 	{
-		$sql = "SELECT id_periodo, id_periodo FROM mocovi_periodo_presupuestario ORDER BY id_periodo";
-		return toba::db('designa')->consultar($sql);
+            $sql = "SELECT id_periodo, id_periodo FROM mocovi_periodo_presupuestario ORDER BY id_periodo";
+            return toba::db('designa')->consultar($sql);
 	}
-
+        function get_periodo($anio){
+            $sql = "SELECT id_periodo FROM mocovi_periodo_presupuestario WHERE anio=".$anio;
+            $res= toba::db('designa')->consultar($sql);
+            return $res[0]['id_periodo'];
+        }
         function get_anios()
 	{
-		$sql = "SELECT distinct anio,id_periodo  FROM mocovi_periodo_presupuestario ORDER BY anio";
-		return toba::db('designa')->consultar($sql);
+            $sql = "SELECT distinct anio,id_periodo  FROM mocovi_periodo_presupuestario ORDER BY anio";
+            return toba::db('designa')->consultar($sql);
 	}
         //trae el anio actual y el presupuestando (a lo sumo pueden ser 2)
         function get_anio_ayp(){
@@ -165,7 +169,18 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
 //                print_r('falso');exit;
 //            }
             return $salida;
-  
+        }
+        //es el anio actual o presupuestando?
+        function es_periodo_ap($anio){
+            $sql="select * from mocovi_periodo_presupuestario "
+                    . " where ((actual and activo_para_carga_presupuestando) or (presupuestando and activo_para_carga_presupuestando))"
+                    . "    and anio=$anio";
+            $res=toba::db('designa')->consultar($sql);
+            if(count($res)>0){
+                return true;
+            }else{
+                return false;
+            }
         }
         //calcula la cantidad de dias transcurridos entre 2 fechas
         function dias_transcurridos($fecha_i,$fecha_f){//strtotime convierte una cadena en formato de fecha
@@ -182,12 +197,13 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             $dias=floor($dias);
             return $dias;
         }
+        //es llamada cuando se da de alta una designacion o una reserva
         function alcanza_credito($desde,$hasta,$cat,$per){
-          $sql_ua = "select sigla,descripcion from unidad_acad ";
-          $sql_ua = toba::perfil_de_datos()->filtrar($sql_ua);
-          $resul=toba::db('designa')->consultar($sql_ua);
+        $sql_ua = "select sigla,descripcion from unidad_acad ";
+        $sql_ua = toba::perfil_de_datos()->filtrar($sql_ua);
+        $resul=toba::db('designa')->consultar($sql_ua);
           
-          if(count($resul>0)){//el usuario esta asociado a un perfil de datos
+        if(count($resul>0)){//el usuario esta asociado a un perfil de datos
             $ua=$resul[0]['sigla'];
            
             //1 periodo actual
@@ -244,86 +260,9 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                   }
             }
             
-            //print_r('desde:'.$desde);print_r('hasta:'.$hasta);print_r($dias);exit();      
-            $cuesta=$dias*$valor_categoria;
-                       
-            //-----------CALCULO LO QUE GASTE 
-            //busco las designaciones y reservas dentro del periodo que son de la UA
-            //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
-		
-//            $sql = "(SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,"
-//                    . "m_c.costo_diario,"
-//                    . "t_t.porc,"
-//                    . "0 as dias_lic,"
-//                    . " case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
-//                            FROM 
-//                            designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
-//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
-//                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
-//                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo)
-//                          
-//                        WHERE  t_d.tipo_desig=1 
-//                            AND not exists(SELECT * from novedad t_no
-//                                            where t_no.id_designacion=t_d.id_designacion
-//                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 or t_no.tipo_nov=5)))"
-//                                            
-//                        ."UNION 
-//                        (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
-//                        m_c.costo_diario,
-//                        t_t.porc,
-//                        0 as dias_lic,
-//                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
-//                        
-//                            FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
-//                           
-//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
-//                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
-//                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
-//                            
-//                            novedad as t_no
-//                           
-//                        WHERE  t_d.tipo_desig=1 
-//                            AND t_no.id_designacion=t_d.id_designacion
-//                            AND (((t_no.tipo_nov=2 or t_no.tipo_nov=5) AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
-//                                OR (t_no.tipo_nov=1 or t_no.tipo_nov=4))
-//                            )"
-//                        ."UNION
-//                        (SELECT distinct 
-//                        t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
-//                        m_c.costo_diario, 
-//                        t_t.porc,"
-//                    . " sum(case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end ) as dias_lic,"
-//                    . " case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
-//                        FROM designacion as t_d 
-//                            
-//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion)
-//                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa)
-//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
-//                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
-//                       	    novedad t_no
-//                        WHERE t_d.tipo_desig=1 
-//                                AND t_no.id_designacion=t_d.id_designacion
-//                                AND (t_no.tipo_nov=2 or t_no.tipo_nov=5)
-//                                AND t_no.tipo_norma is not null
-//                                AND t_no.tipo_emite is not null
-//                                AND t_no.norma_legal is not null
-//                        GROUP BY t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,m_c.costo_diario,t_t.porc  )".
-//                    "UNION
-//                        (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta, t_d.uni_acad,m_c.costo_diario, t_t.porc,0 as dias_lic,
-//                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
-//                        FROM designacion as t_d 
-//                            LEFT OUTER JOIN imputacion t_i ON (t_d.id_designacion=t_i.id_designacion)
-//                            LEFT OUTER JOIN mocovi_programa m_p ON (t_i.id_programa=m_p.id_programa) 
-//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
-//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
-//                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
-//                        reserva as t_r
-//                        WHERE t_d.id_reserva = t_r.id_reserva 
-//                                 AND t_d.tipo_desig=2 
-//                                ) 
-//                            ";
+        //print_r('desde:'.$desde);print_r('hasta:'.$hasta);print_r($dias);exit();      
+        $cuesta=$dias*$valor_categoria;
+         
         if($valor_categoria==0){// porque no encontro la categoria 
             $ded=$cat[strlen($cat)-1];
             if($ded=='H'){//es una categoria ad-honorem por eso no la encontro arriba
@@ -332,21 +271,26 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                 return false;
             }
         }else{
+            //-----------CALCULO LO QUE GASTE 
+            //busco las designaciones y reservas dentro del periodo que son de la UA
             $sql=dt_designacion::armar_consulta($pdia,$udia,$anio);
             
             
-            $sql="select id_designacion,desde,hasta, uni_acad,costo_diario, id_programa,porc,dias_lic, dias_des"
+            $sql="select id_designacion,tipo_desig,desde,hasta, uni_acad,costo_diario, id_programa,porc,dias_lic, dias_des"
                     . " from (".$sql.")b WHERE b.uni_acad='".$ua."' and b.desde <='".$udia."'  and (b.hasta >='".$pdia."' or b.hasta is null)";
             
-            $con="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end)as monto from ("
-                   . " select id_designacion,desde,hasta,uni_acad,costo_diario,id_programa, porc,dias_des,sum(dias_lic) as dias_lic from (".$sql.")a"
-                    . " group by id_designacion,desde,hasta,uni_acad,costo_diario,id_programa, porc,dias_des"
-                    . ")b";
+// aqui cambie           $con="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end)as monto from ("
+//                   . " select id_designacion,desde,hasta,uni_acad,costo_diario,id_programa, porc,dias_des,sum(dias_lic) as dias_lic from (".$sql.")a"
+//                    . " group by id_designacion,desde,hasta,uni_acad,costo_diario,id_programa, porc,dias_des"
+//                    . ")b";
+            $con=//"select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end)as monto from ("
+                    " select sum(case when (dias_des-dias_lic)>=0 then case when tipo_desig=2 then costo_reserva(id_designacion,((dias_des-dias_lic)*costo_diario*porc/100),$anio) else (dias_des-dias_lic)*costo_diario*porc/100 end else 0 end) as monto "
+                       . " from (".$sql.")a";                    
             
             $res= toba::db('designa')->consultar($con);
             
             $gaste=$res[0]['monto'];
-                    
+                
               //obtengo el credito de la UA para el periodo actual o presupuestando
             $sql="select sum(b.credito) as cred "
                      . " from mocovi_programa a, mocovi_credito b, mocovi_periodo_presupuestario m_e, unidad_acad d "
@@ -373,6 +317,149 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
               return false;
           }
         }
+        function costo_designacion($cat,$desde,$hasta,$per){
+            $udia=$this->ultimo_dia_periodo($per);
+            $pdia=$this->primer_dia_periodo($per); 
+            switch ($per) {
+                case 1:     //obtengo el costo diario de la categoria en el periodo actual
+                            $concat=" m_e.actual ";
+                            $where="and  actual=true"; 
+                            break;
+                case 2:    $concat=" m_e.presupuestando ";
+                           $where="and  presupuestando=true"; 
+                            break;
+                
+                }  
+            //--COSTO DE LA NUEVA DESIGNACION en el periodo actual o el periodo presupuestario
+            $sql="select * "
+                    . "from mocovi_costo_categoria m_c,"
+                    . "mocovi_periodo_presupuestario m_e "
+                    . "where m_c.id_periodo=m_e.id_periodo "
+                    . "and m_c.codigo_siu='".trim($cat)."'"
+                    .$where;
+            $costo=toba::db('designa')->consultar($sql);
+            if(count($costo)>0){
+                $valor_categoria = $costo[0]['costo_diario'];       
+            }else{
+                $valor_categoria =0;
+            }
+            //----------dias trabajados dentro del periodo
+            $dias=0;
+            if($desde>$udia || ($hasta!=null && $hasta<$pdia)){//cae fuera del periodo
+                $dias=0;
+            }else{
+            
+               if($desde<=$pdia){
+                //$hasta-$pdia
+                if(($hasta == null)||($hasta>=$udia)){
+                    $dias=$this->dias_transcurridos($pdia,$udia)+1;
+                }else{
+                    $dias=$this->dias_transcurridos($pdia,$hasta)+1;
+                }
+             
+               }else{if(($hasta>=$udia) || ($hasta == null)){
+                //$udia-$desde
+                        $dias=$this->dias_transcurridos($desde,$udia)+1;
+                        }else{
+                            //$hasta-$desde
+                        $dias=($this->dias_transcurridos($desde,$hasta))+1;
+
+                        }
+                  } 
+            }
+            $cuesta_nuevo=$dias*$valor_categoria;
+            return $cuesta_nuevo;
+        }
+        function alcanza_credito_modif_reserva($id_vieja,$desde,$hasta,$cat,$cadena,$per){
+          $sql_ua="select sigla,descripcion from unidad_acad ";
+          $sql_ua = toba::perfil_de_datos()->filtrar($sql_ua);
+          $resul=toba::db('designa')->consultar($sql_ua);
+          
+          if(count($resul>0)){//el usuario esta asociado a un perfil de datos
+            $ua=$resul[0]['sigla'];    
+            $cuesta_nuevo=$this->costo_designacion($cat,$desde,$hasta,$per);//calcula lo que cuesta la reserva en su forma original sin restarle nada
+            //print_r($cuesta_nuevo);exit;
+            $udia=$this->ultimo_dia_periodo($per);
+            $pdia=$this->primer_dia_periodo($per);  
+            $anio=$this->annio($per);
+            switch ($per) {
+                case 1:     //obtengo el costo diario de la categoria en el periodo actual
+                            $concat=" m_e.actual ";
+                            $where="and  actual=true"; 
+                            break;
+                case 2:    $concat=" m_e.presupuestando ";
+                           $where="and  presupuestando=true"; 
+                            break;
+                }
+            if(!isset($cadena)){
+                $cuesta_cadena=0;
+            }else{
+              if($cadena!=''){
+                //lo que cuestan las designaciones que vienen en $cadena
+                $sql="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end ) as costo
+                  from 
+                    (SELECT distinct t_d.id_designacion,porc, costo_diario,
+                         sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$udia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
+                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
+                            FROM designacion as t_d 
+                            LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.tipo_norma is not null 
+                           					and t_no.tipo_emite is not null 
+                           					and t_no.norma_legal is not null 
+                           					and t_no.desde<='".$udia."' and t_no.hasta>='".$pdia."')
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_e.anio=$anio)
+ 			    LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo) 
+ 			    LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
+ 			    LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa)                        					
+                            
+                        WHERE  t_d.tipo_desig=1
+                        and t_d.id_designacion in (".$cadena.")".                         
+                        " GROUP BY t_d.id_designacion,costo_diario,porc
+                        ) sub";
+                $res= toba::db('designa')->consultar($sql);
+                $cuesta_cadena=$res[0]['costo'];
+              }else{
+                $cuesta_cadena=0;  
+              }
+            }
+           //cuesta_nuevo es lo que cuesta la reserva de base sin considerar designaciones asociadas
+            //cuesta nuevo es lo que costaria la reserva considerando las modificaciones realizadas en solapa Designaciones Asociadas
+            if($cuesta_nuevo>=$cuesta_cadena){
+                $cuesta_nuevo=$cuesta_nuevo-$cuesta_cadena;    
+            }else{
+                $cuesta_nuevo=0;
+            }
+             //-----------CALCULO LO QUE GASTE sin considerar la designacion que estoy modificando
+           
+            $sql=dt_designacion::armar_consulta($pdia,$udia,$anio);
+            $sql="select * from (".$sql.")b WHERE b.id_designacion<>".$id_vieja." and b.uni_acad='".$ua."' and b.desde <='".$udia."'  and (b.hasta >='".$pdia."' or b.hasta is null)"; 
+            //modique para que tome en cuenta reservas ocupadas por designaciones                   
+            $con="select sum(case when (dias_des-dias_lic)>=0 then case when tipo_desig=2 then costo_reserva(id_designacion,((dias_des-dias_lic)*costo_diario*porc/100),$anio) else (dias_des-dias_lic)*costo_diario*porc/100 end else 0 end) as monto 
+                  from (".$sql.")a";
+            $res= toba::db('designa')->consultar($con);
+            $gaste=$res[0]['monto'];
+                
+            //sumo los creditos (correspondientes al periodo actual/presupuestando) de todos los programas asociados a la UA
+            $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b,mocovi_periodo_presupuestario d,unidad_acad c "
+                    . "where a.id_unidad=c.sigla and a.id_programa=b.id_programa"
+                    . " and b.id_periodo=d.id_periodo "
+                    . $where ;
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $resul=toba::db('designa')->consultar($sql);
+            $tengo=0;
+            if(count($resul)>0){
+                 $tengo=$resul[0]['cred'];
+                }
+           
+            if($gaste+$cuesta_nuevo>$tengo){
+                return false;
+            }else{
+                return true;
+                }
+          }else{
+              return false;
+          }     
+        }
+        //no considera imputacion en el calculo porque asume que consumira el 100% del costo independientemente de que bolsa de dinero se gaste
         function alcanza_credito_modif($id_vieja,$desde,$hasta,$cat,$per){
           $sql_ua="select sigla,descripcion from unidad_acad ";
           $sql_ua = toba::perfil_de_datos()->filtrar($sql_ua);
@@ -459,105 +546,38 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             if($diaslic>$dias){
                 $diaslic=0;    
                 }
-            
+           
             $cuesta_nuevo=($dias-$diaslic)*$valor_categoria;
             // print_r($cuesta_nuevo);exit;
+            //aqui si la designacion que estoy modificando es una reserva y tiene asociadas designaciones entonces resto
+            $sql="select distinct id_reserva from reserva_ocupada_por r"
+                    . " where r.id_reserva=".$id_vieja;
+            $res= toba::db('designa')->consultar($sql);   
+            if(count($res)>0){//si es una reserva que tiene designaciones, recalculo costo de la reserva
+                $sql="select costo_reserva($id_vieja,$cuesta_nuevo,$anio);";
+                $res= toba::db('designa')->consultar($sql);  
+                $cuesta_nuevo=$res[0]['costo_reserva'];
+            }
                        
             //-----------CALCULO LO QUE GASTE sin considerar la designacion vieja
-            
-           //busco las designaciones y reservas dentro del periodo que son de la UA
-            //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
-		
-//            $sql = "(SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,"
-//                    . "m_c.costo_diario,"
-//                    . "t_t.porc,"
-//                    . "0 as dias_lic,"
-//                    . " case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
-//                            FROM 
-//                            designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
-//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
-//                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
-//                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo)
-//                          
-//                        WHERE  t_d.tipo_desig=1 
-//                            AND not exists(SELECT * from novedad t_no
-//                                            where t_no.id_designacion=t_d.id_designacion
-//                                            and (t_no.tipo_nov=1 or t_no.tipo_nov=2 or t_no.tipo_nov=4 or t_no.tipo_nov=5)))"
-//                                            
-//                        ."UNION 
-//                        (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
-//                        m_c.costo_diario,
-//                        t_t.porc,
-//                        0 as dias_lic,
-//                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
-//                        
-//                            FROM designacion as t_d LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu) 
-//                           
-//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
-//                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
-//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
-//                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
-//                            
-//                            novedad as t_no
-//                           
-//                        WHERE  t_d.tipo_desig=1 
-//                            AND t_no.id_designacion=t_d.id_designacion
-//                            AND (((t_no.tipo_nov=2 or t_no.tipo_nov=5) AND (t_no.tipo_norma is null or t_no.tipo_emite is null or t_no.norma_legal is null))
-//                                OR (t_no.tipo_nov=1 or t_no.tipo_nov=4))
-//                            )"
-//                        ."UNION
-//                        (SELECT distinct 
-//                        t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,
-//                        m_c.costo_diario, 
-//                        t_t.porc,"
-//                    . " sum(case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end ) as dias_lic,"
-//                    . " case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
-//                        FROM designacion as t_d 
-//                            
-//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion)
-//                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa)
-//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
-//                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
-//                       	    novedad t_no
-//                        WHERE t_d.tipo_desig=1 
-//                                AND t_no.id_designacion=t_d.id_designacion
-//                                AND (t_no.tipo_nov=2 or t_no.tipo_nov=5)
-//                                AND t_no.tipo_norma is not null
-//                                AND t_no.tipo_emite is not null
-//                                AND t_no.norma_legal is not null
-//                        GROUP BY t_d.id_designacion,t_d.desde,t_d.hasta,t_d.uni_acad,m_c.costo_diario,t_t.porc  )".
-//                    "UNION
-//                        (SELECT distinct t_d.id_designacion,t_d.desde,t_d.hasta, t_d.uni_acad,m_c.costo_diario, t_t.porc,0 as dias_lic,
-//                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des
-//                        FROM designacion as t_d 
-//                            LEFT OUTER JOIN imputacion t_i ON (t_d.id_designacion=t_i.id_designacion)
-//                            LEFT OUTER JOIN mocovi_programa m_p ON (t_i.id_programa=m_p.id_programa) 
-//                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
-//                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON ( ".$concat.")
-//                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo),
-//                        reserva as t_r
-//                        WHERE t_d.id_reserva = t_r.id_reserva 
-//                                 AND t_d.tipo_desig=2 
-//                                ) 
-//                            ";
-                       
            
             $sql=dt_designacion::armar_consulta($pdia,$udia,$anio);
             
             $sql="select * from (".$sql.")b WHERE b.id_designacion<>".$id_vieja." and b.uni_acad='".$ua."' and b.desde <='".$udia."'  and (b.hasta >='".$pdia."' or b.hasta is null)"; 
-            //aqui queda                       
-            //$con="select sum((dias_des-dias_lic)*costo_diario*porc/100)as monto from ("
-            $con="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end)as monto from ("
-                   . " select id_designacion,desde,hasta,uni_acad,costo_diario, id_programa,porc,dias_des,sum(dias_lic) as dias_lic from (".$sql.")a"
-                    . " group by id_designacion,desde,hasta,uni_acad,costo_diario, id_programa,porc,dias_des"
-                    . ")b";
-            
-            //print_r($con);
+            //modique para que tome en cuenta reservas ocupadas por designaciones                   
+            $con="select sum(case when (dias_des-dias_lic)>=0 then case when tipo_desig=2 then costo_reserva(id_designacion,((dias_des-dias_lic)*costo_diario*porc/100),$anio) else (dias_des-dias_lic)*costo_diario*porc/100 end else 0 end) as monto 
+                  from (".$sql.")a";
+                  
+//         aqui modifique   $con="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end)as monto from ("
+//                   . " select id_designacion,desde,hasta,uni_acad,costo_diario, id_programa,porc,dias_des,sum(dias_lic) as dias_lic from (".$sql.")a"
+//                    . " group by id_designacion,desde,hasta,uni_acad,costo_diario, id_programa,porc,dias_des"
+//                    . ")b";
+//            
+            //print_r($con);exit;
             $res= toba::db('designa')->consultar($con);
             
             $gaste=$res[0]['monto'];
-                       
+                
             //sumo los creditos (correspondientes al periodo actual/presupuestando) de todos los programas asociados a la UA
             $sql="select sum(b.credito) as cred from mocovi_programa a, mocovi_credito b,mocovi_periodo_presupuestario d,unidad_acad c "
                     . "where a.id_unidad=c.sigla and a.id_programa=b.id_programa"

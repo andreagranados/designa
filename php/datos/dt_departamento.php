@@ -22,30 +22,32 @@ class dt_departamento extends toba_datos_tabla
         }
         function get_departamentos($id_ua=null)
 	{
-		$where ="";
-                            
-                if(isset($id_ua)){
-                    $where=" and idunidad_academica='".$id_ua."'";
-                    
-                }
-                $sql = "SELECT distinct t_d.iddepto, t_d.descripcion "
+            $where ="";
+            if(isset($id_ua)){
+              $where=" and idunidad_academica='".$id_ua."'";        
+             }
+            $sql = "SELECT distinct t_d.iddepto, t_d.descripcion "
                         . " FROM departamento t_d,"
                         . " unidad_acad t_u "
                         . " WHERE t_u.sigla=t_d.idunidad_academica"
                         . "  $where"
                         . " order by descripcion";
                 //obtengo el perfil de datos del usuario logueado
-                $con="select sigla,descripcion from unidad_acad ";
-                $con = toba::perfil_de_datos()->filtrar($con);
-                $resul=toba::db('designa')->consultar($con);
-                
-                if((trim($resul[0]['sigla'])<>'AUZA') && (trim($resul[0]['sigla'])<>'ESCM')&& (trim($resul[0]['sigla'])<>'CRUB') && (trim($resul[0]['sigla'])<>'FACA') && (trim($resul[0]['sigla'])<>'ASMA') && (trim($resul[0]['sigla'])<>'CUZA')&& (trim($resul[0]['sigla'])<>'FAAS')){
+            $con="select sigla,descripcion from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            
+            $unidades=array('FAIF','FATU','FACE','FAEA','ASMA','FAHU','FATA','FAAS','CUZA','FADE','FACA','FALE','FAME','AUZA','FAIN','ESCM','CRUB');
+            if( in_array (trim($resul[0]['sigla']),$unidades)){
+              if((trim($resul[0]['sigla'])<>'FAHU') && (trim($resul[0]['sigla'])<>'AUZA') && (trim($resul[0]['sigla'])<>'ESCM')&& (trim($resul[0]['sigla'])<>'CRUB') && (trim($resul[0]['sigla'])<>'FACA') && (trim($resul[0]['sigla'])<>'ASMA') && (trim($resul[0]['sigla'])<>'CUZA')&& (trim($resul[0]['sigla'])<>'FAAS')){
                     $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil para que solo aparezcan los departamentos de su facultad
-                
-                }
-                                
-		$resul = toba::db('designa')->consultar($sql);
-                return $resul;
+                }  
+            }else{//perfil de datos de departamento
+                $sql = toba::perfil_de_datos()->filtrar($sql);
+            }    
+            // print_r($sql);               
+	    $resul = toba::db('designa')->consultar($sql);
+            return $resul;
         }
 	function get_listado($filtro=array())
 	{

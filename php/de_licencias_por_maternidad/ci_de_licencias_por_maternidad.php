@@ -48,7 +48,7 @@ class ci_de_licencias_por_maternidad extends toba_ci
 
             if (count($res)==0){//si la designacion no tiene la licencia cargada
                     $sql3="insert into novedad (tipo_nov, desde, hasta, id_designacion, tipo_norma, 
-                    tipo_emite, norma_legal, observaciones, nro_tab10, sub_tipo) values(2,'".$datos['desde']."','".$datos['hasta']."',".$datos['id_designacion'].",'NOTA','DECA','MATE','maternidad',10,'MATE')";
+                    tipo_emite, norma_legal, observaciones, nro_tab10, sub_tipo, porcen) values(2,'".$datos['desde']."','".$datos['hasta']."',".$datos['id_designacion'].",'NOTA','DECA','MATE','maternidad',10,'MATE',1)";
                     toba::db('designa')->consultar($sql3);
                     toba::notificacion()->agregar('La licencia se ha importado exitosamente.','info');
                     $sql4="update designacion set nro_540=null,check_presup=0 where id_designacion=".$datos['id_designacion'];

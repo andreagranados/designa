@@ -117,8 +117,8 @@ class cargo_solapas extends toba_ci
             if ($vale){// si esta dentro del periodo
                             
                 //le mando la categoria, la fecha desde y la fecha hasta
-                $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
-                $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
+                $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1,null);
+                $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2,null);
                 
                 if ($band && $bandp){//si hay credito 
                     $docente=$this->controlador()->dep('datos')->tabla('docente')->get();
@@ -180,8 +180,9 @@ class cargo_solapas extends toba_ci
 	{
                //ver que quede eliminado todo lo que tiene que ver con la designacion que se esta eliminando
                 //ver liberacion de credito, directamente al eliminar la designacion. No hace falta hacer nada aqui
-                $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
-               
+            $des=$this->controlador()->dep('datos')->tabla('designacion')->get();
+            $band=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($des['id_designacion']);
+            if (!$band){
                 if($des['nro_540']==null){//solo puedo borrar si no tiene tkd
                     $tkd=$this->controlador()->dep('datos')->tabla('designacionh')->existe_tkd($des['id_designacion']);
                     if ($tkd){
@@ -219,8 +220,11 @@ class cargo_solapas extends toba_ci
                         }
                     }
                 }else{
-                    toba::notificacion()->agregar("NO SE PUEDE ELIMINAR UNA DESIGNACION QUE TIENE NUMERO DE TKD", 'error');
+                    toba::notificacion()->agregar(utf8_decode("NO SE PUEDE ELIMINAR UNA DESIGNACIÓN QUE TIENE NUMERO DE TKD"), 'error');
                 }
+            }else{
+                toba::notificacion()->agregar(utf8_decode("NO SE PUEDE ELIMINAR UNA DESIGNACIÓN QUE ESTA AFECTADA AL COSTO DE UNA RESERVA"), 'error');
+            }
                 
 	}
         //modifica la designacion
@@ -244,6 +248,7 @@ class cargo_solapas extends toba_ci
          if($vale){
             //--recupero la designacion que se desea modificar 
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+           
             //si estaba cargada la pisa y sino crea un nuevo registro
             if(isset($datos['suplente'])){//suplente viene con valor
                 if($datos['carac']=='S' ){
@@ -275,7 +280,10 @@ class cargo_solapas extends toba_ci
                 
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
                 {//si modifica algo que afecte el credito
-                
+                 $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);
+                 if($bandera){
+                    toba::notificacion()->agregar(utf8_decode('No puede modificar una designación asociada a una reserva.'),'error');
+                 }else{
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
                     $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
                      if ($band && $band2){//si hay credito
@@ -286,7 +294,7 @@ class cargo_solapas extends toba_ci
                         $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
                         toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                      }
-                
+                 }
                  }else{//no modifica nada de credito
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
@@ -325,7 +333,7 @@ class cargo_solapas extends toba_ci
                     $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                     toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
                     }
-                }
+                }//vale
          }else{//intenta modificar una designacion que no pertenece al periodo actual o al presupuestando
               toba::notificacion()->agregar(utf8_decode($mensaje), "error");
          }
@@ -949,9 +957,11 @@ class cargo_solapas extends toba_ci
 	}
         function evt__form_licencia__alta($datos)
 	{ 
-          $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-          $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
-          if($vale){
+        $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+        $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
+        if($vale){
+          $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);
+          if(!$bandera){
             //solo puede seleccionar tipo_nov 2 , 3 o 5 que son las licencias o cese
             //recupero la designacion a la cual corresponde la novedad
             $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
@@ -999,6 +1009,9 @@ class cargo_solapas extends toba_ci
                     toba::notificacion()->agregar(utf8_decode('El período de la licencia debe estar dentro del período de la designación'),'error');
                 }
             }
+           }else{
+              throw new toba_error(utf8_decode('No puede modificar una designación que esta afectando el crédito de una reserva')); 
+           }
           }else{
               throw new toba_error(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'));
               //toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'),'info');
@@ -1011,10 +1024,12 @@ class cargo_solapas extends toba_ci
 	function evt__form_licencia__baja()
 	{ 
           //recupero la designacion a la cual corresponde la novedad
-          $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-          $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-          $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
-          if($vale){
+        $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+        $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+        $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
+        if($vale){
+          $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);
+          if(!$bandera){
             $nove=$this->controlador()->dep('datos')->tabla('novedad')->get();
             $this->controlador()->dep('datos')->tabla('novedad')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('novedad')->resetear();
@@ -1038,7 +1053,9 @@ class cargo_solapas extends toba_ci
             if ($mensaje!= ''){
                 toba::notificacion()->agregar($mensaje,'info'); 
             }
-            
+           }else{
+              throw new toba_error(utf8_decode('No puede modificar una designación que está afectando el crédito de una reserva')); 
+           }
           }else{
               throw new toba_error(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'));
               //toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'),'info');
@@ -1052,10 +1069,12 @@ class cargo_solapas extends toba_ci
 	function evt__form_licencia__modificacion($datos)
 	{
          //para chequeo que este dentro del periodo de la designacion
-         $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-         $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-         $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
-         if($vale){
+        $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+        $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+        $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
+        if($vale){
+         $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);   
+         if(!$bandera){
             if ($datos['hasta']<$datos['desde']){
                 toba::notificacion()->agregar('La fecha hasta debe ser mayor a la fecha desde','error');
             }else{
@@ -1114,6 +1133,9 @@ class cargo_solapas extends toba_ci
             }  
            }
          }else{
+              toba::notificacion()->agregar(utf8_decode('No puede modificar una designación que está afectando el crédito de una reserva'),'info');
+         }
+         }else{
              toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'),'info');
          }
 	}
@@ -1164,9 +1186,10 @@ class cargo_solapas extends toba_ci
         //recupero la designacion a la cual corresponde la novedad
         $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
         $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-        
         $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
         if($vale){//si la designacion esta dentro del periodo presupuestando/actual y ademas no estan controlando el periodo al que pertenece
+          $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);   
+          if(!$bandera){
             $desig['estado']='B';
             //si la designacion tiene tkd entonces pasa a historico y pierde el tkd
             $mensaje='';
@@ -1212,6 +1235,9 @@ class cargo_solapas extends toba_ci
             }else{
                 toba::notificacion()->agregar(utf8_decode('La fecha de BAJA/RENUNCIA debe estar dentro del período de la designación'),'error');
             }
+         }else{
+             toba::notificacion()->agregar(utf8_decode('No puede modificar una designación que está afectando el crédito de una reserva'),'error');     
+         }
         }else{
             toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'),'info');
         }
@@ -1225,13 +1251,13 @@ class cargo_solapas extends toba_ci
          $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
          $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
          if($vale){
+           $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);   
+           if(!$bandera){
             $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
             //elimino la novedad
             $this->controlador()->dep('datos')->tabla('novedad_baja')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('novedad_baja')->resetear();
             $this->s__alta_novb=0;
-           
-           
             $estado=$this->controlador()->dep('datos')->tabla('novedad')->estado_designacion($desig['id_designacion']);
             $desig['estado']=$estado;
             $mensaje='';
@@ -1249,7 +1275,10 @@ class cargo_solapas extends toba_ci
                 
             if($mensaje!='') {
                 toba::notificacion()->agregar($mensaje,'info');
-            }  
+            } 
+           }else{
+               toba::notificacion()->agregar(utf8_decode('No puede modificar una designación que está afectando el crédito de una reserva'),'error');     
+           }
          }else{
              toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período la que corresponde al designación.'),'info'); 
          }
@@ -1259,6 +1288,8 @@ class cargo_solapas extends toba_ci
          $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
          $vale=$this->controlador()->pertenece_periodo($desig['desde'],$desig['hasta']);
          if($vale){
+            $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);   
+            if(!$bandera){
                 $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 $mensaje='';
               
@@ -1298,6 +1329,9 @@ class cargo_solapas extends toba_ci
                 }else{
                         toba::notificacion()->agregar(utf8_decode('La fecha de la BAJA/RENUNCIA debe estar dentro del período de la designación'),'error');
                     }
+            }else{
+              toba::notificacion()->agregar(utf8_decode('No puede modificar una designación que está afectando el crédito de una reserva'),'error');     
+            }        
           }else{
               toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período la que corresponde al designación.'),'info'); 
           }    

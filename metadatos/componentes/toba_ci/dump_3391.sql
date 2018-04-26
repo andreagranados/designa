@@ -180,6 +180,18 @@ INSERT INTO apex_objeto_mt_me (objeto_mt_me_proyecto, objeto_mt_me, ev_procesar_
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
+	'2947', --dep_id
+	'3391', --objeto_consumidor
+	'4097', --objeto_proveedor
+	'ci_reserva_desig', --identificador
+	NULL, --parametros_a
+	NULL, --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	NULL  --orden
+);
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
 	'2185', --dep_id
 	'3391', --objeto_consumidor
 	'3395', --objeto_proveedor
@@ -196,18 +208,6 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3391', --objeto_consumidor
 	'3393', --objeto_proveedor
 	'cuadro_reserva', --identificador
-	NULL, --parametros_a
-	NULL, --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
-	NULL  --orden
-);
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
-	'2346', --dep_id
-	'3391', --objeto_consumidor
-	'3537', --objeto_proveedor
-	'datos', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
 	NULL, --parametros_c
@@ -244,18 +244,6 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3391', --objeto_consumidor
 	'3394', --objeto_proveedor
 	'form_encabezado', --identificador
-	NULL, --parametros_a
-	NULL, --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
-	NULL  --orden
-);
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
-	'2181', --dep_id
-	'3391', --objeto_consumidor
-	'3392', --objeto_proveedor
-	'form_reserva', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
 	NULL, --parametros_c
@@ -371,7 +359,7 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'1602', --pantalla
 	'3391', --objeto_ci
 	'0', --orden
-	'2181'  --dep_id
+	'2947'  --dep_id
 );
 
 ------------------------------------------------------------
