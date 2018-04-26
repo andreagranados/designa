@@ -223,7 +223,7 @@ class cargo_solapas extends toba_ci
                     toba::notificacion()->agregar(utf8_decode("NO SE PUEDE ELIMINAR UNA DESIGNACIÓN QUE TIENE NUMERO DE TKD"), 'error');
                 }
             }else{
-                toba::notificacion()->agregar(utf8_decode("NO SE PUEDE ELIMINAR UNA DESIGNACIÓN QUE ESTA AFECTADA AL COSTO DE UNA RESERVA"), 'error');
+                toba::notificacion()->agregar(utf8_decode("NO SE PUEDE ELIMINAR UNA DESIGNACIÓN QUE ESTA AFECTADANDO AL COSTO DE UNA RESERVA"), 'error');
             }
                 
 	}
@@ -231,6 +231,10 @@ class cargo_solapas extends toba_ci
         //si ya tenia numero de tkd cambia su estado a R (rectificada)
 	function evt__form_cargo__modificacion($datos)
 	{
+        //--recupero la designacion que se desea modificar 
+        $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+        $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);
+        if(!$bandera){
          $nuevafecha = strtotime ( '-1 day' , strtotime ( $datos['desde'] ) );
          $nuevafecha = date ( 'Y-m-j' , $nuevafecha );
          $vale=true;
@@ -246,9 +250,6 @@ class cargo_solapas extends toba_ci
           //si es anulacion lo deja hacer   
        
          if($vale){
-            //--recupero la designacion que se desea modificar 
-            $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-           
             //si estaba cargada la pisa y sino crea un nuevo registro
             if(isset($datos['suplente'])){//suplente viene con valor
                 if($datos['carac']=='S' ){
@@ -280,10 +281,6 @@ class cargo_solapas extends toba_ci
                 
                 if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
                 {//si modifica algo que afecte el credito
-                 $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);
-                 if($bandera){
-                    toba::notificacion()->agregar(utf8_decode('No puede modificar una designación asociada a una reserva.'),'error');
-                 }else{
                     $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
                     $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
                      if ($band && $band2){//si hay credito
@@ -294,7 +291,6 @@ class cargo_solapas extends toba_ci
                         $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
                         toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                      }
-                 }
                  }else{//no modifica nada de credito
                         $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
                         $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
@@ -337,6 +333,9 @@ class cargo_solapas extends toba_ci
          }else{//intenta modificar una designacion que no pertenece al periodo actual o al presupuestando
               toba::notificacion()->agregar(utf8_decode($mensaje), "error");
          }
+        }else{
+            toba::notificacion()->agregar(utf8_decode('NO PUEDE MODIFICAR UNA DESIGNACIÓN QUE ESTA AFECTANDO EL CRÉDITO DE UNA RESERVA'), "error");
+        }
 	}
 
 	function evt__form_cargo__cancelar()
@@ -431,6 +430,9 @@ class cargo_solapas extends toba_ci
         
 	function evt__form_imputacion__modificacion($datos)//aparece despues del cargar, por lo tanto modifica
 	{
+          $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
+          $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);
+          if(!$bandera){
             $impu=$this->controlador()->dep('datos')->tabla('imputacion')->get();
             //sumo todo menos la imputacion seleccionada
             //debe verificar que no se exceda del 100%
@@ -439,7 +441,6 @@ class cargo_solapas extends toba_ci
             $total=$resul[0]['total']+$datos['porc'];
             
             if($total<=100){
-                $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
                 if($desig['nro_540']!=null){//tiene numero de 540
                     $datos['nro_540']=null;
                     if ($desig['estado']<>'L' && $desig['estado']<>'B'){
@@ -462,14 +463,11 @@ class cargo_solapas extends toba_ci
                 //$this->pantalla('pant_imputacion')->agregar_notificacion('DEBE SUMAR 100','error');
                 toba::notificacion()->agregar('La suma de los porcentajes debe sumar 100%', 'error');
             }
-            $this->s__alta_impu=0;//desacopla el formulario
-            
+            $this->s__alta_impu=0;//desacopla el formulario luego de modificar
+          }else{toba::notificacion()->agregar('NO SE PUEDE MODIFICAR UNA DESIGNACION QUE AFECTA EL CREDITO DE UNA RESERVA', 'error');
+          }
 	}
-        function resetear()
-	{
-		//$this->controlador()->dep('datos')->tabla('imputacion')->resetear();
-	}
-	
+        	
         function evt__form_imputacion__cancelar($datos)
 	{
             $this->controlador()->dep('datos')->tabla('imputacion')->resetear();
@@ -479,7 +477,9 @@ class cargo_solapas extends toba_ci
         //para agregar una imputacion a la designacion
         function evt__form_imputacion__guardar($datos)
 	{
-            $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
+          $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
+          $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($designacion['id_designacion']);
+          if(!$bandera){
             $sql="select case when sum(porc) is null then 0 else sum(porc) end as total from imputacion where id_designacion=".$designacion['id_designacion'];
             $resul=toba::db('designa')->consultar($sql);
             $total=$resul[0]['total']+$datos['porc'];
@@ -491,7 +491,9 @@ class cargo_solapas extends toba_ci
                 $sql="insert into imputacion (id_designacion, id_programa, porc) values (".$designacion['id_designacion'].",'".$datos['id_programa']."',".$datos['porc'].")";
                 toba::db('designa')->consultar($sql);
             }
-            
+          }else{
+               toba::notificacion()->agregar('NO SE PUEDE MODIFICAR UNA DESIGNACION QUE AFECTA EL CREDITO DE UNA RESERVA', 'error');
+          } 
 	}
 	
 
