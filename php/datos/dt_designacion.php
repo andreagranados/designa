@@ -1451,7 +1451,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                        . ")sub3"
                        .$where2
                             . " order by docente_nombre,desde";
-               
+               print_r($sql);
                 return toba::db('designa')->consultar($sql);
 	}
          function get_listado_reservas($filtro=array())
