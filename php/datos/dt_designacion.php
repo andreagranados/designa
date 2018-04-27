@@ -2102,7 +2102,16 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         function get_designaciones_asig_materia($anio){
             $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
             $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
-               
+             //primero veo si esta asociado a un perfil de datos departamento y obtengo la ua del departamento
+            $sql="select iddepto,idunidad_academica from departamento ";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $resul=toba::db('designa')->consultar($sql);
+            
+            if(count($resul)==1){//si solo tiene un registro entonces esta asociado a un perfil de datos departamento
+                $condicion=" and  sigla='".$resul[0]['idunidad_academica']."'";
+            } else{
+                $condicion="";
+            }   
             $sql="select distinct t_d.id_designacion,"
                    // . " case when t_d.id_norma is null then (t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||')') else t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||'-'||t_no.nro_norma||'/'|| extract(year from t_no.fecha)||')' end as descripcion "
                     . " trim(t_d1.apellido)||', '||trim(t_d1.nombre)||' '||t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'(id:'||t_d.id_designacion||') '||' desde: '||to_char(t_d.desde,'DD/MM/YYYY')||' '||coalesce(t_no.emite_norma,'')||case when t_no.nro_norma is not null then ': ' else '' end||coalesce(cast(t_no.nro_norma as text),'')||case when t_no.nro_norma is not null then '/' else '' end||coalesce(cast(extract(year from t_no.fecha) as text),'') as descripcion"
@@ -2112,6 +2121,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     . " and t_d.uni_acad=t_u.sigla "
                     . " and not(t_d.hasta is not null and t_d.desde>t_d.hasta)"//descarto que se anulo
                     . " and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta is null)"
+                    .$condicion
                     . " order by descripcion";
           
             $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil de datos
