@@ -396,25 +396,21 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             }else{
               if($cadena!=''){
                 //lo que cuestan las designaciones que vienen en $cadena
-                $sql="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end ) as costo
-                  from 
-                    (SELECT distinct t_d.id_designacion,porc, costo_diario,
-                         sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$udia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
+                $sql="select sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic)*costo_diario*porc/100 else 0 end ) as costo 
+                      from (SELECT distinct t_d.id_designacion,t_d.desde, t_d.hasta, t_t.porc,m_c.costo_diario  ,   	
+                         sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
                         case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
                             FROM designacion as t_d 
+                            LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
+                            LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa) 
+                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_e.anio=$anio)
+                            LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo)
                             LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.tipo_norma is not null 
                            					and t_no.tipo_emite is not null 
                            					and t_no.norma_legal is not null 
                            					and t_no.desde<='".$udia."' and t_no.hasta>='".$pdia."')
-                            LEFT OUTER JOIN mocovi_periodo_presupuestario m_e ON (m_e.anio=$anio)
- 			    LEFT OUTER JOIN mocovi_costo_categoria as m_c ON (t_d.cat_mapuche = m_c.codigo_siu and m_c.id_periodo=m_e.id_periodo) 
- 			    LEFT OUTER JOIN imputacion as t_t ON (t_d.id_designacion = t_t.id_designacion) 
- 			    LEFT OUTER JOIN mocovi_programa as m_p ON (t_t.id_programa = m_p.id_programa)                        					
-                            
-                        WHERE  t_d.tipo_desig=1
-                        and t_d.id_designacion in (".$cadena.")".                         
-                        " GROUP BY t_d.id_designacion,costo_diario,porc,dias_des,dias_lic
-                        ) sub";
+                        WHERE  t_d.tipo_desig=1 and t_d.id_designacion in(".$cadena.")"
+                            ." GROUP BY t_d.id_designacion,t_d.desde, t_d.hasta, t_t.porc,m_c.costo_diario  )sub ";
                 $res= toba::db('designa')->consultar($sql);
                 $cuesta_cadena=$res[0]['costo'];
               }else{
