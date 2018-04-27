@@ -413,7 +413,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                             
                         WHERE  t_d.tipo_desig=1
                         and t_d.id_designacion in (".$cadena.")".                         
-                        " GROUP BY t_d.id_designacion,costo_diario,porc
+                        " GROUP BY t_d.id_designacion,costo_diario,porc,dias_des,dias_lic
                         ) sub";
                 $res= toba::db('designa')->consultar($sql);
                 $cuesta_cadena=$res[0]['costo'];

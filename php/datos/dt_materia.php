@@ -205,12 +205,23 @@ class dt_materia extends toba_datos_tabla
 
         function get_listado_completo($where=null)
         {
-		if(!is_null($where)){
-                    $where=' where  '.$where;
-                }else{
-                    $where='';
-                }
-		$sql = "select * from(SELECT
+            if(!is_null($where)){
+                $where=' where  '.$where;
+            }else{
+                $where='';
+            }
+            //primero veo si esta asociado a un perfil de datos departamento y obtengo la ua del departamento
+            $sql="select iddepto,idunidad_academica from departamento ";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $resul=toba::db('designa')->consultar($sql);
+            //print_r($resul);
+            if(count($resul)==1){//si solo tiene un registro entonces esta asociado a un perfil de datos departamento
+                $condicion=" and iddepto=".$resul[0]['iddepto'];
+            } else{
+                $condicion="";
+            }
+            
+            $sql = "select * from(SELECT
 			t_m.id_materia,
 			t_pe.cod_carrera as id_plan,
 			t_m.desc_materia,
@@ -238,9 +249,9 @@ class dt_materia extends toba_datos_tabla
 			plan_estudio as t_pe
 		WHERE
 				t_m.id_plan = t_pe.id_plan)sub
-                 $where               
+                 $where  $condicion             
 		";
-                               
+                        
                 $sql=$sql." order by uni_acad,cod_carrera,desc_materia";
 		return toba::db('designa')->consultar($sql);
     

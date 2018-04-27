@@ -109,6 +109,9 @@ class ci_asignacion_materias extends toba_ci
                 $mat=$this->dep('datos')->tabla('materia')->get();
 	        $cuadro->set_datos($this->dep('datos')->tabla('asignacion_materia')->get_asignacion_materia($mat['id_materia'],$this->s__datos_fil['anio']['valor']));
 		} 
+            if($this->s__mostrar==1){
+                $cuadro->colapsar();
+            }    
 	}
         function evt__cuadro_mat__editar($seleccion)
 	{
@@ -151,11 +154,13 @@ class ci_asignacion_materias extends toba_ci
 
 	function evt__formulario__alta($datos)
 	{
-            //$band=$this->dep('datos')->tabla('designacion')->get_control_desig_periodo($this->s__anio,$datos['id_designacion'],$datos['id_periodo']);
+            
+           //$band=$this->dep('datos')->tabla('designacion')->get_control_desig_periodo($this->s__anio,$datos['id_designacion'],$datos['id_periodo']);
             //if($band==0){
-                $mat=$this->dep('datos')->tabla('materia')->get();
-                $datos['nro_tab8']=8;
-                $datos['anio']=$this->s__anio;
+            //$band=$this->dep('datos')->tabla('asignacion_materia')->get_control_desig_periodo($this->s__anio,$datos['id_designacion'],$datos['id_periodo']);
+            $mat=$this->dep('datos')->tabla('materia')->get();
+            $datos['nro_tab8']=8;
+            $datos['anio']=$this->s__anio;
                 $datos['id_materia']=$mat['id_materia'];
                 $this->dep('datos')->tabla('asignacion_materia')->set($datos);
                 $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
@@ -185,6 +190,7 @@ class ci_asignacion_materias extends toba_ci
 	{
             $this->dep('datos')->tabla('asignacion_materia')->set($datos);
             $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
+            toba::notificacion()->agregar(utf8_d_seguro('Guardado correctamente.'), 'info');  
             $this->s__mostrar=0;
 	}
 
