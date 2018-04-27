@@ -144,4 +144,11 @@ INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dime
 	'49', --elemento
 	'11'  --clave
 );
+INSERT INTO apex_usuario_perfil_datos_dims (proyecto, usuario_perfil_datos, dimension, elemento, clave) VALUES (
+	'designa', --proyecto
+	'28', --usuario_perfil_datos
+	'17', --dimension
+	'52', --elemento
+	'9'  --clave
+);
 --- FIN Grupo de desarrollo 0
