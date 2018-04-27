@@ -97,32 +97,15 @@ class dt_norma extends toba_datos_tabla
             $con="select sigla,descripcion from unidad_acad ";
             $con = toba::perfil_de_datos()->filtrar($con);
             $resul=toba::db('designa')->consultar($con);
-            if(count($resul)>0){
-                $condicion=" WHERE uni_acad='".$resul[0]['sigla']."'";
-            }else{
-                $condicion=' WHERE 1=1 ';
+            $condicion=' WHERE 1=1 ';
+            if(count($resul)==1){//si esta asociado a un perfil de datos de unidad acad
+               $condicion=" and uni_acad='".$resul[0]['sigla']."'";                
             }
-           if(!is_null($where)){
+           
+           if(!is_null($where)){//aplico el filtro
                     $condicion.=' and '.$where;
                 }
-           
-//           $sql="select distinct * from ("
-//                   . "select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,quien_emite_norma,nombre_tipo,t_n.uni_acad,link
-//                        from norma t_n
-//                        LEFT OUTER JOIN designacion t_d ON (t_d.id_norma=t_n.id_norma)
-//                        LEFT OUTER JOIN tipo_emite b ON (t_n.emite_norma=b.cod_emite)
-//                        LEFT OUTER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo)
-//                        where t_d.id_designacion is not null                   
-//                        UNION 
-//                       select t_n.id_norma,t_no.nro_norma,t_no.tipo_norma,t_no.emite_norma,t_no.fecha,quien_emite_norma,nombre_tipo,t_no.uni_acad,link
-//                       from norma_desig t_n
-//                        LEFT OUTER JOIN norma t_no ON (t_n.id_norma=t_no.id_norma)
-//                        LEFT OUTER JOIN designacion t_d ON (t_n.id_designacion=t_d.id_designacion)
-//                        LEFT OUTER JOIN tipo_emite b ON (t_no.emite_norma=b.cod_emite)
-//                        LEFT OUTER JOIN tipo_norma_exp c ON (t_no.tipo_norma=c.cod_tipo) 
-//                       "
-//                   . ")b $where"
-//                   . " order by tipo_norma,emite_norma,nro_norma";
+                           
            $sql="select t_n.id_norma,t_n.nro_norma,t_n.tipo_norma,t_n.emite_norma,t_n.fecha,quien_emite_norma,nombre_tipo,t_n.uni_acad,link
                         from norma t_n
                         LEFT OUTER JOIN tipo_emite b ON (t_n.emite_norma=b.cod_emite)

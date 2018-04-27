@@ -148,9 +148,11 @@ class ci_reserva extends designa_ci
                 $datos['check_academica']=0;
                 $datos['desde']=$this->s__fecha_nueva['desde_nuevo'];
                 //bajar las designaciones interinas asociadas a la reserva
-                $this->controlador()->dep('datos')->tabla('designacion')->baja_de_interinos($vieja['id_designacion'],$this->s__fecha_nueva['desde_nuevo']);
+                $band=$this->controlador()->dep('datos')->tabla('designacion')->baja_de_interinos($vieja['id_designacion'],$this->s__fecha_nueva['desde_nuevo']);
                //pasa a historico
-                    
+                if($band){//si efectivamente hizo baja de interinos entonces
+                     toba::notificacion()->agregar("Las designaciones interinas asociadas a la reserva han sido dadas de baja y han perdido tkd", 'info'); 
+                 }   
                 $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
                 $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
                 //borro la reserva??

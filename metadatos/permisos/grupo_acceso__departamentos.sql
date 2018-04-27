@@ -108,10 +108,15 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
 	'designa', --proyecto
 	'departamentos', --usuario_grupo_acc
-	'2'  --restriccion_funcional
+	'3'  --restriccion_funcional
 );
 INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
 	'designa', --proyecto
 	'departamentos', --usuario_grupo_acc
 	'23'  --restriccion_funcional
+);
+INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
+	'designa', --proyecto
+	'departamentos', --usuario_grupo_acc
+	'26'  --restriccion_funcional
 );

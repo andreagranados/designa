@@ -386,7 +386,7 @@ class ci_ver_normas extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
            
-            if (isset($this->s__datos_filtro)) {
+            if (isset($this->s__where)) {
 		$this->s__datos=$this->dep('datos')->tabla('norma')->get_listado_filtro($this->s__where);
                 
                 foreach ($this->s__datos as $key => $value) {

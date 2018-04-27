@@ -1450,6 +1450,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                        . ")sub3"
                        .$where2
                             . " order by docente_nombre,desde";
+                 
                 return toba::db('designa')->consultar($sql);
 	}
          function get_listado_reservas($filtro=array())
@@ -1791,7 +1792,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                            	AND t_d.id_reserva = t_r.id_reserva                            	
                              )";
            //esto es para las designaciones que tienen mas de un departamento,area,orientacion
-            $sql2="SELECT sub1.id_designacion,sub1.tipo_desig,sub1.docente_nombre,sub1.legajo,sub1.nro_cargo,sub1.anio_acad,sub1.desde,sub1.hasta,sub1.cat_mapuche, sub1.cat_mapuche_nombre,
+            $sql2="SELECT distinct sub1.id_designacion,sub1.tipo_desig,sub1.docente_nombre,sub1.legajo,sub1.nro_cargo,sub1.anio_acad,sub1.desde,sub1.hasta,sub1.cat_mapuche, sub1.cat_mapuche_nombre,
                     sub1.cat_estat, sub1.dedic, sub1.carac,case when sub2.id_designacion is not null  then sub2.dpto else sub1.id_departamento end as id_departamento,case when sub2.id_designacion is not null then sub2.area else sub1.id_area end as id_area,case when sub2.id_designacion is not null then sub2.orientacion else sub1.id_orientacion end as id_orientacion
                     , sub1.uni_acad, sub1.emite_norma, sub1.nro_norma, sub1.tipo_norma, sub1.nro_540, sub1.observaciones, sub1.id_programa, sub1.programa, sub1.porc, sub1.costo_diario, sub1.check_presup, sub1.licencia, sub1.estado, sub1.dias_lic, sub1.dias_des
                   FROM (".$sql.")sub1"
@@ -1847,6 +1848,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 //                    . " GROUP BY id_designacion,desde,hasta,uni_acad,costo_diario,porc,id_programa,programa,dias_des"
 //                    .")a group by uni_acad,id_programa,programa"
 //                    . ")b, unidad_acad c where b.uni_acad=c.sigla";
+           
             $con="select * into temp auxi from ("
                     ."select uni_acad,id_programa,programa,sum(case when (dias_des-dias_lic)>=0 then case when tipo_desig=2 then costo_reserva(id_designacion,(dias_des*costo_diario*porc/100),".$filtro['anio'].") else (dias_des-dias_lic)*costo_diario*porc/100 end else 0 end )as monto  "
                     . " from ("
@@ -1856,7 +1858,6 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     .")a group by uni_acad,id_programa,programa"
                     . ")b, unidad_acad c where b.uni_acad=c.sigla";
             toba::db('designa')->consultar($con);
-            
             //obtengo el credito de cada programa para cada facultad
             $cp="select a.id_unidad,a.id_programa,d.nombre as programa,sum(a.credito) as credito  "
                     . " from mocovi_credito a, mocovi_periodo_presupuestario b,  mocovi_programa d , unidad_acad e"
@@ -1911,6 +1912,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     ." group by uni_acad,id_programa,nombre"
                     . ")b, unidad_acad c where b.uni_acad=c.sigla";
             $conr = toba::perfil_de_datos()->filtrar($conr);  
+           
             toba::db('designa')->consultar($conr);    //crea la tabla auxr con las reservas 
             //$conr="select * from auxir";
             //$res=toba::db('designa')->consultar($conr);
@@ -2183,7 +2185,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
         }
         //cuando se asigna la reserva caen las designaciones interinas asociadas aun cuando la fecha desde sea mas grande que la fecha hasta
         function baja_de_interinos($id_desig,$fec){
-            
+            $bandera=false;
             $sql="select id_designacion from reserva_ocupada_por"
                     . " where id_reserva=".$id_desig;
             $res= toba::db('designa')->consultar($sql);
@@ -2192,9 +2194,11 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $fecha = date($fec);
                 $nuevafecha = strtotime ( '-1 day' , strtotime ( $fecha ) ) ;
                 $nuevafecha = date ( 'Y-m-j' , $nuevafecha );
-                $sql="update designacion set hasta='".$nuevafecha."' where id_designacion in(".$cadena_desig.")";
+                $sql="update designacion set nro_540=null, hasta='".$nuevafecha."' where id_designacion in(".$cadena_desig.")";
                 toba::db('designa')->consultar($sql);
+                $bandera=true;
             }
+            return $bandera;
         }
 }
 ?>

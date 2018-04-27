@@ -27,8 +27,18 @@ class dt_unidad_acad extends toba_datos_tabla
 	}
         //filtra por dependencia
         function get_ua(){
+            //primero veo si esta asociado a un perfil de datos departamento y obtengo la ua del departamento
+            $sql="select iddepto,idunidad_academica from departamento ";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $resul=toba::db('designa')->consultar($sql);
             
-             $sql="select sigla,descripcion from unidad_acad ";
+            if(count($resul)==1){//si solo tiene un registro entonces esta asociado a un perfil de datos departamento
+                $condicion=" WHERE sigla='".$resul[0]['idunidad_academica']."'";
+            } else{
+                $condicion="";
+            }
+           
+             $sql="select sigla,descripcion from unidad_acad ".$condicion;
              $sql = toba::perfil_de_datos()->filtrar($sql);
              $resul=toba::db('designa')->consultar($sql);
              return $resul;
