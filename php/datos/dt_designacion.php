@@ -2114,13 +2114,15 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             }   
             $sql="select distinct t_d.id_designacion,"
                    // . " case when t_d.id_norma is null then (t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||')') else t_d1.apellido||', '||t_d1.nombre||'('||'id:'||t_d.id_designacion||'-'||t_d.cat_mapuche||'-'||t_no.nro_norma||'/'|| extract(year from t_no.fecha)||')' end as descripcion "
-                    . " trim(t_d1.apellido)||', '||trim(t_d1.nombre)||' '||t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'(id:'||t_d.id_designacion||') '||' desde: '||to_char(t_d.desde,'DD/MM/YYYY')||' '||coalesce(t_no.emite_norma,'')||case when t_no.nro_norma is not null then ': ' else '' end||coalesce(cast(t_no.nro_norma as text),'')||case when t_no.nro_norma is not null then '/' else '' end||coalesce(cast(extract(year from t_no.fecha) as text),'') as descripcion"
+                    . " trim(t_d1.apellido)||', '||trim(t_d1.nombre)||' '||t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'(id:'||t_d.id_designacion||') '||' desde: '||to_char(t_d.desde,'DD/MM/YYYY')||' '||coalesce(dep.descripcion,'')||' '||coalesce(t_no.emite_norma,'')||case when t_no.nro_norma is not null then ': ' else '' end||coalesce(cast(t_no.nro_norma as text),'')||case when t_no.nro_norma is not null then '/' else '' end||coalesce(cast(extract(year from t_no.fecha) as text),'') as descripcion"
                     . " from designacion t_d "
-                        . " LEFT OUTER JOIN norma t_no ON (t_d.id_norma=t_no.id_norma), docente t_d1, unidad_acad t_u"
+                    . " LEFT OUTER JOIN departamento dep ON (t_d.id_departamento=dep.iddepto)"
+                    . " LEFT OUTER JOIN norma t_no ON (t_d.id_norma=t_no.id_norma), docente t_d1, unidad_acad t_u"
                     . " where t_d.id_docente=t_d1.id_docente "
                     . " and t_d.uni_acad=t_u.sigla "
                     . " and not(t_d.hasta is not null and t_d.desde>t_d.hasta)"//descarto que se anulo
                     . " and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta is null)"
+                    . " and t_d.id_norma is not null"
                     .$condicion
                     . " order by descripcion";
           
@@ -2131,7 +2133,10 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
             $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
             $band=0;//0 indica que esta permitido
-            $medio=new Datetime(CONCAT($anio,'-',7,'-',31));
+            $formato = 'Y-m-d';
+            $medioh="'".$anio."-".'07'.'-'.'31'."'";
+            $mediod="'".$anio."-".'08'.'-'.'01'."'";
+            //$medio = DateTime::createFromFormat($formato, $conv);
            //suma la cantidad de dias de licencia de la designacion en el año correspond 
             $sql="select d.id_designacion,d.desde,d.hasta,"
                     . "(case when d.hasta is null then '".$udia."' else case when d.hasta>'".$udia."' then '".$udia."' else d.hasta end end) -(case when d.desde<'".$pdia."' then '".$pdia."' else d.desde end )+1 as dias_des 
@@ -2142,12 +2147,14 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 group by d.id_designacion,d.desde,d.hasta";
             
             $resul= toba::db('designa')->consultar($sql);
-            if(($resul[0]['dias_des']-$resul[0]['dias_lic'])>0){
+           
+            if(($resul[0]['dias_des']-$resul[0]['dias_lic'])>=0){
                 $dias_trab=$resul[0]['dias_des']-$resul[0]['dias_lic'];
             }else{
                 $dias_trab=$resul[0]['dias_des'];
-            }        
-            if($dias_trab<5){//si tiene mas de 300 dias de lic entonces no puede asignarle materia
+            }  
+           
+            if($dias_trab<5){//si tiene menos de 5 dias trabajados entonces no puede asignarle materia
                 $band=1;
             }else{
                 if( $resul[0]['dias_des']<=183 and ($id_periodo==3 or $id_periodo==4) ){
@@ -2155,7 +2162,15 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 }else{
                     if($resul[0]['dias_des']<=30 and ($id_periodo==1 or $id_periodo==2) ){
                         $band=3;//designado por menos de un cuatrimestre
-                    }//falta controlar que este designado 1cuat y la activida
+                    }else{
+                        if($resul[0]['hasta'] !=null and "'".$resul[0]['hasta']."'"<=$medioh and $id_periodo==2){
+                            $band=4;//esta designado 1 cuat y tien actividad 2cuat
+                        }else{
+                            if("'".$resul[0]['desde']."'">=$mediaod and $id_periodo==1){//la designacion comienza despues de la 2da mitad del año
+                                $band=5;
+                            }
+                        }
+                    }
                 }
             }
             return $band;

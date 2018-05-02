@@ -154,28 +154,35 @@ class ci_asignacion_materias extends toba_ci
 
 	function evt__formulario__alta($datos)
 	{
-            
-           //$band=$this->dep('datos')->tabla('designacion')->get_control_desig_periodo($this->s__anio,$datos['id_designacion'],$datos['id_periodo']);
-            //if($band==0){
-            //$band=$this->dep('datos')->tabla('asignacion_materia')->get_control_desig_periodo($this->s__anio,$datos['id_designacion'],$datos['id_periodo']);
+           
+        
             $mat=$this->dep('datos')->tabla('materia')->get();
-            $datos['nro_tab8']=8;
-            $datos['anio']=$this->s__anio;
+            $uni=$this->dep('datos')->tabla('designacion')->get_uni_acad($datos['id_designacion']);
+            $band=$this->dep('datos')->tabla('conjunto')->control($mat['id_materia'],$this->s__anio,$datos['id_periodo'],$uni,$datos['id_designacion']);
+            if($band){
+              $band2=$this->dep('datos')->tabla('designacion')->get_control_desig_periodo($this->s__anio,$datos['id_designacion'],$datos['id_periodo']);
+              if($band2==0){
+                $datos['nro_tab8']=8;
+                $datos['anio']=$this->s__anio;
                 $datos['id_materia']=$mat['id_materia'];
                 $this->dep('datos')->tabla('asignacion_materia')->set($datos);
                 $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
                 $this->s__mostrar=0;
                 toba::notificacion()->agregar(utf8_d_seguro('El registro se ha ingresado correctamente, año: '. $this->s__anio), 'info');  
-           //}else{
-               // switch ($band) {
-//                    case 1: throw new toba_error(utf8_d_seguro('La designación seleccionada no esta percibiendo haberes por lo tanto no corresponde actividad.')); break;
-//                    case 2: throw new toba_error(utf8_d_seguro('La designación es menor al año, no puede asignar período anual/ambos.'));   break;
-//                    case 3:throw new toba_error(utf8_d_seguro('La designación dura menos de un cuatrimestre, no puede tener asociado período 1CUAT/2CUAT.'));     break;
-//                    default:
-//                        break;
-//                }
-//                //toba::notificacion()->agregar(utf8_d_seguro('La designación seleccionada tiene más de 300 días de licencia/cese de haberes'), 'info');  
-//            }
+              }else{
+                switch ($band2) {
+                    case 1: throw new toba_error(utf8_d_seguro('La designación seleccionada no esta percibiendo haberes por lo tanto no corresponde actividad.')); break;
+                    case 2: throw new toba_error(utf8_d_seguro('La designación es menor al año, no puede asignar período anual/ambos.'));   break;
+                    case 3:throw new toba_error(utf8_d_seguro('La designación dura menos de un cuatrimestre, no puede tener asociado período 1CUAT/2CUAT.'));     break;
+                    case 4:throw new toba_error(utf8_d_seguro('La designación termina a mitad de año, no puede tener actividad en el 2CUAT.'));     break;
+                    case 5:throw new toba_error(utf8_d_seguro('La designación comienza en la 2da mitad del año, no puede tener actividad en 1CUAT.'));     break;
+                    default:
+                break;}
+              }
+            }
+            else{
+                 toba::notificacion()->agregar('Ya tiene asociada una materia del conjunto', 'info');
+            }  
 	}
 
 	function evt__formulario__baja()

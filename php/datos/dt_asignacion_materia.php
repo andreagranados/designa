@@ -725,14 +725,14 @@ class dt_asignacion_materia extends toba_datos_tabla
 //                 . " and t_m.id_materia =".$id_mat
 //                ;
          $sql="select sub2.id_designacion,sub2.id_materia,sub2.id_periodo,p.descripcion as periodo,sub2.agente,sub2.designacion,sub2.carga_horaria,t.desc_item as rol,sub2.id_designacion,sub2.modulo,mo.descripcion as desmodulo,sub2.anio from 
-                (select  distinct m.id_materia,case when sub.id_conjunto is not null then sub.id_periodo else t.id_periodo end as id_periodo,
-                case when sub.id_conjunto is not null then sub.designacion else d.cat_estat||d.dedic||'-'||d.carac||' desde:'||to_char(d.desde,'DD/MM/YYYY')||'('||d.id_designacion||')'  end as designacion, 
-                case when sub.id_conjunto is not null then sub.agente else o.apellido||', '||o.nombre end as agente, 
-                case when sub.id_conjunto is not null then  sub.carga_horaria else t.carga_horaria end,
-                case when sub.modulo is not null then  sub.modulo else t.modulo end as modulo,
-                case when sub.rol is not null then  sub.rol else t.rol end as rol,
-                case when sub.id_designacion is not null then sub.id_designacion else t.id_designacion end as id_designacion,
-                case when sub.anio is not null then sub.anio else t.anio end as anio
+                (select  distinct m.id_materia,case when sub.id_conjunto is not null and sub.id_periodo=t.id_periodo then sub.id_periodo else t.id_periodo end as id_periodo,
+                case when sub.id_conjunto is not null and sub.id_periodo=t.id_periodo then sub.designacion else d.cat_estat||d.dedic||'-'||d.carac||' desde:'||to_char(d.desde,'DD/MM/YYYY')||'('||d.id_designacion||')'  end as designacion, 
+                case when sub.id_conjunto is not null and sub.id_periodo=t.id_periodo then sub.agente else o.apellido||', '||o.nombre end as agente, 
+                case when sub.id_conjunto is not null and sub.id_periodo=t.id_periodo then  sub.carga_horaria else t.carga_horaria end,
+                case when sub.modulo is not null and sub.id_periodo=t.id_periodo then  sub.modulo else t.modulo end as modulo,
+                case when sub.rol is not null and sub.id_periodo=t.id_periodo then  sub.rol else t.rol end as rol,
+                case when sub.id_designacion is not null and sub.id_periodo=t.id_periodo then sub.id_designacion else t.id_designacion end as id_designacion,
+                case when sub.anio is not null and sub.id_periodo=t.id_periodo then sub.anio else t.anio end as anio
                 from materia m
                 left outer join en_conjunto e on (m.id_materia=e.id_materia)
                 left outer join conjunto c on (c.id_conjunto=e.id_conjunto )
@@ -756,7 +756,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                ." where sub2.id_periodo is not null"
                  . " and anio=".$anio
                ." order by sub2.id_periodo,sub2.modulo"  ;
-      
+     
          return toba::db('designa')->consultar($sql);
      }
 }
