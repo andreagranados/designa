@@ -2153,7 +2153,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             }else{
                 $dias_trab=$resul[0]['dias_des'];
             }  
-           
+          
             if($dias_trab<5){//si tiene menos de 5 dias trabajados entonces no puede asignarle materia
                 $band=1;
             }else{
@@ -2166,7 +2166,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         if($resul[0]['hasta'] !=null and "'".$resul[0]['hasta']."'"<=$medioh and $id_periodo==2){
                             $band=4;//esta designado 1 cuat y tien actividad 2cuat
                         }else{
-                            if("'".$resul[0]['desde']."'">=$mediaod and $id_periodo==1){//la designacion comienza despues de la 2da mitad del año
+                            if("'".$resul[0]['desde']."'">=$mediod and $id_periodo==1){//la designacion comienza despues de la 2da mitad del año
                                 $band=5;
                             }
                         }
