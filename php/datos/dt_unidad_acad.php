@@ -38,10 +38,16 @@ class dt_unidad_acad extends toba_datos_tabla
                 $condicion="";
             }
            
-             $sql="select sigla,descripcion from unidad_acad ".$condicion;
-             $sql = toba::perfil_de_datos()->filtrar($sql);
-             $resul=toba::db('designa')->consultar($sql);
-             return $resul;
+            $sql="select sigla,descripcion from unidad_acad ".$condicion;
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $resul=toba::db('designa')->consultar($sql);
+            return $resul;
+        }
+        function get_ua_departamentos(){//es para el filtro de asignacion materias.El director de departamento no filtra por UA
+            $sql="select sigla,descripcion from unidad_acad ";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $resul=toba::db('designa')->consultar($sql);
+            return $resul;
         }
         //credito docente del periodo actual para una UA alguien usa esta funcion?
         //sino la usan sacar?

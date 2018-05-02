@@ -137,13 +137,13 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'uni_acad', --expresion
 	'Unidad Académica', --etiqueta
 	NULL, --descripcion
-	'1', --obligatorio
+	'0', --obligatorio
 	'1', --inicial
-	'1', --orden
+	'2', --orden
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
 	'ef_combo', --opciones_ef
-	'get_ua', --carga_metodo
+	'get_ua_departamentos', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
 	'3227', --carga_dt
@@ -197,7 +197,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	NULL, --descripcion
 	'0', --obligatorio
 	'0', --inicial
-	'2', --orden
+	'3', --orden
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
 	NULL, --opciones_ef
@@ -255,7 +255,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	NULL, --descripcion
 	'0', --obligatorio
 	'0', --inicial
-	'3', --orden
+	'4', --orden
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
 	NULL, --opciones_ef
@@ -313,7 +313,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	NULL, --descripcion
 	'0', --obligatorio
 	'0', --inicial
-	'4', --orden
+	'5', --orden
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
 	NULL, --opciones_ef
@@ -369,9 +369,9 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'iddepto', --expresion
 	'Departamento', --etiqueta
 	NULL, --descripcion
-	'0', --obligatorio
+	'1', --obligatorio
 	'1', --inicial
-	'5', --orden
+	'1', --orden
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
 	'ef_combo', --opciones_ef
