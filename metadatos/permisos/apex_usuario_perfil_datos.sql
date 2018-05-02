@@ -137,4 +137,11 @@ INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, d
 	'QUIMICA', --descripcion
 	NULL  --listar
 );
+INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
+	'designa', --proyecto
+	'29', --usuario_perfil_datos
+	'MECANICA', --nombre
+	'MECANICA', --descripcion
+	NULL  --listar
+);
 --- FIN Grupo de desarrollo 0
