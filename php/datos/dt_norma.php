@@ -92,14 +92,14 @@ class dt_norma extends toba_datos_tabla
            return toba::db('designa')->consultar($sql);
        }
        function get_listado_filtro($where=null){
-          
+         
              //obtengo el perfil de datos del usuario logueado
             $con="select sigla,descripcion from unidad_acad ";
             $con = toba::perfil_de_datos()->filtrar($con);
             $resul=toba::db('designa')->consultar($con);
             $condicion=' WHERE 1=1 ';
             if(count($resul)==1){//si esta asociado a un perfil de datos de unidad acad
-               $condicion=" and uni_acad='".$resul[0]['sigla']."'";                
+               $condicion.=" and uni_acad='".$resul[0]['sigla']."'";                
             }
            
            if(!is_null($where)){//aplico el filtro
