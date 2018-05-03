@@ -142,7 +142,7 @@ class ci_impresion_540 extends toba_ci
                     //'cols' =>array('col2' => array('width'=>50), 'col3' => array('width'=>82),'col4' => array('width'=>26),'col5' => array('width'=>73),'col6' =>array('width'=>35),'col7' => array('width'=>29),'col8' => array('width'=>29),'col10' => array('width'=>14),'col11' => array('width'=>50),'col12' => array('width'=>50),'col13' => array('width'=>64),'col14' => array('width'=>73),'col15' => array('width'=>70),'col16' => array('width'=>67),'col17' =>array('width'=>67),'col18' => array('width'=>56))
                     //'cols' =>array('col2'=>array('justification'=>'center') ,'col3'=>array('justification'=>'center'),'col4'=>array('justification'=>'center') ,'col5'=>array('justification'=>'center'),'col6'=>array('justification'=>'center') ,'col7'=>array('justification'=>'center') ,'col8'=>array('justification'=>'center'),'col9'=>array('justification'=>'center') ,'col10'=>array('justification'=>'center') ,'col11'=>array('justification'=>'center') ,'col12'=>array('justification'=>'center'),'col13'=>array('justification'=>'center') ,'col14'=>array('justification'=>'center') )
                     );
-
+                $reserva='';
                 $i=0;
                 $sum=0;
                 $sub=0;
@@ -171,7 +171,7 @@ class ci_impresion_540 extends toba_ci
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
 
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
-                        
+                        $reserva.=$this->dep('datos')->tabla('reserva_ocupada_por')->get_detalle($des['id_designacion'],$this->s__anio);
                         if(strcmp($programa, $des['programa']) !== 0){//compara
                           
                             $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => round($sub,2));
@@ -222,7 +222,6 @@ class ci_impresion_540 extends toba_ci
                        if($nove!="" || $baja!=""){
                         $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' => '','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => $nove,'col17' =>$baja ,'col18' =>'');    
                         $i++;}
-                        ///
                     }
                 }
                 
@@ -241,6 +240,10 @@ class ci_impresion_540 extends toba_ci
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
                 $pdf->ezText(' ');
                 $pdf->ezText($refe,'9');
+                if($reserva!=''){
+                    $pdf->ezText('   '.$reserva,'9');
+                }
+                
                 //Encabezado: Logo Organización - Nombre 
                 //Recorremos cada una de las hojas del documento para agregar el encabezado
                  foreach ($pdf->ezPages as $pageNum=>$id){ 
