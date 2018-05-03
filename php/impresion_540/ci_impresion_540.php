@@ -171,7 +171,7 @@ class ci_impresion_540 extends toba_ci
                 foreach ($this->s__listado as $des) {//recorro cada designacion del listado
 
                     if (in_array($des['id_designacion'], $sele)){//si la designacion fue seleccionada
-                        $reserva.=$this->dep('datos')->tabla('reserva_ocupada_por')->get_detalle($des['id_designacion'],$this->s__anio);
+                        //$reserva.=$this->dep('datos')->tabla('reserva_ocupada_por')->get_detalle($des['id_designacion'],$this->s__anio);
                         if(strcmp($programa, $des['programa']) !== 0){//compara
                           
                             $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => round($sub,2));
@@ -240,9 +240,9 @@ class ci_impresion_540 extends toba_ci
                 //$pdf->addText(350,600,10,'Informe de ticket de designaciones.'); 
                 $pdf->ezText(' ');
                 $pdf->ezText($refe,'9');
-                if($reserva!=''){
-                    $pdf->ezText('   '.$reserva,'9');
-                }
+//                if($reserva!=''){
+//                    $pdf->ezText('   '.$reserva,'9');
+//                }
                 
                 //Encabezado: Logo Organización - Nombre 
                 //Recorremos cada una de las hojas del documento para agregar el encabezado
