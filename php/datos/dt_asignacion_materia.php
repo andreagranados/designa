@@ -741,7 +741,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                                 and t_m.anio=$anio
                                 )sub on (sub.id_conjunto=c.id_conjunto)
                 
-                where m.id_materia=.$id_mat
+                where m.id_materia=$id_mat
                 and sub.id_conjunto is not null
                 UNION"
                ." select t_m.id_materia,t_m.id_periodo,d.cat_estat||d.dedic||'-'||d.carac||' desde:'||to_char(d.desde,'DD/MM/YYYY')||'('||d.id_designacion||')' as designacion,o.apellido||', '||o.nombre as agente,t_m.carga_horaria,t_m.modulo,t_m.rol,t_m.id_designacion,t_m.anio
@@ -762,7 +762,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                                 left outer join modulo mo on (mo.id_modulo=sub2.modulo)
                                 left outer join tipo t on (t.nro_tabla=8 and t.desc_abrev=sub2.rol)
                                 order by sub2.id_periodo,sub2.modulo "  ;
-     
+     //print_r($sql);
          return toba::db('designa')->consultar($sql);
      }
 }
