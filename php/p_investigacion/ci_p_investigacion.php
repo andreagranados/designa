@@ -121,7 +121,7 @@ class ci_p_investigacion extends toba_ci
                         $cuil=$this->dep('datos')->tabla('viatico')->get_destinatario_cuil($vi['id_viatico']);
                         $dias=$vi['cant_dias'];
                         $dire=$this->dep('datos')->tabla('pinvestigacion')->get_director($vi['id_proyecto']);
-                        $montov=$this->dep('datos')->tabla('montos_viatico')->get_monto_viatico();
+                        $montov=$this->dep('datos')->tabla('montos_viatico')->get_monto_viatico(date("Y-m-d",strtotime($vi['fecha_regreso'])));
                         $fn=$this->dep('datos')->tabla('pinvestigacion')->get_categ($vi['id_proyecto'],$vi['nro_docum_desti']);
                         //el monto del viatico se setea al momento de imprimir la planilla
                         $this->dep('datos')->tabla('viatico')->modifica_monto($vi['id_viatico'],$montov);
