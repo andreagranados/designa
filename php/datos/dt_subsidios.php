@@ -3,10 +3,12 @@ class dt_subsidios extends designa_datos_tabla
 {
         function actualiza_vencidos(){
             //los subsidios que no se rindieron(es decir el estado es distinto de rendido)
-            //y pasaron mas de 13 meses (390 dias) desde la fecha_rendicion entonces quedan vencidos
+            //y la fecha actual es mayor a fecha pago + 13 meses (es decir pasaron mas de 13 meses de la fecha de pago) entonces quedan vencidos
             $sql="update subsidio set estado='V' 
-                    where estado<>'R' and 
-                    extract(year from age( now(),fecha_rendicion))*365+extract(month from age( now(),fecha_rendicion))*30+extract(day from age( now(),fecha_rendicion)) >390";
+                    where estado<>'R' and estado<>'V' 
+                    and (fecha_pago + interval '13 month')<now()";
+                    //and extract(year from age( now(),fecha_rendicion))*365+extract(month from age( now(),fecha_rendicion))*30+extract(day from age( now(),fecha_rendicion)) >390";
+             //y pasaron mas de 13 meses (390 dias) desde la fecha_rendicion entonces quedan vencidos
             return toba::db('designa')->consultar($sql);
             
         }
@@ -57,6 +59,61 @@ class dt_subsidios extends designa_datos_tabla
 		ORDER BY id_proyecto,numero";
 		return toba::db('designa')->consultar($sql);
 	}
+        function get_subsidios($filtro=null){
+            if(!is_null($filtro)){
+                $where=' and '.$filtro;
+            }else{
+                $where='';
+            }
+            
+            $sql="select * from (select d.apellido||d.nombre as agente, s.numero,s.id_proyecto,p.uni_acad,p.codigo,fecha_pago,fecha_rendicion,s.estado, expediente,resolucion "
+                    . " from subsidio s"
+                    . " LEFT OUTER JOIN pinvestigacion p ON (s.id_proyecto=p.id_pinv)"
+                    . " LEFT OUTER JOIN docente d ON (s.id_respon_sub=d.id_docente)) sub, unidad_acad u"
+                    . " Where sub.uni_acad=u.sigla".$where
+                    . " order by uni_acad,codigo,numero";
+                    
+            $sql = toba::perfil_de_datos()->filtrar($sql);           
+            return toba::db('designa')->consultar($sql);
+        }
+        function modificar_subsidio($proy=array(),$datos=array()){
+            $modificar='';
+            $ultimo=0;
+            if(isset($datos['fecha_pago'])){
+               $modificar.=" set fecha_pago='".$datos['fecha_pago']."'";
+               $ultimo=1;
+            }
+            if(isset($datos['fecha_rendido'])){
+                if($ultimo==1){
+                    $modificar.=',';
+                }else{
+                    $modificar.='set';
+                }
+               $modificar.="  fecha_rendicion='".$datos['fecha_rendicion']."'";
+               $ultimo=1;
+            }
+            if(isset($datos['expediente'])){
+                if($ultimo==1){
+                    $modificar.=',';
+                }else{
+                    $modificar.='set';
+                }
+               $modificar.="  expediente='".$datos['expediente']."'";
+               $ultimo=1;
+            }
+            if(isset($datos['resolucion'])){
+                if($ultimo==1){
+                    $modificar.=',';
+                }else{
+                    $modificar.='set';
+                }
+                $modificar.="  resolucion='".$datos['resolucion']."'";
+            }
+            
+            $sql="update subsidio ".$modificar." where numero=".$proy['numero']." and id_proyecto=".$proy['id_proyecto'];
+           // print_r($sql);
+            toba::db('designa')->consultar($sql);
+        }
 
 }
 ?>

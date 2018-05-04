@@ -456,12 +456,15 @@ class ci_pinv_otros extends designa_ci
 	{
             $this->controlador()->dep('datos')->tabla('subsidio')->eliminar_todo();
             $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
+            $this->s__mostrar=0;
+            toba::notificacion()->agregar('El subsidio se ha eliminado correctamente', 'info');  
 	}
     //este es para la central
 	function evt__form_subsidio__modificacion($datos)
 	{
             $this->controlador()->dep('datos')->tabla('subsidio')->set($datos);
             $this->controlador()->dep('datos')->tabla('subsidio')->sincronizar();
+            toba::notificacion()->agregar('El subsidio se ha modificado correctamente', 'info');  
 	}
         //boton modificacion para las unidades academicas
         //solo cargan memo y nota
