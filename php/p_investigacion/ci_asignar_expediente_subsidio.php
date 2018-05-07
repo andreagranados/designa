@@ -6,11 +6,22 @@ class ci_asignar_expediente_subsidio extends toba_ci
         protected $s__seleccionadas;
         protected $s__listado;
         protected $s__mostrar_v;   
+        protected $s__fecha;
+       
+        
         //recibe la fecha de pago y retorna la fecha correspondiente a 13 meses despues
-        function get_fecha_rendicion($fecha){
-           $sql="select  '".$fecha."' + interval '13 month'";
-           $resul=toba::db('designa')->consultar($sql);
-           return '2018-02-01';
+        function get_fecha_rendicion(){
+           //$sql="select  '".$fecha."' + interval '13 month'";
+           //$resul=toba::db('designa')->consultar($sql);
+//            if(isset($fecha)){
+//                return $fecha;
+//            }
+            if(isset($this->s__fecha)){
+                return '2018-01-01';
+            }
+            return '2018-01-01';
+            
+           
         }
         //-----------------------------------------------------------------------------------
 	//---- filtros ----------------------------------------------------------------------
@@ -100,9 +111,13 @@ class ci_asignar_expediente_subsidio extends toba_ci
             }else{
                 $this->dep('formulario')->colapsar(); 
             }
+//            $datos=array();
+//            $datos['fecha_pago']='2018-02-01';
+           // $x=$form->ef('fecha_pago')->get_estado();
+            //print_r($x);
+            
 	}
-
-	function evt__formulario__modificacion($datos)
+        function evt__formulario__modificacion($datos)
 	{
             $cant=0;
             foreach ($this->s__seleccionadas as $key=>$value) {

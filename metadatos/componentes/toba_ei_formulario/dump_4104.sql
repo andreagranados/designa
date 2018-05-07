@@ -16,8 +16,8 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba', --clase_proyecto
 	'toba_ei_formulario', --clase
 	'23', --punto_montaje
-	NULL, --subclase
-	NULL, --subclase_archivo
+	'form_autocompletar_fecha_rendicion', --subclase
+	'p_investigacion/form_autocompletar_fecha_rendicion.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Asignar Expediente Subsidios - formulario', --nombre

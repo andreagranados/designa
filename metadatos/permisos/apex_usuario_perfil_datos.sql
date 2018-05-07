@@ -158,4 +158,11 @@ INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, d
 	'INGENIERIA CIVIL', --descripcion
 	NULL  --listar
 );
+INSERT INTO apex_usuario_perfil_datos (proyecto, usuario_perfil_datos, nombre, descripcion, listar) VALUES (
+	'designa', --proyecto
+	'32', --usuario_perfil_datos
+	'GEOYPET', --nombre
+	'GEOLOGIA Y PETROLEO', --descripcion
+	NULL  --listar
+);
 --- FIN Grupo de desarrollo 0

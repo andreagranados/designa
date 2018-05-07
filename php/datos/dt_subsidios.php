@@ -83,7 +83,7 @@ class dt_subsidios extends designa_datos_tabla
                $modificar.=" set fecha_pago='".$datos['fecha_pago']."'";
                $ultimo=1;
             }
-            if(isset($datos['fecha_rendido'])){
+            if(isset($datos['fecha_rendicion'])){
                 if($ultimo==1){
                     $modificar.=',';
                 }else{
