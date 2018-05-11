@@ -35,7 +35,7 @@ class dt_suplente extends toba_datos_tabla
                 LEFT OUTER JOIN designacion e ON (s.id_desig=e.id_designacion)
                 LEFT OUTER JOIN docente doc ON (e.id_docente=doc.id_docente)
                 LEFT OUTER JOIN docente doc2 ON (d.id_docente=doc2.id_docente)
-                LEFT OUTER JOIN novedad n ON (n.id_designacion=e.id_designacion and n.tipo_nov in (2,5) and (n.desde >= d.desde and n.hasta <= d.hasta) )
+                LEFT OUTER JOIN novedad n ON (n.id_designacion=e.id_designacion and n.tipo_nov in (2,5) and (n.desde >= e.desde and n.hasta <= e.hasta) )
                 LEFT OUTER JOIN tipo_novedad t ON (n.tipo_nov=t.id_tipo)
                 
                 $where)sub, unidad_acad u"
