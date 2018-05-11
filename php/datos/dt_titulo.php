@@ -26,7 +26,7 @@ class dt_titulo extends toba_datos_tabla
                 $where='';
             }
             
-            $sql="select * from (select distinct apellido||', '||d.nombre as agente,d.legajo,uni_acad,codc_nivel,i.desc_titul,fec_emisi,e.nombre as otorgante
+            $sql="select * from (select distinct trim(apellido)||', '||trim(d.nombre) as agente,d.legajo,uni_acad,codc_nivel,i.desc_titul,fec_emisi,e.nombre as otorgante
                   from titulos_docente t
                     LEFT OUTER JOIN docente d ON (t.id_docente=d.id_docente)
                     LEFT OUTER JOIN designacion s ON (s.id_docente=d.id_docente)
