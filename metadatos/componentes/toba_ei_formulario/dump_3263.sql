@@ -402,13 +402,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'4', --orden
 	'Entidad Otorgante', --etiqueta
 	NULL, --etiqueta_estilo
-	'A-Universidades Nacionales<hr>
-B-Universidades Privadas<hr>
-C-Institutos Universitarios Estatales<hr>
-D-Institutos Universitarios Privados<hr>
-E-Universidades Provinciales    <hr>
-F-Universidades Extranjeras  <hr>
-G-Universidades Internacionales<hr>', --descripcion
+	NULL, --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo

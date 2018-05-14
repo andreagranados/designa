@@ -64,7 +64,7 @@ class dt_entidad_otorgante extends toba_datos_tabla
 
 	function get_descripciones()
 	{
-		$sql = "SELECT trim(cod_entidad) as cod_entidad, cod_entidad||'-'||nombre as nombre FROM entidad_otorgante ORDER BY nombre";
+		$sql = "SELECT trim(cod_entidad) as cod_entidad, nombre FROM entidad_otorgante ORDER BY nombre";
 		return toba::db('designa')->consultar($sql);
 	}
 

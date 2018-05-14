@@ -122,7 +122,8 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_inicial', --identificador
 	'1', --orden
 	'Pantalla Inicial', --etiqueta
-	'Solo muestra LSGH/Cese cuyo período esta comprendido dentro del período de la suplencia.', --descripcion
+	'Si el período de la suplencia esta dentro del período de la LICENCIA del cargo al que suple entonces muestra datos de la LICENCIA.
+Si el dato no aparece es posible que haya un error en la carga de la suplencia', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen
