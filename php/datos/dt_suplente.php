@@ -19,14 +19,17 @@ class dt_suplente extends toba_datos_tabla
         }
     }
     function get_suplencias($filtro=null){
-       
-        $where='';
+        $where=' ';
+        $where2=' ';
         if(!is_null($filtro)){
             if(isset ($filtro['anio'])){
              $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
              $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
              $where =" where d.desde <= '".$udia."' and (d.hasta >= '".$pdia."' or d.hasta is null)";
             }
+            if(isset ($filtro['uni_acad'])){
+             $where2 .=" and uni_acad='".$filtro['uni_acad']['valor']."'";     
+             }
             
         }
         
@@ -40,10 +43,9 @@ class dt_suplente extends toba_datos_tabla
                 ." LEFT OUTER JOIN tipo_novedad t ON (n.tipo_nov=t.id_tipo)
                 
                 $where)sub, unidad_acad u"
-                . " where sub.uni_acad=u.sigla"
+                . " where sub.uni_acad=u.sigla $where2"
                 . " order by agente1";
         $sql = toba::perfil_de_datos()->filtrar($sql);  
-        //print_r($sql);
         return toba::db('designa')->consultar($sql);
             
     }
