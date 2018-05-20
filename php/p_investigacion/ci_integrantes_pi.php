@@ -488,7 +488,6 @@ class ci_integrantes_pi extends designa_ci
             $this->s__anio=date("Y",strtotime($pi['fec_desde']));
             $this->s__listado=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
             $cuadro->set_datos($this->s__listado);
-            print_r($this->s__estado);
             }
                        
 	}
