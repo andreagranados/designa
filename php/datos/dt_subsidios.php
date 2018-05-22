@@ -80,7 +80,7 @@ class dt_subsidios extends designa_datos_tabla
             $modificar='';
             $ultimo=0;
             if(isset($datos['fecha_pago'])){
-               $modificar.=" set fecha_pago='".$datos['fecha_pago']."',";
+               $modificar.=" set fecha_pago='".$datos['fecha_pago']."' ";
                $ultimo=1;
             }
             if(isset($datos['fecha_rendicion'])){
@@ -89,11 +89,11 @@ class dt_subsidios extends designa_datos_tabla
                 }else{
                     $modificar.='set';
                 }
-               $modificar.="  fecha_rendicion='".$datos['fecha_rendicion']."' , ";
+               $modificar.="  fecha_rendicion='".$datos['fecha_rendicion']."' ";
                $ultimo=1;
             }
             if($ultimo==1){
-                $modificar.=" estado='D' ";
+                $modificar.=", estado='D' ";
             }
             if(isset($datos['expediente'])){
                 if($ultimo==1){
