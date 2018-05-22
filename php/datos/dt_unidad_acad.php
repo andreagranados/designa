@@ -38,7 +38,7 @@ class dt_unidad_acad extends toba_datos_tabla
                 $condicion="";
             }
            
-            $sql="select sigla,descripcion from unidad_acad ".$condicion;
+            $sql="select sigla,descripcion from unidad_acad ".$condicion. " order by descripcion";
             $sql = toba::perfil_de_datos()->filtrar($sql);
             $resul=toba::db('designa')->consultar($sql);
             return $resul;

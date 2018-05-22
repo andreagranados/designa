@@ -591,10 +591,10 @@ class ci_integrantes_pi extends designa_ci
                     $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
                     //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
                     //si el estado es I entoces marca de agua sino el logo de la unco
-                    if($this->s__anio < 2018){
-                        $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
-                        $pdf->addJpegFromFile($imagen, 100, 35, 700, 400);
-                    }else{
+//                    if($this->s__anio < 2018){
+//                        $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
+//                        $pdf->addJpegFromFile($imagen, 100, 35, 700, 400);
+//                    }else{
                         if($this->s__estado=='I' or $this->s__estado=='N' or $this->s__estado=='X'){
                             $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
                             $pdf->addJpegFromFile($imagen, 100, 35, 700, 400);
@@ -613,7 +613,7 @@ class ci_integrantes_pi extends designa_ci
                                 }
                             }
                         }
-                    }
+                  //  }
                     ////$imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
                     //x, y ,ancho y alto x' e 'y' son las coordenadas de la esquina inferior izquierda de la imagen
                     

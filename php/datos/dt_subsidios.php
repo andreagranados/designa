@@ -2,10 +2,10 @@
 class dt_subsidios extends designa_datos_tabla
 {
         function actualiza_vencidos(){
-            //los subsidios que no se rindieron(es decir el estado es distinto de rendido)
+            //los subsidios que fueron pagados y no se rindieron(es decir el estado es distinto de rendido)
             //y la fecha actual es mayor a fecha pago + 13 meses (es decir pasaron mas de 13 meses de la fecha de pago) entonces quedan vencidos
             $sql="update subsidio set estado='V' 
-                    where estado<>'R' and estado<>'V' 
+                    where estado<>'R' and estado<>'V' and estado<>'D' 
                     and (fecha_pago + interval '13 month')<now()";
                     //and extract(year from age( now(),fecha_rendicion))*365+extract(month from age( now(),fecha_rendicion))*30+extract(day from age( now(),fecha_rendicion)) >390";
              //y pasaron mas de 13 meses (390 dias) desde la fecha_rendicion entonces quedan vencidos
