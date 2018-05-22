@@ -66,7 +66,7 @@ class dt_subsidios extends designa_datos_tabla
                 $where='';
             }
             
-            $sql="select * from (select trim(d.apellido)||', '||trim(d.nombre) as agente, s.numero,s.id_proyecto,p.uni_acad,p.codigo,fecha_pago,fecha_rendicion,s.estado, expediente,resolucion "
+            $sql="select * from (select trim(d.apellido)||', '||trim(d.nombre) as agente, s.numero,s.id_proyecto,p.uni_acad,p.codigo,fecha_pago,fecha_rendicion,s.estado, expediente,resolucion ,s.monto"
                     . " from subsidio s"
                     . " LEFT OUTER JOIN pinvestigacion p ON (s.id_proyecto=p.id_pinv)"
                     . " LEFT OUTER JOIN docente d ON (s.id_respon_sub=d.id_docente)) sub, unidad_acad u"
@@ -93,7 +93,7 @@ class dt_subsidios extends designa_datos_tabla
                $ultimo=1;
             }
             if($ultimo==1){
-                $modificar.=", estado='D' ";
+                $modificar.=", estado='P' ";
             }
             if(isset($datos['expediente'])){
                 if($ultimo==1){
