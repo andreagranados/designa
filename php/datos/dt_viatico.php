@@ -15,9 +15,9 @@ class dt_viatico extends toba_datos_tabla
 //                 . " left outer join tipo t on (v.nro_tab=t.nro_tabla and v.tipo=t.desc_abrev)"
 //                . ")sub, unidad_acad u"
 //                . " where  u.sigla=sub.uni_acad $where";
-        $sql=" select agente,codigo,uni_acad,tipov,estado,fecha_solicitud,fecha_salida,fecha_regreso,cant_dias,expediente_pago,fecha_pago,id_viatico,destino
+        $sql=" select agente,codigo,uni_acad,tipov,estado,fecha_solicitud,fecha_salida,fecha_regreso,cant_dias,expediente_pago,fecha_pago,id_viatico,destino,observaciones
                 from (                
-                select case when doc.nro_docum is not null then trim(doc.apellido)||', '||doc.nombre else trim(pe.apellido)||', '||trim(pe.nombre) end  as agente,id_viatico,i.codigo,i.uni_acad,t.desc_item as tipov,v.fecha_salida,v.fecha_regreso,v.cant_dias,v.estado,v.fecha_solicitud,v.expediente_pago,v.fecha_pago,destino
+                select case when doc.nro_docum is not null then trim(doc.apellido)||', '||doc.nombre else trim(pe.apellido)||', '||trim(pe.nombre) end  as agente,id_viatico,i.codigo,i.uni_acad,t.desc_item as tipov,v.fecha_salida,v.fecha_regreso,v.cant_dias,v.estado,v.fecha_solicitud,v.expediente_pago,v.fecha_pago,v.observaciones,destino
                     from viatico v
                     left outer join pinvestigacion i on (v.id_proyecto=i.id_pinv)
                     left outer join docente doc on (doc.nro_docum=v.nro_docum_desti)

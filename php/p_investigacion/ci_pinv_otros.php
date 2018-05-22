@@ -162,7 +162,8 @@ class ci_pinv_otros extends designa_ci
                 if($pi['es_programa']==1){
                     $pi['es_programa']='SI';
                     //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
-                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	
+                    $this->pantalla()->tab("pant_viaticos")->desactivar();
                 }else{//no es programa
                     $pi['es_programa']='NO';
                     $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
@@ -401,7 +402,8 @@ class ci_pinv_otros extends designa_ci
                 if($pi['es_programa']==1){
                     $pi['es_programa']='SI';
                     //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
-                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();
+                    $this->pantalla()->tab("pant_viaticos")->desactivar();
                 }else{//no es programa
                     $pi['es_programa']='NO';
                     $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
@@ -518,7 +520,7 @@ class ci_pinv_otros extends designa_ci
                 if($pi['es_programa']==1){
                     $pi['es_programa']='SI';
                     //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
-                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 	 
                 }else{//no es programa
                     $pi['es_programa']='NO';
                     $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
@@ -606,6 +608,7 @@ class ci_pinv_otros extends designa_ci
                 unset($datos['fecha_present_certif']);
                 unset($datos['expediente_pago']);
                 unset($datos['fecha_pago']);
+                unset($datos['observaciones']);
                 $mensaje="";
                 if($datos['es_nacional']==1){//si es nacional
                     if($datos['cant_dias']>5){
@@ -646,9 +649,12 @@ class ci_pinv_otros extends designa_ci
             $datos2['fecha_present_certif']=$datos['fecha_present_certif'];
             $datos2['expediente_pago']=$datos['expediente_pago'];
             $datos2['fecha_pago']=$datos['fecha_pago'];
+            $datos2['observaciones']=$datos['observaciones'];
+            $datos2['memo_solicitud']=$datos['memo_solicitud'];
+            $datos2['memo_certificados']=$datos['memo_certificados'];
             $this->controlador()->dep('datos')->tabla('viatico')->set($datos2);
             $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
-            toba::notificacion()->agregar('Modificacion exitosa. SCyT solo modifica estado, expediente de pago, fecha de pago y fecha de presentac certif.', 'info');         
+            toba::notificacion()->agregar('Modificacion exitosa. SCyT solo modifica estado, expediente de pago, fecha de pago, fecha de presentac certif. y observ', 'info');         
         }
         //boton modificacion para la ua
         function evt__form_viatico__modificacion_ua($datos)
@@ -662,12 +668,13 @@ class ci_pinv_otros extends designa_ci
                 $datos['fecha_salida']=$fec;
                 $datos['fecha_regreso']=$fecr;
                 $via=$this->controlador()->dep('datos')->tabla('viatico')->get();
-                if($via['estado']=='S'){     
+                if($via['estado']=='S' or $via['estado']=='R'){  //si ha sido rechazado se puede modificar   
                     $mensaje="";
                     unset($datos['estado']);//la ua no puede modificar el estado de un viatico
                     unset($datos['fecha_present_certif']);
                     unset($datos['expediente_pago']);
                     unset($datos['fecha_pago']);
+                    unset($datos['observaciones']);
                     if($datos['es_nacional']==1){//si es nacional
                         if($datos['cant_dias']>5){
                             $mensaje="Nacional hasta 5 dias";
@@ -711,7 +718,7 @@ class ci_pinv_otros extends designa_ci
                     $this->s__mostrar_v=0;
                     toba::notificacion()->agregar(utf8_decode('El viático se ha eliminado correctamente','info'));
                 }else{
-                    toba::notificacion()->agregar(utf8_decode('El viático no puede ser eliminado porque ya ha sido Aprobado/Rechazado por la SCyT'), 'error');      
+                    toba::notificacion()->agregar(utf8_decode('El viático no puede ser eliminado porque ya ha sido Aprobado/Rechazado/Entregado por la SCyT'), 'error');      
                 }
               }
 	}
@@ -732,7 +739,8 @@ class ci_pinv_otros extends designa_ci
                 if($pi['es_programa']==1){
                     $pi['es_programa']='SI';
                     //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
-                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	
+                    $this->pantalla()->tab("pant_viaticos")->desactivar();
                 }else{//no es programa
                     $pi['es_programa']='NO';
                     $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
@@ -879,6 +887,7 @@ class ci_pinv_otros extends designa_ci
                     $pi['es_programa']='SI';
                     //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
                     $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                    $this->pantalla()->tab("pant_viaticos")->desactivar();
                 }else{//no es programa
                     $pi['es_programa']='NO';
                     $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
@@ -961,7 +970,8 @@ class ci_pinv_otros extends designa_ci
                 if($pi['es_programa']==1){
                     $pi['es_programa']='SI';
                     //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
-                    $this->pantalla()->tab("pant_estimulos")->desactivar();	 
+                    $this->pantalla()->tab("pant_estimulos")->desactivar();	
+                    $this->pantalla()->tab("pant_viaticos")->desactivar();
                 }else{//no es programa
                     $pi['es_programa']='NO';
                     $this->pantalla()->tab("pant_subproyectos")->desactivar();	 

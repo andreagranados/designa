@@ -106,8 +106,6 @@ class ci_asignar_expediente_subsidio extends toba_ci
 	{
             if($this->s__mostrar_v==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('formulario')->descolapsar();
-                $form->ef('expediente')->set_obligatorio('true');
-                $form->ef('resolucion')->set_obligatorio('true');
             }else{
                 $this->dep('formulario')->colapsar(); 
             }

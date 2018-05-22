@@ -111,7 +111,7 @@ class dt_subsidios extends designa_datos_tabla
             }
             
             $sql="update subsidio ".$modificar." where numero=".$proy['numero']." and id_proyecto=".$proy['id_proyecto'];
-           // print_r($sql);
+            //print_r($sql);exit;
             toba::db('designa')->consultar($sql);
         }
 

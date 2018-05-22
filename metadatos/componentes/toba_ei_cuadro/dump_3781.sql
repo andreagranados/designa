@@ -158,7 +158,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3781', --objeto_cuadro
 	'3527', --objeto_cuadro_col
 	'fecha_pago', --clave
-	'5', --orden
+	'9', --orden
 	'Fecha Pago', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'7', --estilo
@@ -189,7 +189,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3781', --objeto_cuadro
 	'3528', --objeto_cuadro_col
 	'observaciones', --clave
-	'6', --orden
+	'5', --orden
 	'Observaciones', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -220,7 +220,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3781', --objeto_cuadro
 	'3529', --objeto_cuadro_col
 	'monto', --clave
-	'7', --orden
+	'6', --orden
 	'Monto', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'1', --estilo
@@ -251,7 +251,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3781', --objeto_cuadro
 	'3530', --objeto_cuadro_col
 	'resolucion', --clave
-	'8', --orden
+	'7', --orden
 	'Resolución', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -282,7 +282,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3781', --objeto_cuadro
 	'3531', --objeto_cuadro_col
 	'expediente', --clave
-	'9', --orden
+	'8', --orden
 	'Expediente', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
