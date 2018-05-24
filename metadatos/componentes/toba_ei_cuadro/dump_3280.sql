@@ -24,11 +24,10 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'Estudios', --titulo
 	'0', --colapsable
 	'Niveles de Estudio:<br>
-UNIV (Universitario)<br>
-TERC (Terciario) <br>
-SECU (Secundario) <br>
-DOCT (Doctorado) <br>
-MAES (Maestría) <br>', --descripcion
+POST (Postgrado)<br>
+GRAD (Grado) <br>
+PREG (Pregrado) <br>
+TERC (Terciario) <br>', --descripcion
 	NULL, --fuente_datos_proyecto
 	NULL, --fuente_datos
 	NULL, --solicitud_registrar

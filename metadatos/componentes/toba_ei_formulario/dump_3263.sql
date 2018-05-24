@@ -156,7 +156,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'¿Desea eliminar este título?', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
-	NULL, --imagen
+	'borrar.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'4', --orden
@@ -475,7 +475,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'3263', --objeto_ei_formulario
 	'designa', --objeto_ei_formulario_proyecto
 	'codc_titul', --identificador
-	'ef_combo', --elemento_formulario
+	'ef_combo_editable', --elemento_formulario
 	'codc_titul', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
@@ -493,10 +493,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --estado_defecto
 	'0', --solo_lectura
 	'0', --solo_lectura_modificacion
-	'get_descripciones', --carga_metodo
-	NULL, --carga_clase
-	NULL, --carga_include
-	'3252', --carga_dt
+	'get_titulos_todos', --carga_metodo
+	'consultas', --carga_clase
+	'datos/consultas.php', --carga_include
+	NULL, --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
@@ -506,10 +506,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --carga_maestros
 	'0', --carga_cascada_relaj
 	'0', --cascada_mantiene_estado
-	'1', --carga_permite_no_seteado
+	'0', --carga_permite_no_seteado
 	'--Seleccione--', --carga_no_seteado
 	'0', --carga_no_seteado_ocultar
-	NULL, --edit_tamano
+	'500', --edit_tamano
 	NULL, --edit_maximo
 	NULL, --edit_mascara
 	NULL, --edit_unidad
@@ -525,9 +525,9 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --popup_proyecto
 	NULL, --popup_editable
 	NULL, --popup_ventana
-	NULL, --popup_carga_desc_metodo
-	NULL, --popup_carga_desc_clase
-	NULL, --popup_carga_desc_include
+	'get_titulo', --popup_carga_desc_metodo
+	'consultas', --popup_carga_desc_clase
+	'datos/consultas.php', --popup_carga_desc_include
 	NULL, --popup_puede_borrar_estado
 	NULL, --fieldset_fin
 	NULL, --check_valor_si

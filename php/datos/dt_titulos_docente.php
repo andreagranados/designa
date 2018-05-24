@@ -16,6 +16,12 @@ class dt_titulos_docente extends toba_datos_tabla
                 return toba::db('designa')->consultar($sql);
                
 	}
+        function get_titulos_de($id_docente){
+            $sql="select * from titulos_docente t_t "
+                    . " LEFT JOIN titulo t_i ON (t_t.codc_titul=t_i.codc_titul) "
+                    . " where t_t.id_docente=$id_docente";
+            return toba::db('designa')->consultar($sql);
+        }
 
 }
 

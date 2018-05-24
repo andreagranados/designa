@@ -40,8 +40,7 @@ class docente_solapas extends toba_ci
     {
         $this->pantalla()->tab("pant_porcentajes")->desactivar();	
         //recupero todo los titulos y los muestro
-        $sql="select * from titulos_docente t_t LEFT JOIN titulo t_i ON (t_t.codc_titul=t_i.codc_titul) where t_t.id_docente=".$this->s__agente['id_docente'];
-        $resul=toba::db('designa')->consultar($sql);
+        $resul=$this->controlador()->dep('datos')->tabla('titulos_docente')->get_titulos_de($this->s__agente['id_docente']);
         $cuadro->set_datos($resul);//si resul no tiene nada no muestra nada
     }
 
