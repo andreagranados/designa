@@ -32,7 +32,6 @@ class dt_titulo extends toba_datos_tabla
                     LEFT OUTER JOIN designacion s ON (s.id_docente=d.id_docente)
                     LEFT OUTER JOIN titulo i ON (t.codc_titul=i.codc_titul)
                     LEFT OUTER JOIN entidad_otorgante e ON (t.codc_entot=e.cod_entidad)
-                 where codc_nivel	='POST'
                  )sub, unidad_acad u
                      where sub.uni_acad=u.sigla
                      $where
