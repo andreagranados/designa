@@ -208,6 +208,7 @@ class ci_pinv_otros extends designa_ci
                  //$componente->ef('estado')->set_obligatorio(0);     
                 $componente->ef('estado')->set_solo_lectura(true);//para que funcione no tiene que ser obligatorio 
                 $componente->ef('codigo')->set_solo_lectura(true); 
+                $componente->ef('tdi')->set_expandido(false);//oculto el campo para que no lo vea la UA
             }
                  
 	}
@@ -232,6 +233,7 @@ class ci_pinv_otros extends designa_ci
             $datos2['nro_resol_baja']=$datos['nro_resol_baja'];
             $datos2['fec_baja']=$datos['fec_baja'];
             $datos2['id_respon_sub']=$datos['id_respon_sub'];
+            $datos2['tdi']=$datos['tdi'];
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
             if($datos['estado']=='B'){//tiene que dar de baja a todos los integrantes
@@ -990,5 +992,7 @@ class ci_pinv_otros extends designa_ci
 //        }
       
 	
+	
+
 }
 ?>

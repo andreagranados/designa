@@ -290,12 +290,17 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');  
-                
             }else{
-                $this->dep('datos')->tabla('integrante_interno_pi')->eliminar_todo();
-                $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
-                $this->s__mostrar_i=0;
-                toba::notificacion()->agregar('El registro se ha eliminado correctamente', 'info');  
+                $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
+                $band=$this->dep('datos')->tabla('logs_integrante_interno_pi')->fue_chequeado($int['id_designacion'],$int['pinvest'],$int['desde']);
+                if($band){
+                    toba::notificacion()->agregar('No puede eliminar un integrante que ya ha sido chequeado por SCyT', 'error');  
+                }else{
+                    $this->dep('datos')->tabla('integrante_interno_pi')->eliminar_todo();
+                    $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+                    $this->s__mostrar_i=0;
+                    toba::notificacion()->agregar('El registro se ha eliminado correctamente', 'info');  
+                }
             }
              
         }
@@ -309,21 +314,6 @@ class ci_integrantes_pi extends designa_ci
 	//-----------------------------------------------------------------------------------
         function conf__form_integrante_e(toba_ei_formulario $form)
 	{
-//            if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-//                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-////                if($pi['es_programa']==1){
-////                    $this->controlador()->pantalla()->tab("pant_estimulos")->desactivar();	     
-////                    $this->controlador()->pantalla()->tab("pant_viaticos")->desactivar();
-////                }else{
-////                    $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
-////                    $this->controlador()->pantalla()->tab("pant_subproyectos")->desactivar();	 
-////                    if($pertenece!=0){// pertenece a un programa   
-////                        //si pertenece a un programa entonces el subsidio lo recibe el programa
-////                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();
-////                        $this->controlador()->pantalla()->tab("pant_winsip")->desactivar();
-////                    }
-////                }
-//            }
             if($this->s__mostrar_e==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('form_integrante_e')->descolapsar();
                 $form->ef('integrante')->set_obligatorio('true');
@@ -377,13 +367,19 @@ class ci_integrantes_pi extends designa_ci
         {
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');  
-                
+                toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');   
             }else{
-                $this->dep('datos')->tabla('integrante_externo_pi')->eliminar_todo();
-                $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
-                toba::notificacion()->agregar('El integrante se ha eliminado correctamente', 'info');  
-                $this->s__mostrar_e=0;
+                //si fue chequeado por SCyT entonces no puede borrar
+                $int=$this->dep('datos')->tabla('integrante_externo_pi')->get();
+                $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
+                if($band){
+                    toba::notificacion()->agregar('No puede eliminar un integrante que ya ha sido chequeado por SCyT', 'error');  
+                }else{
+                    $this->dep('datos')->tabla('integrante_externo_pi')->eliminar_todo();
+                    $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+                    toba::notificacion()->agregar('El integrante se ha eliminado correctamente', 'info');  
+                    $this->s__mostrar_e=0;
+                }
             }
         }
         function evt__form_integrante_e__modificacion($datos)

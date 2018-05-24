@@ -360,8 +360,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'5', --orden
 	'Estado', --etiqueta
 	NULL, --etiqueta_estilo
-	'P (Pendiente) <br>
-R (Rendido)', --descripcion
+	'D (Deudor) <br>
+P (Pagado) <br>
+R (Rendido)<br>
+V (Vencido)', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -379,7 +381,7 @@ R (Rendido)', --descripcion
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'P,R', --carga_lista
+	'D,P,R,V', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	NULL, --carga_maestros
