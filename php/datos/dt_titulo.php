@@ -35,7 +35,7 @@ class dt_titulo extends toba_datos_tabla
                  )sub, unidad_acad u
                      where sub.uni_acad=u.sigla
                      $where
-                ";
+                order by agente";
                     
             $sql = toba::perfil_de_datos()->filtrar($sql);    
             return toba::db('designa')->consultar($sql);

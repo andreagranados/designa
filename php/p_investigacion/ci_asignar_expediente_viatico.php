@@ -112,7 +112,6 @@ class ci_asignar_expediente_viatico extends toba_ci
             if($this->s__mostrar_v==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
                 $this->dep('formulario')->descolapsar();
                 $form->ef('expediente_pago')->set_obligatorio('true');
-                $form->ef('fecha_pago')->set_obligatorio('true');
             }else{
                  $this->dep('formulario')->colapsar(); 
             }

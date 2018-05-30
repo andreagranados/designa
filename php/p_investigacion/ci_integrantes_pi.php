@@ -291,8 +291,11 @@ class ci_integrantes_pi extends designa_ci
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');  
             }else{
-                $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
-                $band=$this->dep('datos')->tabla('logs_integrante_interno_pi')->fue_chequeado($int['id_designacion'],$int['pinvest'],$int['desde']);
+                $band=false;
+                if($pi['estado']=='A'){
+                    $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
+                    $band=$this->dep('datos')->tabla('logs_integrante_interno_pi')->fue_chequeado($int['id_designacion'],$int['pinvest'],$int['desde']);
+                }
                 if($band){
                     toba::notificacion()->agregar('No puede eliminar un integrante que ya ha sido chequeado por SCyT', 'error');  
                 }else{
@@ -369,9 +372,13 @@ class ci_integrantes_pi extends designa_ci
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');   
             }else{
-                //si fue chequeado por SCyT entonces no puede borrar
-                $int=$this->dep('datos')->tabla('integrante_externo_pi')->get();
-                $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
+                $band=false;
+                if($pi['estado']=='A'){//solo en estado A chequea check investigacion
+                    //si fue chequeado por SCyT entonces no puede borrar
+                    $int=$this->dep('datos')->tabla('integrante_externo_pi')->get();
+                    $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
+                }
+                
                 if($band){
                     toba::notificacion()->agregar('No puede eliminar un integrante que ya ha sido chequeado por SCyT', 'error');  
                 }else{
