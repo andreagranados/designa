@@ -1092,7 +1092,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		$where = "";
                 
                 //que sea una designacion vigente, dentro del periodo actual
-		$where=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)"
+		$where=" WHERE ((desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)) or (desde>hasta and ".$filtro['anio']."=extract(year from hasta)) )"
                         . " AND nro_540 is not null";
                         
                 if (isset($filtro['uni_acad'])) {
