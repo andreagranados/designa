@@ -103,16 +103,17 @@ class ci_p_investigacion extends toba_ci
                         $salida->titulo(utf8_d_seguro('UNIVERSIDAD NACIONAL DEL COMAHUE'.chr(10).'SECRETARÍA DE CIENCIA Y TÉCNICA'.chr(10).'SOLICITUD DE ANTICIPO DE VIÁTICOS '));    
                         $titulo="   ";
                         $opciones = array(
-                            'splitRows'=>0,
-                            'rowGap' => 0,
+                            'showLines'=>0,
+                            'rowGap' => 1,
                             'showHeadings' => true,
                             'titleFontSize' => 9,
                             'fontSize' => 10,
-                            'shadeCol' => array(0,0,0),
-                            'outerLineThickness' => 0,
+                            'shadeCol' => array(0.9,0.9,0.9),
+                            'outerLineThickness' => 0,//grosor de las lineas exteriores
                             'innerLineThickness' => 0,
                             'xOrientation' => 'center',
-                            'width' => 500
+                            'width' => 1000,
+                            'cols'=>array('col1'=>array('width'=>180,'justification'=>'center'),'col2'=>array('width'=>180,'justification'=>'center'),'col3'=>array('width'=>180,'justification'=>'center'))
                         );
 
                         $tipo_ac=$this->dep('datos')->tabla('viatico')->get_tipo_actividad($vi['id_viatico']);
@@ -170,14 +171,19 @@ class ci_p_investigacion extends toba_ci
                         $pdf->ezText('  ', 10);
                         
                         $pdf->ezText("\n\n\n", 10);
-                        $pdf->addText(40 ,80,10,'..........................'); 
-                        $pdf->addText(40 ,70,10,'SOLICITANTE'); 
-                        $pdf->addText(240,80,10,'............................................'); 
-                        $pdf->addText(240,70,10,'DIRECTOR/CO-DIRECTOR'); 
-                        $pdf->addText(240,60,10,'     DEL PROYECTO');
-                        $pdf->addText(450,80,10,'...................................'); 
-                        $pdf->addText(450,70,10,'  SECRETARIO DE'); 
-                        $pdf->addText(450,60,10,utf8_d_seguro('CIENCIA Y TÉCNICA')); 
+//                        $pdf->addText(40 ,80,10,'..........................'); 
+//                        $pdf->addText(40 ,70,10,'SOLICITANTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'); 
+//                        $pdf->addText(240,80,10,'............................................'); 
+//                        $pdf->addText(240,70,10,'DIRECTOR/CO-DIRECTOR'); 
+//                        $pdf->addText(240,60,10,'     DEL PROYECTO');
+//                        $pdf->addText(450,80,10,'...................................'); 
+//                        $pdf->addText(450,70,10,'  SECRETARIO DE'); 
+//                        $pdf->addText(450,60,10,utf8_d_seguro('CIENCIA Y TÉCNICA')); 
+                        $datos=array();
+                        $datos[0]=array('col1'=>'....................................','col2'=>'....................................','col3'=>'....................................');
+                        $datos[1]=array('col1'=>$desti,'col2'=>'DIRECTOR/CO-DIRECTOR DEL PROYECTO','col3'=>utf8_d_seguro('SECRETARIO DE CIENCIA Y TÉCNICA'));
+                        //$datos=array(array('col1'=>'SOLICITANTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','col2'=>'DIRECTOR/CO-DIRECTOR DEL PROYECTO','col3'=>utf8_d_seguro('SECRETARIO DE CIENCIA Y TÉCNICA')));
+                        $pdf->ezTable($datos, array('col1'=>'','col2'=>'','col3'=>''), '', $opciones);                        
                         //Recorremos cada una de las hojas del documento para agregar el encabezado
                         foreach ($pdf->ezPages as $pageNum=>$id){ 
                             $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
