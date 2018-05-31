@@ -271,12 +271,11 @@ class ci_integrantes_pi extends designa_ci
                     $datos['ua']=$ua;
                     $datos['pinvest']=$pi['id_pinv'];
                     $datos['check_inv']=0;//pierde el check si es que lo tuviera
+                    //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
+                    $actual=$this->dep('datos')->tabla('integrante_interno_pi')->get();                    
                     $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
                     $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
                     $this->s__mostrar_i=0;
-            
-                    //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
-                    $actual=$this->dep('datos')->tabla('integrante_interno_pi')->get();
                     $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($actual['id_designacion'],$actual['pinvest'],$actual['desde'],$datos['desde']);
                     toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
                 }else{
@@ -397,7 +396,7 @@ class ci_integrantes_pi extends designa_ci
             $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
     //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
             $this->dep('datos')->tabla('integrante_externo_pi')->modificar_fecha_desde($actual['tipo_docum'],$actual['nro_docum'],$actual['pinvest'],$actual['desde'],$datos['desde']);
-        
+            toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
         }
         function evt__form_integrante_e__cancelar()
 	{
