@@ -136,10 +136,11 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'estado', --nombre
 	'estado', --expresion
 	'Estado', --etiqueta
-	'D (Deudor) <br>
+	'D (Desafectado) <br>
 P (Pagado) <br>
 R (Rendido) <br>
-V (Vencido)', --descripcion
+V (Vencido) <br>
+M (Moroso)', --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'2', --orden
@@ -153,7 +154,7 @@ V (Vencido)', --descripcion
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'D,P,R,V', --carga_lista
+	'D,P,R,V,M', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	'1', --carga_permite_no_seteado
