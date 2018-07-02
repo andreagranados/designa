@@ -84,6 +84,50 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             ";
         return toba::db('designa')->consultar($sql);  
     }
+    //devuelve todas las altas nuevas del proyecto que ingresa como argumento
+    function get_altas($id_p){//la fecha desde del integrante es mayor a la del proyecto y además no existe para ese docente un movimiento con fecha desde=fecha desde del proyecto
+        $sql="select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_i.desde,t_i.hasta,t_i.carga_horaria,t_i.funcion_p,t_i.rescd
+        from pinvestigacion t_p
+        LEFT OUTER JOIN integrante_interno_pi t_i ON (t_i.pinvest=t_p.id_pinv)
+        LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_i.id_designacion)
+        LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
+        where t_p.id_pinv=$id_p
+        and t_p.fec_desde<t_i.desde
+        and not exists (select * from integrante_interno_pi i, designacion d, pinvestigacion p
+                                 where i.id_designacion=d.id_designacion
+                                 and i.pinvest=p.id_pinv
+                                 and i.pinvest=$id_p
+                                    and t_d.id_docente=d.id_docente
+                                    and i.desde=p.fec_desde)
+        and not exists (select * from integrante_externo_pi e,persona r
+                                 where e.pinvest=$id_p
+                                    and e.tipo_docum=r.tipo_docum
+                                    and e.nro_docum=r.nro_docum
+                                    and t_do.tipo_docum=r.tipo_docum
+                                    and t_do.nro_docum=r.nro_docum
+                                    and e.desde=t_p.fec_desde)  "
+                . "UNION"
+                . " select trim(t_d.apellido)||', '||trim(t_d.nombre) as agente,t_i.desde,t_i.hasta,t_i.carga_horaria,t_i.funcion_p,t_i.rescd
+        from pinvestigacion t_p
+        LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.pinvest=t_p.id_pinv)
+        LEFT OUTER JOIN persona t_d ON (t_i.nro_docum=t_d.nro_docum and t_i.tipo_docum=t_d.tipo_docum)
+        where t_p.id_pinv=$id_p 
+        and t_p.fec_desde<t_i.desde
+        and not exists (select * from integrante_interno_pi i, designacion d, docente o
+                                 where i.id_designacion=d.id_designacion
+                                 and i.pinvest=t_p.id_pinv
+                                 and i.pinvest=$id_p
+                                 and d.id_docente=o.id_docente
+                                 and t_d.nro_docum=o.nro_docum
+                                 and t_d.tipo_docum=o.tipo_docum
+                                 and i.desde=t_p.fec_desde)
+        and not exists (select * from integrante_externo_pi e
+                                 where e.pinvest=$id_p
+                                    and e.tipo_docum=t_d.tipo_docum
+                                    and e.nro_docum=t_d.nro_docum
+                                    and e.desde=t_p.fec_desde)  ";
+        return toba::db('designa')->consultar($sql);  
+    }
     //devuelve todas las bajas del proyecto que ingresa como argumento
     function get_bajas($id_p){
         $sql=" CREATE LOCAL TEMP TABLE bajas(

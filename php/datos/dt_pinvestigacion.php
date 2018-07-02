@@ -2,6 +2,29 @@
 require_once 'dt_mocovi_periodo_presupuestario.php';
 class dt_pinvestigacion extends toba_datos_tabla
 {
+        function get_resolucion($id_pinv){
+            $sql="select nro_resol,fec_resol from pinvestigacion "
+                    . " where id_pinv=$id_pinv";
+            $resul=toba::db('designa')->consultar($sql);
+            $salida='';
+            if(count($resul)>0){
+                $auxi=trim($resul[0]['nro_resol']);//saca los blancos
+                $ano=date("Y",strtotime($resul[0]['fec_resol']));//obtengo el año
+                $long=strlen ($auxi);
+                $i=0;
+                $band=true;
+                while ($i<$long && $band ) {//recupera todos los caracteres hasta que encuentra algo sin
+                    if(is_numeric(substr($auxi,$i,1))){
+                        $salida.=substr($auxi,$i,1);
+                    }else{
+                        $band=false;
+                    }
+                    $i++;
+                }
+                $salida.='/'.$ano;
+            }
+            return $salida;
+        }
         function control($id_doc,$id_pinv,$estado){//retorna true cuando es estado I y el docente no esta (para integrantes docentes)
             
             if($estado=='I'){

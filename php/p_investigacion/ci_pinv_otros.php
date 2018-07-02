@@ -248,12 +248,15 @@ class ci_pinv_otros extends designa_ci
         //modificacion de datos principales del proyecto por la Unidad Académica
         function evt__formulario__modificacion($datos)
 	{    
-          $mensaje='';
-          $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-          if($pi['estado']<>'I'){
+        $mensaje='';
+        $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+        if($pi['estado']<>'I'){
               toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
-          }else{
-           
+        }else{
+            $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+            if ( !preg_match($regenorma, $datos['nro_resol'], $matchFecha) ) {
+                toba::notificacion()->agregar('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY','error');
+            }else{
                 switch ($datos['es_programa']) {
                     case 'SI':$datos['es_programa']=1;
                          $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
@@ -267,49 +270,49 @@ class ci_pinv_otros extends designa_ci
                 }  
                 
            //print_r($datos);exit();
-          if($datos['programa']!=0){
-                $band=$this->controlador()->dep('datos')->tabla('subproyecto')->esta($datos['programa'],$pi['id_pinv']);
-                if(!$band){
-                    $datos2['id_programa']=$datos['programa'];
-                    $datos2['id_proyecto']=$pi['id_pinv'];
-                    $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
-                    $this->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
-                    $this->controlador()->dep('datos')->tabla('subproyecto')->resetear();
+              if($datos['programa']!=0){
+                    $band=$this->controlador()->dep('datos')->tabla('subproyecto')->esta($datos['programa'],$pi['id_pinv']);
+                    if(!$band){
+                        $datos2['id_programa']=$datos['programa'];
+                        $datos2['id_proyecto']=$pi['id_pinv'];
+                        $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
+                        $this->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
+                        $this->controlador()->dep('datos')->tabla('subproyecto')->resetear();
+                    }
+
+                }else{//no pertenece a ningun programa
+                    $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
                 }
-                
-            }else{//no pertenece a ningun programa
-                $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
-            }
-            if(trim($datos['nro_resol'])<>trim($pi['nro_resol'])){//si modifica la resolucion del cd entonces automaticamente se modifica la res de los integrantes
-                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
-                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);                
-                $mensaje.=$mensaje."Se ha modificado la resol de los integrantes. ";
-            }
-            if($datos['fec_desde']<>$pi['fec_desde']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                  $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                  $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                  $mensaje.=$mensaje."Se ha modificado la fecha desde de los integrantes";
-             }
-            if($datos['fec_hasta']<>$pi['fec_hasta']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                  $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_desde']);
-                  $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_desde']);
-                  $mensaje.=$mensaje."Se ha modificado la fecha hasta de los integrantes";
-             }
-            //elimino lo que viene en codigo y ordenanza dado que no corresponde al perfil de la UA
-            unset($datos['codigo']);
-            unset($datos['nro_ord_cs']);
-            unset($datos['fecha_ord_cs']);
-            unset($datos['observacionscyt']);
-            unset($datos['nro_resol_baja']);
-            unset($datos['fec_baja']);
-            $datos['denominacion']=mb_strtoupper($datos['denominacion']);//strtoupper($datos['denominacion']);
-            $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
-            $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-            if($mensaje!=''){
-                toba::notificacion()->agregar($mensaje, 'info');  
-            }
-            
+                if(trim($datos['nro_resol'])<>trim($pi['nro_resol'])){//si modifica la resolucion del cd entonces automaticamente se modifica la res de los integrantes
+                    $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                    $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);                
+                    $mensaje.=$mensaje."Se ha modificado la resol de los integrantes. ";
+                }
+                if($datos['fec_desde']<>$pi['fec_desde']){//si modifica la fecha desde entonces modifica lo de los integrantes.
+                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
+                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
+                      $mensaje.=$mensaje."Se ha modificado la fecha desde de los integrantes";
+                 }
+                if($datos['fec_hasta']<>$pi['fec_hasta']){//si modifica la fecha desde entonces modifica lo de los integrantes.
+                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_desde']);
+                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_desde']);
+                      $mensaje.=$mensaje."Se ha modificado la fecha hasta de los integrantes";
+                 }
+                //elimino lo que viene en codigo y ordenanza dado que no corresponde al perfil de la UA
+                unset($datos['codigo']);
+                unset($datos['nro_ord_cs']);
+                unset($datos['fecha_ord_cs']);
+                unset($datos['observacionscyt']);
+                unset($datos['nro_resol_baja']);
+                unset($datos['fec_baja']);
+                $datos['denominacion']=mb_strtoupper($datos['denominacion']);//convierte a mayusculas//strtoupper($datos['denominacion']);
+                $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
+                $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+                if($mensaje!=''){
+                    toba::notificacion()->agregar($mensaje, 'info');  
+                }
           }
+         }
 	}
     //elimina un proyecto de investigacion
         function evt__formulario__baja()
@@ -332,10 +335,12 @@ class ci_pinv_otros extends designa_ci
         //nuevo proyecto de investigacion
         function evt__formulario__alta($datos)
 	{
-          $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
-          $datosp['uni_acad']= $ua[0]['sigla'];
-          
-         
+        $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+        if ( !preg_match($regenorma, $datos['nro_resol'], $matchFecha) ) {
+            toba::notificacion()->agregar('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY','error');
+        }else{
+            $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
+            $datosp['uni_acad']= $ua[0]['sigla'];
             if($datos['es_programa']=='SI'){
                 $datosp['es_programa']=1;
             }else{
@@ -369,9 +374,7 @@ class ci_pinv_otros extends designa_ci
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datosp);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($datosp);
-    
-             
-            //$this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datosp);
+
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($datos['programa']!=0){//si el proyecto pertenece a un programa entonces lo asocio
                 $datos2['id_programa']=$datos['programa'];
@@ -379,8 +382,8 @@ class ci_pinv_otros extends designa_ci
                 $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
                 $this->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
                 $this->controlador()->dep('datos')->tabla('subproyecto')->resetear();
-            }
- 
+              }
+            }         
 	}
         function evt__formulario__cancelar()
         {
@@ -538,12 +541,24 @@ class ci_pinv_otros extends designa_ci
                 }else{
                     $f=array();
                 }
-            $cuadro->set_datos($this->controlador()->dep('datos')->tabla('viatico')->get_listado($pi['id_pinv'],$f));
+                //agrego una linea con cant dias
+                $datos=$this->controlador()->dep('datos')->tabla('viatico')->get_listado($pi['id_pinv'],$f);
+               //  print_r($datos);
+                if(count($datos)>0){
+                     $elem['tipo']='TOTAL DIAS:';
+                     $elem['id_viatico']=-1;
+                     $elem['cant_dias']=$datos[0]['total'];
+                     array_push($datos,$elem);
+                 }
+                $cuadro->set_datos($datos);
             }
             
 	}
         function evt__cuadro_viatico__seleccion($datos)
-	{ 
+	{
+          if($datos['id_viatico']==-1){
+              toba::notificacion()->agregar('Debe seleccionar un viatico', 'error');   
+          } else{ 
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A'){//solo en estado A puede modificar
                 toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Activo(A)', 'error');   
@@ -551,6 +566,7 @@ class ci_pinv_otros extends designa_ci
                 $this->s__mostrar_v=1;
                 $this->controlador()->dep('datos')->tabla('viatico')->cargar($datos);
             }
+          }
 	}
        
         function conf__form_viatico(toba_ei_formulario $form)
@@ -581,7 +597,7 @@ class ci_pinv_otros extends designa_ci
                  $datos2['fecha_salida'][2]=trim(substr($datos['fecha_salida'],10,6));//'12:00';
                  unset($datos2['fecha_regreso']);
                  $datos2['fecha_regreso'][0]=substr($datos['fecha_regreso'],0,10);//'2017-01-01';
-                 $datos2['fecha_regreso'][2]=trim(substr($datos['fecha_regreso'],10,6));//'12:00';                 
+                 $datos2['fecha_regreso'][2]=trim(substr($datos['fecha_regreso'],10,6));//'12:00'; 
                  $form->set_datos($datos2);
             } 
             $perfil = toba::usuario()->get_perfil_datos();
@@ -639,7 +655,7 @@ class ci_pinv_otros extends designa_ci
                   }else{
                     throw new toba_error($mensaje);
                   } 
-                }else{
+                }else{//podria colocar un valor menor a $calculo
                    throw new toba_error('La cantidad de dias debe ser menor o igual a: '.$calculo.'. Por favor, corrija e intente guardar nuevamente.');
                 }
           }

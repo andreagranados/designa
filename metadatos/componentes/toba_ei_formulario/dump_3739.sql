@@ -552,7 +552,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'13', --orden
 	'Nro Resolución CD', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Ingrese con el siguiente formato: XXXX/YYYY donde XXXX corresponden a los 4 dígitos para indicar el numero de resolución y YYYY corresponden a los 4 dígitos para el año', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo

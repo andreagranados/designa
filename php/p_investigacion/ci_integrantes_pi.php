@@ -11,6 +11,7 @@ class ci_integrantes_pi extends designa_ci
         protected $s__tiene_direct;
         protected $s__estado;
         protected $s__anio;
+        protected $s__codigo;
            
         function get_persona($id){   
         }
@@ -44,20 +45,8 @@ class ci_integrantes_pi extends designa_ci
 	{            
              //muestra los integrantes internos del p de inv
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-//            if($pi['es_programa']==1){
-//                $this->controlador()->pantalla()->tab("pant_estimulos")->desactivar();	 
-//                $this->controlador()->pantalla()->tab("pant_viaticos")->desactivar();
-//            }else{
-//                $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
-//                $this->controlador()->pantalla()->tab("pant_subproyectos")->desactivar();	 
-//                 if($pertenece!=0){// pertenece a un programa   
-//                        //si pertenece a un programa entonces el subsidio lo recibe el programa
-//                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
-//                        $this->controlador()->pantalla()->tab("pant_winsip")->desactivar();	 
-//                    }
-//            }
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $cuadro->set_titulo(str_replace(':','' ,$pi['denominacion']).'-'.$pi['codigo'].'(ResCD: '.$pi['nro_resol'].')');
+            $resol=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get_resolucion($pi['id_pinv']);
+            $cuadro->set_titulo(str_replace(':','' ,$pi['denominacion']).'-'.$pi['codigo'].' (ResCD: '.$resol.')');
             $cuadro->set_datos($this->dep('datos')->tabla('integrante_interno_pi')->get_listado($pi['id_pinv']));
             
 	}
@@ -211,11 +200,10 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('No pueden agregar participantes al proyecto', 'error');  
-                
             }else{ //pedir obligatorio campo resaval porque es un integrante de otra facultad, salvo los asesores que no necesitan aval
                 $uni=$this->dep('datos')->tabla('designacion')->get_ua($datos['id_designacion']); 
                 //
-                if(trim($datos['funcion_p'])!='AS'and $pi['uni_acad']!=$uni and !(isset($datos['resaval']))){ 
+                if(trim($datos['funcion_p'])!='AS' and $pi['uni_acad']!=$uni and !(isset($datos['resaval']))){ 
                      //toba::notificacion()->agregar('Debe completar la Resol de aval porque es un integrante de otra facultad', 'error');  
                     throw new toba_error("Debe completar la Resol de aval porque es un integrante de otra facultad");
                 }else{
@@ -232,14 +220,23 @@ class ci_integrantes_pi extends designa_ci
                                 //toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');     
                                 throw new toba_error("Revise las fechas. Fuera del periodo del proyecto!");
                             }else{
-                                $datos['pinvest']=$pi['id_pinv'];
-                                $datos['ua']=$uni;
-                                $datos['check_inv']=0;
-                                $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-                                $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                                $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
-                                toba::notificacion()->agregar('El docente ha sido ingresado correctamente', 'info');   
-                                $this->s__mostrar_i=0;
+                                $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+                                if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
+                                    toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                }else{
+                                    if (isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
+                                        toba::notificacion()->agregar('Resolucion CD Baja Modificacion Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                    }else{
+                                        $datos['pinvest']=$pi['id_pinv'];
+                                        $datos['ua']=$uni;
+                                        $datos['check_inv']=0;
+                                        $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
+                                        $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                                        $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+                                        toba::notificacion()->agregar('El docente ha sido ingresado correctamente', 'info');   
+                                        $this->s__mostrar_i=0;
+                                       }
+                                  }
                             }
                         }
                     }else{
@@ -258,29 +255,59 @@ class ci_integrantes_pi extends designa_ci
 
         function evt__form_integrante_i__modificacion($datos)
         {
-            $ua=$this->controlador()->controlador()->dep('datos')->tabla('designacion')->get_uni_acad($datos['id_designacion']);
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $registro=$this->dep('datos')->tabla('integrante_interno_pi')->get();
-            if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){//no puede ir fuera del periodo del proyecto
-                //toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');                    
-                throw new toba_error("Revise las fechas. Fuera del periodo del proyecto!");
+            if($pi['estado']<>'A' and $pi['estado']<>'I'){
+                toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');  
             }else{
-                //verificar que la modificacion no haga que se superpongan las fechas
-                $haysuperposicion=false;//no es igual al del alta porque no tengo que considerar el registro vigente$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion_modif($pi['id_pinv'],$datos['id_docente'],$datos['desde'],$datos['hasta'],$registro['id_designacion'],$registro['desde']);
-                if(!$haysuperposicion){
-                    $datos['ua']=$ua;
-                    $datos['pinvest']=$pi['id_pinv'];
-                    $datos['check_inv']=0;//pierde el check si es que lo tuviera
-                    //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
-                    $actual=$this->dep('datos')->tabla('integrante_interno_pi')->get();                    
-                    $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-                    $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                    $this->s__mostrar_i=0;
-                    $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($actual['id_designacion'],$actual['pinvest'],$actual['desde'],$datos['desde']);
-                    toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
-                }else{
-                    //toba::notificacion()->agregar('Hay superposicion de fechas', 'error');  
-                     throw new toba_error("Hay superposicion de fechas");
+                $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
+                if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){//no puede ir fuera del periodo del proyecto
+                    //toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');                    
+                  throw new toba_error("Revise las fechas. Fuera del periodo del proyecto!");
+                }else{  
+                    //verificar que la modificacion no haga que se superpongan las fechas
+                    $haysuperposicion=false;//no es igual al del alta porque no tengo que considerar el registro vigente$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion_modif($pi['id_pinv'],$datos['id_docente'],$datos['desde'],$datos['hasta'],$registro['id_designacion'],$registro['desde']);
+                    if(!$haysuperposicion){
+                            $band=false;
+                            if($pi['estado']=='A'){
+                                $band=$this->dep('datos')->tabla('logs_integrante_interno_pi')->fue_chequeado($int['id_designacion'],$int['pinvest'],$int['desde']);
+                              }
+                            if($band){
+                                unset($datos['funcion_p']);
+                                unset($datos['cat_investigador']);
+                                unset($datos['identificador_personal']);
+                                unset($datos['carga_horaria']);
+                                unset($datos['desde']);
+                                unset($datos['rescd']);
+                                unset($datos['rescd_bm']);
+                                unset($datos['cat_invest_conicet']);
+                                unset($datos['resaval']);
+                                unset($datos['hs_finan_otrafuente']);
+                                $datos['check_inv']=0;//pierde el check si es que lo tuviera
+                                $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
+                                $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                                $this->s__mostrar_i=0;
+                                toba::notificacion()->agregar('Ha sido chequeado por SCyT, solo puede modificar fecha hasta', 'info');
+                            }else{
+                                $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+                                if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
+                                    toba::notificacion()->agregar('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                }else{
+                                    if (isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
+                                        toba::notificacion()->agregar('Nro Resolucion CD Baja Modificacion invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                    }else{
+                                        $datos['check_inv']=0;//pierde el check si es que lo tuviera
+                                        $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
+                                        $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                                        //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
+                                        $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($int['id_designacion'],$int['pinvest'],$int['desde'],$datos['desde']);
+                                        $this->s__mostrar_i=0;
+                                    }
+                                 }
+                         }
+                    }else{
+                        //toba::notificacion()->agregar('Hay superposicion de fechas', 'error');  
+                         throw new toba_error("Hay superposicion de fechas");
+                    }
                 }
             }
         }
@@ -344,24 +371,32 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('No pueden agregar participantes al proyecto', 'error');  
-                
             }else{ 
                 $band=$this->dep('datos')->tabla('integrante_externo_pi')->es_docente($datos['desde'],$datos['hasta'],$datos['integrante'][0],$datos['integrante'][1]);
                  if($band){
                       //toba::notificacion()->agregar('Este integrante es docente, ingreselo en la solapa Participantes con Cargo Docente en UNCO');
                       //$this->dep('datos')->tabla('integrante_externo_pi')->genera_error();//fuerzo error?para no perder los datos del formualrio                                    
-                      throw new toba_error("Este integrante es docente, ingreselo en la solapa Participantes con Cargo Docente en UNCO");
+                    throw new toba_error("Este integrante es docente, ingreselo en la solapa Participantes con Cargo Docente en UNCO");
                  } else{
-                    $datos['pinvest']=$pi['id_pinv'];
-                    $datos['nro_tabla']=1;
-                    $datos['tipo_docum']=$datos['integrante'][0];
-                    $datos['nro_docum']=$datos['integrante'][1];
-                    $datos['check_inv']=0;
-                    $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
-                    $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
-                    $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
-                    $this->s__mostrar_e=0;
-                    toba::notificacion()->agregar('El integrante se ha dado de alta correctamente', 'info'); 
+                    $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+                    if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
+                        toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                    }else{
+                        if ( isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
+                            toba::notificacion()->agregar('Resolucion CD de Baja o Modificacion Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                        }else{
+                            $datos['pinvest']=$pi['id_pinv'];
+                            $datos['nro_tabla']=1;
+                            $datos['tipo_docum']=$datos['integrante'][0];
+                            $datos['nro_docum']=$datos['integrante'][1];
+                            $datos['check_inv']=0;
+                            $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
+                            $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+                            $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+                            $this->s__mostrar_e=0;
+                            toba::notificacion()->agregar('El integrante se ha dado de alta correctamente', 'info');             
+                        }
+                     }
                  }
             }
 	}
@@ -390,13 +425,36 @@ class ci_integrantes_pi extends designa_ci
         }
         function evt__form_integrante_e__modificacion($datos)
         {
-            $actual=$this->dep('datos')->tabla('integrante_externo_pi')->get();
-            $datos['check_inv']=0;//pierde el check
-            $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
-            $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
-    //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
-            $this->dep('datos')->tabla('integrante_externo_pi')->modificar_fecha_desde($actual['tipo_docum'],$actual['nro_docum'],$actual['pinvest'],$actual['desde'],$datos['desde']);
-            toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
+            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            if($pi['estado']<>'A' and $pi['estado']<>'I'){
+                toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');   
+            }else{
+                $band=false;
+                $int=$this->dep('datos')->tabla('integrante_externo_pi')->get();
+                if($pi['estado']=='A'){//solo en estado A chequea check investigacion
+                    //si fue chequeado por SCyT entonces no puede borrar
+                    $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
+                }
+                if($band){
+                    toba::notificacion()->agregar('No puede modificar un integrante que ya ha sido chequeado por SCyT', 'error');  
+                }else{
+                    $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+                    if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
+                        toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                    }else{
+                       if ( isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
+                           toba::notificacion()->agregar('Resolucion CD Baja Modificacion Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                        }else{
+                            $datos['check_inv']=0;//pierde el check
+                            $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
+                            $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+                    //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
+                            $this->dep('datos')->tabla('integrante_externo_pi')->modificar_fecha_desde($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde'],$datos['desde']);
+                            toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
+                       }
+                    }
+                }
+            }
         }
         function evt__form_integrante_e__cancelar()
 	{
@@ -415,10 +473,11 @@ class ci_integrantes_pi extends designa_ci
                     //si es programa no tiene estimulos. El estimulo lo tiene el proyecto que pertenece al programa
                     $this->controlador()->pantalla()->tab("pant_estimulos")->desactivar();	 
                     }
+                $resol=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get_resolucion($pi['id_pinv']);
+                $cuadro->set_titulo(str_replace(':','' ,$pi['denominacion']).'-'.$pi['codigo'].' (ResCD: '.$resol.')');
+                $cuadro->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get_listado($pi['id_pinv']));    
                 }
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $cuadro->set_titulo(str_replace(':','' ,$pi['denominacion']).'-'.$pi['codigo'].'(ResCD: '.$pi['nro_resol'].')');
-            $cuadro->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get_listado($pi['id_pinv']));
+            
 	}
         function evt__cuadro_int__seleccion($datos)
 	{
@@ -472,11 +531,13 @@ class ci_integrantes_pi extends designa_ci
 	{
            if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $cuadro->set_titulo(str_replace(':','' ,$pi['denominacion']).'-'.$pi['codigo'].'(ResCD: '.$pi['nro_resol'].')');
+            $this->s__resol=$pi['nro_resol'];
+            //$this->s__resol=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get_resolucion($pi['id_pinv']);
+            $cuadro->set_titulo(str_replace(':','' ,$pi['denominacion']).'-'.$pi['codigo'].' (ResCD: '.$this->s__resol.')');
             $this->s__tiene_direct=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->tiene_director($pi['id_pinv']);
             $this->s__dependencia=$pi['uni_acad'];
+            $this->s__codigo=$pi['codigo'];
             $this->s__denominacion=$pi['denominacion'];
-            $this->s__resol=$pi['nro_resol'];
             $this->s__estado=$pi['estado'];
             $this->s__anio=date("Y",strtotime($pi['fec_desde']));
             $this->s__listado=$this->dep('datos')->tabla('integrante_externo_pi')->get_plantilla($pi['id_pinv']);   
@@ -489,6 +550,13 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $form->set_titulo($pi['denominacion']);
 	}
+        function conf__cuadro_altas(toba_ei_cuadro $cuadro)
+        {
+            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $datos=$this->dep('datos')->tabla('integrante_externo_pi')->get_altas($pi['id_pinv']);   
+            $cuadro->set_datos($datos);
+            
+        }
         function conf__cuadro_bajas(toba_ei_cuadro $cuadro)
         {
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
@@ -561,9 +629,10 @@ class ci_integrantes_pi extends designa_ci
                    $i++;
                }   
                $i=$i-1;
-               $pdf->ezText(' DEPENDENCIA DEL PROYECTO: '.$this->s__dependencia.'                                                                                                                                                                                                         Resol: '.$this->s__resol, 10);
-               $pdf->ezText(' DENOMINACION DEL PROYECTO: '.$this->s__denominacion, 10);
+               $pdf->ezText(' DEPENDENCIA DEL PROYECTO: '.$this->s__dependencia, 10);
+               $pdf->ezText(' DENOMINACION DEL PROYECTO: <b>'.$this->s__codigo.'</b> - '.$this->s__denominacion, 10);
                $pdf->ezText(' CANTIDAD DE INTEGRANTES: '.$i, 10);
+               $pdf->ezText(' RESOLUCION DE AVAL: '.$this->s__resol, 10);
                
                //$pdf->ezTable($datos, array( 'col2'=>'<b>ApellidoyNombre</b>','col3' => '<b>Cuil</b>','col4' => '<b>FecNacim</b>','col5' => '<b>Sexo</b>','col6' => '<b>CInv</b>','col7' => '<b>'.$tg.'</b>','col8' => '<b>'.$tp.'</b>','col10' =>'<b>'.$ua.'</b>','col11' => '<b>'.$catc.'</b>','col12' => '<b>Fn</b>','col13' => '<b>'.$cat.'</b>','col14' => '<b>CH</b>'), $titulo, $opciones);
                $cols=array('col2'=>'<b>1</b>','col3' => '<b>2</b>','col4' => '<b>3</b>','col5' => '<b>4</b>','col6' => '<b>5</b>','col7' => '<b>6</b>','col8' => '<b>7</b>','col10' =>'<b>8</b>','col11' => '<b>9</b>','col12' => '<b>10</b>','col13' => '<b>11</b>','col14' => '<b>12</b>');
@@ -579,7 +648,7 @@ class ci_integrantes_pi extends designa_ci
 //                    }else{
                         if($this->s__estado=='I' or $this->s__estado=='N' or $this->s__estado=='X'){
                             $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
-                            $pdf->addJpegFromFile($imagen, 100, 35, 700, 400);
+                            $pdf->addJpegFromFile($imagen, 100, 25, 700, 400);
                         }else{
                             
                             if($this->s__estado=='F'){
