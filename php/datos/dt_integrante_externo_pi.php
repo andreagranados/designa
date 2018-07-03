@@ -44,88 +44,94 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             );";
         toba::db('designa')->consultar($sql);
         $sql="insert into movi
-            select pinvest,tipo_docum,nro_docum,count(distinct desde) from 
-            (select t_i.pinvest, t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,funcion_p,carga_horaria,ua,t_i.desde,t_i.hasta,rescd
-            from integrante_interno_pi t_i
-            LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_i.id_designacion)
-            LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
-            where t_i.pinvest=$id_p
-            UNION
-            select t_i.pinvest,t_d.apellido||', '||t_d.nombre as nombre,t_d.tipo_docum,t_d.nro_docum,funcion_p,carga_horaria,t_n.nombre_institucion as ua,t_i.desde,t_i.hasta,rescd 
-            from integrante_externo_pi t_i
-            LEFT OUTER JOIN persona t_d ON (t_d.nro_docum=t_i.nro_docum and t_d.tipo_docum=t_i.tipo_docum)
-            LEFT OUTER JOIN institucion t_n ON (t_i.id_institucion=t_n.id_institucion)
-            where t_i.pinvest=$id_p)a
-            group by pinvest,tipo_docum,nro_docum;";
+                select pinvest,tipo_docum,nro_docum,count(distinct desde) from 
+                (select t_i.pinvest, t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,funcion_p,carga_horaria,ua,t_i.desde,t_i.hasta,rescd
+                    from integrante_interno_pi t_i
+                    LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_i.id_designacion)
+                    LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
+                    where t_i.pinvest=$id_p
+                UNION
+                    select t_i.pinvest,t_d.apellido||', '||t_d.nombre as nombre,t_d.tipo_docum,t_d.nro_docum,funcion_p,carga_horaria,t_n.nombre_institucion as ua,t_i.desde,t_i.hasta,rescd 
+                    from integrante_externo_pi t_i
+                    LEFT OUTER JOIN persona t_d ON (t_d.nro_docum=t_i.nro_docum and t_d.tipo_docum=t_i.tipo_docum)
+                    LEFT OUTER JOIN institucion t_n ON (t_i.id_institucion=t_n.id_institucion)
+                    where t_i.pinvest=$id_p
+                 )a
+                group by pinvest,tipo_docum,nro_docum;";
         toba::db('designa')->consultar($sql);  
-        $sql="select * from (select t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd ,t_i.rescd_bm, t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as categoria
-            from movi a
-            LEFT OUTER JOIN docente t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
-            LEFT OUTER JOIN designacion t_d ON (t_d.id_docente=t_do.id_docente)
-            LEFT OUTER JOIN integrante_interno_pi t_i ON (t_i.id_designacion=t_d.id_designacion)
-            where t_i.pinvest=$id_p
-            and t_i.pinvest=a.pinvest
-            and a.nro_docum=t_do.nro_docum
-            and a.tipo_docum=t_do.tipo_docum
-            and funcion_p is not null
-            and a.cont>1
+        $sql=" 
+            select ROW_NUMBER() OVER (ORDER BY nombre,desde) AS id,sub.* from 
+              (select t_do.apellido||', '||t_do.nombre as nombre,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd ,t_i.rescd_bm, t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as categoria,t_i.check_inv
+                from movi a
+                LEFT OUTER JOIN docente t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
+                LEFT OUTER JOIN designacion t_d ON (t_d.id_docente=t_do.id_docente)
+                LEFT OUTER JOIN integrante_interno_pi t_i ON (t_i.id_designacion=t_d.id_designacion)
+                where t_i.pinvest=$id_p
+                and t_i.pinvest=a.pinvest
+                and a.nro_docum=t_do.nro_docum
+                and a.tipo_docum=t_do.tipo_docum
+                and funcion_p is not null
+                and a.cont>1
             UNION           
-            select t_do.apellido||', '||t_do.nombre as agente,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd,t_i.rescd_bm,'' as categoria
-            from movi a
-            LEFT OUTER JOIN persona t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
-            LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.nro_docum=t_do.nro_docum and t_i.tipo_docum=t_do.tipo_docum)
-            where t_i.pinvest=$id_p
-            and t_i.pinvest=a.pinvest
-            and a.nro_docum=t_do.nro_docum
-            and a.tipo_docum=t_do.tipo_docum
-            and funcion_p is not null
-            and a.cont>1)a
+                select t_do.apellido||', '||t_do.nombre as agente,t_do.tipo_docum,t_do.nro_docum,t_i.funcion_p,t_i.carga_horaria,t_i.desde,t_i.hasta,t_i.rescd,t_i.rescd_bm,'' as categoria,t_i.check_inv
+                from movi a
+                LEFT OUTER JOIN persona t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
+                LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.nro_docum=t_do.nro_docum and t_i.tipo_docum=t_do.tipo_docum)
+                where t_i.pinvest=$id_p
+                and t_i.pinvest=a.pinvest
+                and a.nro_docum=t_do.nro_docum
+                and a.tipo_docum=t_do.tipo_docum
+                and funcion_p is not null
+                and a.cont>1)sub
             order by nombre,desde
             ";
         return toba::db('designa')->consultar($sql);  
     }
     //devuelve todas las altas nuevas del proyecto que ingresa como argumento
     function get_altas($id_p){//la fecha desde del integrante es mayor a la del proyecto y además no existe para ese docente un movimiento con fecha desde=fecha desde del proyecto
-        $sql="select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_i.desde,t_i.hasta,t_i.carga_horaria,t_i.funcion_p,t_i.rescd
-        from pinvestigacion t_p
-        LEFT OUTER JOIN integrante_interno_pi t_i ON (t_i.pinvest=t_p.id_pinv)
-        LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_i.id_designacion)
-        LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
-        where t_p.id_pinv=$id_p
-        and t_p.fec_desde<t_i.desde
-        and not exists (select * from integrante_interno_pi i, designacion d, pinvestigacion p
-                                 where i.id_designacion=d.id_designacion
-                                 and i.pinvest=p.id_pinv
-                                 and i.pinvest=$id_p
-                                    and t_d.id_docente=d.id_docente
-                                    and i.desde=p.fec_desde)
-        and not exists (select * from integrante_externo_pi e,persona r
-                                 where e.pinvest=$id_p
-                                    and e.tipo_docum=r.tipo_docum
-                                    and e.nro_docum=r.nro_docum
-                                    and t_do.tipo_docum=r.tipo_docum
-                                    and t_do.nro_docum=r.nro_docum
-                                    and e.desde=t_p.fec_desde)  "
+        //le agrego un id de orden de fila ordenado por fecha desde
+        $sql="select ROW_NUMBER() OVER (ORDER BY desde) AS id,sub.* from 
+               (select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_i.desde,t_i.hasta,t_i.carga_horaria,t_i.funcion_p,t_i.rescd,t_i.check_inv,t_d.cat_estat||t_d.dedic as categ
+                from pinvestigacion t_p
+                LEFT OUTER JOIN integrante_interno_pi t_i ON (t_i.pinvest=t_p.id_pinv)
+                LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_i.id_designacion)
+                LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
+                where t_p.id_pinv=$id_p
+                and t_p.fec_desde<t_i.desde
+                and not exists (select * from integrante_interno_pi i, designacion d, pinvestigacion p
+                                         where i.id_designacion=d.id_designacion
+                                         and i.pinvest=p.id_pinv
+                                         and i.pinvest=$id_p
+                                            and t_d.id_docente=d.id_docente
+                                            and i.desde=p.fec_desde)
+                and not exists (select * from integrante_externo_pi e,persona r
+                                         where e.pinvest=$id_p
+                                            and e.tipo_docum=r.tipo_docum
+                                            and e.nro_docum=r.nro_docum
+                                            and t_do.tipo_docum=r.tipo_docum
+                                            and t_do.nro_docum=r.nro_docum
+                                            and e.desde=t_p.fec_desde)  "
                 . "UNION"
-                . " select trim(t_d.apellido)||', '||trim(t_d.nombre) as agente,t_i.desde,t_i.hasta,t_i.carga_horaria,t_i.funcion_p,t_i.rescd
-        from pinvestigacion t_p
-        LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.pinvest=t_p.id_pinv)
-        LEFT OUTER JOIN persona t_d ON (t_i.nro_docum=t_d.nro_docum and t_i.tipo_docum=t_d.tipo_docum)
-        where t_p.id_pinv=$id_p 
-        and t_p.fec_desde<t_i.desde
-        and not exists (select * from integrante_interno_pi i, designacion d, docente o
-                                 where i.id_designacion=d.id_designacion
-                                 and i.pinvest=t_p.id_pinv
-                                 and i.pinvest=$id_p
-                                 and d.id_docente=o.id_docente
-                                 and t_d.nro_docum=o.nro_docum
-                                 and t_d.tipo_docum=o.tipo_docum
-                                 and i.desde=t_p.fec_desde)
-        and not exists (select * from integrante_externo_pi e
-                                 where e.pinvest=$id_p
-                                    and e.tipo_docum=t_d.tipo_docum
-                                    and e.nro_docum=t_d.nro_docum
-                                    and e.desde=t_p.fec_desde)  ";
+                . " select trim(t_d.apellido)||', '||trim(t_d.nombre) as agente,t_i.desde,t_i.hasta,t_i.carga_horaria,t_i.funcion_p,t_i.rescd,t_i.check_inv,'' as categ
+                    from pinvestigacion t_p
+                    LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.pinvest=t_p.id_pinv)
+                    LEFT OUTER JOIN persona t_d ON (t_i.nro_docum=t_d.nro_docum and t_i.tipo_docum=t_d.tipo_docum)
+                    where t_p.id_pinv=$id_p 
+                    and t_p.fec_desde<t_i.desde
+                    and not exists (select * from integrante_interno_pi i, designacion d, docente o
+                                             where i.id_designacion=d.id_designacion
+                                             and i.pinvest=t_p.id_pinv
+                                             and i.pinvest=$id_p
+                                             and d.id_docente=o.id_docente
+                                             and t_d.nro_docum=o.nro_docum
+                                             and t_d.tipo_docum=o.tipo_docum
+                                             and i.desde=t_p.fec_desde)
+                    and not exists (select * from integrante_externo_pi e
+                                             where e.pinvest=$id_p
+                                                and e.tipo_docum=t_d.tipo_docum
+                                                and e.nro_docum=t_d.nro_docum
+                                                and e.desde=t_p.fec_desde) 
+                            )sub";
         return toba::db('designa')->consultar($sql);  
     }
     //devuelve todas las bajas del proyecto que ingresa como argumento
@@ -180,24 +186,25 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         group by tipo_docum,nro_docum,pinvest
         ";
         toba::db('designa')->consultar($sql);
-        $sql="select t_do.apellido||', '||t_do.nombre as nombre,t_i.hasta as fecha,t_i.rescd_bm
-            from bajas a
-            LEFT OUTER JOIN docente t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
-            LEFT OUTER JOIN designacion t_d ON (t_d.id_docente=t_do.id_docente)
-            LEFT OUTER JOIN integrante_interno_pi t_i ON (t_i.id_designacion=t_d.id_designacion)
-            where a.pinvest=$id_p
-            and a.nro_docum=t_do.nro_docum
-            and a.tipo_docum=t_do.tipo_docum
-            and a.fecha=t_i.hasta
-            UNION           
-            select t_do.apellido||', '||t_do.nombre as agente,t_i.hasta,t_i.rescd_bm
-            from bajas a
-            LEFT OUTER JOIN persona t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
-            LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.nro_docum=t_do.nro_docum and t_i.tipo_docum=t_do.tipo_docum)
-            where a.pinvest=$id_p
-            and a.nro_docum=t_do.nro_docum
-            and a.tipo_docum=t_do.tipo_docum
-            and a.fecha=t_i.hasta";
+        $sql="select ROW_NUMBER() OVER (ORDER BY fecha) AS id,sub.* from (
+                select t_do.apellido||', '||t_do.nombre as nombre,t_i.hasta as fecha,t_i.rescd_bm,t_i.check_inv
+                from bajas a
+                LEFT OUTER JOIN docente t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
+                LEFT OUTER JOIN designacion t_d ON (t_d.id_docente=t_do.id_docente)
+                LEFT OUTER JOIN integrante_interno_pi t_i ON (t_i.id_designacion=t_d.id_designacion)
+                where a.pinvest=$id_p
+                and a.nro_docum=t_do.nro_docum
+                and a.tipo_docum=t_do.tipo_docum
+                and a.fecha=t_i.hasta
+                UNION           
+                select t_do.apellido||', '||t_do.nombre as agente,t_i.hasta,t_i.rescd_bm,t_i.check_inv
+                from bajas a
+                LEFT OUTER JOIN persona t_do ON (t_do.nro_docum=a.nro_docum and t_do.tipo_docum=a.tipo_docum)
+                LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.nro_docum=t_do.nro_docum and t_i.tipo_docum=t_do.tipo_docum)
+                where a.pinvest=$id_p
+                and a.nro_docum=t_do.nro_docum
+                and a.tipo_docum=t_do.tipo_docum
+                and a.fecha=t_i.hasta)sub";
         return toba::db('designa')->consultar($sql);
     }
     function get_plantilla($id_p){
