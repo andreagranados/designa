@@ -141,7 +141,8 @@ class dt_articulo_73 extends designa_datos_tabla
                        .$concatenar
                       . " and b.id_designacion=d.id_designacion"
                             . " and e.id_programa=d.id_programa"
-                            . " and e.id_tipo_programa=1 "//solo considero designaciones imputadas al programa por defecto (dinero del tesoro nacional)
+                             //para etapa 3 comento esto para que traiga todo
+                           // . " and e.id_tipo_programa=1 "//solo considero designaciones imputadas al programa por defecto (dinero del tesoro nacional)
                             . ") a"
                             //. " INNER JOIN auxi b "
                             ." LEFT OUTER JOIN auxi b "

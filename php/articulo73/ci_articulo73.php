@@ -58,7 +58,7 @@ class ci_articulo73 extends toba_ci
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
             $art=$this->dep('datos')->tabla('articulo_73')->get();
             
-            if($art['etapa']==1){
+            if($art['etapa']==1 or $art['etapa']==2){
                 toba::notificacion()->agregar('Ya paso a Superior, no se puede modificar', 'info');
             }else{
                 if($art['check_academica']){
@@ -330,7 +330,7 @@ class ci_articulo73 extends toba_ci
             $datos['nro_tab11']=11;
             $datos['check_academica']=false;
             $datos['pase_superior']=false;
-            $datos['etapa']=2;
+            $datos['etapa']=3;
             $dao=$this->dep('datos')->tabla('designacion')->get_dao($datos['id_designacion']);
             if(count($dao)>0){//guardo departamento, area y orientacion de la designacion previamente seleccionada
                 $datos['id_departamento']=$dao[0]['id_departamento'];    
