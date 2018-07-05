@@ -12,13 +12,7 @@ class ci_integrantes_pi extends designa_ci
         protected $s__estado;
         protected $s__anio;
         protected $s__codigo;
-        protected $s__seleccionadas_altas;
-        protected $s__seleccionadas_bajas;
-        protected $s__seleccionadas_mov;
-        protected $s__altas;
-        protected $s__bajas;
-        protected $s__mov;
-        protected $s__imprimir;
+      
         
         function get_persona($id){   
         }
@@ -37,9 +31,6 @@ class ci_integrantes_pi extends designa_ci
         function conf__pant_movimientos(toba_ei_pantalla $pantalla)
         {
             $this->s__pantalla='pant_movimientos';
-//            if($this->s__imprimir==0){
-//                $this->pantalla()->evento('imprimir')->ocultar();
-//            }
         }
        
         function fecha_desde_proyecto(){
@@ -60,11 +51,7 @@ class ci_integrantes_pi extends designa_ci
 	//-----------------------------------------------------------------------------------
 
 	function conf__cuadro_id(toba_ei_cuadro $cuadro)
-	{    
-            $this->s__imprimir=0;
-            $this->s__seleccionadas_mov=array();
-            $this->s__seleccionadas_altas=array();
-            $this->s__seleccionadas_bajas=array();
+	{                
              //muestra los integrantes internos del p de inv
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $resol=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get_resolucion($pi['id_pinv']);
@@ -464,8 +451,8 @@ class ci_integrantes_pi extends designa_ci
                     unset($datos['resaval']);
                     unset($datos['hs_finan_otrafuente']);
                     $datos['check_inv']=0;//pierde el check si es que lo tuviera
-                    $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-                    $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                    $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
+                    $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
                     $this->s__mostrar_e=0;
                     toba::notificacion()->agregar('Ha sido chequeado por SCyT, solo puede modificar fecha hasta', 'info');
                 }else{
@@ -498,10 +485,6 @@ class ci_integrantes_pi extends designa_ci
 	//-----------------------------------------------------------------------------------
         function conf__cuadro_int(toba_ei_cuadro $cuadro)
 	{
-            $this->s__imprimir=0;
-            $this->s__seleccionadas_mov=array();
-            $this->s__seleccionadas_altas=array();
-            $this->s__seleccionadas_bajas=array();
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 if($pi['es_programa']==1){
@@ -585,112 +568,9 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $form->set_titulo($pi['denominacion']);
 	}
-        
-        function conf__cuadro_altas(toba_ei_cuadro $cuadro)
-        {
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $this->s__altas=$this->dep('datos')->tabla('integrante_externo_pi')->get_altas($pi['id_pinv']);   
-            $cuadro->set_datos($this->s__altas);   
-        }
-      	
-        function evt__cuadro_altas__multiple_con_etiq($datos)
-	{
-            $this->s__seleccionadas_altas=$datos;
-	}
-        function conf_evt__cuadro_altas__multiple_con_etiq(toba_evento_usuario $evento, $fila)
-	{
-           $sele=array();
-           if (isset($this->s__seleccionadas_altas)) {//si hay seleccionados en la tabla de altas
-                foreach ($this->s__seleccionadas_altas as $key=>$value) {
-                    $sele[]=$value['id'];  
-                }
-           }
-           if($this->s__altas[$fila]['check_inv']==1){//si tiene el check de inv no esta habilitado para imprimir
-                $evento->anular();
-           }else{
-                if(in_array($this->s__altas[$fila]['id'],$sele)){
-                    $evento->set_check_activo(true);
-                }else{
-                    $evento->set_check_activo(false);   
-                }       
-            }
-        }
-        function conf__cuadro_bajas(toba_ei_cuadro $cuadro)
-        {
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $this->s__bajas=$this->dep('datos')->tabla('integrante_externo_pi')->get_bajas($pi['id_pinv']);   
-            $cuadro->set_datos($this->s__bajas);
-        }
-        function evt__cuadro_bajas__multiple_con_etiq($datos)
-	{
-            $this->s__seleccionadas_bajas=$datos;
-	}
-        function conf_evt__cuadro_bajas__multiple_con_etiq(toba_evento_usuario $evento, $fila)
-	{
-           $sele=array();
-           if (isset($this->s__seleccionadas_bajas)) {//si hay seleccionados en la tabla de altas
-                foreach ($this->s__seleccionadas_bajas as $key=>$value) {
-                    $sele[]=$value['id'];  
-                }
-           }
-           if($this->s__bajas[$fila]['check_inv']==1){//si tiene el check de inv no esta habilitado para imprimir
-                $evento->anular();
-           }else{
-                if(in_array($this->s__bajas[$fila]['id'],$sele)){
-                    $evento->set_check_activo(true);
-                }else{
-                    $evento->set_check_activo(false);   
-                }       
-            }
-        }
-        function conf__cuadro_mov(toba_ei_cuadro $cuadro)
-        {
-             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $this->s__mov=$this->dep('datos')->tabla('integrante_externo_pi')->get_movi($pi['id_pinv']);   
-                $cuadro->set_datos($this->s__mov); 
-             } 
-        }
-        function evt__cuadro_mov__multiple_con_etiq($datos)
-	{
-            $this->s__seleccionadas_mov=$datos;
-	}
-        function conf_evt__cuadro_mov__multiple_con_etiq(toba_evento_usuario $evento, $fila)
-	{
-           $sele=array();
-           if (isset($this->s__seleccionadas_mov)) {//si hay seleccionados en la tabla de altas
-                foreach ($this->s__seleccionadas_mov as $key=>$value) {
-                    $sele[]=$value['id'];  
-                }
-           }
-           if($this->s__mov[$fila]['check_inv']==1){//si tiene el check de inv no esta habilitado para imprimir
-                $evento->anular();
-           }else{
-                if(in_array($this->s__mov[$fila]['id'],$sele)){
-                    $evento->set_check_activo(true);
-                }else{
-                    $evento->set_check_activo(false);   
-                }       
-            }
-        }
-        
-        function evt__prueba(){//esto lo hago para que se llenen las variables previo a generar el pdf, sino no se llenan
-//            print_r($this->s__seleccionadas_altas);
-//            print_r($this->s__seleccionadas_bajas);
-              if($this->s__estado=='A'){
-                  //si selecciono para imprimir entonces muestra el botón para generar pdf
-                if(count($this->s__seleccionadas_bajas)>0 or count($this->s__seleccionadas_altas)>0 or count($this->s__seleccionadas_mov)>0){
-                  $this->s__imprimir=1;
-                } else{
-                  toba::notificacion()->agregar('Debe seleccionar registros para generar la planilla de movimientos', 'info');     
-                } 
-              } else{
-                  toba::notificacion()->agregar('El proyecto debe estar Activo para poder imprimir la Planilla de Movimientos', 'info');     
-              } 
-        }
-      
-       
-        function vista_pdf(toba_vista_pdf $salida){
+
+        function vista_pdf(toba_vista_pdf $salida){         
+         if($this->s__tiene_direct==1){  
             $datos=array();
             $i=0;
             //configuramos el nombre que tendrá el archivo pdf
@@ -725,8 +605,6 @@ class ci_integrantes_pi extends designa_ci
                 'width' => 820//,
                //'cols' =>array('col2'=>array('justification'=>'center') ,'col3'=>array('justification'=>'center'),'col4'=>array('justification'=>'center') ,'col5'=>array('justification'=>'center'),'col6'=>array('justification'=>'center') ,'col7'=>array('justification'=>'center') ,'col8'=>array('justification'=>'center'),'col9'=>array('justification'=>'center') ,'col10'=>array('justification'=>'center') ,'col11'=>array('justification'=>'center') ,'col12'=>array('justification'=>'center'),'col13'=>array('justification'=>'center') ,'col14'=>array('justification'=>'center') )
                 );
-           if($this->s__pantalla=='pant_plantilla'){
-             if($this->s__tiene_direct==1){  
                //Configuración de Título.
                $salida->titulo(utf8_d_seguro('2.4. PLANILLA DETALLE DEL PERSONAL AFECTADO '));    
                $tg=utf8_decode("Título de Preg/Grado");
@@ -765,7 +643,7 @@ class ci_integrantes_pi extends designa_ci
                         }else{
                             if($this->s__estado=='B'){
                                 $imagen= toba::proyecto()->get_path().'/www/img/fondo_baja.jpg';
-                                $pdf->addJpegFromFile($imagen, 200, 38, 400, 400);
+                                $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
                             }else{
                                 $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
                                 $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);//200, 40, 400, 400} }
@@ -777,74 +655,13 @@ class ci_integrantes_pi extends designa_ci
                    // $pdf->addJpegFromFile($imagen2, 680, 520, 70, 60);
                     $pdf->addJpegFromFile($imagen2, 750, 520, 70, 60);
                     $pdf->addJpegFromFile($imagen3, 10, 525, 130, 40); 
-                    
                     $pdf->closeObject(); 
                 } 
              }else{
                  toba::notificacion()->agregar('No tiene director', 'error');    
              }
-        }else{//esta en la pantalla movimientos 
-                //Configuración de Título.
-                $salida->titulo(utf8_d_seguro('2.4. PLANILLA DETALLE DE MOVIMIENTOS '));    
-                $pdf->ezText(' DEPENDENCIA DEL PROYECTO: '.$this->s__dependencia, 10);
-                $pdf->ezText(' DENOMINACION DEL PROYECTO: <b>'.$this->s__codigo.'</b> - '.$this->s__denominacion, 10);
-                $pdf->ezText(' RESOLUCION DE AVAL: '.$this->s__resol, 10);
-                if (count($this->s__seleccionadas_altas)>0){
-                    $sele=array();
-                    $datos=array();$i=0;
-                    foreach ($this->s__seleccionadas_altas as $key => $value) {
-                        $sele[]=$value['id']; 
-                    }
-                    foreach ($this->s__altas as $elem) {//recorro cada designacion del listado
-                        if (in_array($elem['id'], $sele)){//si la designacion fue seleccionada
-                            $datos[$i]=array('col1' =>trim($elem['agente']), 'col2' =>  $elem['desde'],'col3' => $elem['hasta'],'col4' => $elem['funcion_p'],'col5' => $elem['rescd'],'col6' => $elem['categ'],'col7' => $elem['carga_horaria']);
-                            $i++;  
-                         }
-                    }
-                    //print_r($datos);exit; 
-                    $pdf->ezTable($datos, array( 'col1'=>'<b>Apellido y Nombre</b>','col2' => '<b>Desde</b>','col3' => '<b>Hasta</b>','col4' => '<b>Fn</b>','col5' => '<b>Resol</b>','col6' => '<b>Categ</b>','col7' => '<b>CH</b>'), 'ALTAS DE INTEGRANTES', $opciones);
-                    $pdf->ezText("\n", 10);
-                }
-                if (count($this->s__seleccionadas_bajas)>0){
-                    $sele=array();
-                    $datos=array();$i=0;
-                    foreach ($this->s__seleccionadas_bajas as $key => $value) {
-                        $sele[]=$value['id']; 
-                    }
-                    foreach ($this->s__bajas as $elem) {//recorro cada designacion del listado
-                        if (in_array($elem['id'], $sele)){//si la designacion fue seleccionada
-                            $datos[$i]=array('col1' => trim($elem['nombre']), 'col2' => trim($elem['fecha']),'col3' => $elem['rescd_bm']);
-                            $i++;  
-                         }
-                    }
-                    $pdf->ezTable($datos, array( 'col1'=>'<b>Apellido y Nombre</b>','col2' => '<b>Fecha Baja</b>','col3' => '<b>Resol</b>'), 'BAJAS DE PARTICIPANTES', $opciones);
-                    $pdf->ezText("\n", 10);
-                }
-                if (count($this->s__seleccionadas_mov)>0){
-                    $sele=array();
-                    $datos=array();$i=0;
-                    foreach ($this->s__seleccionadas_mov as $key => $value) {
-                        $sele[]=$value['id']; 
-                    }
-                    foreach ($this->s__mov as $elem) {//recorro cada designacion del listado
-                        if (in_array($elem['id'], $sele)){//si la designacion fue seleccionada
-                            $datos[$i]=array('col1' => trim($elem['nombre']), 'col2' => $elem['funcion_p'],'col3' => $elem['carga_horaria'],'col4' => $elem['categoria'],'col5' => $elem['desde'],'col6' => $elem['hasta'],'col7' => $elem['rescd'],'col8' => $elem['rescd_bm']);
-                            $i++;  
-                         }
-                    }
-                    $pdf->ezTable($datos, array( 'col1'=>'<b>Apellido y Nombre</b>','col2' => '<b>Fn</b>','col3' => '<b>CH</b>','col4' => '<b>Categ</b>','col5' => '<b>Desde</b>','col6' => '<b>Hasta</b>','col7' => '<b>Res</b>','col8' => '<b>ResBM</b>'), 'CAMBIOS', $opciones);
-                }
-                $imagen2 = toba::proyecto()->get_path().'/www/img/sein.jpg';
-                $imagen3 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
-               // $pdf->addJpegFromFile($imagen2, 680, 520, 70, 60);
-                $pdf->addJpegFromFile($imagen2, 750, 520, 70, 60);
-                $pdf->addJpegFromFile($imagen3, 10, 525, 130, 40); 
-                $pdf->closeObject(); 
-                
-            }
-            $this->s__imprimir=0;
-            $this->s__seleccionadas_altas=array();
-        }
+        }   
+        
 	
 
 	//-----------------------------------------------------------------------------------
