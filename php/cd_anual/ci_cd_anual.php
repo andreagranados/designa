@@ -6,8 +6,8 @@ class ci_cd_anual extends toba_ci
             $salida->set_nombre_archivo("CD_Anual.pdf");
             $salida->inicializar();
             $pdf = $salida->get_pdf();
-           
-            $pdf->ezSetMargins(30, 30, 50, 30);
+           //top,bottom,left,right
+            $pdf->ezSetMargins(30, 30, 50, 50);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
             $formato = 'Página {PAGENUM} de {TOTALPAGENUM}';
@@ -111,7 +111,7 @@ class ci_cd_anual extends toba_ci
                     }
                 }
                 $texto='RESUMEN: '.$pi['resumen'];
-                $pdf->ezText($texto,12);
+                $pdf->ezText($texto,12,array('justification'=>'left'));
                 $pdf->ezText("\n", 7);
                 $texto='PALABRAS CLAVES: '.$pi['palabras_clave'];
                 $pdf->ezText($texto,12);
@@ -122,7 +122,7 @@ class ci_cd_anual extends toba_ci
                 $texto='INTEGRANTES: '.$integrantes;
                 $pdf->ezText($texto,12);
                 $pdf->ezText("\n", 7);
-                $pdf->ezText("------------------------------------------------------------------------------------------------------------------------------", 12);
+                $pdf->ezText("-------------------------------------------------------------------------------------------------------------------------", 12);
                 $pdf->ezNewPage();
             }
            

@@ -258,7 +258,7 @@ class ci_integrantes_pi extends designa_ci
                 }
             }
 	}
-
+//ahora lo tiene tambien SCYT
         function evt__form_integrante_i__modificacion($datos)
         {
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
@@ -284,8 +284,12 @@ class ci_integrantes_pi extends designa_ci
                                 unset($datos['carga_horaria']);
                                 unset($datos['desde']);
                                 unset($datos['rescd']);
+                                unset($datos['rescd_bm']);
                                 unset($datos['cat_invest_conicet']);
-                                unset($datos['resaval']);
+                                $perfil = toba::usuario()->get_perfil_datos();
+                                if (!$perfil == null) {//es usuario de la UA
+                                     unset($datos['resaval']);
+                                }
                                 unset($datos['hs_finan_otrafuente']);
                                 $datos['check_inv']=0;//pierde el check si es que lo tuviera
                                 $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
@@ -447,6 +451,7 @@ class ci_integrantes_pi extends designa_ci
                     unset($datos['carga_horaria']);
                     unset($datos['desde']);
                     unset($datos['rescd']);
+                    unset($datos['rescd_bm']);
                     unset($datos['cat_invest_conicet']);
                     unset($datos['resaval']);
                     unset($datos['hs_finan_otrafuente']);

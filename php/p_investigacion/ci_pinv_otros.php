@@ -575,7 +575,6 @@ class ci_pinv_otros extends designa_ci
                 $this->dep('form_viatico')->descolapsar(); 
                 $form->ef('tipo')->set_obligatorio('true');
                 //$form->ef('estado')->set_obligatorio('true');// comento para que funcione el solo lectura
-                $form->ef('fecha_solicitud')->set_obligatorio('true');
                 $form->ef('nombre_actividad')->set_obligatorio('true');
                 $form->ef('medio_transporte')->set_obligatorio('true');
                 $form->ef('nro_docum_desti')->set_obligatorio('true');
@@ -603,6 +602,7 @@ class ci_pinv_otros extends designa_ci
             $perfil = toba::usuario()->get_perfil_datos();
             if ($perfil != null) {//si tiene perfil de datos entonces solo lectura campo estado
                 $form->ef('estado')->set_solo_lectura(true);//para que funcione no tiene que ser obligatorio 
+                $form->desactivar_efs(array('fecha_pago','expediente_pago','fecha_present_certif','observaciones'));
             }
             
 	}
@@ -620,6 +620,7 @@ class ci_pinv_otros extends designa_ci
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();         
                 $datos['id_proyecto']=$pi['id_pinv'];
                 $datos['nro_tab']=13;
+                $datos['fecha_solicitud']=date("Y-m-d");  //la fecha de solicitud es la que ingresa en sistema el viatico 
                 $datos['estado']='S';//cuando se ingresa un viatico el mismo se registra como S
                 $datos['nro_tab2']=14;
                 //estos datos si bien estan en el formulario, la ua no puede tocarlos
@@ -672,7 +673,7 @@ class ci_pinv_otros extends designa_ci
             $datos2['memo_certificados']=$datos['memo_certificados'];
             $this->controlador()->dep('datos')->tabla('viatico')->set($datos2);
             $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
-            toba::notificacion()->agregar('Modificacion exitosa. SCyT solo modifica estado, expediente de pago, fecha de pago, fecha de presentac certif. y observ', 'info');         
+            toba::notificacion()->agregar('Modificacion exitosa. SCyT solo modifica estado, expediente de pago, fecha de pago, fecha de presentac certif., memos y observaciones', 'info');         
         }
         //boton modificacion para la ua
         function evt__form_viatico__modificacion_ua($datos)
