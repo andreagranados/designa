@@ -153,7 +153,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
 //            .$where
 //            ." order by desde"    ;
             $sql="select * from (
-                select t_do.nro_cuil1||'-'||t_do.nro_cuil||'-'||t_do.nro_cuil2 as cuil,t_d.cat_estat||t_d.dedic as categoria, t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_p.nro_ord_cs,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd ,t_i.rescd_bm,t_c.descripcion as cat_inv 
+                select t_do.nro_cuil1||'-'||t_do.nro_cuil||'-'||t_do.nro_cuil2 as cuil,t_d.cat_estat||t_d.dedic||'('|| t_d.carac||')' as categoria, t_p.codigo,t_p.denominacion,t_p.nro_resol,t_p.fec_resol,t_p.nro_ord_cs,t_i.funcion_p,t_i.carga_horaria,t_i.ua,t_i.desde,t_i.hasta,t_i.rescd ,t_i.rescd_bm,t_c.descripcion as cat_inv 
                 from integrante_interno_pi t_i 
                 LEFT OUTER JOIN pinvestigacion t_p ON(t_i.pinvest=t_p.id_pinv) 
                 LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)
