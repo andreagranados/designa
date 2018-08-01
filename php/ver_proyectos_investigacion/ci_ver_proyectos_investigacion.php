@@ -2,8 +2,10 @@
 class ci_ver_proyectos_investigacion extends toba_ci
 {
         protected $s__where;
-        protected $s__listado;
         protected $s__datos_filtro;
+        protected $s__cuil;
+        protected $s__agente;
+        
 
 
 	//---- Filtro -----------------------------------------------------------------------
@@ -11,7 +13,6 @@ class ci_ver_proyectos_investigacion extends toba_ci
 	function conf__filtros(toba_ei_filtro $filtro)
 	{
            $datos=array();
-           
            if (isset($this->s__datos_filtro)) {    
              if(count($this->s__datos_filtro)>0){
                 foreach ($this->s__datos_filtro as $key => $value) {
@@ -24,38 +25,43 @@ class ci_ver_proyectos_investigacion extends toba_ci
 
 	function evt__filtros__filtrar($datos)
 	{
-		$this->s__where = $this->dep('filtros')->get_sql_where();
-                $this->s__datos_filtro = $datos;
-                unset($this->s__listado);
+            $this->s__where = $this->dep('filtros')->get_sql_where();
+            $this->s__datos_filtro = $datos;   
 	}
 
 	function evt__filtros__cancelar()
 	{
             unset($this->s__where);
             unset($this->s__datos_filtro);
-            unset($this->s__listado);
+	}
+        function conf__cuadro_rep(toba_ei_cuadro $cuadro)
+        {
+            if (isset($this->s__where)) {
+                $datos=$this->dep('datos')->tabla('persona')->get_descripciones_p($this->s__where);
+                $cuadro->set_datos($datos);
+            } 
+        }
+        function evt__cuadro_rep__seleccion($datos)
+	{
+            $this->s__cuil=$datos['cuil'];
+            $this->s__agente=$datos['agente'];
+            $this->set_pantalla('pant_cuadro');
 	}
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-            if (isset($this->s__where)) {
-                //muestra en que proyectos de investg participa o ha participado el docente que se filtra
-                $resultado = strpos($this->s__where, '!=');
-                if (!($resultado==true)){//
-                    $this->s__listado=$this->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv_filtro($this->s__where);
-                    $datos=$this->dep('datos')->tabla('persona')->get_descripciones_p($this->s__where);
-                    //print_r($datos);
-                    $cuadro->set_titulo(str_replace(':','' ,$datos[0]['id_persona']).'-'.$datos[0]['descripcion']);
-                    $cuadro->set_datos($this->s__listado);
-                }
+            if (isset($this->s__cuil)) {
+                $cuadro->set_datos($this->dep('datos')->tabla('integrante_interno_pi')->sus_proyectos_inv_filtro($this->s__cuil));
+                $cuadro->set_titulo('Listado de Proyectos de Investigacion en los que ha participado '.$this->s__agente);
             }
 	}
-
-	function evt__cuadro__seleccion($datos)
-	{
-		$this->dep('datos')->cargar($datos);
-	}
+        //----Volver
+        function evt__volver(){
+           unset($this->s__cuil);
+           unset($this->s__agente);
+           $this->set_pantalla('pant_edicion');
+        }
 
 	function vista_pdf(toba_vista_pdf $salida)
         {

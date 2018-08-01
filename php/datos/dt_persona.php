@@ -63,16 +63,35 @@ class dt_persona extends toba_datos_tabla
                 }else{
                     $where='';
                 }
-	    $sql = " select sub.id_persona,max(descripcion) as descripcion from 
-                    (SELECT trim(p.tipo_docum)||p.nro_docum as id_persona,trim(apellido)||', '||trim(nombre)||'('||case when nro_docum<0 then docum_extran else cast(nro_docum as text) end ||')' as descripcion 
-                        FROM persona p
-                    UNION
-                    SELECT trim(d.tipo_docum)||d.nro_docum as id_persona,(trim(apellido)||', '||trim(nombre)||'('||nro_cuil1||'-'||nro_cuil||'-'||nro_cuil2||')' ) as descripcion 
-                        FROM docente d
-                    )sub
-                    $where
-                    group by sub.id_persona
-                    order by descripcion";
+//	    $sql = " select sub.id_persona,max(descripcion) as descripcion from 
+//                    (SELECT trim(p.tipo_docum)||p.nro_docum as id_persona,trim(apellido)||', '||trim(nombre)||'('||case when nro_docum<0 then docum_extran else cast(nro_docum as text) end ||')' as descripcion 
+//                        FROM persona p
+//                    UNION
+//                        SELECT trim(d.tipo_docum)||d.nro_docum as id_persona,(trim(apellido)||', '||trim(nombre)||'('||nro_cuil1||'-'||nro_cuil||'-'||nro_cuil2||')' ) as descripcion 
+//                        FROM docente d
+//                    )sub
+//                    $where
+//                    group by sub.id_persona
+//                    order by descripcion";
+//              $sql="select * from (select case when p.nro_docum>0 then calculo_cuil(p.tipo_sexo,p.nro_docum) else docum_extran end as cuil, apellido,nombre,nro_docum,trim(p.apellido)||', '||trim(p.nombre) as agente
+//                    from persona p    
+//                    UNION
+//                    select nro_cuil1||'-'||nro_cuil||'-'||nro_cuil2 as cuil,apellido,nombre,nro_docum,trim(apellido)||', '||trim(nombre) as agente
+//                    from docente d         
+//                    )sub
+//                    $where"
+//                    . "order by agente";
+              $sql="select cuil,max(agente) as agente 
+                    from (select case when p.nro_docum>0 then calculo_cuil(p.tipo_sexo,p.nro_docum) else docum_extran end as cuil, apellido,nombre,nro_docum,trim(p.apellido)||', '||trim(p.nombre) as agente
+                          from persona p 
+                          $where
+                          UNION
+                          select nro_cuil1||'-'||nro_cuil||'-'||nro_cuil2 as cuil,apellido,nombre,nro_docum,trim(apellido)||', '||trim(nombre) as agente
+                          from docente d 
+                          $where
+                       )sub
+                    group by cuil
+                    order by agente";
 		return toba::db('designa')->consultar($sql);
 	}
         //metodo utilizado para mostrar las personas
