@@ -234,6 +234,8 @@ class ci_pinv_otros extends designa_ci
             $datos2['fec_baja']=$datos['fec_baja'];
             $datos2['id_respon_sub']=$datos['id_respon_sub'];
             $datos2['tdi']=$datos['tdi'];
+            $datos2['fec_resol']=$datos['fec_resol'];
+            $datos2['nro_resol']=$datos['nro_resol'];
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
             if($datos['estado']=='B'){//tiene que dar de baja a todos los integrantes

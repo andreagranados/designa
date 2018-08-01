@@ -258,13 +258,35 @@ class ci_integrantes_pi extends designa_ci
                 }
             }
 	}
+        function chequeo_formato_norma($norma){
+            $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+            if ( !preg_match($regenorma, $norma, $matchFecha) ) {
+                $salida=false;
+                toba::notificacion()->agregar('Nro Resolucion '.$norma.'  invalida. Debe ingresar en formato XXXX/YYYY','error');
+            }else{
+                $salida=true;
+            } 
+            return $salida;
+        }
 //ahora lo tiene tambien SCYT
+        //el formulario de modificacion solo aparece cuando el proyecto esta A o I
         function evt__form_integrante_i__modificacion($datos)
         {
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A' and $pi['estado']<>'I'){
+          $perfil = toba::usuario()->get_perfil_datos();
+          if ($perfil == null) {//es usuario de SCyT
+            if($this->chequeo_formato_norma($datos['rescd_bm'])){  
+                $datos2['rescd_bm']=$datos['rescd_bm'];
+                $datos2['resaval']=$datos['resaval'];
+                $this->dep('datos')->tabla('integrante_interno_pi')->set($datos2);
+                $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                $this->s__mostrar_i=0;
+                toba::notificacion()->agregar('Guardado. Solo modifica ResCD baja/modif, Res Aval', 'info');
+            }
+          }else{//es usuario de la UA
+             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');  
-            }else{
+             }else{
                 $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
                 if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){//no puede ir fuera del periodo del proyecto
                     //toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');                    
@@ -276,7 +298,9 @@ class ci_integrantes_pi extends designa_ci
                             $band=false;
                             if($pi['estado']=='A'){
                                 $band=$this->dep('datos')->tabla('logs_integrante_interno_pi')->fue_chequeado($int['id_designacion'],$int['pinvest'],$int['desde']);
-                              }
+                            }
+                            //si alguna vez fue chequeado por SCyT entonces solo puede modificar fecha_hasta y nada mas (se supone que lo demas ya es correcto)  
+                              //fecha_hasta porque puede ocurrir que haya una baja del participante o la modificacion de funcion o carga horaria
                             if($band){
                                 unset($datos['funcion_p']);
                                 unset($datos['cat_investigador']);
@@ -284,12 +308,8 @@ class ci_integrantes_pi extends designa_ci
                                 unset($datos['carga_horaria']);
                                 unset($datos['desde']);
                                 unset($datos['rescd']);
-                                unset($datos['rescd_bm']);
                                 unset($datos['cat_invest_conicet']);
-                                $perfil = toba::usuario()->get_perfil_datos();
-                                if (!$perfil == null) {//es usuario de la UA
-                                     unset($datos['resaval']);
-                                }
+                                unset($datos['resaval']);
                                 unset($datos['hs_finan_otrafuente']);
                                 $datos['check_inv']=0;//pierde el check si es que lo tuviera
                                 $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
@@ -312,13 +332,15 @@ class ci_integrantes_pi extends designa_ci
                                         $this->s__mostrar_i=0;
                                     }
                                  }
-                         }
+                            }
                     }else{
                         //toba::notificacion()->agregar('Hay superposicion de fechas', 'error');  
                          throw new toba_error("Hay superposicion de fechas");
                     }
                 }
-            }
+            } 
+          }
+            
         }
         function evt__form_integrante_i__baja($datos)
         {
@@ -434,6 +456,17 @@ class ci_integrantes_pi extends designa_ci
         }
         function evt__form_integrante_e__modificacion($datos)
         {
+          $perfil = toba::usuario()->get_perfil_datos();
+          if ($perfil == null) {//es usuario de SCyT
+            if($this->chequeo_formato_norma($datos['rescd_bm'])){  
+                $datos2['rescd_bm']=$datos['rescd_bm'];
+                $datos2['resaval']=$datos['resaval'];
+                $this->dep('datos')->tabla('integrante_externo_pi')->set($datos2);
+                $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+                $this->s__mostrar_i=0;
+                toba::notificacion()->agregar('Guardado. Solo modifica ResCD baja/modif, Res Aval', 'info');
+            }
+          }else{
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');   
@@ -451,7 +484,6 @@ class ci_integrantes_pi extends designa_ci
                     unset($datos['carga_horaria']);
                     unset($datos['desde']);
                     unset($datos['rescd']);
-                    unset($datos['rescd_bm']);
                     unset($datos['cat_invest_conicet']);
                     unset($datos['resaval']);
                     unset($datos['hs_finan_otrafuente']);
@@ -478,6 +510,7 @@ class ci_integrantes_pi extends designa_ci
                     }
                 }
             }
+          }//fin de usuario de UA
         }
         function evt__form_integrante_e__cancelar()
 	{
