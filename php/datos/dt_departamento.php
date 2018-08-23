@@ -21,12 +21,12 @@ class dt_departamento extends toba_datos_tabla
             return $res[0]['descripcion'];
         }
         function get_departamentos($id_ua=null)
-	{
+	{//si recibe parametro entonces filtra por la ua que recibe
             $where ="";
             if(isset($id_ua)){
               $where=" and idunidad_academica='".$id_ua."'";        
              }
-            $sql = "SELECT distinct t_d.iddepto, t_d.descripcion "
+            $sql = "SELECT distinct t_d.iddepto, t_d.descripcion ||'('||t_u.sigla||')' as descripcion "
                         . " FROM departamento t_d,"
                         . " unidad_acad t_u "
                         . " WHERE t_u.sigla=t_d.idunidad_academica"

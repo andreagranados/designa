@@ -91,11 +91,5 @@ class dt_unidad_acad extends toba_datos_tabla
              return $tengo;
             
         }
-
-
-
-
-
-
 }
 ?>
