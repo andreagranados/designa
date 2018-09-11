@@ -272,7 +272,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'1', --carga_permite_no_seteado
 	'--Seleccione--', --carga_no_seteado
 	'0', --carga_no_seteado_ocultar
-	'uni_acad', --carga_maestros
+	NULL, --carga_maestros
 	NULL, --edit_tamano
 	NULL, --edit_maximo
 	NULL, --edit_mascara
