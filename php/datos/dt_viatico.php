@@ -24,19 +24,20 @@ class dt_viatico extends toba_datos_tabla
                     left outer join tipo t on (v.nro_tab=t.nro_tabla and v.tipo=t.desc_abrev)
                     left outer join persona pe on (pe.nro_docum=v.nro_docum_desti)  
                     )   sub, unidad_acad u
-                where  u.sigla=sub.uni_acad $where";
+                where  u.sigla=sub.uni_acad $where"
+                . " order by uni_acad,codigo,fecha_salida";
        
         $sql = toba::perfil_de_datos()->filtrar($sql);
         return toba::db('designa')->consultar($sql);
      }
      function get_listado($id_p,$filtro=null){
         $where="";
-        if (isset($filtro['anio']['valor'])) {
-            $where = " and extract(year from fecha_solicitud)=".$filtro['anio']['valor'];
+        if (isset($filtro['anio']['valor'])) {//considero la fecha de salida y no la de la solicitud
+            $where = " and extract(year from fecha_salida)=".$filtro['anio']['valor'];
         }
         $sql="select sub.*,sub2.total from (select id_viatico,id_proyecto, nro_tab, tipo, fecha_solicitud, fecha_pago, 
                 expediente_pago, case when c.nro_docum is not null then trim(c.apellido)||', '||trim(c.nombre) else trim(p.apellido)||', '||trim(p.nombre) end as destinatario, memo_solicitud, memo_certificados, 
-                case when es_nacional=1 then 'SI' else 'NO' end as es_nacional, cant_dias, fecha_present_certif,fecha_salida, a.observaciones, a.estado 
+                case when es_nacional=1 then 'SI' else 'NO' end as es_nacional, cant_dias, fecha_present_certif,fecha_salida,fecha_regreso, a.observaciones, a.estado 
                 from viatico a
                 left outer join docente c on (a.nro_docum_desti=c.nro_docum)
                 left outer join persona p on (a.nro_docum_desti=p.nro_docum)
@@ -44,18 +45,19 @@ class dt_viatico extends toba_datos_tabla
                 " order by fecha_solicitud)sub "
                 . " left outer join (select id_proyecto, sum(cant_dias) as total from viatico
                                     where id_proyecto=$id_p
-                                    and estado<>'R' 
-                                    group by id_proyecto )sub2 on (sub.id_proyecto=sub2.id_proyecto)";
+                                    and estado<>'R' ".$where
+                                    ." group by id_proyecto )sub2 on (sub.id_proyecto=sub2.id_proyecto)";
+        
         return toba::db('designa')->consultar($sql);
     }
     //retorna true si puede ingresar ese viatico porque no supera los 14 dias anuales
     //no considera los rechazados
     function control_dias($id_proy,$anio,$dias){
-        
+        //debe considerar la fecha de salida y no la fecha de solicitud 
         $sql="select sum(cant_dias) as cantidad from viatico "
                 . " where id_proyecto= ".$id_proy
                 . " and estado<>'R'"
-                . " and  extract(year from fecha_solicitud)=".$anio;
+                . " and  extract(year from fecha_salida)=".$anio;
        
         $resul=toba::db('designa')->consultar($sql);
         if(count($resul)>0){
@@ -72,7 +74,7 @@ class dt_viatico extends toba_datos_tabla
         $sql="select sum(cant_dias) as cantidad from viatico "
                 . " where id_proyecto= ".$id_proy
                 . " and estado<>'R'"
-                . " and  extract(year from fecha_solicitud)=".$anio
+                . " and  extract(year from fecha_salida)=".$anio
                 . " and id_viatico<>".$id_via;
        
         $resul=toba::db('designa')->consultar($sql);

@@ -584,6 +584,7 @@ class ci_pinv_otros extends designa_ci
                 $form->ef('destino')->set_obligatorio('true');
                 $form->ef('fecha_salida')->set_obligatorio('true');
                 $form->ef('fecha_regreso')->set_obligatorio('true');
+                $form->ef('cant_dias')->set_obligatorio('true');
              }else{
                 $this->dep('form_viatico')->colapsar();
              }
@@ -642,10 +643,10 @@ class ci_pinv_otros extends designa_ci
                 }
                 $calculo=$this->get_cant_dias($datos['fecha_salida'],$datos['fecha_regreso']);
                 if($datos['cant_dias']<=$calculo){
-                   if($mensaje==""){
-                    $fecha = strtotime($datos['fecha_solicitud']);
-                    $anio=date("Y",$fecha);
-                    
+                   if($mensaje==""){//debe considerar la fecha de salida y no la fecha de solicitud
+                    $fecha = strtotime($datos['fecha_salida']);
+                    $anio=date("Y",$fecha);//tomo el año de la fecha de salida
+                    //controla que no supere los 14 dias anuales
                     $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias($pi['id_pinv'],$anio,$datos['cant_dias']);
                     if($band){//verifica que no supere los 14 dias anuales
                         $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
@@ -706,7 +707,7 @@ class ci_pinv_otros extends designa_ci
                         }
                     }
                     if($mensaje==""){
-                        $fecha = strtotime($datos['fecha_solicitud']);
+                        $fecha = strtotime($datos['fecha_salida']);//debo considerar la fecha de salida y no la fecha de solicitud
                         $anio=date("Y",$fecha);
                         $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_modif($pi['id_pinv'],$anio,$datos['cant_dias'],$via['id_viatico']);
                         if($band){//verifica que no supere los 14 dias anuales
