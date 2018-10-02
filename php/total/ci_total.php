@@ -43,6 +43,7 @@ class ci_total extends toba_ci
             if (isset($this->s__datos_filtro)) {
                $x=$this->dep('datos')->get_totales($this->s__datos_filtro);
                $cuadro->set_datos($x);
+               $cuadro->set_titulo(utf8_decode('Total de Saldos y Créditos - Actualizado a: ').date('d/m/Y (H:i:s)'));
             } 
     
         }

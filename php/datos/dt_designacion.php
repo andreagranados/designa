@@ -2191,7 +2191,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     . " and t_d.desde<'".$udia."' and (t_d.hasta>'".$pdia."' or t_d.hasta is null)"
                     . " and t_d.carac='I' "
                     . " and not exists (select * from novedad t_no where t_no.id_designacion=t_d.id_designacion"
-                    . "                 and t_no.tipo_nov in (2,3,5) "
+                    . "                 and t_no.tipo_nov in (2,5) "
                     . "                 and t_no.desde<'".$udia."' and t_no.hasta>'".$pdia."')"
                     . " order by descripcion";
           

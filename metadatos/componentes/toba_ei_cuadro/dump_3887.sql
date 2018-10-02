@@ -54,7 +54,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'Anular', --etiqueta
 	'1', --maneja_datos
 	'0', --sobre_fila
-	'¿Esta seguro de que desea anular este Ticket y todas las designaciones afectadas a él?', --confirmacion
+	'¿Esta seguro que desea anular el Ticket? Las designaciones afectadas a este Ticket perderán su número de tkd', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
 	'error.png', --imagen

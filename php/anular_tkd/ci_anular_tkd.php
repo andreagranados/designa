@@ -62,7 +62,7 @@ class ci_anular_tkd extends toba_ci
                 $res=toba::db('designa')->consultar($sql);
                 $mensaje='';
                 if(count($res[0])>0){
-                    $mensaje="Se anularon ".$res[0]['cant']. " designaciones";
+                    $mensaje=" ".$res[0]['cant']. " designaciones han perdido el tkd";
                 }
                 $sql="update designacion set nro_540=null where id_designacion in (".$comma_separated .") ";
                 toba::db('designa')->consultar($sql);
