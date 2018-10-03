@@ -26,7 +26,7 @@ class dt_titulo extends toba_datos_tabla
             }else{
                 $where='';
             }
-            //print_r($filtro);
+          
             $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);//utlimo deia del periodo actual
             $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
             $sql="select distinct agente,legajo,desc_titul,codc_nivel,fec_emisi,otorgante from (select distinct trim(apellido)||', '||trim(d.nombre) as agente,d.legajo,uni_acad,codc_nivel,i.desc_titul,fec_emisi,e.nombre as otorgante,case when (s.desde<='".$udia."' and (s.hasta is null or s.hasta>='".$pdia."')) then 1 else 0 end as vigente
@@ -39,7 +39,7 @@ class dt_titulo extends toba_datos_tabla
                      where sub.uni_acad=u.sigla
                      $where
                 order by agente";
-                    
+            
             $sql = toba::perfil_de_datos()->filtrar($sql);    
             return toba::db('designa')->consultar($sql);
         }

@@ -12,28 +12,28 @@ class dt_designacion extends toba_datos_tabla
        $i=0;$long=count($designaciones);
        print_r($designaciones);exit;
        while($band and $i<$long) {
-            $sql="select distinct case when tipo_desig=1 then case when estado<>'B' and estado<>'L' then case when a.id_materia is not null then true else case when pi.id_designacion is not null then true else case when piv.id_designacion is not null then true else case when pe.id_designacion is not null then true else case when pev.id_designacion is not null then true else false end end end end end else false end else false end as control from(
-            select sub1.id_designacion,sub1.id_docente,sub1.tipo_desig ,case when nov.tipo_nov in (1,4) then 'B' else case when nov.tipo_nov in(2,5) then 'L' else estado end end as estado from
-            (select d.id_designacion,d.id_docente,d.tipo_desig,d.estado,max(id_novedad)as id_novedad from designacion d
-            left outer join novedad n on (d.id_designacion=n.id_designacion and n.desde<='".$udia."' and n.desde>='".$pdia."')
-            where d.id_designacion=$designaciones[$i]['id_designacion']
-            group by d.estado,d.id_docente,d.tipo_desig,d.id_designacion
-            )sub1
-            left outer join novedad nov on (nov.id_designacion=sub1.id_designacion)
-            )sub2
+           $sql="SELECT sub.*,case when sub.tipo_desig=2 then true else case when sub.hasta is not null and sub.hasta<sub.desde then true else case when dias_des-dias_lic<2 then true else case when a.id_materia is not null then true else case when t.id_designacion is not null then true else case when i.id_docente is not null then true else case when pi.id_designacion is not null then true else case when pi2.id_designacion is not null then true else case when pe.id_designacion is not null then true else case when pe2.id_designacion is not null then true else false end end end end  end end end end end end FROM
+                (SELECT distinct t_d.id_designacion,t_d.id_docente,t_d.tipo_desig,t_d.desde,t_d.hasta,    	
+                                         sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
+                                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
+                                            FROM designacion as t_d 
+                                            LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,3,5) 
+                                                                                and t_no.desde<='".$udia."' and t_no.hasta>='".$pdia."')
+                where t_d.id_designacion=$designaciones[$i]['id_designacion']                   					
+                GROUP BY t_d.id_designacion,t_d.id_docente,t_d.tipo_desig,t_d.desde,t_d.hasta)sub
+                left outer join asignacion_materia a on (a.id_designacion=sub.id_designacion and a.anio=$anio)
+                left outer join asignacion_tutoria t on (t.id_designacion=sub.id_designacion and a.anio=$anio)
+                left outer join director_dpto i on (sub.id_docente=i.id_docente and i.desde<='".$udia."' and i.hasta>='".$pdia."')
 
-            left outer join asignacion_materia a on (sub2.id_designacion=a.id_designacion and a.anio=$anio)
-            left outer join asignacion_tutoria t on (sub2.id_designacion=t.id_designacion and a.anio=$anio)
-            left outer join director_dpto i on (sub2.id_docente=i.id_docente and i.desde<=$udia and i.hasta>=$pdia)
-            left outer join integrante_interno_pi pi on (sub2.id_designacion=pi.id_designacion and pi.desde<='".$udia."' and pi.hasta>=$pdia)
-            left outer join integrante_interno_pe pe on (sub2.id_designacion=pe.id_designacion and pe.desde<='".$udia."' and pe.hasta>=$pdia)
-        --esto para el primer vinculo
-            left outer join vinculo vin on (vin.desig=sub2.id_designacion)
-            left outer join integrante_interno_pi piv on (vin.vinc=piv.id_designacion and piv.desde<='".$udia."' and piv.hasta>='".$pdia."')".
-            " left outer join integrante_interno_pe pev on (vin.vinc=pev.id_designacion and pev.desde<='".$udia."' and pev.hasta>='".$pdia."')";
-            $resul=toba::db('designa')->consultar($sql);
-            if(!$resul){
-                $band=false;
+                left outer join integrante_interno_pi pi on (sub.id_designacion=pi.id_designacion and pi.desde<='".$udia."' and pi.hasta>='".$pdia."')
+                left outer join vinculo vin on (vin.desig=sub.id_designacion)
+                left outer join integrante_interno_pi pi2 on (vin.vinc=pi2.id_designacion and pi2.desde<='".$udia."' and pi2.hasta>='".$pdia."')
+                left outer join integrante_interno_pe pe on (sub.id_designacion=pe.id_designacion and pe.desde<='".$udia."' and pe.hasta>='".$pdia."')
+                left outer join integrante_interno_pe pe2 on (vin.vinc=pe2.id_designacion and pe2.desde<='".$udia."' and pe2.hasta>='".$pdia."')
+            ";
+             $resul=toba::db('designa')->consultar($sql);
+            if(isset($resul)){
+                $band=$resul[0]['control'];
             }
             $i++;
         }
@@ -1453,17 +1453,22 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                  
                 return toba::db('designa')->consultar($sql);
 	}
-         function get_listado_reservas($filtro=array())
+        function get_listado_reservas($filtro=array())
 	{
+            $where='';
+            $where2='';
             if (isset($filtro['anio'])) {
               	$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
                 $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+                $where=" AND desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)";
 		}     
+            if (isset($filtro['anulada'])) {
+               $where2= " WHERE anulada='".$filtro['anulada']."'"; 
+            }
             
-            $where=" AND desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)";
             //trae las reservas que caen dentro del periodo
             $sql="select distinct t_d.id_designacion,t_r.id_reserva,t_r.descripcion as reserva,desde,hasta,cat_mapuche,cat_estat,dedic,carac,uni_acad,
-                    (case when concursado=0 then 'NO' else 'SI' end) as concursado
+                    (case when concursado=0 then 'NO' else 'SI' end) as concursado, case when t_d.hasta is not null and t_d.hasta<t_d.desde then 'si' else 'no' end as anulada
                     from designacion t_d, reserva t_r, unidad_acad t_u
                     where t_d.id_reserva=t_r.id_reserva
                     and t_d.tipo_desig=2".$where
@@ -1471,8 +1476,9 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             $sql = toba::perfil_de_datos()->filtrar($sql);
             $sql = "select b.*,t_m.nombre as programa from (".$sql.") b "
                     . "LEFT OUTER JOIN imputacion t_i ON (t_i.id_designacion=b.id_designacion)
-                        LEFT OUTER JOIN mocovi_programa t_m ON (t_i.id_programa=t_m.id_programa)
-                    order by reserva";
+                       LEFT OUTER JOIN mocovi_programa t_m ON (t_i.id_programa=t_m.id_programa)"
+                    .$where2    
+                    ." order by reserva";
             
             return toba::db('designa')->consultar($sql);
         
