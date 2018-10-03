@@ -42,7 +42,7 @@ class ci_reserva extends designa_ci
             $datosi['id_designacion']=$datos['id_designacion'];
             $datosr['id_reserva']=$datos['id_reserva'];
             $datosres['id_reserva']=$datos['id_designacion'];
-           
+            $datosp['anio']=$this->s__datos_filtro['anio'];
             $this->controlador()->dep('datos')->tabla('reserva')->cargar($datosr);//busca la reserva con ese id y la carga
             $this->controlador()->dep('datos')->tabla('designacion')->cargar($datos);
             $this->controlador()->dep('datos')->tabla('imputacion')->cargar($datosi);
@@ -51,7 +51,7 @@ class ci_reserva extends designa_ci
             //$per=$this->controlador()->dep('datos')->tabla('mocovi_periodo_presupuestario')->get_periodo($this->s__datos_filtro['anio']);  
             //$datosp['id_periodo']=$per;
             //$this->controlador()->dep('datos')->tabla('mocovi_periodo_presupuestario')->cargar($datosp);//esto para obtener el año desde ci reserva_ocupada_por
-            $this->controlador()->dep('datos')->tabla('mocovi_periodo_presupuestario')->cargar($this->s__datos_filtro);
+            $this->controlador()->dep('datos')->tabla('mocovi_periodo_presupuestario')->cargar($datosp);
             $this->set_pantalla('pant_edicion');
             	
 	}
