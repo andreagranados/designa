@@ -112,4 +112,16 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'solo_consulta_ver_normas', --descripcion
 	'0'  --permite_edicion
 );
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'31', --restriccion_funcional
+	'no_ve_form_viatico', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'32', --restriccion_funcional
+	'no_ve_dao', --descripcion
+	'0'  --permite_edicion
+);
 --- FIN Grupo de desarrollo 0

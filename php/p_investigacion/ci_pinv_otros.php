@@ -601,12 +601,8 @@ class ci_pinv_otros extends designa_ci
                  $datos2['fecha_regreso'][0]=substr($datos['fecha_regreso'],0,10);//'2017-01-01';
                  $datos2['fecha_regreso'][2]=trim(substr($datos['fecha_regreso'],10,6));//'12:00'; 
                  $form->set_datos($datos2);
+                 
             } 
-            $perfil = toba::usuario()->get_perfil_datos();
-            if ($perfil != null) {//si tiene perfil de datos entonces solo lectura campo estado
-                $form->ef('estado')->set_solo_lectura(true);//para que funcione no tiene que ser obligatorio 
-                $form->desactivar_efs(array('fecha_pago','expediente_pago','fecha_present_certif','observaciones'));
-            }
             
 	}
 
@@ -616,6 +612,7 @@ class ci_pinv_otros extends designa_ci
          if($pi['estado']<>'A'){
                throw new toba_error("El proyecto debe estar ACTIVO para ingresar viaticos");
           }else{
+              if($datos['fecha_regreso'][0]>=$datos['fecha_salida'][0]){
                 $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];
                 $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
                 $datos['fecha_salida']=$fec;
@@ -662,6 +659,7 @@ class ci_pinv_otros extends designa_ci
                 }else{//podria colocar un valor menor a $calculo
                    throw new toba_error('La cantidad de dias debe ser menor o igual a: '.$calculo.'. Por favor, corrija e intente guardar nuevamente.');
                 }
+          }else{ throw new toba_error('La fecha de regreso debe ser mayor a la fecha de salida ');}
           }
 	}
         //boton modificacion para central. Solo modifica fecha de presentacion, expediente de pago, fecha de pago, estado
@@ -738,7 +736,7 @@ class ci_pinv_otros extends designa_ci
                     $this->controlador()->dep('datos')->tabla('viatico')->eliminar_todo();
                     $this->controlador()->dep('datos')->tabla('viatico')->resetear();
                     $this->s__mostrar_v=0;
-                    toba::notificacion()->agregar(utf8_decode('El viático se ha eliminado correctamente','info'));
+                    toba::notificacion()->agregar(utf8_decode('El viático se ha eliminado correctamente'),'info');
                 }else{
                     toba::notificacion()->agregar(utf8_decode('El viático no puede ser eliminado porque ya ha sido Aprobado/Rechazado/Entregado por la SCyT'), 'error');      
                 }

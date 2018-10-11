@@ -97,7 +97,8 @@ class dt_mocovi_credito extends toba_datos_tabla
 			t_mtc.tipo as id_tipo_credito_nombre,
 			t_mc.descripcion,
 			t_mc.credito,
-			t_mp.nombre as id_programa_nombre
+			t_mp.nombre as id_programa_nombre,
+                        case when t_mc.documento is not null then  '<a href='||chr(39)||'creditos_dependencia/'||t_mc.documento||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||documento||'</a>' else '' end as documento
 		FROM
 			mocovi_credito as t_mc	
                         LEFT OUTER JOIN mocovi_periodo_presupuestario as t_mpp ON (t_mc.id_periodo = t_mpp.id_periodo)
