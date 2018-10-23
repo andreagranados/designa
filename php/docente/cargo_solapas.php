@@ -236,7 +236,7 @@ class cargo_solapas extends toba_ci
         $bandera=$this->controlador()->dep('datos')->tabla('designacion')->ocupa_reserva($desig['id_designacion']);
         if(!$bandera){
          $nuevafecha = strtotime ( '-1 day' , strtotime ( $datos['desde'] ) );
-         $nuevafecha = date ( 'Y-m-j' , $nuevafecha );
+         $nuevafecha = date ( 'Y-m-d' , $nuevafecha );
          $vale=true;
          if(!($datos['hasta']!=null && $datos['hasta']==$nuevafecha)){//sino es anulacion //si hasta <>null and hasta=desde-1 es una anulacion
                 if($datos['hasta'] !=null && $datos['hasta']<$datos['desde']){//verifica que la fecha hasta>desde

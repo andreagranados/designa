@@ -91,14 +91,11 @@ class dt_impresion_540 extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
         
-        //trae un listado de los tkd que podrian ser anulados. Es decir, que no exista ninguna designacion con ese tkd que ya haya sido chequeada por Presupuesto
+        //trae un listado de los tkd que podrian ser anulados. 
         function get_tkd_anular($id_ua=null){
             $sql="select distinct a.nro_540 from designacion a"
                     . " where a.uni_acad='".$id_ua."'"
                     . " and a.nro_540 is not null"
-                    . " and not exists(select * from designacion b"
-                    . "                where a.nro_540=b.nro_540"
-                    . "                and b.check_presup=1  )"
                     . " order by nro_540";
             return toba::db('designa')->consultar($sql);
         }
