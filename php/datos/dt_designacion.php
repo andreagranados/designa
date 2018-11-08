@@ -100,31 +100,52 @@ class dt_designacion extends toba_datos_tabla
                       	
        return toba::db('designa')->consultar($sql);
     }
-    function cantidad_x_categoria_det($categ,$filtro=array()){
+    function cantidad_x_categoria_det($ua,$categ,$anio){
         $where='';
         //el filtro tiene ua y anio
-        if (isset($filtro['uni_acad'])) {
-            $where.= " and uni_acad = ".quote($filtro['uni_acad']);
+        if (isset($ua)) {
+            $where.= " and uni_acad = ".quote($ua);
          }
-        if (isset($filtro['anio'])) {
-            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
-            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+        if (isset($anio)) {
+            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
+            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
             $where.=" and t_d.desde <='".$udia."' and (t_d.hasta>='".$pdia."' or t_d.hasta is null)"
                     . " and ((t_d.hasta is not null and t_d.desde < t_d.hasta) or t_d.hasta is null) ";//esto para descartar las designaciones con desde=hasta o desde>hasta;
 	}     
-        $sql="select t_do.apellido||', '||t_do.nombre as docente,t_do.legajo,t_d.cat_mapuche,t_d.desde,t_d.hasta,t_d.carac ,t_d.cat_estat,t_d.dedic,case when t_n.id_novedad is not null then 'SI' else 'NO' end as lic"
+        $sql="select t_d.uni_acad,t_d.id_designacion,trim(t_do.apellido)||', '||trim(t_do.nombre) as docente,t_do.legajo,t_d.cat_mapuche,t_d.desde,t_d.hasta,t_d.carac ,t_d.cat_estat||t_d.dedic as cat_estatuto,case when t_n.id_novedad is not null then 'SI' else 'NO' end as lic"
                  . " from designacion t_d"
                 . " left outer join docente t_do on (t_d.id_docente=t_do.id_docente)"
                 . " left outer join novedad t_n on (t_n.id_designacion=t_d.id_designacion and t_n.tipo_nov in (2,5) and t_n.desde <='".$udia."' and (t_n.hasta>='".$pdia."' or t_n.hasta is null))"
                 . " where   cat_mapuche='".$categ."' and tipo_desig=1 "
                 .  $where
-                
-               ;
-       
+                ." order by docente";
         return toba::db('designa')->consultar($sql);
     }
-    function cantidad_x_categoria($filtro=array(),$categ,$ua){
-        $where="";
+//    function cantidad_x_categoria($filtro=array(),$categ,$ua){
+//        $where="";
+//        if (isset($filtro['uni_acad'])) {
+//            $where.= " and uni_acad = ".quote($filtro['uni_acad']);
+//         }
+//        if (isset($filtro['anio'])) {
+//            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+//            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+//            $where.=" and desde <='".$udia."' and (hasta>='".$pdia."' or hasta is null)"
+//                    . " and ((hasta is not null and desde < hasta) or hasta is null) ";//esto para descartar las designaciones con desde=hasta o desde>hasta;
+//	}       
+//         $sql="select count(distinct id_designacion) as canti "
+//                 . " from designacion "
+//                 . " where cat_mapuche='".$categ."' and uni_acad='".$ua."'"
+//                 . " $where"
+//                 . " group by uni_acad,cat_mapuche";
+//         $res = toba::db('designa')->consultar($sql);
+//         if (count($res)>0){
+//             return $res[0]['canti'];
+//         }else{
+//             return 0;
+//         }
+//     }
+    function cantidad_x_categoria($filtro=array()){
+        $where=" where tipo_desig=1 ";
         if (isset($filtro['uni_acad'])) {
             $where.= " and uni_acad = ".quote($filtro['uni_acad']);
          }
@@ -134,19 +155,27 @@ class dt_designacion extends toba_datos_tabla
             $where.=" and desde <='".$udia."' and (hasta>='".$pdia."' or hasta is null)"
                     . " and ((hasta is not null and desde < hasta) or hasta is null) ";//esto para descartar las designaciones con desde=hasta o desde>hasta;
 	}       
-         $sql="select count(distinct id_designacion) as canti "
+        if (isset($filtro['uni_acad'])) {
+            $where.= " and  uni_acad = '".$filtro['uni_acad']."'";
+        }else{
+            //obtengo el perfil de datos del usuario logueado
+            $perfil = toba::usuario()->get_perfil_datos();
+            if ($perfil <> null) {//es usuario tiene perfil de datos asociado
+                $con="select sigla,descripcion from unidad_acad ";
+                $con = toba::perfil_de_datos()->filtrar($con);
+                $resul=toba::db('designa')->consultar($con);        
+                $where.=" and uni_acad ='".trim($resul[0]['sigla'])."'";
+            }
+        }      
+        
+         $sql="select uni_acad,cat_mapuche,cat_estat||dedic as cat_est,count(distinct id_designacion) as canti "
                  . " from designacion "
-                 . " where cat_mapuche='".$categ."' and uni_acad='".$ua."'"
-                 . " $where"
-                 . " group by uni_acad,cat_mapuche";
+                 .  $where
+                 . " group by uni_acad,cat_mapuche,cat_estat,dedic"
+                 . " order by uni_acad,cat_mapuche";
          $res = toba::db('designa')->consultar($sql);
-         if (count($res)>0){
-             return $res[0]['canti'];
-         }else{
-             return 0;
-         }
+         return $res;
      }
-    
     //retorna 1 si tiene completos el departamento, area y orientacion
     function tiene_dao($id_desig){
         $sql="select * from designacion where id_designacion=$id_desig and id_departamento is not null and id_area is not null and id_orientacion is not null";
