@@ -33,7 +33,7 @@ class ci_informe_actividad extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-            if (isset($this->s__datos_filtro)) {  
+            if (isset($this->s__datos_filtro)) {
                 $this->s__listado=$this->dep('datos')->tabla('asignacion_materia')->informe_actividad($this->s__datos_filtro);
                // print_r($this->s__listado);
                 $cuadro->set_datos($this->s__listado);    
@@ -104,7 +104,7 @@ class ci_informe_actividad extends toba_ci
 //        }
         function vista_pdf(toba_vista_pdf $salida)
         {
-            
+          if(isset($this->s__datos_filtro['nro_540'])){
             if (isset($this->s__listado)){
                
                 //configuramos el nombre que tendrá el archivo pdf
@@ -193,6 +193,7 @@ class ci_informe_actividad extends toba_ci
                 }    
       
             }
+            }//si no filtro tkd no genera pdf
         }
 
 	
