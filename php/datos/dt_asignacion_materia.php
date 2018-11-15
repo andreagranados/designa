@@ -2,10 +2,13 @@
 class dt_asignacion_materia extends toba_datos_tabla
 {
     function informe_actividad($filtro=array()){
-        $where='';
+        $where=' WHERE 1=1 ';
         if (isset($filtro['nro_540']['valor'])) {
-		$where.= " WHERE nro_540= ".$filtro['nro_540']['valor'];
+		$where.= " and  nro_540= ".$filtro['nro_540']['valor'];
 		}
+        if (isset($filtro['iddepto']['valor'])) {
+		$where.= " and d.iddepto= ".$filtro['iddepto']['valor'];
+		}        
         $sql="select informe_actividad(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
         toba::db('designa')->consultar($sql);
         $sql=" select a.*,a.id_designacion||'('||a.cat_estat||'-'||a.carac||')' as desig,d.descripcion as departamento,ar.descripcion as area,o.descripcion as orientacion

@@ -2061,20 +2061,52 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             }else{
                 $where='';
             }
-                         
-            $sql =   "select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+             //print_r($where);  where uni_acad = 'FADE' AND	anio = '2017'          
+//            $sql =   "select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+//            t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza
+//            from designacion t_d 
+//            LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+//            LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+//            LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
+//            asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, unidad_acad t_u
+//            where t_a.id_designacion=t_d.id_designacion
+//            and t_a.id_materia=t_m.id_materia
+//            and t_m.id_plan=t_e.id_plan
+//            and t_d.id_docente=t_do.id_docente
+//            and t_d.uni_acad=t_u.sigla
+//            and t_e.uni_acad<>t_d.uni_acad";
+            $sql="select * from(
+                select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
             t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza
             from designacion t_d 
             LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
             LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
             LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
-            asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, unidad_acad t_u
+            asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do
             where t_a.id_designacion=t_d.id_designacion
             and t_a.id_materia=t_m.id_materia
             and t_m.id_plan=t_e.id_plan
             and t_d.id_docente=t_do.id_docente
-            and t_d.uni_acad=t_u.sigla
-            and t_e.uni_acad<>t_d.uni_acad";
+            and t_e.uni_acad<>t_d.uni_acad"
+                    ." UNION
+                select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+            t_p.uni_acad as uni_acad,t_d.uni_acad as ua,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera ,t_p.ordenanza
+            from designacion t_d
+            LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+            LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+            LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
+            inner join asignacion_materia t_a on t_d.id_designacion=t_a.id_designacion
+            inner join docente t_do on t_d.id_docente=t_do.id_docente
+            inner join mocovi_periodo_presupuestario t_pp on (t_pp.anio=t_a.anio)
+            inner join en_conjunto t_e on (t_a.id_materia=t_e.id_materia )
+            inner join conjunto t_c on (t_c.id_conjunto=t_e.id_conjunto and t_c.id_periodo=t_a.id_periodo and t_c.id_periodo_pres=t_pp.id_periodo and t_d.uni_acad=t_c.ua)
+            inner join en_conjunto t_ee on t_ee.id_conjunto=t_c.id_conjunto --obtengo las materias del conjunto 
+            inner join materia t_m on (t_ee.id_materia=t_m.id_materia)
+            inner join plan_estudio t_p on (t_m.id_plan=t_p.id_plan)
+            )sub
+            inner join unidad_acad t_u on t_u.sigla=sub.ua
+          
+           ";
             $sql = toba::perfil_de_datos()->filtrar($sql);
             $sql="select * from (".$sql.")b $where";
             return toba::db('designa')->consultar($sql);

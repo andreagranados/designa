@@ -194,25 +194,23 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'estado', --nombre
 	'estado', --expresion
 	'Estado', --etiqueta
-	'S (Solicitado)</br>
-A (Aprobado)</br>
-R (Rechazado)', --descripcion
+	NULL, --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'2', --orden
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
 	'ef_combo', --opciones_ef
-	NULL, --carga_metodo
+	'get_descripciones', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
-	NULL, --carga_dt
+	'4024', --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'S,A,R', --carga_lista
-	NULL, --carga_col_clave
-	NULL, --carga_col_desc
+	NULL, --carga_lista
+	'id_estado', --carga_col_clave
+	'descripcion', --carga_col_desc
 	'1', --carga_permite_no_seteado
 	'--Seleccione--', --carga_no_seteado
 	'0', --carga_no_seteado_ocultar
