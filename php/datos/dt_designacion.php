@@ -6,20 +6,21 @@ class dt_designacion extends toba_datos_tabla
 {
 //recorre las designaciones y para cada una verifica si tiene actividad
    function control_actividad($designaciones=array(),$anio){
+       //print_r(           $designaciones[0]['id_designacion']);
        $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
        $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
        $band=true;
        $i=0;$long=count($designaciones);
-       print_r($designaciones);exit;
        while($band and $i<$long) {
-           $sql="SELECT sub.*,case when sub.tipo_desig=2 then true else case when sub.hasta is not null and sub.hasta<sub.desde then true else case when dias_des-dias_lic<2 then true else case when a.id_materia is not null then true else case when t.id_designacion is not null then true else case when i.id_docente is not null then true else case when pi.id_designacion is not null then true else case when pi2.id_designacion is not null then true else case when pe.id_designacion is not null then true else case when pe2.id_designacion is not null then true else false end end end end  end end end end end end FROM
+           $des=$designaciones[$i]['id_designacion'];
+           $sql="SELECT sub.*,case when sub.tipo_desig=2 then true else case when sub.hasta is not null and sub.hasta<sub.desde then true else case when dias_des-dias_lic<2 then true else case when a.id_materia is not null then true else case when t.id_designacion is not null then true else case when i.id_docente is not null then true else case when pi.id_designacion is not null then true else case when pi2.id_designacion is not null then true else case when pe.id_designacion is not null then true else case when pe2.id_designacion is not null then true else false end end end end  end end end end end end as control FROM
                 (SELECT distinct t_d.id_designacion,t_d.id_docente,t_d.tipo_desig,t_d.desde,t_d.hasta,    	
                                          sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
                                         case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
                                             FROM designacion as t_d 
                                             LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,3,5) 
                                                                                 and t_no.desde<='".$udia."' and t_no.hasta>='".$pdia."')
-                where t_d.id_designacion=$designaciones[$i]['id_designacion']                   					
+                where t_d.id_designacion=$des                 					
                 GROUP BY t_d.id_designacion,t_d.id_docente,t_d.tipo_desig,t_d.desde,t_d.hasta)sub
                 left outer join asignacion_materia a on (a.id_designacion=sub.id_designacion and a.anio=$anio)
                 left outer join asignacion_tutoria t on (t.id_designacion=sub.id_designacion and a.anio=$anio)
@@ -31,7 +32,7 @@ class dt_designacion extends toba_datos_tabla
                 left outer join integrante_interno_pe pe on (sub.id_designacion=pe.id_designacion and pe.desde<='".$udia."' and pe.hasta>='".$pdia."')
                 left outer join integrante_interno_pe pe2 on (vin.vinc=pe2.id_designacion and pe2.desde<='".$udia."' and pe2.hasta>='".$pdia."')
             ";
-             $resul=toba::db('designa')->consultar($sql);
+            $resul=toba::db('designa')->consultar($sql);
             if(isset($resul)){
                 $band=$resul[0]['control'];
             }
@@ -2103,6 +2104,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             inner join en_conjunto t_ee on t_ee.id_conjunto=t_c.id_conjunto --obtengo las materias del conjunto 
             inner join materia t_m on (t_ee.id_materia=t_m.id_materia)
             inner join plan_estudio t_p on (t_m.id_plan=t_p.id_plan)
+            where t_p.uni_acad<>t_d.uni_acad 
             )sub
             inner join unidad_acad t_u on t_u.sigla=sub.ua
           

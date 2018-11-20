@@ -60,8 +60,7 @@ class ci_impresion_540 extends toba_ci
                         $cuadro->set_datos($this->s__listado);//hasta que no presiona filtrar no aparece nada
                    }
 		} 
-               
-                
+
 	}
 
 
@@ -321,16 +320,15 @@ class ci_impresion_540 extends toba_ci
 	function evt__cuadro__seleccion($datos)
 	{
             if (isset($this->s__seleccionadas)){
-                //print_r($this->s__seleccionadas);exit;//rray ( [0] => Array ( [id_designacion] => 3 ) [1] => Array ( [id_designacion] => 83 ) 
-                //$band=$this->dep('datos')->tabla('designacion')->control_actividad($this->s__seleccionadas, $this->s__anio);
-                //if($band){
-                    toba::notificacion()->agregar(utf8_decode('A partir de Octubre 2018 no podrá imprimir TKD si el mismo incluye designaciones sin actividad.'),'info');
+                //print_r($this->s__seleccionadas);exit;//Array ( [0] => Array ( [id_designacion] => 3 ) [1] => Array ( [id_designacion] => 83 ) 
+                $band=$this->dep('datos')->tabla('designacion')->control_actividad($this->s__seleccionadas, $this->s__anio);
+                if($band){
+                   //le saco la notificacion 16 nov 2018 // toba::notificacion()->agregar(utf8_decode('A partir de Octubre 2018 no podrá imprimir TKD si el mismo incluye designaciones sin actividad.'),'info');
                     $this->set_pantalla('pant_impresion');
-                //}else{
-                  //  toba::notificacion()->agregar('Hay designaciones seleccionadas que no tienen actividad.','info');
-                //}
+                }else{
+                    toba::notificacion()->agregar('Hay designaciones seleccionadas que no tienen actividad.','info');
                 }
-            else{
+            }else{
                 $mensaje=utf8_decode('No hay designaciones seleccionadas para emitir número de ticket');
                 toba::notificacion()->agregar($mensaje,'info');
                 }
