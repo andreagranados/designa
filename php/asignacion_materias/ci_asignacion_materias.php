@@ -97,6 +97,8 @@ class ci_asignacion_materias extends toba_ci
 	function evt__fil__cancelar()
 	{
             unset($this->s__datos_fil);
+            $this->s__anio=null;
+            $this->s__mostrar=0;
 	}
 
 	//-----------------------------------------------------------------------------------
