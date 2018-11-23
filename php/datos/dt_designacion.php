@@ -62,12 +62,12 @@ class dt_designacion extends toba_datos_tabla
        return toba::db('designa')->consultar($sql);
    } 
    //solo trae las designaciones con licencia o cese de la unidad academica correspondiente
-    function get_suplente($desde,$hasta){
+    function get_suplente(){
   
         $sql="select a.id_designacion,a.descripcion from (select distinct t_d.id_designacion,t_d.uni_acad,t_do.apellido||', '||t_do.nombre||'('||t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'-'||t_d.id_designacion||')' as descripcion"
                 . " from designacion t_d "
                 . " INNER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
-                . " INNER JOIN novedad t_n ON (t_d.id_designacion=t_n.id_designacion and t_n.tipo_nov in (2,3,5) and t_n.desde>='".$desde."' and t_n.hasta<='".$hasta."') "//licencia sin goce ,con goce o cese
+                . " INNER JOIN novedad t_n ON (t_d.id_designacion=t_n.id_designacion and t_n.tipo_nov in (2,3,5) )"//and t_n.desde>='".$desde."' and t_n.hasta<='".$hasta."') "//licencia sin goce ,con goce o cese
                 . " where t_d.tipo_desig=1)a, unidad_acad b "
                 . " where a.uni_acad=b.sigla "
                 . " order by descripcion ";

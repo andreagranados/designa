@@ -37,8 +37,7 @@ class cargo_solapas extends toba_ci
             $result=toba::db('designa')->consultar($sql);
             return($result);
         }
-        
-        
+                
         //este metodo permite mostrar en el popup el nombre de la materia seleccionada
         //recibe como argumento el id 
         function get_materia($id){
