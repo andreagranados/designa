@@ -1318,7 +1318,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'8', --orden
 	'Suplente', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'El periodo de la suplencia debe estar dentro del periodo de la licencia o cese temporal de haberes', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo

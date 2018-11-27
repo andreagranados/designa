@@ -10,7 +10,7 @@ class cargo_solapas extends toba_ci
     protected $s__alta_nov;
     protected $s__alta_novb;
     protected $s__volver;
-    protected $s__datos;
+   // protected $s__datos;
     protected $s__datos_filtro;
     protected $s__where;
             
@@ -37,7 +37,8 @@ class cargo_solapas extends toba_ci
             $result=toba::db('designa')->consultar($sql);
             return($result);
         }
-                
+        
+       
         //este metodo permite mostrar en el popup el nombre de la materia seleccionada
         //recibe como argumento el id 
         function get_materia($id){
@@ -76,11 +77,11 @@ class cargo_solapas extends toba_ci
                 
         } 
         //evento implicito que no se muestra en un boton
-        //sirve para ocultar el ef suplente
-        function evt__form_cargo__modif($datos)
-        {
-            $this->s__datos = $datos;
-        }
+//        //sirve para ocultar el ef suplente
+//        function evt__form_cargo__modif($datos)
+//        {
+//            $this->s__datos = $datos;
+//        }
          
        
         function get_descripcion_categoria($id){
@@ -114,59 +115,67 @@ class cargo_solapas extends toba_ci
             //si pertenece al periodo actual o al periodo presupuestando
             $vale=$this->controlador()->pertenece_periodo($datos['desde'],$datos['hasta']);
             if ($vale){// si esta dentro del periodo
-                            
-                //le mando la categoria, la fecha desde y la fecha hasta
-                $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1,null);
-                $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2,null);
+                if($datos['carac']=='S'){//si es suplente verifico que el periodo de la licencia este dentro del periodo de la designacion
+                    $vale=$this->controlador()->dep('datos')->tabla('designacion')->control_suplente($datos['desde'],$datos['hasta'],$datos['suplente']);
+                    //if($vale){print_r('si');}else{print_r('no');}
+                }
+                if($vale){
                 
-                if ($band && $bandp){//si hay credito 
-                    $docente=$this->controlador()->dep('datos')->tabla('docente')->get();
-                    $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
-                    $datos['uni_acad']= $ua[0]['sigla'];
-                    $datos['id_docente']=$docente['id_docente'];
-                    $datos['check_presup']=0;
-                    $datos['check_academica']=0;
-                    $datos['tipo_desig']=1;
-                    $datos['id_reserva']=null;
-                    $datos['estado']='A';
-                    $datos['por_permuta']=0;
-                    //calculo la dedicacion y la cat estatuto por si las dudas no se autocompletaron y quedaron vacias
-                    $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
-                    $datos['dedic']=$dedi;
-                    //$est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);//le sacamos el check ec al formulario
-                    $est=$this->controlador()->get_categ_estatuto($datos['cat_mapuche']);
-                    $datos['cat_estat']=$est;
-                    //-----
-                    $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-                    $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                   //trae el programa por defecto de la UA correspondiente           
-                    $prog=$this->controlador()->dep('datos')->tabla('mocovi_programa')->programa_defecto();
-                   
-                    //obtengo la designacion recien cargada
-                    $des=$this->controlador()->dep('datos')->tabla('designacion')->get();//trae el que acaba de insertar
-                    $impu['id_programa']=$prog;
-                    $impu['porc']=100;
-                    $impu['id_designacion']=$des['id_designacion'];
-                    
-                    $this->controlador()->dep('datos')->tabla('imputacion')->set($impu);
-                    $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
-                    $designacion['id_designacion']=$des['id_designacion'];
-                    $this->controlador()->dep('datos')->tabla('designacion')->cargar($designacion);
-                    //guarda el suplente en caso de que lo tenga
-                    if($datos['carac']=='S' && isset($datos['suplente'])){
-                        $datos_sup['id_desig_suplente']=$des['id_designacion'];//la designacion suplente que se acaba de agregar
-                        $datos_sup['id_desig']=$datos['suplente'];//la designacion del docente al que van a suplir
-                        $this->controlador()->dep('datos')->tabla('suplente')->set($datos_sup);
-                        $this->controlador()->dep('datos')->tabla('suplente')->sincronizar();
-                        $datos_s['id_desig_suplente']=$des['id_designacion'];
-                        $this->controlador()->dep('datos')->tabla('suplente')->cargar($datos_s);
+                    //le mando la categoria, la fecha desde y la fecha hasta
+                    $band=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1,null);
+                    $bandp=$this->controlador()->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2,null);
+
+                    if ($band && $bandp){//si hay credito 
+                        $docente=$this->controlador()->dep('datos')->tabla('docente')->get();
+                        $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
+                        $datos['uni_acad']= $ua[0]['sigla'];
+                        $datos['id_docente']=$docente['id_docente'];
+                        $datos['check_presup']=0;
+                        $datos['check_academica']=0;
+                        $datos['tipo_desig']=1;
+                        $datos['id_reserva']=null;
+                        $datos['estado']='A';
+                        $datos['por_permuta']=0;
+                        //calculo la dedicacion y la cat estatuto por si las dudas no se autocompletaron y quedaron vacias
+                        $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
+                        $datos['dedic']=$dedi;
+                        //$est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);//le sacamos el check ec al formulario
+                        $est=$this->controlador()->get_categ_estatuto($datos['cat_mapuche']);
+                        $datos['cat_estat']=$est;
+                        //-----
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                       //trae el programa por defecto de la UA correspondiente           
+                        $prog=$this->controlador()->dep('datos')->tabla('mocovi_programa')->programa_defecto();
+
+                        //obtengo la designacion recien cargada
+                        $des=$this->controlador()->dep('datos')->tabla('designacion')->get();//trae el que acaba de insertar
+                        $impu['id_programa']=$prog;
+                        $impu['porc']=100;
+                        $impu['id_designacion']=$des['id_designacion'];
+
+                        $this->controlador()->dep('datos')->tabla('imputacion')->set($impu);
+                        $this->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
+                        $designacion['id_designacion']=$des['id_designacion'];
+                        $this->controlador()->dep('datos')->tabla('designacion')->cargar($designacion);
+                        //guarda el suplente en caso de que lo tenga
+                        if($datos['carac']=='S' && isset($datos['suplente'])){
+                            $datos_sup['id_desig_suplente']=$des['id_designacion'];//la designacion suplente que se acaba de agregar
+                            $datos_sup['id_desig']=$datos['suplente'];//la designacion del docente al que van a suplir
+                            $this->controlador()->dep('datos')->tabla('suplente')->set($datos_sup);
+                            $this->controlador()->dep('datos')->tabla('suplente')->sincronizar();
+                            $datos_s['id_desig_suplente']=$des['id_designacion'];
+                            $this->controlador()->dep('datos')->tabla('suplente')->cargar($datos_s);
+                        }
                     }
-                }
-                else{
-                    $mensaje='NO SE DISPONE DE CRÉDITO PARA INGRESAR LA DESIGNACIÓN';
-                    toba::notificacion()->agregar(utf8_decode($mensaje), "error");
-                    
-                }
+                    else{
+                        $mensaje='NO SE DISPONE DE CRÉDITO PARA INGRESAR LA DESIGNACIÓN';
+                        toba::notificacion()->agregar(utf8_decode($mensaje), "error"); 
+                    }
+             }else{
+                 $mensaje='Verifique que el período de la suplencia este dentro del período de la licencia.';
+                 toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+             }
             }else{//esta intentando ingresar una designacion que no pertenece al periodo actual ni al periodo presup
                  $mensaje='Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.';
                  toba::notificacion()->agregar(utf8_decode($mensaje), "error");
@@ -247,91 +256,98 @@ class cargo_solapas extends toba_ci
                 }
              }//puede modificar y corresponde a una anulacion entonces vale es true
           //si es anulacion lo deja hacer   
-       
          if($vale){
-            //si estaba cargada la pisa y sino crea un nuevo registro
-            if(isset($datos['suplente'])){//suplente viene con valor
-                if($datos['carac']=='S' ){
-                    $datos_sup['id_desig_suplente']=$desig['id_designacion'];
-                    $datos_sup['id_desig']=$datos['suplente'];
-                    $this->controlador()->dep('datos')->tabla('suplente')->set($datos_sup);
-                    $this->controlador()->dep('datos')->tabla('suplente')->sincronizar();        
-                    $datos_suplente['id_desig_suplente']=$desig['id_designacion'];
-                    $this->controlador()->dep('datos')->tabla('suplente')->cargar($datos_suplente);
-                }else{
-                    $this->controlador()->dep('datos')->tabla('suplente')->eliminar_todo();
-                    $this->controlador()->dep('datos')->tabla('suplente')->resetear();
-                }
+            if($datos['carac']=='S'){
+                $vale=$this->controlador()->dep('datos')->tabla('designacion')->control_suplente($datos['desde'],$datos['hasta'],$datos['suplente']);
             }
-            
-            //vuelvo a calcular dedicacion y cat estatuto si cambio la categoria por si las dudas no se autocompletan y quedan vacias
-            if($desig['cat_mapuche']<>$datos['cat_mapuche']){
-                $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
-                $datos['dedic']=$dedi;
-                //$est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);//le sacamos el check al formulario
-                $est=$this->controlador()->get_categ_estatuto($datos['cat_mapuche']);
-                $datos['cat_estat']=$est;    
-            }
-            
-            // verifico si la designacion que se quiere modificar tiene numero de 540
-           
-            if($desig['nro_540'] == null){//no tiene nro de 540
-                 //debe verificar si hay credito antes de hacer la modificacion
-                
-                if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
-                {//si modifica algo que afecte el credito
-                    $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
-                    $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
-                     if ($band && $band2){//si hay credito
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
-                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
-                     }else{
-                        $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
-                        toba::notificacion()->agregar(utf8_decode($mensaje), "error");
-                     }
-                 }else{//no modifica nada de credito
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
-                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
-                     }
-                }
-            else{//tiene numero de 540
-                if ($desig['estado']<>'L' && $desig['estado']<>'B'){$datos['estado']='R';};
-    
-                //si modifica algo que afecte el credito
-                if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
-                { //entonces pierde el nro_540 y el check_presup
-                  $datos['nro_540']=null;
-                  $datos['check_presup']=0;
-                  $datos['check_academica']=0;
-                  $mensaje=utf8_decode("Esta modificando una designación que tiene número tkd. La designación perderá el número tkd. ");                       
-                  toba::notificacion()->agregar($mensaje,'info');
-               
-                  //verifico que tenga credito     
-                  $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
-                  if ($band){//si hay credito
-                        //pasa a historico
-                        $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
-                        $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
-                        $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
-                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
-                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
-                  }else{
-                        $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
-                        toba::notificacion()->agregar(utf8_decode($mensaje), "error");
-                  }
-
-                }else{//no modifica nada de credito
-                    $this->controlador()->dep('datos')->tabla('designacion')->set($datos);//modifico la designacion
-                    $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
-                    toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+            if($vale){
+                //si estaba cargada la pisa y sino crea un nuevo registro
+                if(isset($datos['suplente'])){//suplente viene con valor
+                    if($datos['carac']=='S' ){
+                        $datos_sup['id_desig_suplente']=$desig['id_designacion'];
+                        $datos_sup['id_desig']=$datos['suplente'];
+                        $this->controlador()->dep('datos')->tabla('suplente')->set($datos_sup);
+                        $this->controlador()->dep('datos')->tabla('suplente')->sincronizar();        
+                        $datos_suplente['id_desig_suplente']=$desig['id_designacion'];
+                        $this->controlador()->dep('datos')->tabla('suplente')->cargar($datos_suplente);
+                    }else{
+                        $this->controlador()->dep('datos')->tabla('suplente')->eliminar_todo();
+                        $this->controlador()->dep('datos')->tabla('suplente')->resetear();
                     }
-                }//vale
-         }else{//intenta modificar una designacion que no pertenece al periodo actual o al presupuestando
-              toba::notificacion()->agregar(utf8_decode($mensaje), "error");
-         }
+                }
+
+                //vuelvo a calcular dedicacion y cat estatuto si cambio la categoria por si las dudas no se autocompletan y quedan vacias
+                if($desig['cat_mapuche']<>$datos['cat_mapuche']){
+                    $dedi=$this->controlador()->get_dedicacion_categoria($datos['cat_mapuche']);
+                    $datos['dedic']=$dedi;
+                    //$est=$this->controlador()->get_categ_estatuto($datos['ec'],$datos['cat_mapuche']);//le sacamos el check al formulario
+                    $est=$this->controlador()->get_categ_estatuto($datos['cat_mapuche']);
+                    $datos['cat_estat']=$est;    
+                }
+
+                // verifico si la designacion que se quiere modificar tiene numero de 540
+
+                if($desig['nro_540'] == null){//no tiene nro de 540
+                     //debe verificar si hay credito antes de hacer la modificacion
+
+                    if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
+                    {//si modifica algo que afecte el credito
+                        $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
+                        $band2=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
+                         if ($band && $band2){//si hay credito
+                            $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
+                            toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                         }else{
+                            $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
+                            toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                         }
+                     }else{//no modifica nada de credito
+                            $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
+                            toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                         }
+                    }
+                else{//tiene numero de 540
+                    if ($desig['estado']<>'L' && $desig['estado']<>'B'){$datos['estado']='R';};
+
+                    //si modifica algo que afecte el credito
+                    if ($desig['desde']<>$datos['desde'] || $desig['hasta']<>$datos['hasta'] || $desig['cat_mapuche']<>$datos['cat_mapuche'])
+                    { //entonces pierde el nro_540 y el check_presup
+                      $datos['nro_540']=null;
+                      $datos['check_presup']=0;
+                      $datos['check_academica']=0;
+                      $mensaje=utf8_decode("Esta modificando una designación que tiene número tkd. La designación perderá el número tkd. ");                       
+                      toba::notificacion()->agregar($mensaje,'info');
+
+                      //verifico que tenga credito     
+                      $band=$this->controlador()->alcanza_credito_modif($desig['id_designacion'],$datos['desde'],$datos['hasta'],$datos['cat_mapuche'],1);
+                      if ($band){//si hay credito
+                            //pasa a historico
+                            $vieja=$this->controlador()->dep('datos')->tabla('designacion')->get();
+                            $this->controlador()->dep('datos')->tabla('designacionh')->set($vieja);//agrega un nuevo registro al historico
+                            $this->controlador()->dep('datos')->tabla('designacionh')->sincronizar();
+                            $this->controlador()->dep('datos')->tabla('designacion')->set($datos);
+                            $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();     
+                            toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                      }else{
+                            $mensaje='NO SE DISPONE DE CRÉDITO PARA MODIFICAR LA DESIGNACIÓN';
+                            toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+                      }
+
+                    }else{//no modifica nada de credito
+                        $this->controlador()->dep('datos')->tabla('designacion')->set($datos);//modifico la designacion
+                        $this->controlador()->dep('datos')->tabla('designacion')->sincronizar();
+                        toba::notificacion()->agregar('Los datos se guardaron correctamente.','info');
+                        }
+                    }
+                }else{
+                    toba::notificacion()->agregar(utf8_decode("Verique que el período de la licencia este dentro del período de la suplencia"), "error");
+                }
+              //vale
+             }else{//intenta modificar una designacion que no pertenece al periodo actual o al presupuestando
+                  toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+             }
         }else{
             toba::notificacion()->agregar(utf8_decode('NO PUEDE MODIFICAR UNA DESIGNACIÓN QUE ESTA AFECTANDO EL CRÉDITO DE UNA RESERVA'), "error");
         }

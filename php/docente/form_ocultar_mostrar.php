@@ -4,6 +4,7 @@ class form_ocultar_mostrar extends toba_ei_formulario
     function extender_objeto_js()
     {
         echo "
+           
 			{$this->objeto_js}.evt__efecto__procesar = function(es_inicial) 
 			{
 				if (! es_inicial) {
@@ -33,6 +34,7 @@ class form_ocultar_mostrar extends toba_ei_formulario
                         {$this->objeto_js}.mostrar_bloque_A = function(visible)
 			{
 				this.ef('suplente').mostrar(visible);
+                                                               
 			}
 			
 			
