@@ -23,7 +23,7 @@ class dt_designacion extends toba_datos_tabla
                 where t_d.id_designacion=$des                 					
                 GROUP BY t_d.id_designacion,t_d.id_docente,t_d.tipo_desig,t_d.desde,t_d.hasta)sub
                 left outer join asignacion_materia a on (a.id_designacion=sub.id_designacion and a.anio=$anio)
-                left outer join asignacion_tutoria t on (t.id_designacion=sub.id_designacion and a.anio=$anio)
+                left outer join asignacion_tutoria t on (t.id_designacion=sub.id_designacion and t.anio=$anio)
                 left outer join director_dpto i on (sub.id_docente=i.id_docente and i.desde<='".$udia."' and i.hasta>='".$pdia."')
 
                 left outer join integrante_interno_pi pi on (sub.id_designacion=pi.id_designacion and pi.desde<='".$udia."' and pi.hasta>='".$pdia."')
