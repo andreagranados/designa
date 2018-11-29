@@ -260,12 +260,14 @@ class ci_integrantes_pi extends designa_ci
 	}
         function chequeo_formato_norma($norma){
             $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
-            if ( !preg_match($regenorma, $norma, $matchFecha) ) {
-                $salida=false;
-                toba::notificacion()->agregar('Nro Resolucion '.$norma.'  invalida. Debe ingresar en formato XXXX/YYYY','error');
-            }else{
-                $salida=true;
-            } 
+            $salida=true;
+            if(isset($norma)){//si tiene valor chequea que cumpla formato
+               if ( !preg_match($regenorma, $norma, $matchFecha) ) {
+                    $salida=false;
+                    toba::notificacion()->agregar('Nro Resolucion '.$norma.'  invalida. Debe ingresar en formato XXXX/YYYY','error');
+                } 
+            }
+            
             return $salida;
         }
 //ahora lo tiene tambien SCYT

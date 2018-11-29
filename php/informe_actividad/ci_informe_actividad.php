@@ -102,6 +102,18 @@ class ci_informe_actividad extends toba_ci
 //      
 //            }
 //        }
+        function conf__pant_inicial(toba_ei_pantalla $pantalla){
+             if(isset($this->s__datos_filtro['nro_540'])){
+                  if (isset($this->s__listado)){
+                      $this->evento('imprimir')->mostrar();
+                  }else{
+                      $this->evento('imprimir')->ocultar();
+                  }
+             }else{
+                 $this->evento('imprimir')->ocultar();
+             }
+             
+         }
         function vista_pdf(toba_vista_pdf $salida)
         {
           if(isset($this->s__datos_filtro['nro_540'])){
