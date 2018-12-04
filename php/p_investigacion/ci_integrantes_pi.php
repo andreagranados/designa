@@ -279,10 +279,11 @@ class ci_integrantes_pi extends designa_ci
             if($this->chequeo_formato_norma($datos['rescd_bm'])){  
                 $datos2['rescd_bm']=$datos['rescd_bm'];
                 $datos2['resaval']=$datos['resaval'];
+                $datos2['cat_investigador']=$datos['cat_investigador'];
                 $this->dep('datos')->tabla('integrante_interno_pi')->set($datos2);
                 $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
                 $this->s__mostrar_i=0;
-                toba::notificacion()->agregar('Guardado. Solo modifica ResCD baja/modif, Res Aval', 'info');
+                toba::notificacion()->agregar('Guardado. Solo modifica ResCD baja/modif, Res Aval, Cat Investigador', 'info');
             }
           }else{//es usuario de la UA
              $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
