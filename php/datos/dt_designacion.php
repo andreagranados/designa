@@ -868,6 +868,13 @@ class dt_designacion extends toba_datos_tabla
                 }else{//por defecto lo ordena por fecha de inicio
                     $where[]="t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)";
                 }
+                if (isset($filtro['anulada'])) {
+                    if($filtro['anulada']['valor']==1){//anulada
+                        $where[]="(t_d.hasta is not null and t_d.hasta<t_d.desde)";
+                    }else{//no anuladas
+                        $where[]=" not (t_d.hasta is not null and t_d.hasta<t_d.desde) ";
+                    }
+                }
 		
                 // [desde] => Array ( [condicion] => es_igual_a [valor] => 2015-08-18 )
                 if (isset($filtro['desde'])) {
@@ -962,7 +969,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 			AND  t_d.carac = t_c.id_car
 			AND  t_d.uni_acad = t_ua.sigla".
                   " AND t_d.id_docente=".$agente.      
-		" ORDER BY desde";
+		" ORDER BY desde desc";
                 
                 $sql = toba::perfil_de_datos()->filtrar($sql);
                 

@@ -258,7 +258,7 @@ class ci_docente extends toba_ci
             //no hago resetear porque pierdo los datos
             //cuando seleccione otro agente desde la ventana inicial se vuelven a cargar los datos del docente
             $this->controlador()->set_pantalla('pant_edicion');
-            
+            unset($this->s__datos_filtro_cargo);
         }
         function evt__agregar_reserva()
 	{
@@ -298,7 +298,9 @@ class ci_docente extends toba_ci
 
         function conf__filtro_cargo(toba_ei_filtro $filtro)
 	{
-           
+            if (isset($this->s__datos_filtro_cargo)) {
+		$filtro->set_datos($this->s__datos_filtro_cargo);
+            }
 	}
 
 	function evt__filtro_cargo__filtrar($datos)
