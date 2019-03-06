@@ -1372,36 +1372,36 @@ class ci_pinv_otros extends designa_ci
                     $datos2['id_pinv']=$pi['id_pinv'];
                     if (isset($datos['ficha_tecnica'])) {
                             $nombre_ca="ficha_tecnica".$id.".pdf";
-                            $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
-                            //$destino_ca="/home/cristian/toba_2.7.1/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
                             if(move_uploaded_file($datos['ficha_tecnica']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['ficha_tecnica']=strval($nombre_ca);}
                     }
                     if (isset($datos['cv_dir_codir'])) {
                             $nombre_cvdc="cv_dir_codir".$id.".pdf";
-                            $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
-                            //$destino_ca="/home/cristian/toba_2.7.1/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
                             if(move_uploaded_file($datos['cv_dir_codir']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['cv_dir_codir']=strval($nombre_cvdc);}
                     }
                     if (isset($datos['cv_integrantes'])) {
                             $nombre_int="cv_integrantes".$id.".pdf";
-                            $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
-                            //$destino_ca="/home/cristian/toba_2.7.1/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
                             if(move_uploaded_file($datos['cv_integrantes']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['cv_integrantes']=strval($nombre_int);}
                     }
                     if (isset($datos['plan_trabajo'])) {
                             $nombre_pt="plan_trabajo".$id.".pdf";
-                            $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
-                            //$destino_ca="/home/cristian/toba_2.7.1/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
                             if(move_uploaded_file($datos['plan_trabajo']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['plan_trabajo']=strval($nombre_pt);}
                     }
                      if (isset($datos['nota_aceptacion'])) {
                             $nombre_na="nota_aceptacion".$id.".pdf";
-                            $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
-                            //$destino_ca="/home/cristian/toba_2.7.1/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
                             if(move_uploaded_file($datos['nota_aceptacion']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['nota_aceptacion']=strval($nombre_na);}
                     }
