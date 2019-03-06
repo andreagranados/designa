@@ -4,8 +4,8 @@ class dt_unidad_acad extends toba_datos_tabla
        //trae todas las dependencias 
 	function get_descripciones()
 	{
-		$sql = "SELECT sigla, descripcion FROM unidad_acad ORDER BY descripcion";
-		return toba::db('designa')->consultar($sql);
+            $sql = "SELECT sigla, descripcion FROM unidad_acad ORDER BY descripcion";
+	    return toba::db('designa')->consultar($sql);
 	}
         function get_descripcion ($sigla){
             $sql="select descripcion from unidad_acad where sigla='".$sigla."'";
@@ -15,6 +15,16 @@ class dt_unidad_acad extends toba_datos_tabla
             }else{
                 return '';
             } 
+        }
+        function get_ua_dependencia(){//trae todas menos la UA asociada al usuario logueado, para las ua dependencia de los proyectos 
+            $perfil = toba::usuario()->get_perfil_datos();
+            if (isset($perfil)) {       //es usuario de la UA
+                $sql="select sigla,descripcion from unidad_acad ";
+                $sql = toba::perfil_de_datos()->filtrar($sql);  
+                $resul=toba::db('designa')->consultar($sql);
+                $sql="select * from unidad_acad WHERE sigla<>'AUZA' and sigla<>'ASMA' and sigla<>'".$resul[0]['sigla']."'";
+                return toba::db('designa')->consultar($sql);
+            }
         }
         function get_descripciones_ua($id_des=null)	{
             if(!is_null($id_des)){

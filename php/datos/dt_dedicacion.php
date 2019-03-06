@@ -7,24 +7,5 @@ class dt_dedicacion extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 ?>

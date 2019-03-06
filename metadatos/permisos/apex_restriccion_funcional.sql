@@ -60,12 +60,6 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 );
 INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
 	'designa', --proyecto
-	'16', --restriccion_funcional
-	'no_modifica_estado_pi', --descripcion
-	'0'  --permite_edicion
-);
-INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
-	'designa', --proyecto
 	'17', --restriccion_funcional
 	'no_edita_pi', --descripcion
 	'0'  --permite_edicion
@@ -122,6 +116,60 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'designa', --proyecto
 	'32', --restriccion_funcional
 	'no_ve_dao', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'33', --restriccion_funcional
+	'no_agrega_proyecto', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'35', --restriccion_funcional
+	'no_elimina_proyecto', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'37', --restriccion_funcional
+	'no_edita_subsidios', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'38', --restriccion_funcional
+	'no_edita_estimulos', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'40', --restriccion_funcional
+	'no_edita_viaticos', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'41', --restriccion_funcional
+	'no_edita_pres', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'42', --restriccion_funcional
+	'no_modif_estimulos', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'44', --restriccion_funcional
+	'restricciones_ua_proyectos', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'46', --restriccion_funcional
+	'restricciones_director_proyecto', --descripcion
 	'0'  --permite_edicion
 );
 --- FIN Grupo de desarrollo 0

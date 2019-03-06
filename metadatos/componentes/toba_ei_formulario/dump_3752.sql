@@ -183,7 +183,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'3229', --evento_id
 	'3752', --objeto
 	'modificacion_ua', --identificador
-	'Modificar', --etiqueta
+	'&ModificarUA', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
 	NULL, --confirmacion

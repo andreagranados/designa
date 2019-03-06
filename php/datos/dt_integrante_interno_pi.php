@@ -8,7 +8,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         toba::db('designa')->consultar($sql); 
     }
     function chequeados_ok($id_proy){
-        $sql="update integrante_interno_pi set check_inv=1 where  pinvest=".$id_proy;
+        $sql="update integrante_interno_pi set check_inv=1 where  pinvest=".$id_proy." or pinvest in (select id_proyecto from subproyecto where id_programa=".$id_proy.")";
         toba::db('designa')->consultar($sql); 
     }
     //trae un listado de los docentes que estan asociados al proyecto. Combo responsable del fondo
@@ -48,7 +48,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
     }
     //modifica la fecha hasta de los integrantes del proyecto
     function modificar_fechahasta($pinv,$hasta){
-        $sql=" update integrante_externo_pi set hasta='".$hasta."' where pinvest=".$pinv;
+        $sql=" update integrante_interno_pi set hasta='".$hasta."' where pinvest=".$pinv;
         toba::db('designa')->consultar($sql); 
     }
     //trae los integrantes docentes de la ua que ingresa que participan en proyectos de otras ua

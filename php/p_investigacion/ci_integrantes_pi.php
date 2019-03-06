@@ -13,7 +13,12 @@ class ci_integrantes_pi extends designa_ci
         protected $s__anio;
         protected $s__codigo;
       
-        
+        function ini()
+        {
+            $this->s__mostrar_e=0;
+            $this->s__mostrar_i=0;
+
+        }
         function get_persona($id){   
         }
         function conf__pant_integrantes_i(toba_ei_pantalla $pantalla)
@@ -43,7 +48,12 @@ class ci_integrantes_pi extends designa_ci
         }
         function resolucion_proyecto(){
             $datos=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            return $datos['nro_resol'];
+            if(isset($datos['nro_resol'])){
+                return $datos['nro_resol'];
+            }else{
+                return '0000/0000';
+            }
+            
         }
        
         //-----------------------------------------------------------------------------------
@@ -61,14 +71,32 @@ class ci_integrantes_pi extends designa_ci
 
 	function evt__cuadro_id__seleccion($datos)
 	{
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
-            }else{
-                $this->s__mostrar_i=1;
-                $this->dep('datos')->tabla('integrante_interno_pi')->cargar($datos);     
+            $perfil = toba::usuario()->get_perfil_datos();
+            if (isset($perfil)) {       //es usuario de la UA
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();  
+                if($pi['estado']<>'A' and $pi['estado']<>'I'){
+                    toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
+                }else{//el proyecto esta en A o I
+                    $seguir=true;
+                    $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
+                    if($pf[0]=='investigacion_director'){
+                        if($pi['estado']<>'I'){
+                            toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Inicial', 'error');  
+                            $seguir=false;
+                        }
+                    }else{//es usuario de la UA
+                        if($pi['estado']<>'A'){
+                            toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Activo', 'error');  
+                            $seguir=false;
+                        }
+                    }
+                    if($seguir){
+                        $this->s__mostrar_i=1;
+                        $this->dep('datos')->tabla('integrante_interno_pi')->cargar($datos);
+                    }
+              }
             }
-	}
+        }
         function evt__cuadro_id__check($datos)
 	{
             $this->dep('datos')->tabla('integrante_interno_pi')->cargar($datos);   
@@ -282,14 +310,10 @@ class ci_integrantes_pi extends designa_ci
                 $datos2['cat_investigador']=$datos['cat_investigador'];
                 $this->dep('datos')->tabla('integrante_interno_pi')->set($datos2);
                 $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                $this->s__mostrar_i=0;
                 toba::notificacion()->agregar('Guardado. Solo modifica ResCD baja/modif, Res Aval, Cat Investigador', 'info');
             }
           }else{//es usuario de la UA
-             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-             if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');  
-             }else{
+                $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
                 $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
                 if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){//no puede ir fuera del periodo del proyecto
                     //toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');                    
@@ -317,7 +341,6 @@ class ci_integrantes_pi extends designa_ci
                                 $datos['check_inv']=0;//pierde el check si es que lo tuviera
                                 $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
                                 $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                                $this->s__mostrar_i=0;
                                 toba::notificacion()->agregar('Ha sido chequeado por SCyT, solo puede modificar fecha hasta', 'info');
                             }else{
                                 $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
@@ -332,7 +355,6 @@ class ci_integrantes_pi extends designa_ci
                                         $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
                                         //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
                                         $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($int['id_designacion'],$int['pinvest'],$int['desde'],$datos['desde']);
-                                        $this->s__mostrar_i=0;
                                     }
                                  }
                             }
@@ -341,31 +363,27 @@ class ci_integrantes_pi extends designa_ci
                          throw new toba_error("Hay superposicion de fechas");
                     }
                 }
-            } 
-          }
-            
+            }
+            //nuevo Lo coloco para que el formulario se oculte al finalizar
+            $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+            $this->s__mostrar_i=0;
         }
         function evt__form_integrante_i__baja($datos)
         {
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');  
-            }else{
-                $band=false;
-                if($pi['estado']=='A'){
-                    $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
-                    $band=$this->dep('datos')->tabla('logs_integrante_interno_pi')->fue_chequeado($int['id_designacion'],$int['pinvest'],$int['desde']);
-                }
-                if($band){
-                    toba::notificacion()->agregar('No puede eliminar un integrante que ya ha sido chequeado por SCyT', 'error');  
-                }else{
-                    $this->dep('datos')->tabla('integrante_interno_pi')->eliminar_todo();
-                    $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
-                    $this->s__mostrar_i=0;
-                    toba::notificacion()->agregar('El registro se ha eliminado correctamente', 'info');  
-                }
+            $band=false;
+            if($pi['estado']=='A'){
+                $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
+                $band=$this->dep('datos')->tabla('logs_integrante_interno_pi')->fue_chequeado($int['id_designacion'],$int['pinvest'],$int['desde']);
             }
-             
+            if($band){
+                toba::notificacion()->agregar('No puede eliminar un integrante que ya ha sido chequeado por SCyT', 'error');  
+            }else{
+                $this->dep('datos')->tabla('integrante_interno_pi')->eliminar_todo();
+                toba::notificacion()->agregar('El registro se ha eliminado correctamente', 'info');  
+            }
+            $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+            $this->s__mostrar_i=0;
         }
         function evt__form_integrante_i__cancelar()
 	{
@@ -414,10 +432,11 @@ class ci_integrantes_pi extends designa_ci
                  } else{
                     $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
                     if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
-                        toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                        //toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                        throw new toba_error('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY');
                     }else{
                         if ( isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
-                            toba::notificacion()->agregar('Resolucion CD de Baja o Modificacion Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                            throw new toba_error('Resolucion CD de Baja o Modificacion Invalida. Debe ingresar en formato XXXX/YYYY');
                         }else{
                             $datos['pinvest']=$pi['id_pinv'];
                             $datos['nro_tabla']=1;
@@ -437,25 +456,22 @@ class ci_integrantes_pi extends designa_ci
         function evt__form_integrante_e__baja($datos)
         {
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');   
-            }else{
-                $band=false;
-                if($pi['estado']=='A'){//solo en estado A chequea check investigacion
-                    //si fue chequeado por SCyT entonces no puede borrar
-                    $int=$this->dep('datos')->tabla('integrante_externo_pi')->get();
-                    $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
-                }
-                
-                if($band){
-                    toba::notificacion()->agregar('No puede eliminar un integrante que ya ha sido chequeado por SCyT', 'error');  
-                }else{
-                    $this->dep('datos')->tabla('integrante_externo_pi')->eliminar_todo();
-                    $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
-                    toba::notificacion()->agregar('El integrante se ha eliminado correctamente', 'info');  
-                    $this->s__mostrar_e=0;
-                }
+            $band=false;
+            if($pi['estado']=='A'){//solo en estado A chequea check investigacion
+                //si fue chequeado por SCyT entonces no puede borrar
+                $int=$this->dep('datos')->tabla('integrante_externo_pi')->get();
+                $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
             }
+
+            if($band){//ya fue chequeado por SCyT
+                toba::notificacion()->agregar('No puede eliminar un integrante que ya ha sido chequeado por SCyT', 'error');  
+                
+            }else{
+                $this->dep('datos')->tabla('integrante_externo_pi')->eliminar_todo();
+                toba::notificacion()->agregar('El integrante se ha eliminado correctamente', 'info');  
+            }
+            $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+            $this->s__mostrar_e=0;
         }
         function evt__form_integrante_e__modificacion($datos)
         {
@@ -466,54 +482,53 @@ class ci_integrantes_pi extends designa_ci
                 $datos2['resaval']=$datos['resaval'];
                 $this->dep('datos')->tabla('integrante_externo_pi')->set($datos2);
                 $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
-                $this->s__mostrar_i=0;
                 toba::notificacion()->agregar('Guardado. Solo modifica ResCD baja/modif, Res Aval', 'info');
             }
           }else{
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados', 'error');   
-            }else{
-                $band=false;
-                $int=$this->dep('datos')->tabla('integrante_externo_pi')->get();
-                if($pi['estado']=='A'){//solo en estado A chequea check investigacion
-                    //si fue chequeado por SCyT entonces no puede borrar
-                    $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
-                }
-                if($band){
-                    unset($datos['funcion_p']);
-                    unset($datos['cat_investigador']);
-                    unset($datos['identificador_personal']);
-                    unset($datos['carga_horaria']);
-                    unset($datos['desde']);
-                    unset($datos['rescd']);
-                    unset($datos['cat_invest_conicet']);
-                    unset($datos['resaval']);
-                    unset($datos['hs_finan_otrafuente']);
-                    $datos['check_inv']=0;//pierde el check si es que lo tuviera
-                    $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
-                    $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
-                    $this->s__mostrar_e=0;
-                    toba::notificacion()->agregar('Ha sido chequeado por SCyT, solo puede modificar fecha hasta', 'info');
+            $band=false;
+            $int=$this->dep('datos')->tabla('integrante_externo_pi')->get();
+            if($pi['estado']=='A'){//solo en estado A chequea check investigacion
+                //si fue chequeado por SCyT entonces no puede borrar
+                $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
+            }
+            if($band){
+                unset($datos['funcion_p']);
+                unset($datos['cat_investigador']);
+                unset($datos['identificador_personal']);
+                unset($datos['carga_horaria']);
+                unset($datos['desde']);
+                unset($datos['rescd']);
+                unset($datos['cat_invest_conicet']);
+                unset($datos['resaval']);
+                unset($datos['hs_finan_otrafuente']);
+                $datos['check_inv']=0;//pierde el check si es que lo tuviera
+                $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
+                $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+                //$this->s__mostrar_e=0;
+                toba::notificacion()->agregar('Ha sido chequeado por SCyT, solo puede modificar fecha hasta', 'info');
+            }else{//no fue modificado por SCyT entonces puede modificar cualquier dato
+                $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+                if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
+                    toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
                 }else{
-                    $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
-                    if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
-                        toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                   if ( isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
+                       toba::notificacion()->agregar('Resolucion CD Baja Modificacion Invalida. Debe ingresar en formato XXXX/YYYY','error');
                     }else{
-                       if ( isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
-                           toba::notificacion()->agregar('Resolucion CD Baja Modificacion Invalida. Debe ingresar en formato XXXX/YYYY','error');
-                        }else{
-                            $datos['check_inv']=0;//pierde el check
-                            $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
-                            $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
-                    //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
-                            $this->dep('datos')->tabla('integrante_externo_pi')->modificar_fecha_desde($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde'],$datos['desde']);
-                            toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
-                       }
-                    }
+                        $datos['check_inv']=0;//pierde el check
+                        $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
+                        $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+                //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
+                        $this->dep('datos')->tabla('integrante_externo_pi')->modificar_fecha_desde($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde'],$datos['desde']);
+                        toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
+                   }
                 }
             }
+            
           }//fin de usuario de UA
+          //para que el formulario desaparezca despues de la modificacion
+          $this->s__mostrar_e=0;
+          $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
         }
         function evt__form_integrante_e__cancelar()
 	{
@@ -540,16 +555,33 @@ class ci_integrantes_pi extends designa_ci
 	}
         function evt__cuadro_int__seleccion($datos)
 	{
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
-            }else{
-                $this->s__mostrar_e=1;
-                $this->dep('datos')->tabla('integrante_externo_pi')->cargar($datos);     
-            }
-           
+            $perfil = toba::usuario()->get_perfil_datos();
+            if (isset($perfil)) {       //es usuario de la UA
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if($pi['estado']<>'A' and $pi['estado']<>'I'){
+                    toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
+                }else{
+                    $seguir=true;
+                    $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
+                    if($pf[0]=='investigacion_director'){
+                            if($pi['estado']<>'I'){
+                                toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Inicial', 'error');  
+                                $seguir=false;
+                            }
+                    }else{//es usuario de la UA
+                        if($pi['estado']<>'A'){
+                                toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Activo', 'error');  
+                                $seguir=false;
+                            }
+                    }
+                    if($seguir){
+                        $this->s__mostrar_e=1;
+                        $this->dep('datos')->tabla('integrante_externo_pi')->cargar($datos); 
+                    }
+                  }
+            } 
 	}
-         function evt__cuadro_int__check($datos)
+        function evt__cuadro_int__check($datos)
 	{
             $this->dep('datos')->tabla('integrante_externo_pi')->cargar($datos);   
             $registro=$this->dep('datos')->tabla('integrante_externo_pi')->get();
@@ -569,20 +601,41 @@ class ci_integrantes_pi extends designa_ci
         //--Eventos
         function evt__agregar()
 	{
-         $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-         if($pi['estado']<>'I' and $pi['estado']<>'A'){
-            toba::notificacion()->agregar('No es posible porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
-         }else{
-            //el boton agregar aparece en la pantalla de integ internos y externos
-            switch ($this->s__pantalla) {
-                case 'pant_integrantes_i': $this->s__mostrar_i=1;
-                                           $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
-                                          break;
-                case 'pant_integrantes_e':  $this->s__mostrar_e=1;
-                                            $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
-                                            break;
+            $seguir=true;
+            $mensaje='';
+            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            if($pi['estado']<>'I' and $pi['estado']<>'A'){
+                $mensaje='No es posible por el estado del proyecto';   
+                $seguir=false;
+            }else{
+                $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
+                if($pf[0]=='investigacion_director'){
+                        if($pi['estado']<>'I'){
+                            $mensaje='No es posible agregar participantes. El proyecto debe estar en estado Inicial';  
+                            $seguir=false;
+                        }
+                }else{
+                   if($pf[0]='investigacion'){//es usuario de la UA
+                     if($pi['estado']<>'A'){
+                           $mensaje='No es posible agregar participantes. El proyecto debe estar en estado Activo';  
+                           $seguir=false;
+                        }
+                  }
+                }
             }
-         }
+            if($seguir){
+                //el boton agregar aparece en la pantalla de integ internos y externos 
+                switch ($this->s__pantalla) {
+                    case 'pant_integrantes_i': $this->s__mostrar_i=1;
+                                               $this->dep('datos')->tabla('integrante_interno_pi')->resetear();
+                                              break;
+                    case 'pant_integrantes_e':  $this->s__mostrar_e=1;
+                                                $this->dep('datos')->tabla('integrante_externo_pi')->resetear();
+                                                break;
+                }
+            }else{
+                  toba::notificacion()->agregar($mensaje, 'error');  
+            }
         }
         
         //---Plantilla
@@ -702,29 +755,6 @@ class ci_integrantes_pi extends designa_ci
                  toba::notificacion()->agregar('No tiene director', 'error');    
              }
         }   
-        
-	
-
-	//-----------------------------------------------------------------------------------
-	//---- Configuraciones --------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function conf()
-	{
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['es_programa']==1){
-                $this->controlador()->pantalla()->tab("pant_estimulos")->desactivar();	 
-                $this->controlador()->pantalla()->tab("pant_viaticos")->desactivar();
-            }else{
-                $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
-                $this->controlador()->pantalla()->tab("pant_subproyectos")->desactivar();	 
-                 if($pertenece!=0){// pertenece a un programa   
-                        //si pertenece a un programa entonces el subsidio lo recibe el programa
-                        $this->controlador()->pantalla()->tab("pant_subsidios")->desactivar();	 
-                        $this->controlador()->pantalla()->tab("pant_winsip")->desactivar();	 
-                    }
-            }
-	}
 
 }
 ?>

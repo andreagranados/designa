@@ -80,7 +80,7 @@ class ci_cd_anual extends toba_ci
                 $pdf->ezText("\n", 7);
                 //aqui si es programa va distinto
                 if($pi['tipo']=='PROIN' ){
-                    $pp=$this->dep('datos')->tabla('pinvestigacion')->get_proyectos_programa($pi['id_pinv']);;
+                    $pp=$this->dep('datos')->tabla('pinvestigacion')->get_proyectos_programa($pi['id_pinv']);
                     $texto='DENOMINACION DE LOS PROYECTOS DE PROGRAMA: ';
                     $pdf->ezText($texto,12);
                     $pdf->ezText("\n", 4);

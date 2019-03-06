@@ -1,8 +1,8 @@
 <?php
 class dt_integrante_externo_pi extends toba_datos_tabla
 {
-    function chequeados_ok($id_proy){
-        $sql="update integrante_externo_pi set check_inv=1 where  pinvest=".$id_proy;
+    function chequeados_ok($id_proy){// si es un programa entonces tambien coloca el check en todos los integrantes de los subproyectos
+        $sql="update integrante_externo_pi set check_inv=1 where  pinvest=".$id_proy." or pinvest in (select id_proyecto from subproyecto where id_programa=".$id_proy.")";
         toba::db('designa')->consultar($sql); 
     }
     function modificar_fecha_desde($tipo_doc,$nro,$pinv,$desdeactual,$desdenuevo)

@@ -15,5 +15,6 @@ class dt_estado_pi extends toba_datos_tabla
          }
          return toba::db('designa')->consultar($sql);
     }
+    
 }
 ?>

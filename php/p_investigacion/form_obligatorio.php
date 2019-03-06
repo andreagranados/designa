@@ -17,7 +17,7 @@ class form_obligatorio extends toba_ei_formulario
 					case 'B':
 						this.obligatorio(true);
 						break;
-					
+                                        case 'R':this.ef('nro_resol').set_obligatorio(true); break;
 					default:
 						this.obligatorio(false);
 						break;					

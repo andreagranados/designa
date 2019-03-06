@@ -2,6 +2,81 @@
 require_once 'dt_mocovi_periodo_presupuestario.php';
 class dt_pinvestigacion extends toba_datos_tabla
 {
+        function chequeo_previo_envio($id_pinv){
+            $band=true;
+            $mensaje='';
+            $salida=array();
+            //que haya cargado responsable de subs
+            //que haya adjuntado la ficha tecnica, los cv, si tiene alumnos que haya adjuntado plan trabajo, si tiene asesor que haya adjuntado nota
+            $sql="select id_respon_sub,ficha_tecnica,cv_dir_codir,cv_integrantes,count(distinct r.id) as presup,count(distinct id_designacion) as internos, count(distinct e.nro_docum) as externos from pinvestigacion p "
+                    . " left outer join integrante_interno_pi i on i.pinvest=p.id_pinv"
+                    . " left outer join integrante_externo_pi e on e.pinvest=p.id_pinv"
+                    . " left outer join proyecto_adjuntos a on a.id_pinv=p.id_pinv"
+                    . " left outer join presupuesto_proyecto r on r.id_proyecto=p.id_pinv"
+                    . " where p.id_pinv=$id_pinv"
+                    . " group by p.id_pinv,ficha_tecnica,cv_dir_codir,cv_integrantes";
+            $resul=toba::db('designa')->consultar($sql);
+            //print_r($resul);exit;
+            if(!isset($resul[0]['id_respon_sub'])){// and $resul[0]['internos']>1 and $resul[0]['externos']>1){
+                $band=false;
+                $mensaje.=' Falta responsable de los subsidios';
+            }else{
+                if($resul[0]['internos']<=0){
+                    $band=false;
+                    $mensaje.='Falta ingresar integrantes internos';
+                }else{
+                    if($resul[0]['externos']<=0){
+                        $band=false;
+                        $mensaje.='Falta ingresar integrantes externos';
+                    }else{
+                        if(!isset($resul[0]['ficha_tecnica'])){
+                            $band=false;
+                            $mensaje.='Falta adjuntar ficha tecnica';
+                        }else{
+                            if(!isset($resul[0]['cv_dir_codir'])){
+                                $band=false;
+                                $mensaje.='Falta adjuntar cv director codirector';
+                            }else{
+                                if(!isset($resul[0]['cv_integrantes'])){
+                                    $band=false;
+                                    $mensaje.='Falta adjuntar cv integrantes';
+                                }else{
+                                    if(count($resul[0]['presup'])<=0){
+                                        $band=false;
+                                        $mensaje.='Falta ingresar el presupuesto';
+                                    }
+                                    
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+            }
+            
+            $salida['bandera']=$band;
+            $salida['mensaje']=$mensaje;
+            return $salida;
+        }
+        function get_avales($es_prog,$id_pinv)
+        {
+            if($es_prog==1){
+                $where=" where id_pinv in (select id_proyecto from subproyecto c where id_programa=".$id_pinv.")";
+            }else{
+                $where=" where id_pinv=".$id_pinv ;
+            }
+            $salida='';
+            $sql="select * from integrante_interno_pi a "
+                    . " inner join pinvestigacion b on a.pinvest=b.id_pinv"
+                    . $where."  and b.uni_acad<>a.ua ";
+            $resul=toba::db('designa')->consultar($sql);
+            //print_r($resul);exit;
+            foreach ($resul as $clave => $valor) {
+                        $salida.=$valor['ua'].': '.$valor['resaval'].', ';
+                    }
+             
+            return $salida;
+        }
         function get_resolucion($id_pinv){
             $sql="select nro_resol,fec_resol from pinvestigacion "
                     . " where id_pinv=$id_pinv";
@@ -237,7 +312,9 @@ class dt_pinvestigacion extends toba_datos_tabla
         }
         function get_programas($es_prog=null)
         {
-            if($es_prog=='NO'){//trae todos los programas de la unidad academica que se logueo
+            if($es_prog=='NO'){//trae todos los programas del director que se logueo
+                //obtengo el usuario logueado
+                $usuario=toba::usuario()->get_id();
                 //obtengo el perfil de datos del usuario logueado
                 $con="select sigla,descripcion from unidad_acad ";
                 $con = toba::perfil_de_datos()->filtrar($con);
@@ -246,10 +323,11 @@ class dt_pinvestigacion extends toba_datos_tabla
                     $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 ";
                 }else{//usuario de una UA
                 //le agrego al desplegable la opcion 0 sin programa
-                    $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 and uni_acad='".trim($resul[0]['sigla'])."'";
+                    //$sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 and uni_acad='".trim($resul[0]['sigla'])."'";
+                    $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 and usuario='".trim($usuario)."'";
                 }
                 $res=toba::db('designa')->consultar($sql);
-                return toba::db('designa')->consultar($sql);
+                return $res;
             }
             else{//si es un programa entonces no muestra nada en este combo
                 $res=array();
@@ -311,10 +389,20 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $con="select sigla from unidad_acad ";
                 $con = toba::perfil_de_datos()->filtrar($con);
                 $resul=toba::db('designa')->consultar($con);
-                //print_r($resul);
+                $usuario=toba::usuario()->get_id();
+                // Por defecto el sistema se activa sobre el proyecto y usuario actual
+                $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
+                $pd = toba::manejador_sesiones()->get_perfil_datos();
+                //print_r($pf);
                 $where = " WHERE 1=1 ";
-              
-                if(count($resul)<=1){//es usuario de una unidad academica
+                //los directores solo pueden ver sus proyectos
+                if(isset($pf)){//si tiene perfil funcional investigador_director 
+                    if($pf[0]=='investigacion_director'){
+                        $where.=" and usuario='".$usuario."'";
+                    }    
+                }
+                //if(count($resul)<=1){//es usuario de una unidad academica
+                if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
                     $where.=" and t_p.uni_acad = ".quote($resul[0]['sigla']);
                 }//sino es usuario de la central no filtro a menos que haya elegido
                 
@@ -520,6 +608,24 @@ class dt_pinvestigacion extends toba_datos_tabla
                 return '';
             }else{
                 return $res[0]['director'];
+            }
+        }
+        function get_codirector($id_proy){
+            $sql="select case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as codirector
+                    from pinvestigacion as t_p
+                left outer join integrante_interno_pi id2 on (id2.pinvest=t_p.id_pinv and (id2.funcion_p='C' or id2.funcion_p='CE') and t_p.fec_hasta=id2.hasta)
+                left outer join designacion t_d2 on (t_d2.id_designacion=id2.id_designacion)    
+                left outer join docente t_do2 on (t_do2.id_docente=t_d2.id_docente)  
+                        
+                left outer join integrante_externo_pi id3 on (id3.pinvest=t_p.id_pinv and (id3.funcion_p='C' or id3.funcion_p='CE' ) and t_p.fec_hasta=id3.hasta)
+                left outer join persona t_d3 on (t_d3.tipo_docum=id3.tipo_docum and t_d3.nro_docum=id3.nro_docum) 
+                where t_p.id_pinv=".$id_proy;
+            $res= toba::db('designa')->consultar($sql);
+            
+            if($res[0]['codirector']==''){
+                return '';
+            }else{
+                return $res[0]['codirector'];
             }
         }
         function get_categ($id_p,$nro_doc){
