@@ -6,7 +6,14 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
             $band=false;
             $actual=date('Y-m-d');
             $anio_actual= date("Y", strtotime($actual));
-            $sql="select fec_inicio ,fec_fin  from convocatoria_proyectos where anio=$anio_actual and id_tipo=$tipo";
+            switch ($tipo) {
+                case 'RECO':$id_tipo=1;
+                   break;
+                default:$id_tipo=2;
+                    break;
+            }
+            $sql="select fec_inicio,fec_fin from convocatoria_proyectos "
+                    . " where anio=$anio_actual and id_tipo=$id_tipo";
             $resul=toba::db('designa')->consultar($sql);
             if(count($resul)>0){
                 if($actual>=$resul[0]['fec_inicio'] and $actual<=$resul[0]['fec_fin'] ){
