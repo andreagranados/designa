@@ -6,54 +6,70 @@ class dt_pinvestigacion extends toba_datos_tabla
             $band=true;
             $mensaje='';
             $salida=array();
-            //que haya cargado responsable de subs
-            //que haya adjuntado la ficha tecnica, los cv, si tiene alumnos que haya adjuntado plan trabajo, si tiene asesor que haya adjuntado nota
-            $sql="select id_respon_sub,ficha_tecnica,cv_dir_codir,cv_integrantes,count(distinct r.id) as presup,count(distinct id_designacion) as internos, count(distinct e.nro_docum) as externos from pinvestigacion p "
-                    . " left outer join integrante_interno_pi i on i.pinvest=p.id_pinv"
-                    . " left outer join integrante_externo_pi e on e.pinvest=p.id_pinv"
-                    . " left outer join proyecto_adjuntos a on a.id_pinv=p.id_pinv"
-                    . " left outer join presupuesto_proyecto r on r.id_proyecto=p.id_pinv"
-                    . " where p.id_pinv=$id_pinv"
-                    . " group by p.id_pinv,ficha_tecnica,cv_dir_codir,cv_integrantes";
-            $resul=toba::db('designa')->consultar($sql);
-            //print_r($resul);exit;
-            if(!isset($resul[0]['id_respon_sub'])){// and $resul[0]['internos']>1 and $resul[0]['externos']>1){
+            $valor=$this->tiene_director($id_pinv);
+            if($valor==0){//no tiene director
                 $band=false;
-                $mensaje.=' Falta responsable de los subsidios';
+                $mensaje='No tiene director';
             }else{
-                if($resul[0]['internos']<=0){
+                  //que haya cargado responsable de fondos
+                //que haya adjuntado la ficha tecnica, los cv, si tiene alumnos que haya adjuntado plan trabajo, si tiene asesor que haya adjuntado nota
+                $sql="select sub.es_programa,id_respon_sub,ficha_tecnica,cv_dir_codir,cv_integrantes,case when sub.es_programa=1 then case when subp=presup_subp then 1 else 0 end else presup end as presupu,
+            case when sub.es_programa=1 then case when subp=integ_subp then 1 else 0 end else case when integ>0 then 1 else 0 end end as integrantes,
+            case when sub.es_programa=1 then case when (subp=ft)and(subp=cvdc)and(subp=cvi) then 1 else 0 end else 1 end as adj
+             from (select p.id_pinv,p.es_programa,p.id_respon_sub,a.ficha_tecnica,a.cv_dir_codir,a.cv_integrantes,
+                  count(distinct s.id_proyecto) as subp,count(distinct rr.id_proyecto) as presup_subp,count(distinct r.id_proyecto) as presup,count(distinct ii.pinvest) as integ_subp,count(distinct i.id_designacion) as integ,
+                  count(distinct aa.ficha_tecnica) as ft,count(distinct aa.cv_dir_codir) as cvdc,count(distinct aa.cv_integrantes) as cvi
+                  from pinvestigacion p
+                    left outer join presupuesto_proyecto r on r.id_proyecto=p.id_pinv  
+                    left outer join subproyecto s on s.id_programa=p.id_pinv
+                    left outer join presupuesto_proyecto rr on rr.id_proyecto=s.id_proyecto
+                    left outer join proyecto_adjuntos a on a.id_pinv=p.id_pinv
+                    left outer join proyecto_adjuntos aa on aa.id_pinv=s.id_proyecto
+                    left outer join integrante_interno_pi i on i.pinvest=p.id_pinv
+                    left outer join integrante_interno_pi ii on ii.pinvest=s.id_proyecto
+                    where p.id_pinv=".$id_pinv.
+                    " group by p.id_pinv,p.es_programa,a.ficha_tecnica,a.cv_dir_codir,a.cv_integrantes)sub";
+                $resul=toba::db('designa')->consultar($sql);
+                //print_r($resul);exit;
+                if(!isset($resul[0]['id_respon_sub'])){// and $resul[0]['internos']>1 and $resul[0]['externos']>1){
                     $band=false;
-                    $mensaje.='Falta ingresar integrantes internos';
+                    $mensaje.=' Debe ingresa el responsable de los subsidios';
                 }else{
-                    if($resul[0]['externos']<=0){
+                    if($resul[0]['integrantes']==0){
                         $band=false;
-                        $mensaje.='Falta ingresar integrantes externos';
+                        $mensaje.='Debe tener cargados los integrantes';
                     }else{
-                        if(!isset($resul[0]['ficha_tecnica'])){
+                         if($resul[0]['presupu']==0){
                             $band=false;
-                            $mensaje.='Falta adjuntar ficha tecnica';
-                        }else{
-                            if(!isset($resul[0]['cv_dir_codir'])){
-                                $band=false;
-                                $mensaje.='Falta adjuntar cv director codirector';
-                            }else{
-                                if(!isset($resul[0]['cv_integrantes'])){
-                                    $band=false;
-                                    $mensaje.='Falta adjuntar cv integrantes';
-                                }else{
-                                    if(count($resul[0]['presup'])<=0){
+                            $mensaje.='Debe tener cargado el presupuesto';
+                          }else{
+                              if(!isset($resul[0]['ficha_tecnica'])){
+                               $band=false;
+                               $mensaje.='Debe adjuntar ficha tecnica';
+                              }else{
+                                  if(!isset($resul[0]['cv_dir_codir'])){
                                         $band=false;
-                                        $mensaje.='Falta ingresar el presupuesto';
-                                    }
-                                    
-                                }
-                            }
-                            
-                        }
+                                        $mensaje.='Debe adjuntar CV Director';
+                                    }else{
+                                        if($resul[0]['es_programa']==1){//ademas chequea que los subproyectos tengan adjuntos
+                                            if($resul[0]['adj']==0){
+                                                $band=false;
+                                                $mensaje.='Faltan adjuntos en los proyectos de programa';
+                                            }
+                                        }else{//no es programa
+                                            if(!isset($resul[0]['cv_integrantes'])){
+                                                $band=false;
+                                                $mensaje.='Debe adjuntar CV de integrantes';
+                                            }
+                                        }
+
+                                    }   
+                              }
+                          }
                     }
                 }
             }
-            
+           
             $salida['bandera']=$band;
             $salida['mensaje']=$mensaje;
             return $salida;
@@ -591,6 +607,24 @@ class dt_pinvestigacion extends toba_datos_tabla
             }else{
                 return 1;
             }
+        }
+        //sino tiene correo el director entonces toma el correo del codirector
+        function get_correo_director($id_proy){
+            $sql="select case when correod <>'' then correod else correoc end as correo
+                    from (select case when t_do2.id_docente is not null then case when t_do2.correo_personal !='' or t_do2.correo_institucional !='' then coalesce(t_do2.correo_personal,'')||'/'||coalesce(t_do2.correo_institucional,'') else '' end else '' end as correod,
+                    case when t_do22.id_docente is not null then coalesce(t_do22.correo_personal,'')||'/'||coalesce(t_do22.correo_institucional,'')  else '' end as correoc
+                    from pinvestigacion as t_p
+                    left outer join integrante_interno_pi id2 on (id2.pinvest=t_p.id_pinv and (id2.funcion_p='DP' or id2.funcion_p='DE' or id2.funcion_p='D' ) and t_p.fec_hasta=id2.hasta)
+                    left outer join designacion t_d2 on (t_d2.id_designacion=id2.id_designacion)    
+                    left outer join docente t_do2 on (t_do2.id_docente=t_d2.id_docente) 
+
+                    left outer join integrante_interno_pi id22 on (id22.pinvest=t_p.id_pinv and (id22.funcion_p='C'  ) and t_p.fec_hasta=id22.hasta)
+                    left outer join designacion t_d22 on (t_d22.id_designacion=id22.id_designacion)    
+                    left outer join docente t_do22 on (t_do22.id_docente=t_d22.id_docente) 
+
+                    where t_p.id_pinv= $id_proy)sub";  
+            $res= toba::db('designa')->consultar($sql);
+            return $res[0]['correo'];
         }
         function get_director($id_proy){
             $sql="select case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as director

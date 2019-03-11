@@ -45,12 +45,19 @@ class dt_subproyecto extends toba_datos_tabla
             $sql="update integrante_externo_pi set hasta='".$datos['fec_hasta']."' where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
             toba::db('designa')->consultar($sql);
         }
+        if(isset($datos['nro_resol'])){//si cambia nro_resol desde tambien modifica resol de los integrantes de los subproyectos
+            $concatenar.=" , nro_resol='".$datos['nro_resol']."'";
+            $sql="update integrante_interno_pi set rescd='".$datos['nro_resol']."' where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
+            toba::db('designa')->consultar($sql);
+            $sql="update integrante_externo_pi set rescd='".$datos['nro_resol']."' where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
+            toba::db('designa')->consultar($sql);
+        }
         if(isset($datos['codigo'])){
             $concatenar.=" , codigo='".$datos['codigo']."'";
         }
-        if(isset($datos['nro_resol'])){
-            $concatenar.=" , nro_resol='".$datos['nro_resol']."'";
-        }
+//        if(isset($datos['nro_resol'])){
+//            $concatenar.=" , nro_resol='".$datos['nro_resol']."'";
+//        }
         if(isset($datos['fec_resol'])){
             $concatenar.=" , fec_resol="."'".$datos['fec_resol']."'";
         }

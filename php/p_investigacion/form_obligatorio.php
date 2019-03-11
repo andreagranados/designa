@@ -14,10 +14,11 @@ class form_obligatorio extends toba_ei_formulario
 			{
                       
 				switch (this.ef('estado').get_estado()) {
+                              
 					case 'B':
 						this.obligatorio(true);
 						break;
-                                        case 'R':this.ef('nro_resol').set_obligatorio(true); break;
+                                        
 					default:
 						this.obligatorio(false);
 						break;					

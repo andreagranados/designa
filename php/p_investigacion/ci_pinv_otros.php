@@ -529,6 +529,7 @@ class ci_pinv_otros extends designa_ci
         {
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+               // if($pi['estado']=='R'){ $componente->ef('observacion')->set_obligatorio(1); }
                 $componente->set_datos($pi);
             }
         }
@@ -540,7 +541,7 @@ class ci_pinv_otros extends designa_ci
             $mensaje='';
             $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            
+                        
             $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
             if($pertenece!=0){//es un subproyecto no permite cambiar nada
                 toba::notificacion()->agregar('Esta intentando editar un Proyecto de Programa, debe modificar estos datos desde el Programa correspondiente', 'error');   
@@ -575,23 +576,18 @@ class ci_pinv_otros extends designa_ci
                             //toba::notificacion()->agregar('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY','error');
                                 throw new toba_error('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY');
                             }else{
-                                if($datos['fec_desde']<>$pi['fec_desde']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                                      $mensaje.="Se ha modificado la Fecha de Inicio de los integrantes";
-                                }
-                                if($datos['fec_hasta']<>$pi['fec_hasta']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
-                                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
-                                      $mensaje.="Se ha modificado la Fecha de Finalización de los integrantes";
-                                }
                                 //ojo cambiar resol de los integrantes
+                                if($datos['nro_resol']<>$pi['nro_resol']){//si modifica la resolucion entonces modifica la de los integrantes.
+                                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                                      $mensaje.=" Se ha modificado nro de resol de los integrantes";
+                                }
                                 $datos2['nro_resol']=$datos['nro_resol'];
                                 $datos2['fec_resol']=$datos['fec_resol'];
                                 $datos2['observacion']=$datos['observacion'];
                                 $datos2['disp_asent']=$datos['disp_asent'];
                                 $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
-                                $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+                                $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();                               
                                 if($pi['es_programa']==1){
                                    $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
                                 }
@@ -599,9 +595,9 @@ class ci_pinv_otros extends designa_ci
                             toba::notificacion()->agregar($mensaje, 'info');  
                        }else{
                            switch ($pi['estado']) {
-                                case 'C':toba::notificacion()->agregar('El proyecto ya ha sido "aCeptado".', 'error');  
+                                case 'C':toba::notificacion()->agregar('El proyecto ya ha sido "aCeptado". Ya no puede cambiar el estado.', 'error');  
                                    break;
-                                case 'R':toba::notificacion()->agregar('El proyecto ya ha sido "Rechazado".', 'error');  
+                                case 'R':toba::notificacion()->agregar('El proyecto ya ha sido "Rechazado". Ya no puede cambiar el estado.', 'error');  
                                    break;
                                default:toba::notificacion()->agregar('Para modificar el proyecto el mismo debe estar en estado "Enviado".', 'error');  
                                    break;
@@ -619,8 +615,6 @@ class ci_pinv_otros extends designa_ci
                         }
                     }
                 }
-            
-         
         }
 	//-----------------------------------------------------------------------------------
 	//---- cuadro_subsidio --------------------------------------------------------------
@@ -1217,8 +1211,7 @@ class ci_pinv_otros extends designa_ci
                 if($pi['estado']<>'I'){
                     toba::notificacion()->agregar('El proyecto debe estar en estado Inicial(I) ', 'error');   
                 }else{//el proyecto esta en estado inicial entonces puede enviar
-                    //que controla previo?
-                    
+                    //control previo envio
                     $salida=$this->controlador()->dep('datos')->tabla('pinvestigacion')->chequeo_previo_envio($pi['id_pinv']);
                     if(!$salida['bandera']){
                         toba::notificacion()->agregar($salida['mensaje'], 'error');
@@ -1330,36 +1323,41 @@ class ci_pinv_otros extends designa_ci
      //adjuntos
         function conf__form_adj(toba_ei_formulario $form)
 	{
-            if ($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
-                $ins=$this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
-                $datos['id_pinv']=$ins['id_pinv'];
-                if(isset($ins['ficha_tecnica'])){
-                    $nomb_ft='/designa/1.0/adjuntos_proyectos_inv/'.$ins['ficha_tecnica'];//en windows
-                    $datos['ficha_tecnica']=$ins['ficha_tecnica'];
-                    $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
+            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $datos['es_programa']=$pi['es_programa'];
+                if ($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
+                    $ins=$this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
+                    $datos['id_pinv']=$ins['id_pinv'];
+                    if(isset($ins['ficha_tecnica'])){
+                        $nomb_ft='/designa/1.0/adjuntos_proyectos_inv/'.$ins['ficha_tecnica'];//en windows
+                        $datos['ficha_tecnica']=$ins['ficha_tecnica'];
+                        $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
+                    }
+                    if(isset($ins['cv_dir_codir'])){
+                        $nomb_dir='/designa/1.0/adjuntos_proyectos_inv/'.$ins['cv_dir_codir'];
+                        $datos['cv_dir_codir']=$ins['cv_dir_codir'];
+                        $datos['imagen_vista_previa_codir'] = "<a target='_blank' href='{$nomb_dir}' >cv dir y codir</a>";
+                    }
+                    if(isset($ins['cv_integrantes'])){
+                        $nomb_int='/designa/1.0/adjuntos_proyectos_inv/'.$ins['cv_integrantes'];
+                        $datos['cv_integrantes']=$ins['cv_integrantes'];
+                        $datos['imagen_vista_previa_int'] = "<a target='_blank' href='{$nomb_int}' >cv int</a>";
+                    }
+                    if(isset($ins['plan_trabajo'])){
+                        $nomb_pt='/designa/1.0/adjuntos_proyectos_inv/'.$ins['plan_trabajo'];
+                        $datos['plan_trabajo']=$ins['plan_trabajo'];
+                        $datos['imagen_vista_previa_pt'] = "<a target='_blank' href='{$nomb_pt}' >plan trabajo</a>";
+                    }
+                    if(isset($ins['nota_aceptacion'])){
+                        $nomb_na='/designa/1.0/adjuntos_proyectos_inv/'.$ins['nota_aceptacion'];
+                        $datos['nota_aceptacion']=$ins['nota_aceptacion'];
+                        $datos['imagen_vista_previa_nota'] = "<a target='_blank' href='{$nomb_na}' >nota aceptacion</a>";
+                    }
+                    return $datos;
                 }
-                if(isset($ins['cv_dir_codir'])){
-                    $nomb_dir='/designa/1.0/adjuntos_proyectos_inv/'.$ins['cv_dir_codir'];
-                    $datos['cv_dir_codir']=$ins['cv_dir_codir'];
-                    $datos['imagen_vista_previa_codir'] = "<a target='_blank' href='{$nomb_dir}' >cv dir y codir</a>";
-                }
-                if(isset($ins['cv_integrantes'])){
-                    $nomb_int='/designa/1.0/adjuntos_proyectos_inv/'.$ins['cv_integrantes'];
-                    $datos['cv_integrantes']=$ins['cv_integrantes'];
-                    $datos['imagen_vista_previa_int'] = "<a target='_blank' href='{$nomb_int}' >cv int</a>";
-                }
-                if(isset($ins['plan_trabajo'])){
-                    $nomb_pt='/designa/1.0/adjuntos_proyectos_inv/'.$ins['plan_trabajo'];
-                    $datos['plan_trabajo']=$ins['plan_trabajo'];
-                    $datos['imagen_vista_previa_pt'] = "<a target='_blank' href='{$nomb_pt}' >plan trabajo</a>";
-                }
-                if(isset($ins['nota_aceptacion'])){
-                    $nomb_na='/designa/1.0/adjuntos_proyectos_inv/'.$ins['nota_aceptacion'];
-                    $datos['nota_aceptacion']=$ins['nota_aceptacion'];
-                    $datos['imagen_vista_previa_nota'] = "<a target='_blank' href='{$nomb_na}' >nota aceptacion</a>";
-                }
-                return $datos;
             }
+       
         }
         function evt__form_adj__guardar($datos)
         {
@@ -1420,7 +1418,7 @@ class ci_pinv_otros extends designa_ci
         function vista_pdf(toba_vista_pdf $salida){
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                if($pi['estado']=='C'){//solo si esta aceptado imprime la ficha
+                //if($pi['estado']=='C'){//solo si esta aceptado imprime la ficha
                     $datos=array();
                     //configuramos el nombre que tendrá el archivo pdf
                     $salida->set_nombre_archivo("Ficha Solicitud.pdf");
@@ -1465,6 +1463,7 @@ class ci_pinv_otros extends designa_ci
                     //---
                     $ua=$this->controlador()->dep('datos')->tabla('unidad_acad')->get_descripcion($pi['uni_acad']);
                     $director=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get_director($pi['id_pinv']);
+                    $correo=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get_correo_director($pi['id_pinv']);
                     $unidades=$this->controlador()->dep('datos')->tabla('unidades_proyecto')->get_unidades_proyecto($pi['id_pinv']);
                     //--ficha de solicitud
                     $datos=array();
@@ -1487,6 +1486,8 @@ class ci_pinv_otros extends designa_ci
                         }
                         $tabla_dp[$i]=array( 'col1'=>'Director del Programa:','col2' => $director);
                         $i++;
+                        $tabla_dp[$i]=array( 'col1'=>'Mail de Contacto:','col2' => $correo);
+                        $i++;
                         $tabla_dp[$i]=array( 'col1'=>'Directores de los Proyectos de Programa:','col2' => '');
                         $i++;
                         $j=1;
@@ -1504,11 +1505,13 @@ class ci_pinv_otros extends designa_ci
                            $j++;
                         }
                     }else{
+                        
                         $codirector=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get_codirector($pi['id_pinv']);
                         $tabla_dp[1]=array( 'col1'=>utf8_decode('Título del Proyecto: '),'col2' => $pi['denominacion']);
                         $tabla_dp[2]=array( 'col1'=>'Director del Proyecto:','col2' => $director);
                         $tabla_dp[3]=array( 'col1'=>'Codirector del Proyecto:','col2' => $codirector);
-                        $i=4;
+                        $tabla_dp[4]=array( 'col1'=>'Mail de Contacto:','col2' => $correo);
+                        $i=5;
                     }
                     $fec_inicio=date("d/m/Y",strtotime($pi['fec_desde']));
                     $fec_fin=date("d/m/Y",strtotime($pi['fec_hasta']));
@@ -1643,8 +1646,8 @@ class ci_pinv_otros extends designa_ci
                         $pdf->addJpegFromFile($imagen2, 480, 730, 70, 66);
                         $pdf->closeObject(); 
                     } 
-                }
-                }
+            //    }
+            }
         }
       
 
