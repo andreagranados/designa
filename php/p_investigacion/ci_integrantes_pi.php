@@ -80,10 +80,17 @@ class ci_integrantes_pi extends designa_ci
                     $seguir=true;
                     $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
                     if($pf[0]=='investigacion_director'){
-                        if($pi['estado']<>'I'){
-                            toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Inicial', 'error');  
+                        $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
+                        if($band){
+                            if($pi['estado']<>'I'){
+                                toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Inicial', 'error');  
+                                $seguir=false;
+                           }
+                        }else{//fuera del periodo de la convocatoria
+                            toba::notificacion()->agregar('Fuera de la Convocatoria', 'error');  
                             $seguir=false;
                         }
+                        
                     }else{//es usuario de la UA
                         if($pi['estado']<>'A'){
                             toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Activo', 'error');  
@@ -234,7 +241,8 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'A' and $pi['estado']<>'I'){
                 toba::notificacion()->agregar('No pueden agregar participantes al proyecto', 'error');  
-            }else{ //pedir obligatorio campo resaval porque es un integrante de otra facultad, salvo los asesores que no necesitan aval
+            }else{ 
+                //pedir obligatorio campo resaval porque es un integrante de otra facultad, salvo los asesores que no necesitan aval
                 $uni=$this->dep('datos')->tabla('designacion')->get_ua($datos['id_designacion']); 
                 //
                 if(trim($datos['funcion_p'])!='AS' and $pi['uni_acad']!=$uni and !(isset($datos['resaval']))){ 
@@ -552,7 +560,7 @@ class ci_integrantes_pi extends designa_ci
                 $cuadro->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get_listado($pi['id_pinv']));    
                 }
             
-	}
+	}//el director no puede modificar cuando esta fuera de la convocatoria
         function evt__cuadro_int__seleccion($datos)
 	{
             $perfil = toba::usuario()->get_perfil_datos();
@@ -564,10 +572,17 @@ class ci_integrantes_pi extends designa_ci
                     $seguir=true;
                     $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
                     if($pf[0]=='investigacion_director'){
+                        $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
+                        if($band){
                             if($pi['estado']<>'I'){
                                 toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Inicial', 'error');  
                                 $seguir=false;
                             }
+                        }else{
+                           toba::notificacion()->agregar('Fuera de la Convocatoria', 'error');  
+                           $seguir=false; 
+                        }
+                            
                     }else{//es usuario de la UA
                         if($pi['estado']<>'A'){
                                 toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Activo', 'error');  
@@ -610,10 +625,17 @@ class ci_integrantes_pi extends designa_ci
             }else{
                 $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
                 if($pf[0]=='investigacion_director'){
+                    $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
+                    if($band){
                         if($pi['estado']<>'I'){
                             $mensaje='No es posible agregar participantes. El proyecto debe estar en estado Inicial';  
                             $seguir=false;
-                        }
+                        }    
+                    }else{
+                        $mensaje='Fuera de la Convocatoria';  
+                        $seguir=false;
+                    }
+                        
                 }else{
                    if($pf[0]='investigacion'){//es usuario de la UA
                      if($pi['estado']<>'A'){

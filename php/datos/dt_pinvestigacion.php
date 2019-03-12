@@ -609,6 +609,7 @@ class dt_pinvestigacion extends toba_datos_tabla
             }
         }
         //sino tiene correo el director entonces toma el correo del codirector
+        //no considero director de subprogramas porque el envio se realiza desde los programas
         function get_correo_director($id_proy){
             $sql="select case when correod <>'' then correod else correoc end as correo
                     from (select case when t_do2.id_docente is not null then case when t_do2.correo_personal !='' or t_do2.correo_institucional !='' then coalesce(t_do2.correo_personal,'')||'/'||coalesce(t_do2.correo_institucional,'') else '' end else '' end as correod,
