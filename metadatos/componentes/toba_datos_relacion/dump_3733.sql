@@ -238,7 +238,7 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'4237', --objeto_proveedor
 	'unidades_proyecto', --identificador
 	'0', --parametros_a
-	'10', --parametros_b
+	'20', --parametros_b
 	NULL, --parametros_c
 	NULL, --inicializar
 	'14'  --orden
