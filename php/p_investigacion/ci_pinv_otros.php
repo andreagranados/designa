@@ -26,12 +26,7 @@ class ci_pinv_otros extends designa_ci
             $this->s__mostrar_v=0;//muestra formulario de viatico
             $this->s__mostrar=0;//subsidio
 	}
-        //evento implicito que no se muestra en un boton
-        //sirve para ocultar el ef suplente
-        function evt__formulario__modif($datos)
-        {
-            $this->s__datos = $datos;
-        }
+ 
         function get_cant_dias($fs, $fr){
             $fsa=substr($fs, 0, 10);//fecha de salida
             $fre=substr($fr, 0, 10);//fecha de regreso
@@ -60,14 +55,7 @@ class ci_pinv_otros extends designa_ci
              
             return $dif;
         }
-        function get_listado_docentes(){
-            $salida=array();
-            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-              $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-              $salida=$this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->get_listado_docentes($pi['id_pinv']);
-             }
-            return $salida; 
-        }
+     
         function get_responsable_fondo(){
             $salida=array();
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
@@ -102,22 +90,8 @@ class ci_pinv_otros extends designa_ci
                  return "01/01/1999";
              }
          }
-         function su_fec_desde($id){
-             if($id!=0){//pertenece a un programa 
-                 $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_desde($id);
-                 return $cod;
-             }else{//si el $id es 0 significa que No es programa
-                 return "01/01/1999";
-             }
-         }
-         function su_fec_hasta($id){
-             if($id!=0){//pertenece a un programa 
-                 $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_hasta($id);
-                 return $cod;
-             }else{//si el $id es 0 significa que No es programa
-                 return "01/01/1999";
-             }
-         }
+ 
+       
          function su_nro_ord_cs($id){
              if($id!=0){//pertenece a un programa 
                  $cod=$this->controlador()->dep('datos')->tabla('pinvestigacion')->su_nro_ord_cs($id);
@@ -133,7 +107,6 @@ class ci_pinv_otros extends designa_ci
              }else{//si el $id es 0 significa que No es programa
                  return null;
              }
-         
          }
          
         //este metodo permite mostrar en el popup la persona que selecciona o la que ya tenia
@@ -159,335 +132,16 @@ class ci_pinv_otros extends designa_ci
               
         }
         
-	//-----------------------------------------------------------------------------------
-	//---- formulario -------------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	//function conf__formulario(designa_ei_formulario $form)
-        function conf__formulario($componente)
-	{
-            $this->controlador()->dep('datos')->tabla('viatico')->resetear();
-            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
-                if($pi['es_programa']==1){
-                    $pi['es_programa']='SI';
-                }else{//no es programa
-                    $pi['es_programa']='NO';
-
-                }
-                switch ($pi['tipo']) {
-                    case 'PIN1 ':$pi['tipo']=1;break;
-                    case 'PIN2 ':$pi['tipo']=2;break;
-                    case 'PROIN':$pi['tipo']=0;break;
-                    case 'RECO ':$pi['tipo']=3;break;
-                }
-                if($pertenece!=0){//es un subproyecto
-                    //en los subproyectos que no pueda tocar las fecha desde y hasta asi solo se cambian desde el programa
-                    $componente->ef('fec_desde')->set_solo_lectura(true)  ;
-                    $componente->ef('fec_hasta')->set_solo_lectura(true)  ;
-                    $pi['programa']=$pertenece;
-                }else{$pi['programa']=0;}
-              
-               // $form->set_datos($pi);
-                 $componente->set_datos($pi);
-		}
-            else{//si el proyecto no esta cargado no habilito la pantalla
-                $this->pantalla()->tab("pant_integrantes")->desactivar();	 
-                $this->pantalla()->tab("pant_subsidios")->desactivar();	 
-                $this->pantalla()->tab("pant_estimulos")->desactivar();	 
-                $this->pantalla()->tab("pant_winsip")->desactivar();	 
-                $this->pantalla()->tab("pant_subproyectos")->desactivar();	 
-                $this->pantalla()->tab("pant_viaticos")->desactivar();	 
-                $this->pantalla()->tab("pant_presupuesto")->desactivar();	 
-                $this->pantalla()->tab("pant_solicitud")->desactivar();	 
-                $this->pantalla()->tab("pant_admin")->desactivar();	 
-                $this->pantalla()->tab("pant_adjuntos")->desactivar();	 
-                }
-                    
-            //pregunto si el usuario logueado esta asociado a un perfil para desactivar los campos que no debe completar
-            $perfil = toba::usuario()->get_perfil_datos();
-            if ($perfil != null) {
-                $sql="select sigla,descripcion from unidad_acad ";
-                $sql = toba::perfil_de_datos()->filtrar($sql);
-                $resul=toba::db('designa')->consultar($sql);
-              
-                if(trim($resul[0]['sigla'])=='ASMA' or trim($resul[0]['sigla'])=='AUZA'){
-                    $componente->ef('disp_asent')->set_obligatorio(1);      
-                }
-                 //$componente->ef('estado')->set_obligatorio(0);     
-                //$componente->ef('estado')->set_solo_lectura(true);//para que funcione no tiene que ser obligatorio 
-               // $componente->ef('codigo')->set_solo_lectura(true); //lo agregue como restriccion al perfil funcional
-                //$componente->ef('tdi')->set_expandido(false);//oculto el campo para que no lo vea la UA
-            }
-                 
-	}
-        //boton solo para SCyT. Aqui modifica el codigo y el respons subsidios
-        //en el caso de los proyectos de programa no toca nada, emite cartel
-        function evt__formulario__modif_central($datos)
-        { 
-            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
-                if($pertenece!=0){//es un subproyecto
-                    toba::notificacion()->agregar('Debe modificar desde el programa', 'error');  
-                }else{
-                    $datos2['id_respon_sub']=$datos['id_respon_sub'];
-                    $datos2['codigo']=$datos['codigo'];
-                    $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
-                    $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-                    if($pi['es_programa']==1){
-                        unset($datos2['id_respon_sub']);//los subproyectos no llevan responsable de fondos
-                        $datos2['estado']=$pi['estado'];//no cambia estado solo es para reutilizar el metodo que sigue
-                        $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
-                    }
-                    toba::notificacion()->agregar('Se ha modificado correctamente.', 'info');  
-                }
-                
-            }
-        }
-//        //boton solo para SCyT
-//        function evt__formulario__modif_central($datos)
-//        {  
-//            $mensaje="";
-//            $cambioestado=true;//es posible un cambio de estado?
-//            //antes de hacer la modificacion recupero el estado que tenia
-//            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-//            //nuevo
-//            if($datos['estado']<>$pi['estado']){//si esta cambiando el estado
-//                if($pi['es_programa']==1){//es programa
-//                    //en este caso modifica estado de todos los subproyectos
-//                    $datos2['estado']=$datos['estado'];//cambia el estado del programa mas abajo
-//                    $this->controlador()->dep('datos')->tabla('subproyecto')->cambiar_estado($pi['id_pinv'],$datos['estado']);
-//                    $mensaje.=" Ha cambiado el estado de todos los proyectos de programa asociados a este programa. ";
-//                }else{
-//                    $pert=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
-//                    if($pert!=0){//es un subproyecto entonces no deberia poder cambiar el estado. Tiene que cambiar el estado del programa
-//                        $mensaje.=' Recuerde que para cambiar el estado de un proyecto de programa debe modificar el estado del programa al que pertenece.';
-//                        $cambioestado=false;
-//                    }else{//es un proyecto comun
-//                        $datos2['estado']=$datos['estado'];
-//                    } 
-//                }
-//            }
-//            //------
-//            //si pasa a estado A entonces tiene que poner el check in en 1 a todos los integrantes
-//            if($cambioestado and $pi['estado']<>'A' and $datos['estado']=='A'){//sino estaba activo y lo activa
-//                //le coloca SCyt les coloca el check de aprobados a todos los integrantes del proyecto
-//                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->chequeados_ok($pi['id_pinv']);
-//                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->chequeados_ok($pi['id_pinv']);
-//                $mensaje.=" Los integrantes han sido chequeados (check_inv=1)";
-//            }
-//            
-//            $datos2['codigo']=$datos['codigo'];
-//            $datos2['nro_ord_cs']=$datos['nro_ord_cs'];
-//            $datos2['fecha_ord_cs']=$datos['fecha_ord_cs'];
-//            $datos2['observacionscyt']=$datos['observacionscyt'];
-//            $datos2['nro_resol_baja']=$datos['nro_resol_baja'];
-//            $datos2['fec_baja']=$datos['fec_baja'];
-//            $datos2['id_respon_sub']=$datos['id_respon_sub'];
-//            $datos2['tdi']=$datos['tdi'];
-//            $datos2['fec_resol']=$datos['fec_resol'];
-//            $datos2['nro_resol']=$datos['nro_resol'];
-//            $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
-//            $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-//            if($datos['estado']=='B'){//tiene que dar de baja a todos los integrantes
-//                //ademas agrega al director y codirector del proyecto penados
-//                //deberia dar de baja a todos los participantes del proyecto y completar la resol de baja
-//                 $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->dar_baja($pi['id_pinv'],$pi['fec_hasta'],$datos['fec_baja'],$datos['nro_resol_baja']);
-//                 toba::notificacion()->agregar('Se ha dado de baja a todos los participantes del proyecto', 'info');  
-//            }
-//            toba::notificacion()->agregar('Se ha modificado correctamente.'.$mensaje, 'info');  
-//        }
-        //modificacion de datos principales del proyecto por el Director 
-        function evt__formulario__modificacion($datos)
-	{    
-            $mensaje='';
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-            if($band){
-                if($pi['estado']<>'I'){
-                      toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
-                }else{//solo modifica datos principales si el proyecto esta en I
-                        switch ($datos['es_programa']) {
-                            case 'SI':$datos['es_programa']=1;
-                                 $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
-                            case 'NO':$datos['es_programa']=0;break;
-                         }
-                        switch ($datos['tipo']) {
-                            case 0:$datos['tipo']='PROIN';break;
-                            case 1:$datos['tipo']='PIN1 ';break;
-                            case 2:$datos['tipo']='PIN2 ';break;
-                            case 3:$datos['tipo']='RECO ';break;
-                        }  
-
-                   //print_r($datos);exit();
-                      if($datos['programa']!=0){
-                            $band=$this->controlador()->dep('datos')->tabla('subproyecto')->esta($datos['programa'],$pi['id_pinv']);
-                            if(!$band){
-                                $datos2['id_programa']=$datos['programa'];
-                                $datos2['id_proyecto']=$pi['id_pinv'];
-                                $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
-                                $this->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
-                                $this->controlador()->dep('datos')->tabla('subproyecto')->resetear();
-                            }
-
-                        }else{//no pertenece a ningun programa
-                            $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
-                        }
-
-                        if($datos['fec_desde']<>$pi['fec_desde']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                              $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                              $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                              $mensaje.=" Se ha modificado la Fecha de Inicio de los integrantes";
-                         }
-                        if($datos['fec_hasta']<>$pi['fec_hasta']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                              $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
-                              $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
-                              $mensaje.=" Se ha modificado la Fecha de Finalización de los integrantes";
-                         }
-                        //ver
-                        if($pi['es_programa']==1){
-                            $band=false;
-                            //solo si cambia la fecha desde/ hasta del programa entonces tanbien cambia el de los subproyectos
-                            if($datos['fec_hasta']<>$pi['fec_hasta']){
-                                $datos2['fec_hasta']=$datos['fec_hasta'];  
-                                $band=true;
-                            }
-                            if($datos['fec_desde']<>$pi['fec_desde']){
-                                $datos2['fec_desde']=$datos['fec_desde'];    
-                                $band=true;
-                            }
-                            //cambia la fecha desde y hasta de los subproyectos del programa y de los integrantes de los subproyectos
-                            if($band){
-                                $datos2['estado']=$pi['estado'];//va siempre
-                                $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
-                            }
-                        }
-                                    //--------
-                        //elimino lo que viene en codigo dado que no corresponde al perfil del director
-                        unset($datos['codigo']);
-                        $datos['denominacion']=mb_strtoupper($datos['denominacion']);//convierte a mayusculas//strtoupper($datos['denominacion']);
-                        $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-                        if($mensaje!=''){
-                            toba::notificacion()->agregar($mensaje, 'info');  
-                        }
-                 }        
-            }else{
-                 toba::notificacion()->agregar('Fuera de la Convocatoria', 'error');  
-            }
-            
-	}
-    //elimina un proyecto de investigacion
-        function evt__formulario__baja()
-	{
-         $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-         if($pi['estado']<>'I'){
-               toba::notificacion()->agregar('No puede eliminar el proyecto porque el mismo no se encuentra en estado Inicial (I)', 'error');  
-          }else{
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $res=$this->controlador()->dep('datos')->tabla('pinvestigacion')->tiene_integrantes($pi['id_pinv']);
-            if($res==1){//tiene integrantes
-                 toba::notificacion()->agregar('El proyecto tiene integrantes','error');
-            }else{
-                $this->controlador()->dep('datos')->tabla('pinvestigacion')->eliminar_todo();
-                $this->resetear();
-            
-            }
-          }	
-	}
-        //unicamente disponible solo para el director
-        //nuevo proyecto de investigacion
-        function evt__formulario__alta($datos)
-	{
-         $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($datos['tipo']);
-         if($band){
-            $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
-            $datosp['uni_acad']= $ua[0]['sigla'];
-            if($datos['es_programa']=='SI'){
-                $datosp['es_programa']=1;
-            }else{
-                $datosp['es_programa']=0;
-            }
-            $datosp['usuario']=toba::usuario()->get_id();
-            $datosp['estado']='I';//el proyecto se ingresa por primera vez en estado I
-            //$datosp['codigo']=$datos['codigo'];El codigo lo pone central
-            $datosp['denominacion']=mb_strtoupper($datos['denominacion']);
-            $datosp['duracion']=$datos['duracion'];
-            $datosp['fec_desde']=$datos['fec_desde'];
-            $datosp['fec_hasta']=$datos['fec_hasta'];
-            $datosp['id_obj']=$datos['id_obj']; 
-            $datosp['id_disciplina']=$datos['id_disciplina']; 
-            $datosp['palabras_clave']=$datos['palabras_clave']; 
-            $datosp['resumen']=$datos['resumen']; 
-            $datosp['tdi']=$datos['tdi']; 
-            
-            switch ($datos['tipo']) {
-                case 0:$datosp['tipo']='PROIN'; break;
-                case 1:$datosp['tipo']='PIN1';break;
-                case 2:$datosp['tipo']='PIN2';break;
-                case 3:$datosp['tipo']='RECO';break;
-            }
-  
-            $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datosp);
-            $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-            $this->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($datosp);
-
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($datos['programa']!=0){//si el proyecto pertenece a un programa entonces lo asocio
-                $datos2['id_programa']=$datos['programa'];
-                $datos2['id_proyecto']=$pi['id_pinv'];
-                $this->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
-                $this->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
-                $this->controlador()->dep('datos')->tabla('subproyecto')->resetear();
-              }
-         }else{
-             toba::notificacion()->agregar(utf8_decode('Fuera del período de la convocatoria'), 'error');   
-             //aqui que vuelva a la pantalla de seleccion
-             $this->controlador()->set_pantalla('pant_seleccion');
-         }
-	}
-        function evt__formulario__cancelar()
-        {
-            $this->resetear();
-        }
-        function resetear()
-	{
-            $this->controlador()->dep('datos')->tabla('pinvestigacion')->resetear();
-            $this->controlador()->set_pantalla('pant_seleccion');
-	}
         //-----------------------------------------------------------------------------------
 	//---- form_pertenencia --------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
         function conf__form_pertenencia(toba_ei_formulario_ml $form)
-	{// print_r($this->s__pantalla);
+	{
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $this->dep('form_pertenencia')->descolapsar();
-                $form->ef('uni_acad')->set_obligatorio(true);
-                if($this->s__pantalla=='pant_admin'){
-                    $form->ef('nro_resol')->set_obligatorio(true);
-                    $form->ef('fecha_resol')->set_obligatorio(true);
-                }
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $ar=array('id_proyecto' => $pi['id_pinv']);
                 $res = $this->controlador()->dep('datos')->tabla('unidades_proyecto')->get_filas($ar);
                 $form->set_datos($res); 
-                $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
-                if ($pf[0]=='investigacion' or $pf[0]=='investigcentral') {//la UA o SCyT no puede agregar o eliminar registros 
-                    $form->desactivar_agregado_filas(true);
-                    if($this->s__pantalla=='pant_inicial'){
-                        $form->eliminar_evento('modificacion');
-                    }
-                }
-
-                if($pf[0]=='investigacion_director'){
-                    if($this->s__pantalla=='pant_admin'){
-                      $form->eliminar_evento('modificacion');   
-                    }
-                }
-            }else{
-                $this->dep('form_pertenencia')->colapsar();
             }
          }
         function evt__form_pertenencia__modificacion($datos)
@@ -496,36 +150,26 @@ class ci_pinv_otros extends designa_ci
               $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
               $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
               if($pertenece!=0){//es un subproyecto no permite cambiar nada
-                toba::notificacion()->agregar('Esta intentando editar un Proyecto de Programa, debe modificar estos datos desde el Programa correspondiente', 'error');   
+                toba::notificacion()->agregar('Esta intentando editar un proyecto de programa, debe modificar estos datos desde el programa correspondiente', 'error');   
               }else{//es programa o proyecto comun
                     $perfil = toba::usuario()->get_perfil_datos();
-                    if (isset($perfil)) {  //es director o UA
+                    if (isset($perfil)) {  //es la  UA. El director no ve este boton
                         $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
-                        if($pf[0]=='investigacion_director'){//es director
-                            if($pi['estado']=='I'){//solo si esta en I puede modificar
-                                foreach ($datos as $clave => $elem){
-                                     $datos[$clave]['id_proyecto']=$pi['id_pinv'];    
-                                }    
-                                $this->controlador()->dep('datos')->tabla('unidades_proyecto')->procesar_filas($datos);
-                                $this->controlador()->dep('datos')->tabla('unidades_proyecto')->sincronizar();
-                            }else{
-                                toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
-                            }
-                        }else{//es la UA
-                            if($pi['estado']=='E'){//solo en estado E puede modificar
-                              foreach ($datos as $clave => $elem){
-                                     $datos[$clave]['id_proyecto']=$pi['id_pinv'];    
-                                }    
-                                $this->controlador()->dep('datos')->tabla('unidades_proyecto')->procesar_filas($datos);
-                                $this->controlador()->dep('datos')->tabla('unidades_proyecto')->sincronizar();  
-                            }else{
-                                toba::notificacion()->agregar('El proyecto debe estar en estado E(Enviado) para poder modificar', 'error');  
-                            }
+                        if($pi['estado']=='E'){//solo en estado E puede modificar
+                          foreach ($datos as $clave => $elem){
+                                 $datos[$clave]['id_proyecto']=$pi['id_pinv'];    
+                            }    
+                            $this->controlador()->dep('datos')->tabla('unidades_proyecto')->procesar_filas($datos);
+                            $this->controlador()->dep('datos')->tabla('unidades_proyecto')->sincronizar();  
+                        }else{
+                             throw new toba_error('El proyecto debe estar en estado E(Enviado) para poder modificar');
+                            //toba::notificacion()->agregar('El proyecto debe estar en estado E(Enviado) para poder modificar', 'error');  
+                        }
                         }
                     }
               }
-            } 
-	}
+        } 
+	
         
        	//-----------------------------------------------------------------------------------
 	//---- formulario_admin --------------------------------------------------------------
@@ -550,7 +194,7 @@ class ci_pinv_otros extends designa_ci
                         
             $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
             if($pertenece!=0){//es un subproyecto no permite cambiar nada
-                toba::notificacion()->agregar('Esta intentando editar un Proyecto de Programa, debe modificar estos datos desde el Programa correspondiente', 'error');   
+                toba::notificacion()->agregar('Esta intentando editar un proyecto de programa, debe modificar estos datos desde el programa correspondiente', 'error');   
             }else{//es programa o proyecto comun
                    if($pf[0]=='investigacion'){//es usuario de la UA
                         if($pi['estado']=='E'){//solo si el proyecto ha sido enviado por el Director
@@ -572,7 +216,7 @@ class ci_pinv_otros extends designa_ci
                                         }
                                    }
                                }else{
-                                   $mensaje.=' No es posible cambiar el estado. Debe seleccionar Aceptado, Rechazado o Inicial';
+                                   $mensaje.=' No es posible cambiar el estado. Debe seleccionar Aceptado, Rechazado o Inicial. ';
                                }
                             }else{//no cambio el estado
                                 $datos2['estado']=$pi['estado'];
@@ -583,7 +227,7 @@ class ci_pinv_otros extends designa_ci
                                 throw new toba_error('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY');
                             }else{
                                 //ojo cambiar resol de los integrantes
-                                if($datos['nro_resol']<>$pi['nro_resol']){//si modifica la resolucion entonces modifica la de los integrantes.
+                                if(trim($datos['nro_resol'])!=trim($pi['nro_resol'])){//si modifica la resolucion entonces modifica la de los integrantes.
                                       $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
                                       $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
                                       $mensaje.=" Se ha modificado nro de resol de los integrantes";
@@ -601,11 +245,11 @@ class ci_pinv_otros extends designa_ci
                             toba::notificacion()->agregar($mensaje, 'info');  
                        }else{
                            switch ($pi['estado']) {
-                                case 'C':toba::notificacion()->agregar('El proyecto ya ha sido "aCeptado". Ya no puede cambiar el estado.', 'error');  
+                                case 'C':throw new toba_error('El proyecto ya ha sido "aCeptado". Ya no puede cambiar el estado.');
                                    break;
-                                case 'R':toba::notificacion()->agregar('El proyecto ya ha sido "Rechazado". Ya no puede cambiar el estado.', 'error');  
+                                case 'R':throw new toba_error('El proyecto ya ha sido "Rechazado". Ya no puede cambiar el estado.');
                                    break;
-                               default:toba::notificacion()->agregar('Para modificar el proyecto el mismo debe estar en estado "Enviado".', 'error');  
+                               default:throw new toba_error('Para modificar el proyecto el mismo debe estar en estado "Enviado".');
                                    break;
                            }
                            
@@ -1156,10 +800,11 @@ class ci_pinv_otros extends designa_ci
             $correo=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get_correo_director($pi['id_pinv']);
             $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
             if ($pf[0]=='investigacion' or $pf[0]=='investigcentral') {//la UA o SCyT no puede agregar o eliminar registros 
-                $pantalla->set_descripcion(utf8_decode('ATENCIÓN. Verifique que el MAIL DE CONTACTO sea:'.$correo.' Sino aparece o no esta actualizado contactase con Secretaría Académica para su actualización previo a la impresión de la Ficha'.'</br>'.'Presione el botón para generar la Ficha de Solicitud'));
+                $pantalla->set_descripcion(utf8_decode('<font size=3>ATENCIÓN. Verifique que el MAIL DE CONTACTO sea:<b>'.$correo.'</b> Sino aparece o no esta actualizado contactase con Secretaría Académica para su actualización previo a la impresión de la Ficha'.'</br>'.'Presione el botón para generar la Ficha de Solicitud</font>'));
+                
             }else{//es el director
-                $pantalla->set_descripcion(utf8_decode('ATENCIÓN. Verifique que el MAIL DE CONTACTO sea:'.$correo.' Sino aparece o no esta actualizado contactase con Secretaría Académica para su actualización.'.
-                "<br>".' Presione el botón Enviar para realizar el envio de la solicitud. Recuerde que una vez enviado ya no podrá realizar cambios.' ));
+                $pantalla->set_descripcion(utf8_decode("<font size=3>ATENCIÓN. Verifique que el MAIL DE CONTACTO sea:<b>'.$correo.'</b> Sino aparece o no esta actualizado contactase con Secretaría Académica para su actualización.".
+                "<br>".' Presione el botón Enviar para realizar el envio de la solicitud. Recuerde que una vez enviado ya no podrá realizar cambios.</font>' ));
             }
 	}
         
@@ -1351,7 +996,12 @@ class ci_pinv_otros extends designa_ci
         function conf__form_adj(toba_ei_formulario $form)
 	{
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $form->ef('ficha_tecnica')->set_obligatorio(1);       
+                $form->ef('cv_dir_codir')->set_obligatorio(1);       
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if($pi['es_programa']!=1){//ademas agrego el obligatorio para lo que no son programa   
+                   $form->ef('cv_integrantes')->set_obligatorio(1);       
+                }
                 $datos['es_programa']=$pi['es_programa'];
                 if ($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $ins=$this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
@@ -1450,7 +1100,7 @@ class ci_pinv_otros extends designa_ci
         function vista_pdf(toba_vista_pdf $salida){
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                //if($pi['estado']=='C'){//solo si esta aceptado imprime la ficha
+                if($pi['estado']=='C' or $pi['estado']=='R'){//solo si esta aceptado o rechazado imprime la ficha
                     $datos=array();
                     //configuramos el nombre que tendrá el archivo pdf
                     $salida->set_nombre_archivo("Ficha Solicitud.pdf");
@@ -1582,11 +1232,23 @@ class ci_pinv_otros extends designa_ci
                         $i++;
                     }
 
-                    $tabla_dp[$i]=array( 'col1'=>utf8_decode('<b>¿LA PROPUESTA DE INVESTIGACIÓN CUMPLE EN TODOS SUS TÉRMINOS CON LO DISPUESTO EN LA ORDENANZA 0602/16?</b>'),'col2' => ' SI / NO ');
                     $pdf->ezTable($tabla_dp,$cols_dp,'',array('shaded'=>0,'showLines'=>1,'width'=>550,'cols'=>array('col1'=>array('justification'=>'right','width'=>200),'col2'=>array('width'=>350)) ));
-                     //--cartel
+                    //$pdf->ezText("\n", 7);
+                     //--cartel pregunta
                     $datos=array();
-                    $datos[0]=array('col1'=>utf8_decode('<b><i>Se debe adjuntar copia de las TODAS LAS RESOLUCIONES citadas en la presente solicitud<i></b>'));
+                    $datos[0]=array('dato'=>utf8_decode('<b>¿LA PROPUESTA DE INVESTIGACIÓN CUMPLE EN TODOS SUS TÉRMINOS CON LO DISPUESTO EN LA ORDENANZA N° 0602/16?</b>'));
+                    $pdf->ezTable($datos,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>550));
+                    $datos1=array();
+                    if($pi['estado']=='C'){
+                        $aceptado='PI Aceptado';
+                    }else{
+                        $aceptado='PI Rechazado';
+                    }
+                    $datos1[0]=array('col1'=>'SI/NO','col2'=>$aceptado);
+                    $pdf->ezTable($datos1,array('col1'=>'','col2'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>550,'cols'=>array('col1'=>array('justification'=>'center','width'=>275),'col2'=>array('justification'=>'center','width'=>275))));
+                    //--
+                    $datos=array();
+                    $datos[0]=array('col1'=>utf8_decode('<b><i>Se debe adjuntar copia de las TODAS LAS RESOLUCIONES citadas en la presente solicitud</b></i>'));
                     $pdf->ezTable($datos,array('col1'=>''),' ',array('showHeadings'=>0,'shaded'=>0,'width'=>550,'cols'=>array('col1'=>array('justification'=>'center','width'=>550))));
                     //--firmas
                     $tabla_texto=array();
@@ -1678,7 +1340,12 @@ class ci_pinv_otros extends designa_ci
                         $pdf->addJpegFromFile($imagen2, 480, 730, 70, 66);
                         $pdf->closeObject(); 
                     } 
-            //    }
+                }else{
+                   // throw new toba_error('El proyecto debe estar Aceptado o Rechazado');
+                //echo("<script> alert('nooo')</script>"); 
+                  
+                
+                }
             }
         }
       
@@ -1703,7 +1370,6 @@ class ci_pinv_otros extends designa_ci
                     $this->pantalla()->tab("pant_estimulos")->desactivar();	
                     $this->pantalla()->tab("pant_viaticos")->desactivar();
                 }else{//no es programa
-                    $this->pantalla()->tab("pant_subproyectos")->desactivar();
                     $this->pantalla()->tab("pant_subproyectos")->desactivar();	 	 
                     if($pertenece!=0){// pertenece a un programa, es un subproyecto  
                         //si pertenece a un programa entonces el subsidio lo recibe el programa
@@ -1714,6 +1380,5 @@ class ci_pinv_otros extends designa_ci
                     }
             }
 	}
-
 }
 ?>

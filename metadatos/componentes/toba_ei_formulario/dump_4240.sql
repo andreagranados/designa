@@ -138,7 +138,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ficha_tecnica', --identificador
 	'ef_upload', --elemento_formulario
 	'ficha_tecnica', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'2', --orden
 	'Ficha Técnica', --etiqueta
@@ -218,7 +218,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cv_dir_codir', --identificador
 	'ef_upload', --elemento_formulario
 	'cv_dir_codir', --columnas
-	'1', --obligatorio
+	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'4', --orden
 	'CV Director y Codirector', --etiqueta

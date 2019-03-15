@@ -13,6 +13,7 @@ class form_adj_extension extends toba_ei_formulario
                                                 this.ef('plan_trabajo').ocultar();
                                                 this.ef('nota_aceptacion').ocultar();
 						break;
+                                        default: break;        
                                              
 				}
 			}

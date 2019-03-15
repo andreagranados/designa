@@ -13,12 +13,13 @@ class ci_integrantes_pi extends designa_ci
         protected $s__anio;
         protected $s__codigo;
       
-        function ini()
+     
+        function ini()//este es para evitar que aparecezcan los formulario cuando uno se sale de la pantalla
         {
-            $this->s__mostrar_e=0;
-            $this->s__mostrar_i=0;
-
+            //$this->s__mostrar_e=0;
+            //$this->s__mostrar_i=0;
         }
+        
         function get_persona($id){   
         }
         function conf__pant_integrantes_i(toba_ei_pantalla $pantalla)
@@ -61,7 +62,7 @@ class ci_integrantes_pi extends designa_ci
 	//-----------------------------------------------------------------------------------
 
 	function conf__cuadro_id(toba_ei_cuadro $cuadro)
-	{                
+	{    
              //muestra los integrantes internos del p de inv
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $resol=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get_resolucion($pi['id_pinv']);
@@ -219,7 +220,7 @@ class ci_integrantes_pi extends designa_ci
                 if ($this->dep('datos')->tabla('integrante_interno_pi')->esta_cargada()) {
                      $datos=$this->dep('datos')->tabla('integrante_interno_pi')->get();
                      $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                     if($datos['ua']!=$pi['uni_acad']){
+                     if($datos['ua']!=$pi['uni_acad'] and $datos['funcion_p']!='AS'){
                          $form->ef('resaval')->set_obligatorio('true');
                      }
                  }
@@ -244,10 +245,8 @@ class ci_integrantes_pi extends designa_ci
             }else{ 
                 //pedir obligatorio campo resaval porque es un integrante de otra facultad, salvo los asesores que no necesitan aval
                 $uni=$this->dep('datos')->tabla('designacion')->get_ua($datos['id_designacion']); 
-                //
                 if(trim($datos['funcion_p'])!='AS' and $pi['uni_acad']!=$uni and !(isset($datos['resaval']))){ 
-                     //toba::notificacion()->agregar('Debe completar la Resol de aval porque es un integrante de otra facultad', 'error');  
-                    throw new toba_error("Debe completar la Resol de aval porque es un integrante de otra facultad");
+                    throw new toba_error("Debe completar la Resol de Aval porque es un integrante de otra facultad");
                 }else{
                     //controla que si el proyecto esta en estado I entonces no pueda cargar mas de un registro por docente
                     $bandera=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->control($datos['id_docente'],$pi['id_pinv'],$pi['estado']);
@@ -264,10 +263,12 @@ class ci_integrantes_pi extends designa_ci
                             }else{
                                 $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
                                 if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
-                                    toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                    //toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                    throw new toba_error('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY');
                                 }else{
                                     if (isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
-                                        toba::notificacion()->agregar('Resolucion CD Baja Modificacion Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                        //toba::notificacion()->agregar('Resolucion CD Baja Modificacion Invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                        throw new toba_error('Resolucion CD Baja Modificacion Invalida. Debe ingresar en formato XXXX/YYYY');
                                     }else{
                                         $datos['pinvest']=$pi['id_pinv'];
                                         $datos['ua']=$uni;
@@ -321,13 +322,13 @@ class ci_integrantes_pi extends designa_ci
                 toba::notificacion()->agregar('Guardado. Solo modifica ResCD baja/modif, Res Aval, Cat Investigador', 'info');
             }
           }else{//es usuario de la UA
-                $pi=$this->dep('datos')->tabla('pinvestigacion')->get();
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
                 if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){//no puede ir fuera del periodo del proyecto
                     //toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');                    
                   throw new toba_error("Revise las fechas. Fuera del periodo del proyecto!");
                 }else{  
-                    //verificar que la modificacion no haga que se superpongan las fechas
+                    //Pendiente verificar que la modificacion no haga que se superpongan las fechas
                     $haysuperposicion=false;//no es igual al del alta porque no tengo que considerar el registro vigente$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->superposicion_modif($pi['id_pinv'],$datos['id_docente'],$datos['desde'],$datos['hasta'],$registro['id_designacion'],$registro['desde']);
                     if(!$haysuperposicion){
                             $band=false;
@@ -349,7 +350,7 @@ class ci_integrantes_pi extends designa_ci
                                 $datos['check_inv']=0;//pierde el check si es que lo tuviera
                                 $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
                                 $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                                toba::notificacion()->agregar('Ha sido chequeado por SCyT, solo puede modificar fecha hasta', 'info');
+                                toba::notificacion()->agregar('Ha sido chequeado por SCyT, solo puede modificar fecha hasta y resCD baja/modif', 'info');
                             }else{
                                 $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
                                 if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {

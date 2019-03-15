@@ -284,6 +284,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                     . " where a.id_proyecto=b.id_pinv and a.id_programa=$id_proy";
             return toba::db('designa')->consultar($sql);
         }
+        
         function get_tipos($es_prog,$prog=null)
         {
             $res=array();
@@ -315,14 +316,13 @@ class dt_pinvestigacion extends toba_datos_tabla
         }
         function get_duracion($tipo)
         {
-            
+           // print_r($tipo);
             switch ($tipo) {
                 case 0:return 4;break;//son PROIN 0
                 case 1:return 4;break;//son PIN1 1
                 case 2:return 3;break;//son PIN2 2
-//                case 'PROIN':return 4;break;
-                case 'PIN1 ':return 4;break;
-//                case 'PIN2 ':return 3;break;
+                case 3:return 2;break;//son RECO
+
             }
              
         }
