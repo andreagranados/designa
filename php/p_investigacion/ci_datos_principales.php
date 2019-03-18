@@ -197,24 +197,27 @@ class ci_datos_principales extends toba_ci
         function evt__formulario__baja()
 	{
          $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-         if($pi['estado']<>'I'){
+         $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
+         if($band){
+              if($pi['estado']<>'I'){
                toba::notificacion()->agregar('No puede eliminar el proyecto porque el mismo no se encuentra en estado Inicial (I)', 'error');  
-          }else{
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $res=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->tiene_integrantes($pi['id_pinv']);
-            if($res==1){//tiene integrantes
-                 toba::notificacion()->agregar('El proyecto tiene integrantes','error');
-            }else{
-                try{
-                    $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->eliminar_todo();
-                    $this->resetear();
-                }catch(Exception $e){
-                    toba::notificacion()->agregar('Verifique que el proyecto no tenga pertenencia, presupuesto, adjuntos','error');   
+              }else{
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $res=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->tiene_integrantes($pi['id_pinv']);
+                if($res==1){//tiene integrantes
+                     toba::notificacion()->agregar('El proyecto tiene integrantes','error');
+                }else{
+                    try{
+                        $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->eliminar_todo();
+                        $this->resetear();
+                    }catch(Exception $e){
+                        toba::notificacion()->agregar('Verifique que el proyecto no tenga pertenencia, presupuesto, adjuntos','error');   
+                    }
                 }
-                
-            
-            }
-          }	
+              }
+         }else{
+             toba::notificacion()->agregar('Fuera de la Convocatoria', 'error');  
+         }
 	}
         //unicamente disponible solo para el director
         //nuevo proyecto de investigacion
@@ -298,36 +301,42 @@ class ci_datos_principales extends toba_ci
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
               $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-              $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
-              if($pertenece!=0){//es un subproyecto no permite cambiar nada
-                toba::notificacion()->agregar('Esta intentando editar un proyecto de programa, debe modificar estos datos desde el programa correspondiente', 'error');   
-              }else{//es programa o proyecto comun
-                    $perfil = toba::usuario()->get_perfil_datos();
-                    if (isset($perfil)) {  //es director o UA
-                        $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
-                        if($pf[0]=='investigacion_director'){//es director
-                            if($pi['estado']=='I'){//solo si esta en I puede modificar
-                                foreach ($datos as $clave => $elem){
-                                     $datos[$clave]['id_proyecto']=$pi['id_pinv'];    
-                                }   
-                                $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->procesar_filas($datos);
-                                $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->sincronizar();
-                            }else{
-                                toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
-                            }
-                        }else{//es la UA
-                            if($pi['estado']=='E'){//solo en estado E puede modificar
-                              foreach ($datos as $clave => $elem){
-                                     $datos[$clave]['id_proyecto']=$pi['id_pinv'];    
-                                }    
-                                $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->procesar_filas($datos);
-                                $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->sincronizar();  
-                            }else{
-                                toba::notificacion()->agregar('El proyecto debe estar en estado E(Enviado) para poder modificar', 'error');  
+              $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
+              if($band){
+                  $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                  if($pertenece!=0){//es un subproyecto no permite cambiar nada
+                    toba::notificacion()->agregar('Esta intentando editar un proyecto de programa, debe modificar estos datos desde el programa correspondiente', 'error');   
+                  }else{//es programa o proyecto comun
+                        $perfil = toba::usuario()->get_perfil_datos();
+                        if (isset($perfil)) {  //es director o UA
+                            $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
+                            if($pf[0]=='investigacion_director'){//es director
+                                if($pi['estado']=='I'){//solo si esta en I puede modificar
+                                    foreach ($datos as $clave => $elem){
+                                         $datos[$clave]['id_proyecto']=$pi['id_pinv'];    
+                                    }   
+                                    $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->procesar_filas($datos);
+                                    $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->sincronizar();
+                                }else{
+                                    toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
+                                }
+                            }else{//es la UA
+                                if($pi['estado']=='E'){//solo en estado E puede modificar
+                                  foreach ($datos as $clave => $elem){
+                                         $datos[$clave]['id_proyecto']=$pi['id_pinv'];    
+                                    }    
+                                    $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->procesar_filas($datos);
+                                    $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->sincronizar();  
+                                }else{
+                                    toba::notificacion()->agregar('El proyecto debe estar en estado E(Enviado) para poder modificar', 'error');  
+                                }
                             }
                         }
-                    }
+                  }
+              }else{
+                  toba::notificacion()->agregar('Fuera de la Convocatoria', 'error');  
               }
+
             } 
 	}
         

@@ -383,11 +383,17 @@ class ci_pinv_otros extends designa_ci
         function evt__cuadro_pres__seleccion($datos)
         {//boton solo visible para el director
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']=='I'){
-                $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->cargar($datos);
-                $this->s__mostrar_p=1;
-            }else{
-                toba::notificacion()->agregar(utf8_decode('El proyecto debe estar en estado Inicial para modificar su presupuesto'), 'error');  
+            $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
+            if($band){
+                if($pi['estado']=='I'){
+                    $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->cargar($datos);
+                    $this->s__mostrar_p=1;
+                }else{
+                    toba::notificacion()->agregar(utf8_decode('El proyecto debe estar en estado Inicial para modificar su presupuesto'), 'error');  
+                }
+            }
+            else{
+                 toba::notificacion()->agregar(utf8_decode('Fuera del período de la Convocatoria'),'error');
             }
         }
 	function conf__form_pres(toba_ei_formulario $form)
@@ -407,33 +413,26 @@ class ci_pinv_otros extends designa_ci
 	}
         function evt__form_pres__alta($datos)//alta de un item
         {
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-            if($band){
-               if($pi['estado']<>'I'){
-                    throw new toba_error("El proyecto debe estar en estado Inicial(I) para ingresar el presupuesto");
-               }else{//no puede repetir el rubro dentro del mismo año
-                $repite=$this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->chequeo_repite_rubro($pi['id_pinv'],$datos['id_rubro'],$datos['anio']);
-                if(!$repite){
-                    $datos['id_proyecto']=$pi['id_pinv'];
-                    $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->set($datos);
-                    $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->sincronizar();
-                    $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->resetear();
-                    $this->s__mostrar_p=0;
-                }else{
-                    toba::notificacion()->agregar(utf8_decode('Ya existe ese rubro en el año '.$datos['anio']),'info');
-                } 
-               }
+           $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+           if($pi['estado']<>'I'){
+                throw new toba_error("El proyecto debe estar en estado Inicial(I) para ingresar el presupuesto");
+           }else{//no puede repetir el rubro dentro del mismo año
+            $repite=$this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->chequeo_repite_rubro($pi['id_pinv'],$datos['id_rubro'],$datos['anio']);
+            if(!$repite){
+                $datos['id_proyecto']=$pi['id_pinv'];
+                $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->set($datos);
+                $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->sincronizar();
+                $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->resetear();
+                $this->s__mostrar_p=0;
             }else{
-                toba::notificacion()->agregar(utf8_decode('Fuera del período de la Convocatoria'),'error');
-            }
+                toba::notificacion()->agregar(utf8_decode('Ya existe ese rubro en el año '.$datos['anio']),'info');
+            } 
+           }
         }
         function evt__form_pres__baja()
 	{
-          $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-          $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-          if($band){
-            if($pi['estado']<>'I'){
+            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            if($pi['$estado']<>'I'){
                 toba::notificacion()->agregar(utf8_decode('El proyecto debe estar en estado Inicial(I) para poder modificar presupuesto. '), 'error');  
             }else{
                 $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->eliminar_todo();
@@ -441,15 +440,10 @@ class ci_pinv_otros extends designa_ci
                 $this->s__mostrar_p=0;
                 toba::notificacion()->agregar(utf8_decode('El item se ha eliminado correctamente'),'info');
               }
-          }else{
-              toba::notificacion()->agregar(utf8_decode('Fuera del período de la Convocatoria'),'error');
-          }
 	}
         function evt__form_pres__modificacion($datos)
         {
-          $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-          $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-          if($band){
+            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($pi['estado']<>'I'){
                 toba::notificacion()->agregar(utf8_decode('El proyecto debe estar en estado Inicial(I) para poder modificar presupuesto. '), 'error');  
             }else{
@@ -465,9 +459,6 @@ class ci_pinv_otros extends designa_ci
                      toba::notificacion()->agregar(utf8_decode('No es posible realizar la modificación, ya existe el rubro en el año'),'error');
                 }
             } 
-          }else{
-              toba::notificacion()->agregar(utf8_decode('Fuera del período de la Convocatoria.'), 'error');  
-          }
         }
         function evt__form_pres__cancelar()
 	{
@@ -830,6 +821,7 @@ class ci_pinv_otros extends designa_ci
                     case "pant_subsidios": toba::notificacion()->agregar('Se ingresan desde SCyT', 'error');  break;   
                     case "pant_estimulos":toba::notificacion()->agregar('Se ingresan desde SCyT', 'error');break;   
                     case "pant_viaticos":
+                            if($pf[0]=='investigacion'){//solo la UA agrega, los directores no
                                         $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                                         if($pi['estado']<>'A'){
                                             toba::notificacion()->agregar('El proyecto debe estar ACTIVO para ingresar viaticos ', 'error'); 
@@ -837,21 +829,27 @@ class ci_pinv_otros extends designa_ci
                                             $this->s__mostrar_v=1;
                                             $this->controlador()->dep('datos')->tabla('viatico')->resetear();
                                         }
-                                        
+                            }else{toba::notificacion()->agregar('No puede agregar viaticos', 'error');}
                                         break;
                     case "pant_presupuesto":
                         if($pf[0]=='investigacion_director'){//solo el director agrega
                             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                            if($pi['es_programa']==1){//en los programa no se carga presupuesto
-                                toba::notificacion()->agregar('El presupuesto de un programa se ingresa desde los proyectos de programa', 'error');
-                            }else{
-                                if($pi['estado']=='I'){//solo en estado inicial puede ingresar
-                                    $this->s__mostrar_p=1;    
-                                    $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->resetear();
+                            $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
+                            if($band){
+                                if($pi['es_programa']==1){//en los programa no se carga presupuesto
+                                    toba::notificacion()->agregar('El presupuesto de un programa se ingresa desde los proyectos de programa', 'error');
                                 }else{
-                                    toba::notificacion()->agregar('No puede modificar el presupuesto de un proyecto que no se encuentre en estado Inicial', 'error');
-                                }
-                            } 
+                                    if($pi['estado']=='I'){//solo en estado inicial puede ingresar
+                                        $this->s__mostrar_p=1;    
+                                        $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->resetear();
+                                    }else{
+                                        toba::notificacion()->agregar('No puede modificar el presupuesto de un proyecto que no se encuentre en estado Inicial', 'error');
+                                    }
+                                } 
+                            }else{
+                                toba::notificacion()->agregar('Fuera de la convocatoria.', 'error');
+                            }
+                          
                         }else{//corresponde a la Secretaria de la UA
                                 toba::notificacion()->agregar('No puede modificar el presupuesto de un proyecto.', 'error');
                         }
@@ -893,7 +891,7 @@ class ci_pinv_otros extends designa_ci
                             //la solapa solicitud esta desactivada para los subproyectos
                             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
                             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-                            toba::notificacion()->agregar(uft8_decode('El proyecto ha sido enviado con éxito!'), 'info');
+                            toba::notificacion()->agregar(uft8_decode('Su solicitud ha sido enviada. Debe acercarse a la Secretaria de CyT de su UA para continuar con el trámite. '), 'info');
                         }
                     }
                 }else{
