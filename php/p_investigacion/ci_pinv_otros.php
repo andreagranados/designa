@@ -13,10 +13,6 @@ class ci_pinv_otros extends designa_ci
         protected $s__datos;
         protected $s__datos_cd;
         
-        function ini__operacion()
-	{
-            $this->controlador()->dep('datos')->tabla('unidades_proyecto')->cargar();
-	}
 
         function ini()
 	{
@@ -140,8 +136,11 @@ class ci_pinv_otros extends designa_ci
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $ar=array('id_proyecto' => $pi['id_pinv']);
+                $this->controlador()->dep('datos')->tabla('unidades_proyecto')->cargar($ar);
                 $res = $this->controlador()->dep('datos')->tabla('unidades_proyecto')->get_filas($ar);
                 $form->set_datos($res); 
+                //nadie puede agregar o eliminar pertenencia desde aqui
+                $form->desactivar_agregado_filas(true);
             }
          }
         function evt__form_pertenencia__modificacion($datos)
@@ -183,6 +182,7 @@ class ci_pinv_otros extends designa_ci
                 $componente->set_datos($pi);
             }
         }
+      
         //DESDE ESTA PANTALLA LA UA Y SCYT MODIFICA EL ESTADO
         //LA UA CAMBIA RESOL Y FECHA DEL CD, DISPO OBSERVACIONES Y ESTADO
         //SOLO CUANDO ESTA ENVIADO PUEDE CAMBIAR
@@ -794,8 +794,8 @@ class ci_pinv_otros extends designa_ci
                 $pantalla->set_descripcion(utf8_decode('<font size=3>ATENCIÓN. Verifique que el MAIL DE CONTACTO sea:<b>'.$correo.'</b> Sino aparece o no esta actualizado contactase con Secretaría Académica para su actualización previo a la impresión de la Ficha'.'</br>'.'Presione el botón para generar la Ficha de Solicitud</font>'));
                 
             }else{//es el director
-                $pantalla->set_descripcion(utf8_decode("<font size=3>ATENCIÓN. Verifique que el MAIL DE CONTACTO sea:<b>'.$correo.'</b> Sino aparece o no esta actualizado contactase con Secretaría Académica para su actualización.".
-                "<br>".' Presione el botón Enviar para realizar el envio de la solicitud. Recuerde que una vez enviado ya no podrá realizar cambios.</font>' ));
+                $pantalla->set_descripcion(utf8_decode("<font size=3>"."ATENCIÓN. Verifique que el MAIL DE CONTACTO sea:<b>".$correo."</b> Sino aparece o no esta actualizado contactase con Secretaría Académica de su UA para su actualización.".
+                "<br>"." Presione el botón Enviar para realizar el envio de la solicitud. Recuerde que una vez enviado ya no podrá realizar cambios."."</font>" ));
             }
 	}
         
@@ -882,6 +882,7 @@ class ci_pinv_otros extends designa_ci
                         if(!$salida['bandera']){
                             toba::notificacion()->agregar($salida['mensaje'], 'error');
                         }else{
+                            $mensaje='';
                             $datos['estado']='E';
                             if($pi['es_programa']==1){//es programa
                                 //en este caso modifica estado de todos los subproyectos
@@ -891,7 +892,8 @@ class ci_pinv_otros extends designa_ci
                             //la solapa solicitud esta desactivada para los subproyectos
                             $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
                             $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-                            toba::notificacion()->agregar(uft8_decode('Su solicitud ha sido enviada. Debe acercarse a la Secretaria de CyT de su UA para continuar con el trámite. '), 'info');
+                            $mensaje.='Su solicitud ha sido enviada. Debe acercarse a la Secretaría de CyT de su UA para continuar con el trámite. ';
+                            toba::notificacion()->agregar(utf8_decode($mensaje), 'info');
                         }
                     }
                 }else{
@@ -1047,36 +1049,36 @@ class ci_pinv_otros extends designa_ci
                         $datos2['id_pinv']=$pi['id_pinv'];
                         if (isset($datos['ficha_tecnica'])) {
                                 $nombre_ca="ficha_tecnica".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                                $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                                //$destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
                                 if(move_uploaded_file($datos['ficha_tecnica']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                                 $datos2['ficha_tecnica']=strval($nombre_ca);}
                         }
                         if (isset($datos['cv_dir_codir'])) {
                                 $nombre_cvdc="cv_dir_codir".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
+                                $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
+                                //$destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
                                 if(move_uploaded_file($datos['cv_dir_codir']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                                 $datos2['cv_dir_codir']=strval($nombre_cvdc);}
                         }
                         if (isset($datos['cv_integrantes'])) {
                                 $nombre_int="cv_integrantes".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
+                                $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
+                                //$destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
                                 if(move_uploaded_file($datos['cv_integrantes']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                                 $datos2['cv_integrantes']=strval($nombre_int);}
                         }
                         if (isset($datos['plan_trabajo'])) {
                                 $nombre_pt="plan_trabajo".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
+                                $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
+                                //$destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
                                 if(move_uploaded_file($datos['plan_trabajo']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                                 $datos2['plan_trabajo']=strval($nombre_pt);}
                         }
                          if (isset($datos['nota_aceptacion'])) {
                                 $nombre_na="nota_aceptacion".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
+                                $destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
+                                //$destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
                                 if(move_uploaded_file($datos['nota_aceptacion']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                                 $datos2['nota_aceptacion']=strval($nombre_na);}
                         }
@@ -1231,7 +1233,7 @@ class ci_pinv_otros extends designa_ci
                     }
 
                     $pdf->ezTable($tabla_dp,$cols_dp,'',array('shaded'=>0,'showLines'=>1,'width'=>550,'cols'=>array('col1'=>array('justification'=>'right','width'=>200),'col2'=>array('width'=>350)) ));
-                    //$pdf->ezText("\n", 7);
+                    $pdf->ezText("\n", 7);
                      //--cartel pregunta
                     $datos=array();
                     $datos[0]=array('dato'=>utf8_decode('<b>¿LA PROPUESTA DE INVESTIGACIÓN CUMPLE EN TODOS SUS TÉRMINOS CON LO DISPUESTO EN LA ORDENANZA N° 0602/16?</b>'));
@@ -1246,8 +1248,9 @@ class ci_pinv_otros extends designa_ci
                     $pdf->ezTable($datos1,array('col1'=>'','col2'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>550,'cols'=>array('col1'=>array('justification'=>'center','width'=>275),'col2'=>array('justification'=>'center','width'=>275))));
                     //--
                     $datos=array();
-                    $datos[0]=array('col1'=>utf8_decode('<b><i>Se debe adjuntar copia de las TODAS LAS RESOLUCIONES citadas en la presente solicitud</b></i>'));
-                    $pdf->ezTable($datos,array('col1'=>''),' ',array('showHeadings'=>0,'shaded'=>0,'width'=>550,'cols'=>array('col1'=>array('justification'=>'center','width'=>550))));
+                    $datos[0]=array('dato'=>utf8_decode('<b><i>Se debe adjuntar copia de las TODAS LAS RESOLUCIONES citadas en la presente solicitud</b></i>'));
+                    $pdf->ezTable($datos,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>550,'cols'=>array('dato'=>array('justification'=>'center','width'=>550))));
+                    
                     //--firmas
                     $tabla_texto=array();
                     $tabla_texto[0]=array('dato'=>utf8_decode('FIRMAS:'));
@@ -1378,5 +1381,7 @@ class ci_pinv_otros extends designa_ci
                     }
             }
 	}
+	
+
 }
 ?>

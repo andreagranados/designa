@@ -464,7 +464,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1583', --pantalla
 	'pant_estimulos', --identificador
 	'8', --orden
-	'Estímulo', --etiqueta
+	'Estímulos', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen

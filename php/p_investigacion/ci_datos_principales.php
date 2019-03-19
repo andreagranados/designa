@@ -118,14 +118,14 @@ class ci_datos_principales extends toba_ci
 	{    
             $mensaje='';
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-            if($band){
+            $bandera = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
+            if($bandera){
                 if($pi['estado']<>'I'){
                       toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
                 }else{//solo modifica datos principales si el proyecto esta en I
                         switch ($datos['es_programa']) {
                             case 'SI':$datos['es_programa']=1;
-                                 $this->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
+                                 $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
                             case 'NO':$datos['es_programa']=0;break;
                          }
                         switch ($datos['tipo']) {
@@ -225,6 +225,7 @@ class ci_datos_principales extends toba_ci
 	{
          $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($datos['tipo']);
          if($band){
+            $id_conv=$this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_convocatoria_actual($datos['tipo']);
             $ua = $this->controlador()->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
             $datosp['uni_acad']= $ua[0]['sigla'];
             if($datos['es_programa']=='SI'){
@@ -232,9 +233,9 @@ class ci_datos_principales extends toba_ci
             }else{
                 $datosp['es_programa']=0;
             }
+            
             $datosp['usuario']=toba::usuario()->get_id();
             $datosp['estado']='I';//el proyecto se ingresa por primera vez en estado I
-            //$datosp['codigo']=$datos['codigo'];El codigo lo pone central
             $datosp['denominacion']=mb_strtoupper($datos['denominacion']);
             $datosp['duracion']=$datos['duracion'];
             $datosp['fec_desde']=$datos['fec_desde'];
@@ -244,19 +245,20 @@ class ci_datos_principales extends toba_ci
             $datosp['palabras_clave']=$datos['palabras_clave']; 
             $datosp['resumen']=$datos['resumen']; 
             $datosp['tdi']=$datos['tdi']; 
-            
+            $datosp['id_convocatoria']=$id_conv;
             switch ($datos['tipo']) {
                 case 0:$datosp['tipo']='PROIN'; break;
                 case 1:$datosp['tipo']='PIN1';break;
                 case 2:$datosp['tipo']='PIN2';break;
                 case 3:$datosp['tipo']='RECO';break;
             }
-  
             $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datosp);
             $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-            $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($datosp);
-
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+            $proy['id_pinv']=$pi['id_pinv'];
+            $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($proy);
+
+            //$pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             if($datos['programa']!=0){//si el proyecto pertenece a un programa entonces lo asocio
                 $datos2['id_programa']=$datos['programa'];
                 $datos2['id_proyecto']=$pi['id_pinv'];
@@ -286,9 +288,9 @@ class ci_datos_principales extends toba_ci
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $form->ef('uni_acad')->set_obligatorio(true);
-                
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $ar=array('id_proyecto' => $pi['id_pinv']);
+                $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->cargar($ar);
                 $res = $this->controlador()->controlador()->dep('datos')->tabla('unidades_proyecto')->get_filas($ar);
                 $form->set_datos($res); 
                 $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();

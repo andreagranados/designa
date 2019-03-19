@@ -30,7 +30,11 @@ class ci_convocatorias extends toba_ci
 
     function conf__cuadro(toba_ei_cuadro $cuadro)
     {   
-        $cuadro->set_datos($this->dep('datos')->tabla('convocatoria_proyectos')->get_listado($this->s__where));
+        if (isset($this->s__where)) {
+            $cuadro->set_datos($this->dep('datos')->tabla('convocatoria_proyectos')->get_listado($this->s__where));
+        }else{
+             $cuadro->set_datos($this->dep('datos')->tabla('convocatoria_proyectos')->get_listado());
+        }
     }
     function evt__cuadro__seleccion($datos){
         $this->dep('datos')->tabla('convocatoria_proyectos')->cargar($datos);
