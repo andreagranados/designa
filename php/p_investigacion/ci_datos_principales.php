@@ -22,7 +22,6 @@ class ci_datos_principales extends toba_ci
                  $cod=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_desde($id);
                  return $cod;
              }else{//si el $id es 0 significa que No es programa
-                 //$this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->;
                  return "01/01/1999";
              }
          }

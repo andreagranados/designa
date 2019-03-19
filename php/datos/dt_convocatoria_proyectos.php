@@ -11,7 +11,7 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
                 default:$id_tipo=2;
                     break;
             }
-            $sql="select id_conv,fec_desde_proyectos from convocatoria_proyectos "
+            $sql="select id_conv from convocatoria_proyectos "
                     . " where anio=$anio_actual and id_tipo=$id_tipo";
             $resul=toba::db('designa')->consultar($sql);
             if(count($resul)>0){
@@ -19,7 +19,23 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
             }else 
                 return null;
         }
-       
+        function get_fecha_iniciop_convocatoria_actual($tipo){
+            $actual=date('Y-m-d');
+            $anio_actual= date("Y", strtotime($actual));
+             switch ($tipo) {
+                case 'RECO':$id_tipo=1;
+                   break;
+                default:$id_tipo=2;
+                    break;
+            }
+            $sql="select fec_desde_proyectos from convocatoria_proyectos "
+                    . " where anio=$anio_actual and id_tipo=$id_tipo";
+            $resul=toba::db('designa')->consultar($sql);
+            if(count($resul)>0){
+                return $resul[0]['fec_desde_proyectos'];
+            }else 
+                return "01/01/1999";
+        }
 	function get_permitido($tipo)
 	{
             $band=false;
