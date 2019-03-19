@@ -15,11 +15,11 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
                     . " where anio=$anio_actual and id_tipo=$id_tipo";
             $resul=toba::db('designa')->consultar($sql);
             if(count($resul)>0){
-                return $resul;
+                return $resul[0]['id_conv'];
             }else 
                 return null;
         }
-        
+       
 	function get_permitido($tipo)
 	{
             $band=false;
