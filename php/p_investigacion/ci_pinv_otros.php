@@ -201,19 +201,26 @@ class ci_pinv_otros extends designa_ci
                             //esto para el estado
                             if($datos['estado']<>'E'){//si cambia  estado
                               
-                                 if( $datos['estado']=='I' or $datos['estado']=='C' or $datos['estado']=='R'){//puede reabrir o aceptar o rechazar
-                                   if($pi['es_programa']==1){//debe cambiar el estado de todos los subproyectos
-                                       $datos2['estado']=$datos['estado'];//para cambiar el estado del programa
-                                       $this->controlador()->dep('datos')->tabla('subproyecto')->cambiar_estado($pi['id_pinv'],$datos['estado']);
-                                       $mensaje.=' Ha cambiado el estado de todos los proyectos de programa del programa';
+                                if( $datos['estado']=='I' or $datos['estado']=='C' or $datos['estado']=='R'){//puede reabrir o aceptar o rechazar
+                                    //cuando la UA cambia el estado entonces verifica que esten cargadas las resoluciones de la pertenencia
+                                   $verifica=$this->controlador()->dep('datos')->tabla('unidades_proyecto')->get_verifica_resoluciones($pi['id_pinv']);
+                                   //$verifica=false;
+                                   if($verifica){
+                                       if($pi['es_programa']==1){//debe cambiar el estado de todos los subproyectos
+                                           $datos2['estado']=$datos['estado'];//para cambiar el estado del programa
+                                           $this->controlador()->dep('datos')->tabla('subproyecto')->cambiar_estado($pi['id_pinv'],$datos['estado']);
+                                           $mensaje.=' Ha cambiado el estado de todos los proyectos de programa del programa';
+                                       }else{
+                                           $pert=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                                           if($pert!=0){//es un subproyecto
+                                               $mensaje.=' No puede cambiar el estado de un proyecto de programa. Debe cambiar el estado del programa al que pertenece';
+                                            }else{
+                                                $datos2['estado']=$datos['estado'];
+                                                $mensaje.=' Ha cambiado el estado a: '.$datos2['estado'];
+                                            }
+                                       }
                                    }else{
-                                       $pert=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
-                                       if($pert!=0){//es un subproyecto
-                                           $mensaje.=' No puede cambiar el estado de un proyecto de programa. Debe cambiar el estado del programa al que pertenece';
-                                        }else{
-                                            $datos2['estado']=$datos['estado'];
-                                            $mensaje.=' Ha cambiado el estado a: '.$datos2['estado'];
-                                        }
+                                       $mensaje.=' No es posible cambiar el estado. Complete las resoluciones de las UA de Pertenencia ';
                                    }
                                }else{
                                    $mensaje.=' No es posible cambiar el estado. Debe seleccionar Aceptado, Rechazado o Inicial. ';
@@ -226,8 +233,8 @@ class ci_pinv_otros extends designa_ci
                             //toba::notificacion()->agregar('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY','error');
                                 throw new toba_error('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY');
                             }else{
-                                //ojo cambiar resol de los integrantes
-                                if(trim($datos['nro_resol'])!=trim($pi['nro_resol'])){//si modifica la resolucion entonces modifica la de los integrantes.
+                                //si modifica la resolucion entonces modifica la de los integrantes.
+                                if(trim($datos['nro_resol'])!=trim($pi['nro_resol'])){
                                       $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
                                       $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
                                       $mensaje.=" Se ha modificado nro de resol de los integrantes";
@@ -260,9 +267,16 @@ class ci_pinv_otros extends designa_ci
                         $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
                         $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
                         //ojo cambiar resol de los integrantes
+                        //si modifica la resolucion entonces modifica la de los integrantes.
+                        if(trim($datos['nro_resol'])!=trim($pi['nro_resol'])){
+                              $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                              $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                              $mensaje.=" Se ha modificado nro de resol de los integrantes";
+                        }
                         if($pi['es_programa']==1){
                             $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos); 
                         }
+                        toba::notificacion()->agregar($mensaje, 'info'); 
                     }
                 }
         }
@@ -779,6 +793,10 @@ class ci_pinv_otros extends designa_ci
         function conf__pant_admin(toba_ei_pantalla $pantalla)
 	{
             $this->s__pantalla = "pant_admin";
+            $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
+            if ($pf[0]=='investigacion') {//es la UA
+                 $pantalla->set_descripcion(utf8_decode('Recuerde que una vez aCeptado o Rechazado ya no podrá realizar más cambios.'));
+            }
 	}
         function conf__pant_inicial(toba_ei_pantalla $pantalla)
 	{

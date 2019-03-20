@@ -321,8 +321,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 case 0:return 4;break;//son PROIN 0
                 case 1:return 4;break;//son PIN1 1
                 case 2:return 3;break;//son PIN2 2
-                case 3:return 2;break;//son RECO
-
+                case 3:break;//son RECO no retorna nada
             }
              
         }

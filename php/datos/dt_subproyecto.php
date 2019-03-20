@@ -2,9 +2,9 @@
 class dt_subproyecto extends toba_datos_tabla
 {
     function get_descripciones(){
-        
-            
-        }
+       $sql="select * from subproyecto";  
+       return toba::db('designa')->consultar($sql);        
+    }
         
     function esta($id_programa,$id_proyecto){
         $sql="select * from subproyecto where id_programa=$id_programa and id_proyecto=$id_proyecto";

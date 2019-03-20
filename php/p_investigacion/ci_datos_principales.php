@@ -9,20 +9,24 @@ class ci_datos_principales extends toba_ci
              }
             return $salida; 
         }
-        function su_fec_hasta($id){
+        function su_fec_hasta($id,$tipo){
              if($id!=0){//pertenece a un programa 
                  $cod=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_hasta($id);
                  return $cod;
              }else{//si el $id es 0 significa que No es programa
-                 return "01/01/1999";
+                 $cod=$this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_fecha_finp_convocatoria_actual($tipo);
+                 //return "01/01/1999";
+                 return $cod;
              }
          }
-        function su_fec_desde($id){
+        function su_fec_desde($id,$tipo){
              if($id!=0){//pertenece a un programa 
                  $cod=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->su_fec_desde($id);
                  return $cod;
              }else{//si el $id es 0 significa que No es programa
-                 return "01/01/1999";
+                 $cod=$this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_fecha_iniciop_convocatoria_actual($tipo);
+                // return "01/01/1999";
+                return $cod;
              }
          }
         //-----------------------------------------------------------------------------------
