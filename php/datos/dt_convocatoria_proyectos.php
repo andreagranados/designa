@@ -33,7 +33,7 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
             $sql="select fec_desde_proyectos from convocatoria_proyectos "
                     . " where anio=$anio_actual and id_tipo=$id_tipo";
             $resul=toba::db('designa')->consultar($sql);
-            if(count($resul)>0){
+            if(count($resul)>0 and isset($resul[0]['fec_desde_proyectos'])){
                 return date("d/m/Y", strtotime($resul[0]['fec_desde_proyectos']));
             }else 
                 return "01/01/1999";
@@ -59,7 +59,7 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
             $sql="select fec_desde_proyectos from convocatoria_proyectos "
                     . " where anio=$anio_actual and id_tipo=$id_tipo";
             $resul=toba::db('designa')->consultar($sql);
-            if(count($resul)>0 and $anios!=''){
+            if(count($resul)>0 and isset($resul[0]['fec_desde_proyectos']) and $anios!=''){
                 //$fecha= strtotime('+1 year',strtotime($resul[0]['fec_desde_proyectos']));
                 //le suma la cantidad de años correspondiente a la fecha de inicio de los proyectos
                 $fecha= strtotime($anios,strtotime($resul[0]['fec_desde_proyectos']));
