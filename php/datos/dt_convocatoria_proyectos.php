@@ -63,7 +63,8 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
                 //$fecha= strtotime('+1 year',strtotime($resul[0]['fec_desde_proyectos']));
                 //le suma la cantidad de años correspondiente a la fecha de inicio de los proyectos
                 $fecha= strtotime($anios,strtotime($resul[0]['fec_desde_proyectos']));
-                return date("d/m/Y",$fecha);
+                $fecha_salida= strtotime('-1 day',$fecha);
+                return date("d/m/Y",$fecha_salida);
             }else {
                 return "01/01/1999";
             }

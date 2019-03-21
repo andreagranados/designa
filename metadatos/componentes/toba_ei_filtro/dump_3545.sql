@@ -136,7 +136,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'uni_acad', --nombre
 	'uni_acad', --expresion
 	'Unidad Académica', --etiqueta
-	NULL, --descripcion
+	'UA para la que presta el servicio', --descripcion
 	'1', --obligatorio
 	'1', --inicial
 	'1', --orden
@@ -194,7 +194,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'anio', --nombre
 	'anio', --expresion
 	'Año', --etiqueta
-	NULL, --descripcion
+	'Año en el que se desempeña para la materia', --descripcion
 	'1', --obligatorio
 	'1', --inicial
 	'2', --orden

@@ -2101,6 +2101,9 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 //            and t_d.id_docente=t_do.id_docente
 //            and t_d.uni_acad=t_u.sigla
 //            and t_e.uni_acad<>t_d.uni_acad";
+            //t_e.uni_acad as uni_acad,t_d.uni_acad as ua
+            $sql2="select * from unidad_acad "; 
+            $sql2 = toba::perfil_de_datos()->filtrar($sql2);//WHERE /*-------- PERFIL DE DATOS --------*/ ( unidad_acad.sigla IN ('FAIF ') ) /*------------------------*/
             $sql="select * from(
                 select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
             t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza
@@ -2131,11 +2134,11 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             inner join plan_estudio t_p on (t_m.id_plan=t_p.id_plan)
             where t_p.uni_acad<>t_d.uni_acad 
             )sub
-            inner join unidad_acad t_u on t_u.sigla=sub.ua
-          
+            
+          inner join (".$sql2.") t_u on t_u.sigla=sub.ua
+            $where
            ";
-            $sql = toba::perfil_de_datos()->filtrar($sql);
-            $sql="select * from (".$sql.")b $where";
+        
             return toba::db('designa')->consultar($sql);
         }
         function get_permutas_externas($where=null){
