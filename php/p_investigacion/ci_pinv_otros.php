@@ -1262,7 +1262,7 @@ class ci_pinv_otros extends designa_ci
                     }else{
                         $aceptado='PI Rechazado';
                     }
-                    $datos1[0]=array('col1'=>'SI/NO','col2'=>$aceptado);
+                    $datos1[0]=array('col1'=>'SI  /  NO','col2'=>$aceptado);
                     $pdf->ezTable($datos1,array('col1'=>'','col2'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>550,'cols'=>array('col1'=>array('justification'=>'center','width'=>275),'col2'=>array('justification'=>'center','width'=>275))));
                     //--
                     $datos=array();
