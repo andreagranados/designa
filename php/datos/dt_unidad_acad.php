@@ -23,8 +23,10 @@ class dt_unidad_acad extends toba_datos_tabla
                 $sql = toba::perfil_de_datos()->filtrar($sql);  
                 $resul=toba::db('designa')->consultar($sql);
                 $sql="select * from unidad_acad WHERE sigla<>'AUZA' and sigla<>'ASMA' and sigla<>'".$resul[0]['sigla']."'";
-                return toba::db('designa')->consultar($sql);
+            }else{
+                $sql="select * from unidad_acad ";
             }
+            return toba::db('designa')->consultar($sql);
         }
         function get_descripciones_ua($id_des=null)	{
             if(!is_null($id_des)){
