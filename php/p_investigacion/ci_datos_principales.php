@@ -185,7 +185,7 @@ class ci_datos_principales extends toba_ci
                                     //--------
                         //elimino lo que viene en codigo dado que no corresponde al perfil del director
                         unset($datos['codigo']);
-                        $datos['denominacion']=mb_strtoupper($datos['denominacion']);//convierte a mayusculas//strtoupper($datos['denominacion']);
+                        $datos['denominacion']=mb_strtoupper($datos['denominacion'],'LATIN1');//convierte a mayusculas//strtoupper($datos['denominacion']);
                         $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
                         $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
                         if($mensaje!=''){
@@ -240,7 +240,7 @@ class ci_datos_principales extends toba_ci
             
             $datosp['usuario']=toba::usuario()->get_id();
             $datosp['estado']='I';//el proyecto se ingresa por primera vez en estado I
-            $datosp['denominacion']=mb_strtoupper($datos['denominacion']);
+            $datosp['denominacion']=mb_strtoupper($datos['denominacion'],'LATIN1');
             $datosp['duracion']=$datos['duracion'];
             $datosp['fec_desde']=$datos['fec_desde'];
             $datosp['fec_hasta']=$datos['fec_hasta'];
