@@ -1172,7 +1172,7 @@ class ci_pinv_otros extends designa_ci
                    //---
                     $cols_dp = array('col1'=>"<b>Datos Principales</b>",'col2'=>'');
                     $tabla_dp=array();
-                    $tabla_dp[0]=array( 'col1'=>utf8_decode('Unidad Académica:'),'col2' =>'<b>'.mb_strtoupper($ua).'</b>');
+                    $tabla_dp[0]=array( 'col1'=>utf8_decode('Unidad Académica:'),'col2' =>'<b>'.mb_strtoupper($ua,'LATIN1').'</b>');
                     if($pi['es_programa']==1){
                         $tabla_dp[1]=array( 'col1'=>utf8_decode('Título del Programa:'),'col2' => $pi['denominacion']);
                         $pp=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get_proyectos_programa($pi['id_pinv']);
