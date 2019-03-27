@@ -44,6 +44,7 @@ class dt_subsidios extends designa_datos_tabla
 			t_s.monto,
 			t_s.resolucion,
 			t_s.expediente,
+                        t_s.extension_expediente,
 			t_s.fecha_rendicion,
 			t_s.estado,
 			t_s.nota,

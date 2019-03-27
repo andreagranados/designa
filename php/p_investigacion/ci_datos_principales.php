@@ -95,10 +95,10 @@ class ci_datos_principales extends toba_ci
         //en el caso de los proyectos de programa no toca nada, emite cartel
         function evt__formulario__modif_central($datos)
         { 
-            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $mensaje='';
-                $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+            if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $mensaje='Solo cambia codigo y responsable de fondos.';
+                $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
                 $datos2['id_respon_sub']=$datos['id_respon_sub'];//responsable de fondos
                 if($pertenece!=0){//es un subproyecto
                     $mensaje='Solo modifica responsable de fondos. El codigo se modifica desde el programa.';
@@ -108,12 +108,12 @@ class ci_datos_principales extends toba_ci
                     if($pi['es_programa']==1){//es un programa
                         $datos3['codigo']=$datos['codigo'];//Solo codigo, no toca el respon de los subproyectos 
                         $datos3['estado']=$pi['estado'];//no cambia estado solo es para reutilizar el metodo que sigue
-                        $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos3); 
+                        $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos3); 
                         $mensaje=' Ha modificado codigo de los proyectos de programa';
                     }
                 }
-                $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
-                $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+                $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
+                $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
                 toba::notificacion()->agregar($mensaje, 'info');  
             }
         }

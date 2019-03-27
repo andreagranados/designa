@@ -295,11 +295,11 @@ class ci_pinv_otros extends designa_ci
         function evt__cuadro_subsidio__seleccion($datos)
         {
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
-            }else{
+            if($pi['estado']=='A' or $pi['estado']=='F'){
                 $this->controlador()->dep('datos')->tabla('subsidio')->cargar($datos);
-                $this->s__mostrar=1;  
+                $this->s__mostrar=1; 
+            }else{
+                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Finalizado(F) o Activo(A)', 'error');   
             }
         }
 	//-----------------------------------------------------------------------------------
@@ -828,7 +828,15 @@ class ci_pinv_otros extends designa_ci
          if ($perfil == null) {//es usuario de la SCyT
                  switch ($this->s__pantalla) {
                     case "pant_winsip":$this->s__mostrar_s=1; $this->controlador()->dep('datos')->tabla('winsip')->resetear();break;
-                    case "pant_subsidios":$this->s__mostrar=1; $this->controlador()->dep('datos')->tabla('subsidio')->resetear();break;   
+                    case "pant_subsidios":
+                        $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                         if($pi['estado']=='A' or $pi['estado']=='F'){
+                            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                            $this->s__mostrar=1; $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
+                         }else{
+                             toba::notificacion()->agregar('El proyecto debe estar Activo(A) o Finalizado(F) para agregar subsidios', 'error'); 
+                            }
+                        break;   
                     case "pant_estimulos":$this->s__mostrar_form_tiene=1; $this->controlador()->dep('datos')->tabla('tiene_estimulo')->resetear();break;   
                     case "pant_viaticos":$this->s__mostrar_v=1;$this->controlador()->dep('datos')->tabla('viatico')->resetear();break;
                     case "pant_presupuesto":$this->s__mostrar_v=1;toba::notificacion()->agregar('No puede modificar el presupuesto del proyecto', 'error');break;
