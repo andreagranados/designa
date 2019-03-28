@@ -67,7 +67,7 @@ class dt_subsidios extends designa_datos_tabla
                 $where='';
             }
             
-            $sql="select * from (select trim(d.apellido)||', '||trim(d.nombre) as agente, s.numero,s.id_proyecto,p.uni_acad,p.codigo,fecha_pago,fecha_rendicion,s.estado, expediente,resolucion ,s.monto"
+            $sql="select * from (select trim(d.apellido)||', '||trim(d.nombre) as agente, s.numero,s.id_proyecto,p.uni_acad,p.codigo,fecha_pago,fecha_rendicion,s.estado, expediente, extension_expediente, resolucion ,s.monto"
                     . " from subsidio s"
                     . " LEFT OUTER JOIN pinvestigacion p ON (s.id_proyecto=p.id_pinv)"
                     . " LEFT OUTER JOIN docente d ON (s.id_respon_sub=d.id_docente)) sub, unidad_acad u"
@@ -77,47 +77,53 @@ class dt_subsidios extends designa_datos_tabla
             $sql = toba::perfil_de_datos()->filtrar($sql);           
             return toba::db('designa')->consultar($sql);
         }
-        function modificar_subsidio($proy=array(),$datos=array()){
-            $modificar='';
-            $ultimo=0;
+
+        function modificar_subsidio($seleccionadas=array(),$datos=array()){
+            $bandera=false;
+            //---el where de la consulta
+            $concatena='';$cant=0;
+            foreach ($seleccionadas as $key => $value) {
+                $concatena.=' (id_proyecto='.$value['id_proyecto'].' and numero='.$value['numero'].')or';
+                $cant++;
+            }
+       //le saco el ultimo or
+            $where = ' where '.substr($concatena, 0,strlen($concatena)-2);
+            //el set de la consulta
+            $modificar='set '; 
             if(isset($datos['fecha_pago'])){
-               $modificar.=" set fecha_pago='".$datos['fecha_pago']."' ";
-               $ultimo=1;
+               $bandera=true;
+               $modificar.=" fecha_pago='".$datos['fecha_pago']."' ,";
             }
             if(isset($datos['fecha_rendicion'])){
-                if($ultimo==1){
-                    $modificar.=',';
-                }else{
-                    $modificar.='set';
-                }
-               $modificar.="  fecha_rendicion='".$datos['fecha_rendicion']."' ";
-               $ultimo=1;
-            }
-            if($ultimo==1){
-                $modificar.=", estado='P' ";
+               $bandera=true;
+               $modificar.="  fecha_rendicion='".$datos['fecha_rendicion']."' ,";
             }
             if(isset($datos['expediente'])){
-                if($ultimo==1){
-                    $modificar.=',';
-                }else{
-                    $modificar.='set';
-                }
-               $modificar.="  expediente='".$datos['expediente']."'";
-               $ultimo=1;
+               $bandera=true; 
+               $modificar.="  expediente='".$datos['expediente']."',";
             }
             if(isset($datos['resolucion'])){
-                if($ultimo==1){
-                    $modificar.=',';
-                }else{
-                    $modificar.='set';
-                }
-                $modificar.="  resolucion='".$datos['resolucion']."'";
+                $bandera=true;
+                $modificar.="  resolucion='".$datos['resolucion']."',";
             }
-            
-            $sql="update subsidio ".$modificar." where numero=".$proy['numero']." and id_proyecto=".$proy['id_proyecto'];
-            //print_r($sql);exit;
-            toba::db('designa')->consultar($sql);
+             if(isset($datos['estado'])){
+                $bandera=true;
+                $modificar.="  estado='".$datos['estado']."',";
+            }
+            if(isset($datos['extension_expediente'])){
+                $bandera=true;
+                $modificar.=" extension_expediente='".$datos['extension_expediente']."',";
+            }
+            //le saco la coma final
+            $modificar_nuevo = substr($modificar, 0,strlen($modificar)-1);
+           
+            if($bandera){
+                $sql="update subsidio ".$modificar_nuevo.$where;
+                toba::db('designa')->consultar($sql);
+                return true;
+            }else{
+                return false;
+            }
         }
-
 }
 ?>

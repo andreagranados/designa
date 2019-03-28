@@ -1,5 +1,5 @@
 <?php
-class ci_asignar_expediente_subsidio extends toba_ci
+class ci_actualiza_expediente_subsidio extends toba_ci
 {
         protected $s__where;
         protected $s__datos_filtro;
@@ -116,13 +116,17 @@ class ci_asignar_expediente_subsidio extends toba_ci
             
 	}
         function evt__formulario__modificacion($datos)
-	{
-            $cant=0;
-            foreach ($this->s__seleccionadas as $key=>$value) {
-                $this->dep('datos')->tabla('subsidio')->modificar_subsidio($value,$datos);  
-                $cant++;
-            }     
-            toba::notificacion()->agregar('Se modificaron '.$cant.' subsidios', 'info'); 
+	{  
+            $cant=count($this->s__seleccionadas);
+            if(count($this->s__seleccionadas)>0){
+                $bandera=$this->dep('datos')->tabla('subsidio')->modificar_subsidio($this->s__seleccionadas,$datos);
+                if($bandera){
+                    toba::notificacion()->agregar('Se modificaron '.$cant.' subsidios', 'info'); 
+                }else{
+                    toba::notificacion()->agregar('No se modifico','info');
+                }
+                
+            }
             $this->s__mostrar_v=0;
             $this->s__seleccionadas=null;
 	}

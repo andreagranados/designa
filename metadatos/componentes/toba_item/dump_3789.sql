@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[3789]--  Asignar Expediente Subsidios 
+--[3789]--  Actualizar Expediente Subsidios 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -23,7 +23,7 @@ INSERT INTO apex_item (item_id, proyecto, item, padre_id, padre_proyecto, padre,
 	NULL, --actividad_buffer
 	NULL, --actividad_patron_proyecto
 	NULL, --actividad_patron
-	'Asignar Expediente Subsidios', --nombre
+	'Actualizar Expediente Subsidios', --nombre
 	NULL, --descripcion
 	'23', --punto_montaje
 	NULL, --actividad_accion

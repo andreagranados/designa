@@ -16,8 +16,8 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba', --clase_proyecto
 	'toba_ci', --clase
 	'23', --punto_montaje
-	'ci_asignar_expediente_subsidio', --subclase
-	'p_investigacion/ci_asignar_expediente_subsidio.php', --subclase_archivo
+	'ci_actualiza_expediente_subsidio', --subclase
+	'p_investigacion/ci_actualiza_expediente_subsidio.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Actualizar Expediente Subsidios', --nombre
