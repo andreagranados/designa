@@ -847,7 +847,7 @@ class ci_pinv_otros extends designa_ci
                     case "pant_subsidios": toba::notificacion()->agregar('Se ingresan desde SCyT', 'error');  break;   
                     case "pant_estimulos":toba::notificacion()->agregar('Se ingresan desde SCyT', 'error');break;   
                     case "pant_viaticos":
-                            if($pf[0]=='investigacion'){//solo la UA agrega, los directores no
+                            if($pf[0]=='investigacion' or $pf[0]=='investigacion_extension'){//solo la UA agrega, los directores no
                                         $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                                         if($pi['estado']<>'A'){
                                             toba::notificacion()->agregar('El proyecto debe estar ACTIVO para ingresar viaticos ', 'error'); 

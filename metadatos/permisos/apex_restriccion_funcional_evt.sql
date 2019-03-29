@@ -1770,6 +1770,13 @@ INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, ite
 	'designa', --proyecto
 	'44', --restriccion_funcional
 	'3732', --item
+	'3119', --evento_id
+	'1'  --no_visible
+);
+INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, item, evento_id, no_visible) VALUES (
+	'designa', --proyecto
+	'44', --restriccion_funcional
+	'3732', --item
 	'3219', --evento_id
 	'1'  --no_visible
 );
