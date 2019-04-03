@@ -58,7 +58,7 @@ class ci_certificacion_periodo extends toba_ci
 //            $pdf->addText(750,80,10,"Firma y Sello"); 
                 //Configuración de Título.
             
-           $salida->titulo(utf8_d_seguro(utf8_decode("Planilla de Designación del Docente")));
+           $salida->titulo(utf8_d_seguro(utf8_decode("Planilla de Designación del Docente - Período ".$this->s__datos_filtro['anio'])));
  
            $opciones = array(
                 'showLines'=>1,
@@ -91,8 +91,8 @@ class ci_certificacion_periodo extends toba_ci
                 }
                 $texto= utf8_decode("Categoría y Dedicación: <b>".trim($des['cat_estat'])."-".$des['dedic']."</b> Desde: <b>".date_format(date_create($des['desde']),'d/m/Y'). "</b> Hasta: <b>".$hasta."</b>");
                 $pdf->ezText($texto,12);
-                
-               
+                $texto='Normativa: '.$des['norma_ultima'].', '.$des['norma_ant'];
+                $pdf->ezText($texto,12);
                 $texto= utf8_decode("Situación: <b>".$des['caracter']."</b>");
                 $pdf->ezText($texto,12);
                 $texto= "Departamento: <b>".$des['depto']."</b>";

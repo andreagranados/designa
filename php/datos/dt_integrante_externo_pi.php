@@ -1,6 +1,10 @@
 <?php
 class dt_integrante_externo_pi extends toba_datos_tabla
 {
+    function dar_baja($id_pinv,$hastap,$fec_baja,$nro_resol){//modifica la fecha de baja de los intergrantes que estan hasta el final del proyecto
+        $sql="update integrante_externo_pi set hasta='".$fec_baja."',rescd_bm='".$nro_resol."' where  pinvest=".$id_pinv." and hasta='".$hastap."'";
+        toba::db('designa')->consultar($sql); 
+    }
     function chequeados_ok($id_proy){// si es un programa entonces tambien coloca el check en todos los integrantes de los subproyectos
         $sql="update integrante_externo_pi set check_inv=1 where  pinvest=".$id_proy." or pinvest in (select id_proyecto from subproyecto where id_programa=".$id_proy.")";
         toba::db('designa')->consultar($sql); 

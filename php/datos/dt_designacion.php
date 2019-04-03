@@ -2022,26 +2022,56 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             }else{
                      $where2=$where;
                 }
-            
-            $sql="select * from (".
-            "select distinct b.*,d.descripcion as dep,a.descripcion as area,o.descripcion as ori 
-                  from (select * from (select distinct a.anio,b.id_designacion,trim(c.apellido)||', '||trim(c.nombre) as docente_nombre,c.legajo,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,carga_horaria,b.id_departamento,b.id_area,b.id_orientacion,a.id_materia,d.descripcion as modulo,a.modulo as id_modulo,f.desc_item as rol,g.descripcion as periodo,h.desc_materia||'('||h.cod_siu||')'||'#'||i.cod_carrera||'#'||i.uni_acad as desc_materia,i.cod_carrera,i.ordenanza,a.observacion
-                          from asignacion_materia a, designacion b, docente c, modulo d, tipo f, periodo g, materia h, plan_estudio i
+           
+//            $sql="select * from (".
+//            "select distinct b.*,d.descripcion as dep,a.descripcion as area,o.descripcion as ori 
+//                  from (select * from (
+//                          select distinct a.anio,b.id_designacion,trim(c.apellido)||', '||trim(c.nombre) as docente_nombre,c.legajo,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,carga_horaria,b.id_departamento,b.id_area,b.id_orientacion,a.id_materia,d.descripcion as modulo,a.modulo as id_modulo,f.desc_item as rol,a.id_periodo,g.descripcion as periodo,h.desc_materia||'('||h.cod_siu||')'||'#'||i.cod_carrera||'#'||i.uni_acad as desc_materia,i.cod_carrera,i.ordenanza,a.observacion
+//                          from asignacion_materia a, designacion b, docente c, modulo d, tipo f, periodo g, materia h, plan_estudio i
+//                          where a.id_designacion=b.id_designacion
+//                                and c.id_docente=b.id_docente
+//                                and a.modulo=d.id_modulo
+//                                and f.nro_tabla=a.nro_tab8
+//                                and f.desc_abrev=a.rol
+//                                and a.id_periodo=g.id_periodo
+//                                and a.id_materia=h.id_materia
+//                                and h.id_plan=i.id_plan
+//                          order by docente_nombre
+//                          ) a ".$where2.")b "
+//                    . " LEFT OUTER JOIN departamento d ON (b.id_departamento=d.iddepto)"
+//                    . " LEFT OUTER JOIN area a ON (a.idarea=b.id_area) "
+//                    . " LEFT OUTER JOIN orientacion o ON (o.idorient=b.id_orientacion and o.idarea=b.id_area)"
+//                    . ")c $where3"
+//                    . " order by desc_materia,periodo,modulo "
+//                     ; 
+                //reemplazo por esta para traer todas la materias en conjunto si las hay
+                $sql="select sub4.uni_acad,d.apellido||', '||d.nombre as docente_nombre,d.legajo,sub4.id_designacion,sub4.cat_est,sub4.carac,sub4.desde,sub4.hasta,t_mo.descripcion as modulo,carga_horaria,observacion,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo, dep.descripcion as dep,ar.descripcion as area,t_o.descripcion as ori,case when materia_conj is not null then materia_conj else m.desc_materia||'('||pl.cod_carrera||' de '||pl.uni_acad|| ')' end as desc_materia
+ from(select sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion,string_agg(sub4.materia,'/') as materia_conj from (select distinct * from (
+    select distinct a.anio,b.id_designacion,b.id_docente,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,b.id_departamento,b.id_area,b.id_orientacion
+                          from asignacion_materia a, designacion b
                           where a.id_designacion=b.id_designacion
-                            and c.id_docente=b.id_docente
-                            and a.modulo=d.id_modulo
-                            and f.nro_tabla=a.nro_tab8
-                            and f.desc_abrev=a.rol
-                            and a.id_periodo=g.id_periodo
-                            and a.id_materia=h.id_materia
-                            and h.id_plan=i.id_plan
-                        order by docente_nombre) a ".$where2.")b "
-                    . " LEFT OUTER JOIN departamento d ON (b.id_departamento=d.iddepto)"
-                    . " LEFT OUTER JOIN area a ON (a.idarea=b.id_area) "
-                    . " LEFT OUTER JOIN orientacion o ON (o.idorient=b.id_orientacion and o.idarea=b.id_area)"
-                    . ")c $where3"
-                    . " order by desc_materia,periodo,modulo "
-                     ;    
+                             
+                         )sub1
+                         ".$where2." )  sub2                   
+    left outer join                       
+( select t_c.id_conjunto,t_p.anio,t_c.id_periodo,t_c.ua,t_e.id_materia
+  from en_conjunto t_e,conjunto  t_c, mocovi_periodo_presupuestario t_p
+    WHERE t_e.id_conjunto=t_c.id_conjunto and t_p.id_periodo=t_c.id_periodo_pres 
+ 	                )sub3                        on (sub3.ua=sub2.uni_acad and sub3.id_periodo=sub2.id_periodo and sub3.anio=sub2.anio and sub3.id_materia=sub2.id_materia)
+ 	             left outer join (select t_e.id_conjunto,t_e.id_materia,t_m.desc_materia||'('||t_p.cod_carrera||' de '||t_p.uni_acad||')' as materia from en_conjunto t_e,materia t_m ,plan_estudio t_p
+ 	                              where t_e.id_materia=t_m.id_materia
+ 	                              and t_p.id_plan=t_m.id_plan)sub4 on sub4.id_conjunto=sub3.id_conjunto
+ 	          group by sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion)sub4
+ 	          LEFT OUTER JOIN docente d ON d.id_docente=sub4.id_docente
+ 	          LEFT OUTER JOIN periodo p ON p.id_periodo=sub4.id_periodo
+ 	          LEFT OUTER JOIN modulo t_mo ON sub4.modulo=t_mo.id_modulo
+ 	          LEFT OUTER JOIN departamento dep ON dep.iddepto=sub4.id_departamento
+ 	          LEFT OUTER JOIN area ar ON ar.idarea=sub4.id_area
+ 	          LEFT OUTER JOIN orientacion t_o ON (sub4.id_orientacion=t_o.idorient and ar.idarea=t_o.idarea)
+ 	          LEFT OUTER JOIN materia m ON m.id_materia=sub4.id_materia
+ 	          LEFT OUTER JOIN plan_estudio pl ON pl.id_plan=m.id_plan
+                  $where3
+ 	          order by desc_materia,periodo,modulo";
             return toba::db('designa')->consultar($sql);
         }
         
@@ -2157,17 +2187,19 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $resul=toba::db('designa')->consultar($sql);
                 $sql =  "select * from(" 
                ."select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
-                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo
+                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_p.descripcion as periodo
                         from designacion t_d 
                         LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
                         LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
                         LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
-                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo
+                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo, tipo t_t, periodo t_p
                         where t_a.id_designacion=t_d.id_designacion
                         and t_a.id_materia=t_m.id_materia
                         and t_m.id_plan=t_e.id_plan
                         and t_d.id_docente=t_do.id_docente
                         and t_a.modulo=t_mo.id_modulo
+                        and t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla
+                        and t_a.id_periodo=t_p.id_periodo
                         and t_e.uni_acad<>t_d.uni_acad
                         and t_d.uni_acad<>'".$resul[0]['sigla']."'"
                         . " and t_e.uni_acad='".$resul[0]['sigla']."'"
@@ -2177,17 +2209,19 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
               }else{//el usuario no esta asociado a ningun perfil de datos
                  $sql =  "select * from(" 
                           ." select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
-                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo
+                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_p.descripcion as periodo
                         from designacion t_d 
                         LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
                         LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
                         LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
-                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo
+                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo, tipo t_t, periodo t_p
                         where t_a.id_designacion=t_d.id_designacion
                         and t_a.id_materia=t_m.id_materia
                         and t_m.id_plan=t_e.id_plan
                         and t_d.id_docente=t_do.id_docente
                         and t_a.modulo=t_mo.id_modulo
+                        and t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla
+                        and t_a.id_periodo=t_p.id_periodo
                         and t_e.uni_acad<>t_d.uni_acad
                         )b $where";
                         

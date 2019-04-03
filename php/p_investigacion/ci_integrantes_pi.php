@@ -750,7 +750,7 @@ class ci_integrantes_pi extends designa_ci
               //primero agrego la imagen de fondo porque sino pisa la tabla
                 foreach ($pdf->ezPages as $pageNum=>$id){ 
                     $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
-                    if($this->s__estado=='I' or $this->s__estado=='N' or $this->s__estado=='X'){
+                    if($this->s__estado=='I' or $this->s__estado=='E' or $this->s__estado=='N' or $this->s__estado=='X'){
                         $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
                         $pdf->addJpegFromFile($imagen, 100, 25, 700, 400);
                     }else{

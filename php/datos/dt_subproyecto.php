@@ -52,6 +52,12 @@ class dt_subproyecto extends toba_datos_tabla
             $sql="update integrante_externo_pi set rescd='".$datos['nro_resol']."' where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
             toba::db('designa')->consultar($sql);
         }
+        if($datos['check']==1){//si cambio a A el estado del proyecto check viene en 1
+            $sql="update integrante_interno_pi set check_inv=1 where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
+            toba::db('designa')->consultar($sql);
+            $sql="update integrante_externo_pi set check_inv=1 where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
+            toba::db('designa')->consultar($sql);
+        }
         if(isset($datos['codigo'])){
             $concatenar.=" , codigo='".$datos['codigo']."'";
         }

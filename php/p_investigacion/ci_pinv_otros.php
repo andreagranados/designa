@@ -191,12 +191,12 @@ class ci_pinv_otros extends designa_ci
             $mensaje='';
             $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                        
+           
             $pertenece=$this->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
             if($pertenece!=0){//es un subproyecto no permite cambiar nada
                 toba::notificacion()->agregar('Esta intentando editar un proyecto de programa, debe modificar estos datos desde el programa correspondiente', 'error');   
             }else{//es programa o proyecto comun
-                   if($pf[0]=='investigacion'){//es usuario de la UA
+                   if($pf[0]=='investigacion' or $pf[0]=='investigacion_extension'){//es usuario de la UA
                         if($pi['estado']=='E'){//solo si el proyecto ha sido enviado por el Director
                             //esto para el estado
                             if($datos['estado']<>'E'){//si cambia  estado
@@ -263,6 +263,7 @@ class ci_pinv_otros extends designa_ci
                        }
                     }else{//es SCyT
                         //podria modificar todo menos observacion UA
+                        $datos['check']=null;
                         unset($datos['observacion']);//no toca las observaciones de la UA
                         $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
                         $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
@@ -273,6 +274,19 @@ class ci_pinv_otros extends designa_ci
                               $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
                               $mensaje.=" Se ha modificado nro de resol de los integrantes";
                         }
+                        if(($datos['estado'])!=$pi['estado']){//modifica el estado
+                            if($datos['estado']=='A'){//cuando se activa le coloca el chek a los integrantes
+                                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->chequeados_ok($pi['id_pinv']);
+                                $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->chequeados_ok($pi['id_pinv']);
+                                if($pi['es_programa']==1){//para ponerle el check a los integrantes de los subproyectos
+                                    $datos['check']=1;
+                                }
+                                $mensaje.=" Ha sido Activado. Ahora los integrantes tienen el check de SCyT";
+                                
+                            }//si es programa tambien chequea 
+                            
+                        }
+                        
                         if($pi['es_programa']==1){
                             $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos); 
                         }
@@ -794,7 +808,7 @@ class ci_pinv_otros extends designa_ci
 	{
             $this->s__pantalla = "pant_admin";
             $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
-            if ($pf[0]=='investigacion') {//es la UA
+            if ($pf[0]=='investigacion' or $pf[0]=='investigacion_extension') {//es la UA
                  $pantalla->set_descripcion(utf8_decode('Recuerde que una vez aCeptado o Rechazado ya no podrá realizar más cambios.'));
             }
 	}
@@ -808,7 +822,7 @@ class ci_pinv_otros extends designa_ci
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $correo=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get_correo_director($pi['id_pinv']);
             $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
-            if ($pf[0]=='investigacion' or $pf[0]=='investigcentral') {//la UA o SCyT no puede agregar o eliminar registros 
+            if ($pf[0]=='investigacion' or $pf[0]=='investigacion_extension' or $pf[0]=='investigcentral') {//la UA o SCyT no puede agregar o eliminar registros 
                 $pantalla->set_descripcion(utf8_decode('<font size=3>ATENCIÓN. Verifique que el MAIL DE CONTACTO sea:<b>'.$correo.'</b> Sino aparece o no esta actualizado contactase con Secretaría Académica para su actualización previo a la impresión de la Ficha'.'</br>'.'Presione el botón para generar la Ficha de Solicitud</font>'));
                 
             }else{//es el director

@@ -21,28 +21,6 @@ class ci_comparacion_inscriptos_docentes extends toba_ci
 		unset($this->s__datos_filtro);
 	}
 
-
-//	//---- Filtro -----------------------------------------------------------------------
-//
-//	function conf__filtros(toba_ei_filtro $filtro)
-//	{
-//            if (isset($this->s__datos_filtro)) {
-//                $filtro->set_datos($this->s__datos_filtro);
-//		}
-//	}
-//
-//	function evt__filtros__filtrar($datos)
-//	{
-//	    $this->s__datos_filtro = $datos;
-//            $this->s__where = $this->dep('filtros')->get_sql_where();
-//         }
-//
-//	function evt__filtros__cancelar()
-//	{
-//		unset($this->s__datos_filtro);
-//                unset($this->s__where);
-//	}
-
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
@@ -61,9 +39,7 @@ class ci_comparacion_inscriptos_docentes extends toba_ci
 	}
         function conf__cuadro_detalle(toba_ei_cuadro $cuadro)
         {
-         
             if(isset($this->s__datos)){
-               
                 //dada una materia, un anio y un periodo trae todos los inscriptos a esa materia en ese anio y periodo
                 $datos=$this->dep('datos')->tabla('asignacion_materia')->get_comisiones($this->s__datos['id_materia'],$this->s__datos['anio'],$this->s__datos['id_periodo'],$this->s__datos['conj']);
                 $cuadro->set_datos($datos);

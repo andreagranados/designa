@@ -66,12 +66,12 @@ class dt_subsidios extends designa_datos_tabla
             }else{
                 $where='';
             }
-            
-            $sql="select * from (select trim(d.apellido)||', '||trim(d.nombre) as agente, s.numero,s.id_proyecto,p.uni_acad,p.codigo,fecha_pago,fecha_rendicion,s.estado, expediente, extension_expediente, resolucion ,s.monto"
+           
+            $sql="select * from (select trim(d.apellido)||', '||trim(d.nombre) as agente, s.numero,s.id_proyecto,p.uni_acad,p.codigo,fecha_pago,fecha_rendicion,s.estado, expediente, extension_expediente, resolucion ,s.monto, p.fec_desde"
                     . " from subsidio s"
                     . " LEFT OUTER JOIN pinvestigacion p ON (s.id_proyecto=p.id_pinv)"
                     . " LEFT OUTER JOIN docente d ON (s.id_respon_sub=d.id_docente)) sub, unidad_acad u"
-                    . " Where sub.uni_acad=u.sigla".$where
+                    . " Where sub.uni_acad=u.sigla ".$where
                     . " order by uni_acad,codigo,numero";
                     
             $sql = toba::perfil_de_datos()->filtrar($sql);           

@@ -3,7 +3,7 @@ require_once 'dt_mocovi_periodo_presupuestario.php';
 require_once 'consultas_mapuche.php';
 class dt_integrante_interno_pi extends toba_datos_tabla
 {
-    function dar_baja($id_pinv,$hastap,$fec_baja,$nro_resol){
+    function dar_baja($id_pinv,$hastap,$fec_baja,$nro_resol){//modifica la fecha de baja de los intergrantes que estan hasta el final del proyecto
         $sql="update integrante_interno_pi set hasta='".$fec_baja."',rescd_bm='".$nro_resol."' where  pinvest=".$id_pinv." and hasta='".$hastap."'";
         toba::db('designa')->consultar($sql); 
     }
