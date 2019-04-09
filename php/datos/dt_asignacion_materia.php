@@ -119,7 +119,7 @@ class dt_asignacion_materia extends toba_datos_tabla
     //muestra cuentos inscriptos hay por comision
     //el ultimo parametro es 0 si no es conjunto
     function get_comisiones ($materia,$anio,$periodo,$conj){
-            if ($conj==0){
+            if ($conj==0){//no esta en ningun conjunto
                 $sql="select distinct t_m.desc_materia,t_i.id_materia,t_i.anio_acad,t_i.id_periodo,t_pe.descripcion as periodo,t_c.descripcion as comision,t_i.inscriptos,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad"
                     . " from inscriptos t_i"
                     . " LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=t_i.id_periodo)"
@@ -212,59 +212,81 @@ class dt_asignacion_materia extends toba_datos_tabla
                 $where.= " and  uni_acad = ".quote($filtro['uni_acad']);
             }
              if (isset($filtro['anio'])) {
-                $where.= " and  c.anio = ".$filtro['anio'];
+                //$where.= " and  c.anio = ".$filtro['anio'];
+                 $where.= " and  t_i.anio_acad = ".$filtro['anio'];
             }
            //agrupa por materia, anio y periodo
 
-            $sql="select inscriptos_designa(".$filtro['anio'].",'".$filtro['uni_acad']."');";
-            toba::db('designa')->consultar($sql);   
-//            $sql="select distinct c.* 
-//                    ,case when a.cant_desig is not null then a.cant_desig else a2.cant_desig end as cant_desig
-//                from(
-//                    select b.*,t_pe.descripcion as periodo,case when t_m.desc_materia is null then t_co.descripcion else t_m.desc_materia end as desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_p.uni_acad from
-//                    (select id_materia,anio,id_periodo,0 as conj,sum(cant_inscriptos) as cant_inscriptos 
+            //$sql="select inscriptos_designa(".$filtro['anio'].",'".$filtro['uni_acad']."');";
+            //toba::db('designa')->consultar($sql);   
+//            $sql="select distinct t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.uni_acad,t_p.ordenanza,t_e.descripcion as periodo, c.*,case when c.conj=0 then a.cant_desig else a2.cant_desig end as cant_desig
+//		
+//		from (select id_materia,anio,id_periodo,0 as conj,sum(cant_inscriptos) as cant_inscriptos 
 //                    from auxiliar
 //                    where id_conjunto is null --si la materia no esta en ningun conjunto para ese anio y ese periodo 
 //                    group by id_materia,anio,id_periodo
-//                    UNION
-//                    select  id_conjunto,anio,id_periodo,1 as conj,sum(cant_inscriptos) as cant_inscriptos 
-//                    from auxiliar
-//                    where id_conjunto is not null -- esta en un conjunto
-//                    group by id_conjunto,anio,id_periodo
-//                    
-//                    )b
-//                LEFT OUTER JOIN materia t_m ON (t_m.id_materia=b.id_materia and b.conj=0)	
-//                LEFT OUTER JOIN plan_estudio t_p ON (t_p.id_plan=t_m.id_plan)	
-//                LEFT OUTER JOIN periodo t_pe ON (t_pe.id_periodo=b.id_periodo)
-//                LEFT OUTER JOIN conjunto t_co ON (t_co.id_conjunto=b.id_materia and conj=1)
-//                  )c              
-//                 LEFT OUTER JOIN auxiliar a ON (c.conj=0 and a.id_materia=c.id_materia and a.id_periodo=c.id_periodo and a.anio=c.anio)                  
-//                 LEFT OUTER JOIN auxiliar a2 ON (c.conj<>0 and a2.id_conjunto=c.id_materia and a2.id_periodo=c.id_periodo and a2.anio=c.anio)
-//                $where
-//                ";
-            $sql="select distinct t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.uni_acad,t_p.ordenanza,t_e.descripcion as periodo, c.*,case when c.conj=0 then a.cant_desig else a2.cant_desig end as cant_desig
-		
-		from (select id_materia,anio,id_periodo,0 as conj,sum(cant_inscriptos) as cant_inscriptos 
-                    from auxiliar
-                    where id_conjunto is null --si la materia no esta en ningun conjunto para ese anio y ese periodo 
-                    group by id_materia,anio,id_periodo
-                 UNION
-                    select id_materia,t_a.anio,t_a.id_periodo,t_a.id_conjunto,sub.cant_inscriptos
-                    from auxiliar t_a
-                    inner join (select  id_conjunto,anio,id_periodo,sum(cant_inscriptos) as cant_inscriptos 
-                    		from auxiliar 
-                    		group by id_conjunto,anio,id_periodo
-                    		) sub on (sub.id_conjunto=t_a.id_conjunto) --sumo los inscriptos de todas las materias del conjunto
-                    where t_a.id_conjunto is not null  -- esta en un conjunto
-                    )c
-                    LEFT OUTER JOIN auxiliar a ON (c.conj=0 and a.id_materia=c.id_materia and a.id_periodo=c.id_periodo and a.anio=c.anio)                  
-                    LEFT OUTER JOIN auxiliar a2 ON (c.conj<>0 and a2.id_conjunto=c.conj and a2.id_periodo=c.id_periodo and a2.anio=c.anio)
-                    LEFT OUTER JOIN materia t_m ON (t_m.id_materia=c.id_materia)
-                    LEFT OUTER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
-                    LEFT OUTER JOIN periodo t_e ON (t_e.id_periodo=c.id_periodo)
-                    $where";          
-            $res=toba::db('designa')->consultar($sql);   
+//                 UNION
+//                    select id_materia,t_a.anio,t_a.id_periodo,t_a.id_conjunto,sub.cant_inscriptos
+//                    from auxiliar t_a
+//                    inner join (select  id_conjunto,anio,id_periodo,sum(cant_inscriptos) as cant_inscriptos 
+//                    		from auxiliar 
+//                    		group by id_conjunto,anio,id_periodo
+//                    		) sub on (sub.id_conjunto=t_a.id_conjunto) --sumo los inscriptos de todas las materias del conjunto
+//                    where t_a.id_conjunto is not null  -- esta en un conjunto
+//                    )c
+//                    LEFT OUTER JOIN auxiliar a ON (c.conj=0 and a.id_materia=c.id_materia and a.id_periodo=c.id_periodo and a.anio=c.anio)                  
+//                    LEFT OUTER JOIN auxiliar a2 ON (c.conj<>0 and a2.id_conjunto=c.conj and a2.id_periodo=c.id_periodo and a2.anio=c.anio)
+//                    LEFT OUTER JOIN materia t_m ON (t_m.id_materia=c.id_materia)
+//                    LEFT OUTER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
+//                    LEFT OUTER JOIN periodo t_e ON (t_e.id_periodo=c.id_periodo)
+//                    $where";  
+            $sql="select distinct t_p.uni_acad,t_i.id_materia,t_a.desc_materia,t_a.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_i.id_periodo,t_pr.descripcion as periodo, t_i.anio_acad as anio,case when sub.id_conjunto is null then 0 else sub.id_conjunto end  as conj,
+case when sub.id_conjunto is null then sub3.cant_insc_s else sub2.cant_insc_c end as cant_inscriptos,case when sub.id_conjunto is null then sub4.cant_desig_s else sub1.cant_desigc end as cant_desig
+--,sub.id_conjunto,t_i.id_comision,t_i.inscriptos,t_m.id_designacion,sub1.cant_desigc, sub4.cant_desig_s, sub2.cant_insc_c, sub3.cant_insc_s
+from inscriptos t_i
+INNER JOIN materia t_a ON (t_a.id_materia=t_i.id_materia)
+INNER JOIN plan_estudio t_p ON (t_p.id_plan=t_a.id_plan)
+INNER JOIN periodo t_pr ON (t_pr.id_periodo=t_i.id_periodo)
+FULL OUTER JOIN asignacion_materia t_m ON (t_i.id_periodo=t_m.id_periodo and t_i.anio_acad=t_m.anio and t_i.id_materia=t_m.id_materia)
+--con lo que sigue obtengo el conjunto si es que lo tiene
+LEFT OUTER JOIN (select t_c.ua,t_c.id_conjunto,t_r.anio,t_c.id_periodo,t_e.id_materia 
+        	from  en_conjunto t_e,conjunto t_c ,mocovi_periodo_presupuestario t_r
+        	where t_e.id_conjunto=t_c.id_conjunto
+        	and t_c.id_periodo_pres=t_r.id_periodo
+        	)sub
+        	ON (sub.id_periodo=t_i.id_periodo and sub.anio=t_i.anio_acad  and sub.id_materia=t_i.id_materia)
+--cantidad de designaciones del conjunto        	
+LEFT OUTER JOIN (select t_e.id_conjunto,count(distinct t_a.id_designacion) as cant_desigc from 
+                 en_conjunto t_e 
+                 INNER JOIN conjunto t_c ON (t_e.id_conjunto=t_c.id_conjunto)
+                 INNER JOIN mocovi_periodo_presupuestario t_p ON (t_c.id_periodo_pres=t_p.id_periodo)
+                 INNER JOIN asignacion_materia t_a ON (t_a.id_materia=t_e.id_materia and t_a.id_periodo=t_c.id_periodo and t_a.anio=t_p.anio)
+  	         group by t_e.id_conjunto
+               )sub1 
+               ON (sub.id_conjunto=sub1.id_conjunto)
+--cantidad de inscriptos del conjunto        	               
+LEFT OUTER JOIN (select t_e.id_conjunto,t_i.id_periodo,t_p.anio,sum(t_i.inscriptos) as cant_insc_c
+                 from en_conjunto t_e
+ 	         INNER JOIN conjunto t_c ON (t_e.id_conjunto=t_c.id_conjunto)
+                 INNER JOIN mocovi_periodo_presupuestario t_p ON (t_c.id_periodo_pres=t_p.id_periodo)
+		 INNER JOIN inscriptos t_i ON (t_i.id_materia=t_e.id_materia and t_i.id_periodo=t_c.id_periodo and t_i.anio_acad=t_p.anio)
+		 group by t_e.id_conjunto,t_i.id_periodo,t_p.anio
+                )sub2
+               ON (sub.id_conjunto=sub2.id_conjunto)   
+--cantidad de inscriptos de las sin conj                        
+LEFT OUTER JOIN (select  t_i.id_materia,t_i.id_periodo,t_i.anio_acad,sum(t_i.inscriptos) cant_insc_s 
+                 from inscriptos t_i
+                 group by t_i.id_materia,t_i.id_periodo,t_i.anio_acad
+                  ) sub3
+                ON (sub.id_conjunto is null and t_i.id_materia =sub3.id_materia and t_i.id_periodo =sub3.id_periodo and t_i.anio_acad=sub3.anio_acad)
+--cant desig sin conjunto                                  
+LEFT OUTER JOIN (select  t_m.id_materia,t_m.id_periodo,t_m.anio,count(distinct t_m.id_designacion) cant_desig_s 
+                 from asignacion_materia t_m
+                 group by t_m.id_materia,t_m.id_periodo,t_m.anio
+                  ) sub4
+                ON (sub.id_conjunto is null and t_i.id_materia=sub4.id_materia and t_i.id_periodo=sub4.id_periodo and t_i.anio_acad=sub4.anio)                                  ";
             
+            $res=toba::db('designa')->consultar($sql);   
             return $res;
             
         }

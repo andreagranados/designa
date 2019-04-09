@@ -122,80 +122,74 @@ class ci_datos_principales extends toba_ci
 	{    
             $mensaje='';
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $bandera = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-            if($bandera){
-                if($pi['estado']<>'I'){
-                      toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
-                }else{//solo modifica datos principales si el proyecto esta en I
-                        switch ($datos['es_programa']) {
-                            case 'SI':$datos['es_programa']=1;
-                                 $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
-                            case 'NO':$datos['es_programa']=0;break;
-                         }
-                        switch ($datos['tipo']) {
-                            case 0:$datos['tipo']='PROIN';break;
-                            case 1:$datos['tipo']='PIN1 ';break;
-                            case 2:$datos['tipo']='PIN2 ';break;
-                            case 3:$datos['tipo']='RECO ';break;
-                        }  
+            if($pi['estado']<>'I'){
+                  toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
+            }else{//solo modifica datos principales si el proyecto esta en I
+                    switch ($datos['es_programa']) {
+                        case 'SI':$datos['es_programa']=1;
+                             $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
+                        case 'NO':$datos['es_programa']=0;break;
+                     }
+                    switch ($datos['tipo']) {
+                        case 0:$datos['tipo']='PROIN';break;
+                        case 1:$datos['tipo']='PIN1 ';break;
+                        case 2:$datos['tipo']='PIN2 ';break;
+                        case 3:$datos['tipo']='RECO ';break;
+                    }  
 
-                   //print_r($datos);exit();
-                      if($datos['programa']!=0){
-                            $band=$this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->esta($datos['programa'],$pi['id_pinv']);
-                            if(!$band){
-                                $datos2['id_programa']=$datos['programa'];
-                                $datos2['id_proyecto']=$pi['id_pinv'];
-                                $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
-                                $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
-                                $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->resetear();
-                            }
-
-                        }else{//no pertenece a ningun programa
-                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
+               //print_r($datos);exit();
+                  if($datos['programa']!=0){
+                        $band=$this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->esta($datos['programa'],$pi['id_pinv']);
+                        if(!$band){
+                            $datos2['id_programa']=$datos['programa'];
+                            $datos2['id_proyecto']=$pi['id_pinv'];
+                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
+                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
+                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->resetear();
                         }
 
-                        if($datos['fec_desde']<>$pi['fec_desde']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                              $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                              $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                              $mensaje.=" Se ha modificado la Fecha de Inicio de los integrantes";
-                         }
-                        if($datos['fec_hasta']<>$pi['fec_hasta']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                              $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
-                              $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
-                              $mensaje.=" Se ha modificado la Fecha de Finalización de los integrantes";
-                         }
-                        //ver
-                        if($pi['es_programa']==1){
-                            $band=false;
-                            //solo si cambia la fecha desde/ hasta del programa entonces tanbien cambia el de los subproyectos
-                            if($datos['fec_hasta']<>$pi['fec_hasta']){
-                                $datos2['fec_hasta']=$datos['fec_hasta'];  
-                                $band=true;
-                            }
-                            if($datos['fec_desde']<>$pi['fec_desde']){
-                                $datos2['fec_desde']=$datos['fec_desde'];    
-                                $band=true;
-                            }
-                            //cambia la fecha desde y hasta de los subproyectos del programa y de los integrantes de los subproyectos
-                            if($band){
-                                $datos2['estado']=$pi['estado'];//va siempre
-                                $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
-                            }
+                    }else{//no pertenece a ningun programa
+                        $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
+                    }
+
+                    if($datos['fec_desde']<>$pi['fec_desde']){//si modifica la fecha desde entonces modifica lo de los integrantes.
+                          $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
+                          $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
+                          $mensaje.=" Se ha modificado la Fecha de Inicio de los integrantes";
+                     }
+                    if($datos['fec_hasta']<>$pi['fec_hasta']){//si modifica la fecha desde entonces modifica lo de los integrantes.
+                          $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
+                          $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
+                          $mensaje.=" Se ha modificado la Fecha de Finalización de los integrantes";
+                     }
+                    //ver
+                    if($pi['es_programa']==1){
+                        $band=false;
+                        //solo si cambia la fecha desde/ hasta del programa entonces tanbien cambia el de los subproyectos
+                        if($datos['fec_hasta']<>$pi['fec_hasta']){
+                            $datos2['fec_hasta']=$datos['fec_hasta'];  
+                            $band=true;
                         }
+                        if($datos['fec_desde']<>$pi['fec_desde']){
+                            $datos2['fec_desde']=$datos['fec_desde'];    
+                            $band=true;
+                        }
+                        //cambia la fecha desde y hasta de los subproyectos del programa y de los integrantes de los subproyectos
+                        if($band){
+                            $datos2['estado']=$pi['estado'];//va siempre
+                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
+                        }
+                    }
                                     //--------
-                        //elimino lo que viene en codigo dado que no corresponde al perfil del director
-                        unset($datos['codigo']);
-                        $datos['denominacion']=mb_strtoupper($datos['denominacion'],'LATIN1');//convierte a mayusculas//strtoupper($datos['denominacion']);
-                        $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
-                        $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-                        if($mensaje!=''){
-                            toba::notificacion()->agregar($mensaje, 'info');  
-                        }
+                    //elimino lo que viene en codigo dado que no corresponde al perfil del director
+                    unset($datos['codigo']);
+                    $datos['denominacion']=mb_strtoupper($datos['denominacion'],'LATIN1');//convierte a mayusculas//strtoupper($datos['denominacion']);
+                    $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
+                    $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+                    if($mensaje!=''){
+                        toba::notificacion()->agregar($mensaje, 'info');  
+                    }
                  }        
-            }else{
-                 toba::notificacion()->agregar('Fuera de la Convocatoria', 'error');  
-            }
-            
 	}
     //elimina un proyecto de investigacion
         function evt__formulario__baja()
@@ -226,7 +220,7 @@ class ci_datos_principales extends toba_ci
         //unicamente disponible solo para el director
         //nuevo proyecto de investigacion
         function evt__formulario__alta($datos)
-	{
+	{//solo puede ingresar nuevos proyectos dentro del periodo de la convocatoria
          $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($datos['tipo']);
          if($band){
             $id_conv=$this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_convocatoria_actual($datos['tipo']);
@@ -306,9 +300,7 @@ class ci_datos_principales extends toba_ci
         function evt__form_pertenencia__modificacion($datos)
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-              $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-              $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-              if($band){
+                  $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                   $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
                   if($pertenece!=0){//es un subproyecto no permite cambiar nada
                     toba::notificacion()->agregar('Esta intentando editar un proyecto de programa, debe modificar estos datos desde el programa correspondiente', 'error');   
@@ -339,9 +331,6 @@ class ci_datos_principales extends toba_ci
                             }
                         }
                   }
-              }else{
-                  toba::notificacion()->agregar('Fuera de la Convocatoria', 'error');  
-              }
 
             } 
 	}

@@ -411,17 +411,11 @@ class ci_pinv_otros extends designa_ci
         function evt__cuadro_pres__seleccion($datos)
         {//boton solo visible para el director
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-            if($band){
-                if($pi['estado']=='I'){
-                    $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->cargar($datos);
-                    $this->s__mostrar_p=1;
-                }else{
-                    toba::notificacion()->agregar(utf8_decode('El proyecto debe estar en estado Inicial para modificar su presupuesto'), 'error');  
-                }
-            }
-            else{
-                 toba::notificacion()->agregar(utf8_decode('Fuera del período de la Convocatoria'),'error');
+            if($pi['estado']=='I'){
+                $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->cargar($datos);
+                $this->s__mostrar_p=1;
+            }else{
+                toba::notificacion()->agregar(utf8_decode('El proyecto debe estar en estado Inicial para modificar su presupuesto'), 'error');  
             }
         }
 	function conf__form_pres(toba_ei_formulario $form)
@@ -874,21 +868,16 @@ class ci_pinv_otros extends designa_ci
                     case "pant_presupuesto":
                         if($pf[0]=='investigacion_director'){//solo el director agrega
                             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                            $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-                            if($band){
-                                if($pi['es_programa']==1){//en los programa no se carga presupuesto
-                                    toba::notificacion()->agregar('El presupuesto de un programa se ingresa desde los proyectos de programa', 'error');
-                                }else{
-                                    if($pi['estado']=='I'){//solo en estado inicial puede ingresar
-                                        $this->s__mostrar_p=1;    
-                                        $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->resetear();
-                                    }else{
-                                        toba::notificacion()->agregar('No puede modificar el presupuesto de un proyecto que no se encuentre en estado Inicial', 'error');
-                                    }
-                                } 
+                            if($pi['es_programa']==1){//en los programa no se carga presupuesto
+                                toba::notificacion()->agregar('El presupuesto de un programa se ingresa desde los proyectos de programa', 'error');
                             }else{
-                                toba::notificacion()->agregar('Fuera de la convocatoria.', 'error');
-                            }
+                                if($pi['estado']=='I'){//solo en estado inicial puede ingresar
+                                    $this->s__mostrar_p=1;    
+                                    $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->resetear();
+                                }else{
+                                    toba::notificacion()->agregar('No puede modificar el presupuesto de un proyecto que no se encuentre en estado Inicial', 'error');
+                                }
+                            } 
                           
                         }else{//corresponde a la Secretaria de la UA
                                 toba::notificacion()->agregar('No puede modificar el presupuesto de un proyecto.', 'error');
@@ -912,34 +901,28 @@ class ci_pinv_otros extends designa_ci
         function evt__enviar(){
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-                if($band){
-                    if($pi['estado']<>'I'){
-                        toba::notificacion()->agregar('El proyecto debe estar en estado Inicial(I) ', 'error');   
-                    }else{//el proyecto esta en estado inicial entonces puede enviar
-                        //control previo envio
-                        $salida=$this->controlador()->dep('datos')->tabla('pinvestigacion')->chequeo_previo_envio($pi['id_pinv']);
-                        if(!$salida['bandera']){
-                            toba::notificacion()->agregar($salida['mensaje'], 'error');
-                        }else{
-                            $mensaje='';
-                            $datos['estado']='E';
-                            if($pi['es_programa']==1){//es programa
-                                //en este caso modifica estado de todos los subproyectos
-                                $this->controlador()->dep('datos')->tabla('subproyecto')->cambiar_estado($pi['id_pinv'],'E');
-                                $mensaje.=" Ha cambiado el estado de todos los proyectos de programa asociados a este programa. ";
-                            }
-                            //la solapa solicitud esta desactivada para los subproyectos
-                            $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
-                            $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-                            $mensaje.='Su solicitud ha sido enviada. Debe acercarse a la Secretaría de CyT de su UA para continuar con el trámite. ';
-                            toba::notificacion()->agregar(utf8_decode($mensaje), 'info');
+                if($pi['estado']<>'I'){
+                    toba::notificacion()->agregar('El proyecto debe estar en estado Inicial(I) ', 'error');   
+                }else{//el proyecto esta en estado inicial entonces puede enviar
+                    //control previo envio
+                    $salida=$this->controlador()->dep('datos')->tabla('pinvestigacion')->chequeo_previo_envio($pi['id_pinv']);
+                    if(!$salida['bandera']){
+                        toba::notificacion()->agregar($salida['mensaje'], 'error');
+                    }else{
+                        $mensaje='';
+                        $datos['estado']='E';
+                        if($pi['es_programa']==1){//es programa
+                            //en este caso modifica estado de todos los subproyectos
+                            $this->controlador()->dep('datos')->tabla('subproyecto')->cambiar_estado($pi['id_pinv'],'E');
+                            $mensaje.=" Ha cambiado el estado de todos los proyectos de programa asociados a este programa. ";
                         }
+                        //la solapa solicitud esta desactivada para los subproyectos
+                        $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+                        $mensaje.='Su solicitud ha sido enviada. Debe acercarse a la Secretaría de CyT de su UA para continuar con el trámite. ';
+                        toba::notificacion()->agregar(utf8_decode($mensaje), 'info');
                     }
-                }else{
-                    toba::notificacion()->agregar(utf8_decode('Fuera del período de la Convocatoria'), 'error');   
                 }
-               
             }
         }
        
@@ -1080,60 +1063,55 @@ class ci_pinv_otros extends designa_ci
         {
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $band = $this->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
-                if($band){
-                    if($pi['estado']<>'I'){//solo en estado I puede modificar        
-                       toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I)', 'error');   
-                    }else{
-                        $id=$pi['id_pinv'];
-                        $datos2['id_pinv']=$pi['id_pinv'];
-                        if (isset($datos['ficha_tecnica'])) {
-                                $nombre_ca="ficha_tecnica".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
-                                if(move_uploaded_file($datos['ficha_tecnica']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                                $datos2['ficha_tecnica']=strval($nombre_ca);}
-                        }
-                        if (isset($datos['cv_dir_codir'])) {
-                                $nombre_cvdc="cv_dir_codir".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
-                                if(move_uploaded_file($datos['cv_dir_codir']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                                $datos2['cv_dir_codir']=strval($nombre_cvdc);}
-                        }
-                        if (isset($datos['cv_integrantes'])) {
-                                $nombre_int="cv_integrantes".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
-                                if(move_uploaded_file($datos['cv_integrantes']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                                $datos2['cv_integrantes']=strval($nombre_int);}
-                        }
-                        if (isset($datos['plan_trabajo'])) {
-                                $nombre_pt="plan_trabajo".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
-                                if(move_uploaded_file($datos['plan_trabajo']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                                $datos2['plan_trabajo']=strval($nombre_pt);}
-                        }
-                         if (isset($datos['nota_aceptacion'])) {
-                                $nombre_na="nota_aceptacion".$id.".pdf";
-                                //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
-                                $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
-                                if(move_uploaded_file($datos['nota_aceptacion']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                                $datos2['nota_aceptacion']=strval($nombre_na);}
-                        }
-                        $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos2);
-                        $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();           
-
-                        //sino esta cargada la carga
-                        if(($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada())!=true){
-                           $auxi['id_pinv']=$pi['id_pinv'];
-                           $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->cargar($auxi); 
-                        }
-                    }  
+                if($pi['estado']<>'I'){//solo en estado I puede modificar        
+                   toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I)', 'error');   
                 }else{
-                       toba::notificacion()->agregar(utf8_decode('Fuera del período de la Convocatoria'), 'error');   
-                }  
+                    $id=$pi['id_pinv'];
+                    $datos2['id_pinv']=$pi['id_pinv'];
+                    if (isset($datos['ficha_tecnica'])) {
+                            $nombre_ca="ficha_tecnica".$id.".pdf";
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                            if(move_uploaded_file($datos['ficha_tecnica']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                            $datos2['ficha_tecnica']=strval($nombre_ca);}
+                    }
+                    if (isset($datos['cv_dir_codir'])) {
+                            $nombre_cvdc="cv_dir_codir".$id.".pdf";
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
+                            if(move_uploaded_file($datos['cv_dir_codir']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                            $datos2['cv_dir_codir']=strval($nombre_cvdc);}
+                    }
+                    if (isset($datos['cv_integrantes'])) {
+                            $nombre_int="cv_integrantes".$id.".pdf";
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
+                            if(move_uploaded_file($datos['cv_integrantes']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                            $datos2['cv_integrantes']=strval($nombre_int);}
+                    }
+                    if (isset($datos['plan_trabajo'])) {
+                            $nombre_pt="plan_trabajo".$id.".pdf";
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
+                            if(move_uploaded_file($datos['plan_trabajo']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                            $datos2['plan_trabajo']=strval($nombre_pt);}
+                    }
+                     if (isset($datos['nota_aceptacion'])) {
+                            $nombre_na="nota_aceptacion".$id.".pdf";
+                            //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
+                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
+                            if(move_uploaded_file($datos['nota_aceptacion']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                            $datos2['nota_aceptacion']=strval($nombre_na);}
+                    }
+                    $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos2);
+                    $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();           
+
+                    //sino esta cargada la carga
+                    if(($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada())!=true){
+                       $auxi['id_pinv']=$pi['id_pinv'];
+                       $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->cargar($auxi); 
+                    }
+                    }  
               }
             }
         

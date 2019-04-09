@@ -140,6 +140,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
     }
     //devuelve todas las bajas del proyecto que ingresa como argumento
     function get_bajas($id_p){
+        //no considero a los becarios BCIN,BUIA,BUGI,BUGP
         $sql=" CREATE LOCAL TEMP TABLE bajas(
                tipo_docum	character(4),
                 nro_docum	integer,
@@ -151,9 +152,9 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             select distinct tipo_docum,nro_docum,pinvest,max(hasta) from
         (select t_do.tipo_docum,t_do.nro_docum,t_i.pinvest,t_i.hasta
         from pinvestigacion t_p
-        LEFT OUTER JOIN integrante_interno_pi t_i ON (t_i.pinvest=t_p.id_pinv)
-        LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_i.id_designacion)
-        LEFT OUTER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
+        INNER JOIN integrante_interno_pi t_i ON (t_i.pinvest=t_p.id_pinv and funcion_p<>'BCIN' and funcion_p<>'BUIA' and funcion_p<>'BUGI' and funcion_p<>'BUGP')
+        INNER JOIN designacion t_d ON (t_d.id_designacion=t_i.id_designacion)
+        INNER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
         where t_p.id_pinv=$id_p and not exists( select * from integrante_interno_pi t_o, designacion t_dd , docente t_doc
                                        where t_o.pinvest=t_p.id_pinv
                                        and t_dd.id_designacion=t_o.id_designacion
@@ -170,8 +171,8 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         UNION
         select t_d.tipo_docum,t_d.nro_docum,t_i.pinvest,t_i.hasta                                       
         from pinvestigacion t_p
-        LEFT OUTER JOIN integrante_externo_pi t_i ON (t_i.pinvest=t_p.id_pinv)
-        LEFT OUTER JOIN persona t_d ON (t_i.nro_docum=t_d.nro_docum and t_i.tipo_docum=t_d.tipo_docum)
+        INNER JOIN integrante_externo_pi t_i ON (t_i.pinvest=t_p.id_pinv and funcion_p<>'BCIN' and funcion_p<>'BUIA' and funcion_p<>'BUGI' and funcion_p<>'BUGP')
+        INNER JOIN persona t_d ON (t_i.nro_docum=t_d.nro_docum and t_i.tipo_docum=t_d.tipo_docum)
         where t_p.id_pinv=$id_p and not exists( select * from integrante_externo_pi t_o, persona t_dd 
                                        where t_o.pinvest=t_p.id_pinv
                                        and t_dd.nro_docum=t_o.nro_docum
@@ -215,7 +216,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         $concat='';
         $sql="select estado from pinvestigacion where id_pinv=".$id_p;
         $resul= toba::db('designa')->consultar($sql); 
-        if($resul[0]['estado']=='A'){
+        if($resul[0]['estado']=='A'){//si el proyecto esta A entonces solo muestra los chequeados
             $concat=' and check_inv=1 ';
         }
         $sql="(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"

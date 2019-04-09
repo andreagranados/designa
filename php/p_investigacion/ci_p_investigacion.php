@@ -56,7 +56,7 @@ class ci_p_investigacion extends toba_ci
 
 	function evt__agregar()
 	{
-		$this->set_pantalla('pant_edicion');
+            $this->set_pantalla('pant_edicion');
 	}
 
 	function evt__volver()
