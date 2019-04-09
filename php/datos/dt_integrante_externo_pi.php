@@ -248,7 +248,9 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                        select id_pinv from pinvestigacion
                                       where id_pinv=".$id_p." 
                                        )
-                        and t_i.hasta=p.fec_hasta $concat) "
+                        and ((t_i.funcion_p not in('BCIN' ,'BUIA' ,'BUGI' ,'BUGP') and t_i.hasta=p.fec_hasta) or (t_i.funcion_p in('BCIN' ,'BUIA' ,'BUGI' ,'BUGP') and t_i.hasta>=current_date) ) 
+                             $concat) "
+//Sino es becario entonces t_i.hasta=p.fec_hasta. Si es becario entonces hasta>fecha actual                                
                 ." UNION"
                 . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,trim(t_i.nombre_institucion) as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
                 . " from integrante_externo_pi t_e"
@@ -266,7 +268,8 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                        select id_pinv from pinvestigacion
                                       where id_pinv=".$id_p."  
                                        )"
-                   ." and t_e.hasta=p.fec_hasta $concat)"
+                   //." and  t_e.hasta=p.fec_hasta $concat)"
+                ." and ((t_e.funcion_p not in('BCIN' ,'BUIA' ,'BUGI' ,'BUGP') and t_e.hasta=p.fec_hasta) or (t_e.funcion_p in('BCIN' ,'BUIA' ,'BUGI' ,'BUGP') and  t_e.hasta>=current_date ) ) $concat)"
                 . " order by orden";
         //union con los integrantes externos
         return toba::db('designa')->consultar($sql);  
