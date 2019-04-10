@@ -220,7 +220,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             $concat=' and check_inv=1 ';
         }
         $sql=" CREATE LOCAL TEMP TABLE plantilla (
-                nombre          character(30),
+                nombre          text,
                 fec_nacim	date,
                 tipo_docum	character(4),
                 nro_docum       integer,
