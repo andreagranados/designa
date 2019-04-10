@@ -226,7 +226,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 nro_docum       integer,
                 tipo_sexo 	character(1),
                 categoria       text, 
-                ua              character(5),
+                ua              text,
                 carga_horaria   integer,
                 funcion_p       character(4),
                 cat_invest      character(10),
