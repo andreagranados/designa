@@ -101,6 +101,11 @@ class ci_certificacion_periodo extends toba_ci
                 $pdf->ezText($texto,12);
                 $texto= utf8_decode("Orientación:")." <b>".$des['orient']."</b>";
                 $pdf->ezText($texto,12);
+                if(isset($des['lic'])){
+                    $texto= utf8_decode("Lic:")." <b>".$des['lic']."</b>";
+                    $pdf->ezText($texto,12);
+                }
+                
                 $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig($des['id_designacion']);
                 $i=0;
                 foreach ($mate as $ma) {//busco todas las materias correspondientes al año previamente seleccionado

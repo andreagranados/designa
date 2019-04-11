@@ -35,6 +35,7 @@ class ci_p_investigacion extends toba_ci
 	{
 		if (isset($this->s__datos_filtro)) {
                     $cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_listado_filtro($this->s__datos_filtro));
+                    $cuadro->set_titulo(utf8_decode('Listado  ').date('d/m/Y (H:i:s)'));
 		} 
 	}
 
