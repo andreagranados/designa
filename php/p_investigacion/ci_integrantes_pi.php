@@ -665,6 +665,7 @@ class ci_integrantes_pi extends designa_ci
 	}
 
         function vista_pdf(toba_vista_pdf $salida){         
+            print_r($this->s__listado);exit;
          if($this->s__tiene_direct==1){  
             $datos=array();
             $i=0;
@@ -679,9 +680,9 @@ class ci_integrantes_pi extends designa_ci
             //Primero definimos la plantilla para el número de página.
             $formato = utf8_decode('Página {PAGENUM} de {TOTALPAGENUM}   ').utf8_decode('CInv: Categoría Investigador - Fn: Función - CH: Carga Horaria ');
             //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
-            $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+            //$pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
             //Luego definimos la ubicación de la fecha en el pie de página.
-            $pdf->addText(710,20,8,date('d/m/Y h:i:s a')); 
+            //$pdf->addText(710,20,8,date('d/m/Y h:i:s a')); esto lo paso mas abajo para que quede por encima del fondo
             
             $titulo="   ";
             $opciones = array(
@@ -757,6 +758,9 @@ class ci_integrantes_pi extends designa_ci
                     $pdf->addJpegFromFile($imagen3, 10, 525, 130, 40); 
                     $pdf->closeObject(); 
                 }
+                $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+                //Luego definimos la ubicación de la fecha en el pie de página.
+                $pdf->addText(710,20,8,date('d/m/Y h:i:s a')); 
              }else{
                  toba::notificacion()->agregar('No tiene director', 'error');    
              }
