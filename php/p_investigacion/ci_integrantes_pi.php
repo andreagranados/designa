@@ -665,7 +665,6 @@ class ci_integrantes_pi extends designa_ci
 	}
 
         function vista_pdf(toba_vista_pdf $salida){         
-            print_r($this->s__listado);exit;
          if($this->s__tiene_direct==1){  
             $datos=array();
             $i=0;
@@ -727,30 +726,30 @@ class ci_integrantes_pi extends designa_ci
                $cols=array('col2'=>'<b>1</b>','col3' => '<b>2</b>','col4' => '<b>3</b>','col5' => '<b>4</b>','col6' => '<b>5</b>','col7' => '<b>6</b>','col8' => '<b>7</b>','col10' =>'<b>8</b>','col11' => '<b>9</b>','col12' => '<b>10</b>','col13' => '<b>11</b>','col14' => '<b>12</b>');
                $pdf->ezTable($datos, array( 'col2'=>'<b>1</b>','col3' => '<b>2</b>','col4' => '<b>3</b>','col5' => '<b>4</b>','col6' => '<b>5</b>','col7' => '<b>6</b>','col8' => '<b>7</b>','col10' =>'<b>8</b>','col11' => '<b>9</b>','col12' => '<b>10</b>','col13' => '<b>11</b>','col14' => '<b>12</b>'), $titulo, $opciones);
               //primero agrego la imagen de fondo porque sino pisa la tabla
-                foreach ($pdf->ezPages as $pageNum=>$id){ 
-                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
-                    if($this->s__estado=='I' or $this->s__estado=='E' or $this->s__estado=='N' or $this->s__estado=='X'){
-                        $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
-                        $pdf->addJpegFromFile($imagen, 100, 25, 700, 400);
-                    }else{
-                        if($this->s__estado=='F'){
-                            $imagen= toba::proyecto()->get_path().'/www/img/fondo_fin.jpg';
-                            $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
-                        }else{
-                            if($this->s__estado=='B'){
-                                $imagen= toba::proyecto()->get_path().'/www/img/fondo_baja.jpg';
-                                $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
-                            }else{
-                                if($this->s__estado=='R'){
-                                    $imagen= toba::proyecto()->get_path().'/www/img/fondo_rec.jpg';
-                                    $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
-                                }else{
-                                    $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
-                                    $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);//200, 40, 400, 400
-                                }
-                            }
-                        }
-                    }
+//                foreach ($pdf->ezPages as $pageNum=>$id){ 
+//                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+//                    if($this->s__estado=='I' or $this->s__estado=='E' or $this->s__estado=='N' or $this->s__estado=='X'){
+//                        $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
+//                        $pdf->addJpegFromFile($imagen, 100, 25, 700, 400);
+//                    }else{
+//                        if($this->s__estado=='F'){
+//                            $imagen= toba::proyecto()->get_path().'/www/img/fondo_fin.jpg';
+//                            $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
+//                        }else{
+//                            if($this->s__estado=='B'){
+//                                $imagen= toba::proyecto()->get_path().'/www/img/fondo_baja.jpg';
+//                                $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
+//                            }else{
+//                                if($this->s__estado=='R'){
+//                                    $imagen= toba::proyecto()->get_path().'/www/img/fondo_rec.jpg';
+//                                    $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
+//                                }else{
+//                                    $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
+//                                    $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);//200, 40, 400, 400
+//                                }
+//                            }
+//                        }
+//                    }
                     $imagen2 = toba::proyecto()->get_path().'/www/img/sein.jpg';
                     $imagen3 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
                    // $pdf->addJpegFromFile($imagen2, 680, 520, 70, 60);
