@@ -940,8 +940,8 @@ class ci_pinv_otros extends designa_ci
         function evt__cuadro_tiene_estimulo__seleccion($datos)
         {
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A' and $pi['estado']<>'I'){
-                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
+            if($pi['estado']<>'A' and $pi['estado']<>'I' and $pi['estado']<>'F'){
+                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I) o Activo(A) o Finalizado(F)', 'error');   
             }else{
                 $this->s__mostrar_form_tiene=1;
                 $this->controlador()->dep('datos')->tabla('tiene_estimulo')->cargar($datos);
