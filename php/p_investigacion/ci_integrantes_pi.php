@@ -664,7 +664,8 @@ class ci_integrantes_pi extends designa_ci
             $form->set_titulo($pi['denominacion']);
 	}
 
-        function vista_pdf(toba_vista_pdf $salida){         
+        function vista_pdf(toba_vista_pdf $salida){   
+           
          if($this->s__tiene_direct==1){  
             $datos=array();
             $i=0;
