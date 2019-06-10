@@ -13,6 +13,11 @@ class ci_informe_actividad extends toba_ci
             if (isset($this->s__datos_filtro)) {
 			$filtro->set_datos($this->s__datos_filtro);
 		}
+            $filtro->columna('uni_acad')->set_condicion_fija('es_igual_a',true)  ;
+            $filtro->columna('anio')->set_condicion_fija('es_igual_a',true)  ;
+            $filtro->columna('nro_540')->set_condicion_fija('es_igual_a',true)  ;
+            $filtro->columna('iddepto')->set_condicion_fija('es_igual_a',true)  ;
+            $filtro->columna('legajo')->set_condicion_fija('es_igual_a',true)  ;
 	}
 
 	function evt__filtros__filtrar($datos)
@@ -35,7 +40,6 @@ class ci_informe_actividad extends toba_ci
 	{
             if (isset($this->s__datos_filtro)) {
                 $this->s__listado=$this->dep('datos')->tabla('asignacion_materia')->informe_actividad($this->s__datos_filtro);
-               // print_r($this->s__listado);
                 $cuadro->set_datos($this->s__listado);    
 		} 
 	}
@@ -103,7 +107,7 @@ class ci_informe_actividad extends toba_ci
 //            }
 //        }
         function conf__pant_inicial(toba_ei_pantalla $pantalla){
-             if(isset($this->s__datos_filtro['nro_540'])){
+             if(isset($this->s__datos_filtro['nro_540']) or isset($this->s__datos_filtro['legajo'])){
                   if (isset($this->s__listado)){
                       $this->evento('imprimir')->mostrar();
                   }else{
@@ -116,7 +120,21 @@ class ci_informe_actividad extends toba_ci
          }
         function vista_pdf(toba_vista_pdf $salida)
         {
-          if(isset($this->s__datos_filtro['nro_540'])){
+          $bandera=false;
+          if(isset($this->s__datos_filtro['legajo'])){ //si filtra por legajo sale anexo 1
+                $formato = utf8_decode('Informe de Actividad - Período '.$this->s__datos_filtro['anio']['valor'].' Legajo '.$this->s__datos_filtro['legajo']['valor'].' Página {PAGENUM} de {TOTALPAGENUM}   '); 
+                $texto=utf8_decode("<b>Informe de Actividad - Período: ".$this->s__datos_filtro['anio']['valor']." Legajo ".$this->s__datos_filtro['legajo']['valor'].'</b>');
+                $anexo='<b>ANEXO I</b>';
+                $bandera=true;
+          }else{//sino filtro por legajo pregunta si filtro por tkd
+              if(isset($this->s__datos_filtro['nro_540'])){
+                $formato = utf8_decode('Informe de Actividad TKD # '.$this->s__datos_filtro['nro_540']['valor']."/".$this->s__datos_filtro['anio']['valor'].' Página {PAGENUM} de {TOTALPAGENUM}   ');
+                $texto="<b>Informe de Actividad TKD #".$this->s__datos_filtro['nro_540']['valor']."/".$this->s__datos_filtro['anio']['valor'].'</b>';
+                $anexo='<b>ANEXO II</b>';
+                $bandera=true;
+            }
+          }   
+         if($bandera){
             if (isset($this->s__listado)){
                
                 //configuramos el nombre que tendrá el archivo pdf
@@ -127,18 +145,19 @@ class ci_informe_actividad extends toba_ci
                 $pdf = $salida->get_pdf();
            
                 //modificamos los márgenes de la hoja top, bottom, left, right
-                $pdf->ezSetMargins(80, 30, 15, 15);
+                $pdf->ezSetMargins(100, 30, 15, 15);//80,30,15,15
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
-                $formato = utf8_d_seguro('Informe de Actividad TKD # '.$this->s__datos_filtro['nro_540']['valor']."/".$this->s__datos_filtro['anio']['valor'].' Página {PAGENUM} de {TOTALPAGENUM}   ');
+                //$formato = utf8_d_seguro('Informe de Actividad TKD # '.$this->s__datos_filtro['nro_540']['valor']."/".$this->s__datos_filtro['anio']['valor'].' Página {PAGENUM} de {TOTALPAGENUM}   ');
                 //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
-                $pdf->ezStartPageNumbers(400, 20, 8, 'left', $formato, 1); 
+                $pdf->ezStartPageNumbers(700, 20, 8, 'left', $formato, 1); 
                 //Luego definimos la ubicación de la fecha en el pie de página.
                 //$pdf->addText(700,20,8,date('d/m/Y h:i:s a')); 
                 //Configuración de Título.
                 $op=array();
                 $op['justification']='center';
-                $pdf->ezText('<b>Informe de Actividad TKD #'.$this->s__datos_filtro['nro_540']['valor']."/".$this->s__datos_filtro['anio']['valor'].'</b>',13,$op);
+                //$pdf->ezText('<b>Informe de Actividad TKD #'.$this->s__datos_filtro['nro_540']['valor']."/".$this->s__datos_filtro['anio']['valor'].'</b>',13,$op);
+                $pdf->ezText($texto,13,$op);
                 $pdf->ezText('');
 
                 foreach ($this->s__listado as $des) {
@@ -190,17 +209,18 @@ class ci_informe_actividad extends toba_ci
                      
                     }
                 
-               //genera la tabla de datos
-                
                 //Recorremos cada una de las hojas del documento para agregar el encabezado
                  foreach ($pdf->ezPages as $pageNum=>$id){ 
                     $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
                     //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
                     $imagen = toba::proyecto()->get_path().'/www/img/logo_sti.jpg';
                     $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
-                    $pdf->addJpegFromFile($imagen, 10, 525, 70, 66); 
+                    $pdf->addJpegFromFile($imagen, 12, 510, 70, 66); 
                     $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
                     $pdf->addText(700,20,8,date('d/m/Y h:i:s a')); 
+                    $pdf->selectFont('./fonts/Helvetica.afm');
+                    //$pdf->selectFont('./fonts/Times.afm');
+                    $pdf->addText(410,535,12,$anexo); 
                     $pdf->closeObject(); 
                 }    
       
@@ -214,11 +234,11 @@ class ci_informe_actividad extends toba_ci
 	//---- Eventos ----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
-	function evt__imprimir()
-	{
-            //->activar
-            $this->desactivar();
-	}
+//	function evt__imprimir()
+//	{
+//            //->activar
+//            $this->desactivar();
+//	}
 
 }
 ?>

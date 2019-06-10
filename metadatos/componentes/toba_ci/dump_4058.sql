@@ -162,7 +162,9 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_inicial', --identificador
 	'1', --orden
 	'Pantalla Inicial', --etiqueta
-	'Debe seleccionar el N° TKD para que aparezca el botón de Imprimir', --descripcion
+	'Filtre por  <b> legajo </b> para generar Informe de Actividad para un determinado docente.<br>
+Filtre por <b>N° TKD</b> para generar Informe de Actividad de un TKD.<br>
+El botón Imprimir solo aparecerá si ha elegido tkd o legajo', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen

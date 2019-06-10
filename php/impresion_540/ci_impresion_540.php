@@ -137,10 +137,12 @@ class ci_impresion_540 extends toba_ci
                     'innerLineThickness' => 0.7,
                     'xOrientation' => 'center',
                     'width' => 820,//820
-                    'cols' =>array('col2' => array('width'=>35),'col3' => array('width'=>74),'col4' => array('width'=>28),'col5' => array('width'=>79),'col6' =>array('width'=>35),'col7' => array('width'=>30),'col8' => array('width'=>31),'col11' => array('width'=>51),'col12' => array('width'=>51),'col13' => array('width'=>62),'col14' => array('width'=>72),'col15' => array('width'=>68),'col16' => array('width'=>66),'col17' =>array('width'=>68))
+                    'cols' =>array('col2' => array('width'=>35),'col3' => array('width'=>74),'col4' => array('width'=>25),'col5' => array('width'=>79),'col6' =>array('width'=>35),'col7' => array('width'=>28),'col8' => array('width'=>28),'col10' => array('width'=>20),'col11' => array('width'=>50),'col12' => array('width'=>50),'col13' => array('width'=>62),'col14' => array('width'=>72),'col15' => array('width'=>68),'col16' => array('width'=>66),'col17' =>array('width'=>68),'col18' =>array('width'=>60,'justification'=>'right'))
                     //'cols' =>array('col2' => array('width'=>50), 'col3' => array('width'=>82),'col4' => array('width'=>26),'col5' => array('width'=>73),'col6' =>array('width'=>35),'col7' => array('width'=>29),'col8' => array('width'=>29),'col10' => array('width'=>14),'col11' => array('width'=>50),'col12' => array('width'=>50),'col13' => array('width'=>64),'col14' => array('width'=>73),'col15' => array('width'=>70),'col16' => array('width'=>67),'col17' =>array('width'=>67),'col18' => array('width'=>56))
                     //'cols' =>array('col2'=>array('justification'=>'center') ,'col3'=>array('justification'=>'center'),'col4'=>array('justification'=>'center') ,'col5'=>array('justification'=>'center'),'col6'=>array('justification'=>'center') ,'col7'=>array('justification'=>'center') ,'col8'=>array('justification'=>'center'),'col9'=>array('justification'=>'center') ,'col10'=>array('justification'=>'center') ,'col11'=>array('justification'=>'center') ,'col12'=>array('justification'=>'center'),'col13'=>array('justification'=>'center') ,'col14'=>array('justification'=>'center') )
                     );
+                $opc = array('width' => 820,//820
+                    'cols' =>array('col2' => array('width'=>35,'justification'=>'center'),'col3' => array('width'=>74,'justification'=>'center'),'col4' => array('width'=>28,'justification'=>'center'),'col5' => array('width'=>79,'justification'=>'center'),'col6' =>array('width'=>35,'justification'=>'center'),'col7' => array('width'=>29,'justification'=>'center'),'col8' => array('width'=>29,'justification'=>'center'),'col11' => array('width'=>50,'justification'=>'center'),'col12' => array('width'=>50),'col13' => array('width'=>62,'justification'=>'center'),'col14' => array('width'=>72),'col15' => array('width'=>68),'col16' => array('width'=>66,'justification'=>'center'),'col17' =>array('width'=>68,'justification'=>'center'),'col18' =>array('width'=>60,'justification'=>'center')));
                 $reserva='';
                 $i=0;
                 $sum=0;
@@ -194,7 +196,7 @@ class ci_impresion_540 extends toba_ci
                             $hasta='';
                         }
                         //$datos[$i]=array('col1' => $des['uni_acad'],'col2' => $des['id_designacion'], 'col3' => trim($des['programa']) ,'col4' => $des['porc'].'%','col5' => trim($ayn),'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => $des['cat_estat'].$des['dedic'],'col10' => trim($des['carac']),'col11' => $desde,'col12' => $hasta,'col13' => trim($des['id_departamento']),'col14' => trim($des['id_area']),'col15' => trim($des['id_orientacion']),'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
-                        $datos[$i]=array('col2' => $des['id_designacion'], 'col3' => trim($des['programa']) ,'col4' => $des['porc'].'%','col5' => trim($ayn),'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => trim($des['cat_estat']).$des['dedic'],'col10' => substr(trim($des['carac']),0,1),'col11' => $desde,'col12' => $hasta,'col13' => trim($des['id_departamento']),'col14' => trim($des['id_area']),'col15' => trim($des['id_orientacion']),'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>round($des['costo'],2));
+                        $datos[$i]=array('col2' => $des['id_designacion'], 'col3' => trim($des['programa']) ,'col4' => $des['porc'].'%','col5' => trim($ayn),'col6' => $des['legajo'],'col7' => $des['cat_mapuche'],'col8' => trim($des['cat_estat']).$des['dedic'],'col10' => substr(trim($des['carac']),0,1),'col11' => $desde,'col12' => $hasta,'col13' => trim($des['id_departamento']),'col14' => trim($des['id_area']),'col15' => trim($des['id_orientacion']),'col16' => $des['dias_lic'],'col17' =>$des['estado'] ,'col18' =>number_format($des['costo'],2,',','.'));
                         $i++;  
                         $nove="";
                         //aqui agregar nueva linea
@@ -224,9 +226,10 @@ class ci_impresion_540 extends toba_ci
                     }
                 }
                 
-                $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => round($sub,2));
+                $datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => $ver.'SUBTOTAL: ','col18' => number_format($sub,2,',','.'));
                 //$datos[$i]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'SUBTOTAL: ','col18' => round($sub,2));
-                $datos[$i+1]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => round($sum,2));
+                $datos[$i+1]=array('col2' => '', 'col3' => '','col4' => '','col5' => '','col6' =>'','col7' => '','col8' => '','col10' => '','col11' => '','col12' => '','col13' => '','col14' => '','col15' => '','col16' => '','col17' => 'TOTAL: ','col18' => number_format($sum,2,',','.'));
+                
                           
             
                //genera la tabla de datos
@@ -252,6 +255,7 @@ class ci_impresion_540 extends toba_ci
                     $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
                     $pdf->addJpegFromFile($imagen, 10, 525, 70, 66); 
                     $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
+                    $pdf->addText(410,535,12,'<b>ANEXO I</b>'); 
                     $pdf->closeObject(); 
                 }    
         toba::db()->cerrar_transaccion();
