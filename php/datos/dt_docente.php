@@ -162,27 +162,28 @@ class dt_docente extends toba_datos_tabla
                 $datos_mapuche = consultas_mapuche::get_dh01($conjunto);
                 if(count($datos_mapuche)>0){ 
                     $sql=" CREATE LOCAL TEMP TABLE auxi(
-                        nro_legaj integer,
-                        desc_appat  character(20),
-                        desc_nombr  character(20),
-                        tipo_doc  character(4),
-                        nro_doc integer, 
-                        nro_cuil3 integer,
-                        nro_cuil4 integer,
-                        nro_cuil5 integer,
-                        sexo character(1),
-                        nacim date
+                            nro_legaj   integer,
+                            desc_appat  character(20),
+                            desc_nombr  character(20),
+                            tipo_doc    character(4),
+                            nro_doc     integer, 
+                            nro_cuil3   integer,
+                            nro_cuil4   integer,
+                            nro_cuil5   integer,
+                            sexo        character(1),
+                            nacim       date,
+                            fec_ingreso date
                     );";
                     toba::db('designa')->consultar($sql);
                     foreach ($datos_mapuche as $valor) {
-                        $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."')";
+                        $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."','".$valor['fec_ingreso']."')";
                         toba::db('designa')->consultar($sql);
                     }
             
                     $sql = "SELECT * from ("
                     . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim "
                     . " from docente a, designacion b"
-                    . " where a.id_docente=b.id_docente".$where
+                    . " where a.id_docente=b.id_docente ".$where
                     . " and a.legajo=0) a INNER JOIN auxi b "
                     .                   " ON (a.nro_docum=b.nro_doc)";
                     

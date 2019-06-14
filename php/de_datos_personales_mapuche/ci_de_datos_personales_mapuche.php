@@ -55,6 +55,7 @@ class ci_de_datos_personales_mapuche extends toba_ci
                 $valores['fec_nacim']=$datos['nacim'];
                 $valores['tipo_docum']=$datos['tipo_doc'];
                 $valores['tipo_sexo']=$datos['sexo'];
+                $valores['fec_ingreso']=$datos['fec_ingreso'];
                 $this->dep('datos')->tabla('docente')->cargar($d);//carga el docente seleccionado
                 $this->dep('datos')->tabla('docente')->set($valores);
                 $this->dep('datos')->tabla('docente')->sincronizar();

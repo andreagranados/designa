@@ -34,11 +34,17 @@ class consultas_mapuche
 	return toba::db('mapuche')->consultar($sql);
  	
  	}
+// function get_dh01($documentos){
+// 	$sql="select * from mapuche.dh01 where nro_docum in($documentos)";
+// 	$datos_mapuche = toba::db('mapuche')->consultar($sql);
+// 	return $datos_mapuche;
+// 	}
  function get_dh01($documentos){
- 	$sql="select * from mapuche.dh01 where nro_docum in($documentos)";
- 	$datos_mapuche = toba::db('mapuche')->consultar($sql);
- 	return $datos_mapuche;
- 	}
+    $sql="select a.*,b.fec_ingreso from mapuche.dh01 a"
+            . " left outer join mapuche.dh09 b on (a.nro_legaj=b.nro_legaj) where a.nro_docum in($documentos)";
+    $datos_mapuche = toba::db('mapuche')->consultar($sql);
+    return $datos_mapuche;
+}
  function get_lic_maternidad($ua,$udia,$pdia){
  	//recupero las licencias por maternidad del periodo y ua ingresadas
  	$sql="select distinct b.nro_licencia,case when b.nro_legaj is null then a.nro_legaj else b.nro_legaj end as nro_legaj,b.nro_cargo,fec_desde,fec_hasta,codn_tipo_lic as tipo_lic
