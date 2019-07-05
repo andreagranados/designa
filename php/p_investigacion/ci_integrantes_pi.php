@@ -675,7 +675,7 @@ class ci_integrantes_pi extends designa_ci
             $salida->set_papel_orientacion('landscape');
             $salida->inicializar();
             $pdf = $salida->get_pdf();
-            $pdf->ezSetMargins(80, 50, 3, 3);
+            $pdf->ezSetMargins(80, 50, 7, 7);
             //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
             //Primero definimos la plantilla para el número de página.
             $formato = utf8_decode('Página {PAGENUM} de {TOTALPAGENUM}   ').utf8_decode('CInv: Categoría Investigador - Fn: Función - CH: Carga Horaria ');
@@ -698,7 +698,8 @@ class ci_integrantes_pi extends designa_ci
                 'outerLineThickness' => 0.7,
                 'innerLineThickness' => 0.7,
                 'xOrientation' => 'center',
-                'width' => 820//,
+                'width' => 820,
+                'cols' =>array('col2'=>array('width'=>150) ,'col3'=>array('width'=>70),'col4'=>array('width'=>55) ,'col5'=>array('width'=>35),'col6'=>array('width'=>35) ,'col7'=>array('width'=>120) ,'col8'=>array('width'=>120),'col10'=>array('width'=>60) ,'col11'=>array('width'=>50) ,'col12'=>array('width'=>30),'col13'=>array('width'=>40) ,'col14'=>array('width'=>30) )
                //'cols' =>array('col2'=>array('justification'=>'center') ,'col3'=>array('justification'=>'center'),'col4'=>array('justification'=>'center') ,'col5'=>array('justification'=>'center'),'col6'=>array('justification'=>'center') ,'col7'=>array('justification'=>'center') ,'col8'=>array('justification'=>'center'),'col9'=>array('justification'=>'center') ,'col10'=>array('justification'=>'center') ,'col11'=>array('justification'=>'center') ,'col12'=>array('justification'=>'center'),'col13'=>array('justification'=>'center') ,'col14'=>array('justification'=>'center') )
                 );
                //Configuración de Título.
@@ -731,22 +732,22 @@ class ci_integrantes_pi extends designa_ci
                     $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
                     if($this->s__estado=='I' or $this->s__estado=='E' or $this->s__estado=='N' or $this->s__estado=='X'){
                         $imagen= toba::proyecto()->get_path().'/www/img/fondo_copia2.jpg';
-                        $pdf->addJpegFromFile($imagen, 100, 25, 700, 400);
+                        $pdf->addJpegFromFile($imagen, 100, 25, 700, 350);
                     }else{
                         if($this->s__estado=='F'){
                             $imagen= toba::proyecto()->get_path().'/www/img/fondo_fin.jpg';
-                            $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
+                            $pdf->addJpegFromFile($imagen, 200, 25, 400, 350);
                         }else{
                             if($this->s__estado=='B'){
                                 $imagen= toba::proyecto()->get_path().'/www/img/fondo_baja.jpg';
-                                $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
+                                $pdf->addJpegFromFile($imagen, 200, 25, 400, 350);
                             }else{
                                 if($this->s__estado=='R'){
                                     $imagen= toba::proyecto()->get_path().'/www/img/fondo_rec.jpg';
-                                    $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);
+                                    $pdf->addJpegFromFile($imagen, 200, 25, 400, 350);
                                 }else{
                                     $imagen= toba::proyecto()->get_path().'/www/img/fondo1.jpg';
-                                    $pdf->addJpegFromFile($imagen, 200, 25, 400, 400);//200, 40, 400, 400
+                                    $pdf->addJpegFromFile($imagen, 200, 25, 400, 350);//200, 40, 400, 400
                                 }
                             }
                         }
