@@ -74,11 +74,11 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         return toba::db('designa')->consultar($sql); 
     }
     function get_participantes($filtro=array()){
-        $where=" WHERE ";
+        $where=" WHERE 1=1 ";
         if (isset($filtro['anio']['valor'])) {
             switch ($filtro['anio']['condicion']) {
-                case 'es_igual_a':  $where.="  extract(year from fec_desde) =".$filtro['anio']['valor'];  break;
-                case 'es_distinto_de':  $where.="  extract(year from fec_desde) <>".$filtro['anio']['valor']; break;
+                case 'es_igual_a':  $where.="  and extract(year from fec_desde) =".$filtro['anio']['valor'];  break;
+                case 'es_distinto_de':  $where.="  and extract(year from fec_desde) <>".$filtro['anio']['valor']; break;
             }
 	}
         if (isset($filtro['uni_acad']['valor'])) {
