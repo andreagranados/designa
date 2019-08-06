@@ -12,6 +12,7 @@ class ci_ver_participantes extends toba_ci
             if (isset($this->s__datos_filtro)) {
                 $filtro->set_datos($this->s__datos_filtro);
 		}
+            $filtro->columna('uni_acad')->set_condicion_fija('es_igual_a',true)  ;
 	}
 
 	function evt__filtros__filtrar($datos)
@@ -31,7 +32,7 @@ class ci_ver_participantes extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-            if (isset($this->s__where)) {
+            if (isset($this->s__datos_filtro)) {
                 $cuadro->set_datos($this->dep('datos')->tabla('integrante_interno_pi')->get_participantes($this->s__datos_filtro));
             }
 	}

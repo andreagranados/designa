@@ -97,8 +97,8 @@ class ci_personas extends toba_ci
                     }   
                 }
             if($inser){
-                $datos['apellido']=strtoupper($datos['apellido']);//pasa a mayusculas
-                $datos['nombre']=strtoupper($datos['nombre']);//pasa a mayusculas
+                $datos['apellido']=mb_strtoupper($datos['apellido'],'LATIN1');//pasa a mayusculas
+                $datos['nombre']=mb_strtoupper($datos['nombre'],'LATIN1');//pasa a mayusculas
                 $datos['nro_tabla']=1;    
                 $this->dep('datos')->tabla('persona')->set($datos);
                 $this->dep('datos')->sincronizar();

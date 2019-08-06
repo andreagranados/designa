@@ -75,19 +75,20 @@ class dt_integrante_interno_pi extends toba_datos_tabla
     }
     function get_participantes($filtro=array()){
         $where=" WHERE ";
+        if (isset($filtro['anio']['valor'])) {
+            switch ($filtro['anio']['condicion']) {
+                case 'es_igual_a':  $where.="  extract(year from fec_desde) =".$filtro['anio']['valor'];  break;
+                case 'es_distinto_de':  $where.="  extract(year from fec_desde) <>".$filtro['anio']['valor']; break;
+            }
+	}
         if (isset($filtro['uni_acad']['valor'])) {
             if(trim($filtro['uni_acad']['valor'])=='ASMA'){//el usuario de ASMA puede ver los proyectos de FACA
-                $where.= "  (uni_acad = ".quote($filtro['uni_acad']['valor']). " or uni_acad = 'FACA')";
+                $where.= " and (uni_acad = ".quote($filtro['uni_acad']['valor']). " or uni_acad = 'FACA')";
             }else{
-                $where.= "  uni_acad = ".quote($filtro['uni_acad']['valor']);
+                $where.= "  and uni_acad = ".quote($filtro['uni_acad']['valor']);
             }
          }
-        if (isset($filtro['anio']['valor'])) {
-            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
-            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
-            $where.=" and fec_desde <='".$udia."' and (fec_hasta>='".$pdia."' or fec_hasta is null)";
-                    
-	}   
+           
         if (isset($filtro['funcion_p']['valor'])) {
             $where.=" and funcion_p=".quote($filtro['funcion_p']['valor']);
         }
@@ -112,6 +113,16 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 case 'es_igual_a': $where.=" and descripcion = ".quote("{$filtro['descripcion']['valor']}");   break;
                 case 'es_distinto_de':  $where.=" and descripcion <> ".quote("{$filtro['descripcion']['valor']}");  break;
                 
+            }
+        }
+        if (isset($filtro['denominacion']['valor'])) {
+            switch ($filtro['denominacion']['condicion']) {
+                case 'contiene':  $where.=" and denominacion ILIKE ".quote("%{$filtro['denominacion']['valor']}%");  break;
+                case 'no_contiene':   $where.=" and denominacion NOT ILIKE ".quote("%{$filtro['denominacion']['valor']}%"); break;
+                case 'comienza_con': $where.=" and denominacion ILIKE ".quote("{$filtro['denominacion']['valor']}%");   break;
+                case 'termina_con':  $where.=" and denominacion ILIKE ".quote("%{$filtro['denominacion']['valor']}");  break;
+                case 'es_igual_a': $where.=" and denominacion = ".quote("{$filtro['denominacion']['valor']}");   break;
+                case 'es_distinto_de':  $where.=" and denominacion <> ".quote("{$filtro['denominacion']['valor']}");  break;
             }
         }
         $sql="select * from ("

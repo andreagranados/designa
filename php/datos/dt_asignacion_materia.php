@@ -215,7 +215,6 @@ class dt_asignacion_materia extends toba_datos_tabla
                 $where.= " and  uni_acad = ".quote($filtro['uni_acad']);
             }
              if (isset($filtro['anio'])) {
-                //$where.= " and  c.anio = ".$filtro['anio'];
                  $where.= " and  t_i.anio_acad = ".$filtro['anio'];
             }
            //agrupa por materia, anio y periodo
@@ -287,8 +286,8 @@ LEFT OUTER JOIN (select  t_m.id_materia,t_m.id_periodo,t_m.anio,count(distinct t
                  from asignacion_materia t_m
                  group by t_m.id_materia,t_m.id_periodo,t_m.anio
                   ) sub4
-                ON (sub.id_conjunto is null and t_i.id_materia=sub4.id_materia and t_i.id_periodo=sub4.id_periodo and t_i.anio_acad=sub4.anio)                                  ";
-            
+                ON (sub.id_conjunto is null and t_i.id_materia=sub4.id_materia and t_i.id_periodo=sub4.id_periodo and t_i.anio_acad=sub4.anio)                                  "
+            .$where;
             $res=toba::db('designa')->consultar($sql);   
             return $res;
             
