@@ -165,7 +165,7 @@ class dt_asignacion_materia extends toba_datos_tabla
         }
         function get_docentes($materia,$anio,$periodo,$conj){
           if ($conj==0){
-            $sql="select t_a.anio,t_doc.apellido||', '||t_doc.nombre as docente,t_doc.legajo, t_pe.descripcion as periodo,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as designacion,t_ti.desc_item as rol,t_a.carga_horaria,t_mod.descripcion as modulo
+            $sql="select t_a.anio,t_doc.apellido||', '||t_doc.nombre as docente,t_doc.legajo, t_pe.descripcion as periodo,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as designacion,t_d.desde,t_d.hasta,t_ti.desc_item as rol,t_a.carga_horaria,t_mod.descripcion as modulo
                     from asignacion_materia t_a
                     LEFT OUTER JOIN designacion t_d ON (t_a.id_designacion=t_d.id_designacion)
                     LEFT OUTER JOIN docente t_doc ON (t_doc.id_docente=t_d.id_docente)
@@ -175,7 +175,8 @@ class dt_asignacion_materia extends toba_datos_tabla
                     where 
                     t_a.id_materia=$materia
                     and t_a.anio=$anio
-            and t_a.id_periodo=$periodo";
+            and t_a.id_periodo=$periodo"
+                    . " order by t_ti.desc_item";
             
           }else{//tengo un conjunto ENTONCES BUSCO TODOS LOS DOCENTES ASOCIADOS A LAS MATERIAS DEL CONJUNTO PARA ESE PERIODO Y ANO
 //             $sql="select t_a.anio,t_doc.apellido||', '||t_doc.nombre as docente,t_doc.legajo, t_pe.descripcion as periodo,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as designacion,t_ti.desc_item as rol,t_a.carga_horaria,t_mod.descripcion as modulo
@@ -193,7 +194,7 @@ class dt_asignacion_materia extends toba_datos_tabla
 //                     and t_a.anio=$anio
 //                    and t_a.id_periodo=$periodo";
               $sql="                    
-                select t_a.anio,t_doc.apellido||', '||t_doc.nombre as docente,t_doc.legajo, t_pe.descripcion as periodo,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as designacion,t_ti.desc_item as rol,t_a.carga_horaria,t_mod.descripcion as modulo
+                select t_a.anio,t_doc.apellido||', '||t_doc.nombre as docente,t_doc.legajo, t_pe.descripcion as periodo,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as designacion,t_d.desde,t_d.hasta,t_ti.desc_item as rol,t_a.carga_horaria,t_mod.descripcion as modulo
                 from en_conjunto t_con
                 INNER JOIN conjunto t_c ON (t_c.id_conjunto=t_con.id_conjunto)
                 INNER JOIN mocovi_periodo_presupuestario t_m ON (t_c.id_periodo_pres=t_m.id_periodo)
@@ -203,7 +204,8 @@ class dt_asignacion_materia extends toba_datos_tabla
                 INNER JOIN docente t_doc ON (t_d.id_docente=t_doc.id_docente)
                 INNER JOIN modulo t_mod ON (t_mod.id_modulo=t_a.modulo)
                 INNER JOIN tipo t_ti ON(t_a.nro_tab8=t_ti.nro_tabla and t_a.rol=t_ti.desc_abrev)
-                where t_con.id_conjunto= $conj     ";
+                where t_con.id_conjunto= $conj    "
+                      . " order by t_ti.desc_item ";
               
           }
             
