@@ -172,4 +172,10 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'restricciones_central_proyectos', --descripcion
 	'0'  --permite_edicion
 );
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'53', --restriccion_funcional
+	'no_ve_costo', --descripcion
+	'0'  --permite_edicion
+);
 --- FIN Grupo de desarrollo 0

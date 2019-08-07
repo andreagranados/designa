@@ -26,3 +26,19 @@ INSERT INTO apex_restriccion_funcional_cols (proyecto, restriccion_funcional, it
 	'2359', --objeto_cuadro_col
 	'1'  --no_visible
 );
+INSERT INTO apex_restriccion_funcional_cols (proyecto, restriccion_funcional, item, objeto_cuadro, objeto_cuadro_col, no_visible) VALUES (
+	'designa', --proyecto
+	'53', --restriccion_funcional
+	'3658', --item
+	'3384', --objeto_cuadro
+	'2370', --objeto_cuadro_col
+	'1'  --no_visible
+);
+INSERT INTO apex_restriccion_funcional_cols (proyecto, restriccion_funcional, item, objeto_cuadro, objeto_cuadro_col, no_visible) VALUES (
+	'designa', --proyecto
+	'53', --restriccion_funcional
+	'3658', --item
+	'3384', --objeto_cuadro
+	'2375', --objeto_cuadro_col
+	'1'  --no_visible
+);

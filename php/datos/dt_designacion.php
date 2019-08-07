@@ -2050,7 +2050,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
     select distinct a.anio,b.id_designacion,b.id_docente,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,b.id_departamento,b.id_area,b.id_orientacion
                           from asignacion_materia a, designacion b
                           where a.id_designacion=b.id_designacion
-                             
+                            and not (b.hasta is not null and b.hasta<=b.desde)
                          )sub1
                          ".$where2." )  sub2                   
     left outer join                       
