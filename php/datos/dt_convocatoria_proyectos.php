@@ -1,7 +1,7 @@
 <?php
 class dt_convocatoria_proyectos extends toba_datos_tabla
 {
-    //retorna  la convocatoria del año actual para el tipo ingresado como argumento
+    //retorna  la convocatoria vigente para el tipo ingresado como argumento
         function get_convocatoria_actual($tipo){
             $actual=date('Y-m-d');
             $anio_actual= date("Y", strtotime($actual));
@@ -12,7 +12,9 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
                     break;
             }
             $sql="select id_conv from convocatoria_proyectos "
-                    . " where anio=$anio_actual and id_tipo=$id_tipo";
+                    //. " where anio=$anio_actual and id_tipo=$id_tipo";
+                     ." where fec_inicio<='".$actual."' and fec_fin >='".$actual."'"
+                    . " and id_tipo=$id_tipo";
             $resul=toba::db('designa')->consultar($sql);
             if(count($resul)>0){
                 return $resul[0]['id_conv'];
@@ -31,7 +33,9 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
                  default: $id_tipo=2;break;
             }
             $sql="select fec_desde_proyectos from convocatoria_proyectos "
-                    . " where anio=$anio_actual and id_tipo=$id_tipo";
+                   // . " where anio=$anio_actual and id_tipo=$id_tipo";
+                      ." where fec_inicio<='".$actual."' and fec_fin >='".$actual."'"
+                    . " and id_tipo=$id_tipo ";
             $resul=toba::db('designa')->consultar($sql);
             if(count($resul)>0 and isset($resul[0]['fec_desde_proyectos'])){
                 return date("d/m/Y", strtotime($resul[0]['fec_desde_proyectos']));
@@ -57,7 +61,9 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
             
             //obtengo la fecha de inicio de los proyectos de la convocatoria
             $sql="select fec_desde_proyectos from convocatoria_proyectos "
-                    . " where anio=$anio_actual and id_tipo=$id_tipo";
+                    //. " where anio=$anio_actual and id_tipo=$id_tipo";
+                      ." where fec_inicio<='".$actual."' and fec_fin >='".$actual."'"
+                    . " and id_tipo=$id_tipo";
             $resul=toba::db('designa')->consultar($sql);
             if(count($resul)>0 and isset($resul[0]['fec_desde_proyectos']) and $anios!=''){
                 //$fecha= strtotime('+1 year',strtotime($resul[0]['fec_desde_proyectos']));
@@ -80,13 +86,17 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
                 default:$id_tipo=2;
                     break;
             }
+            //trae la convocatoria que se encuentra vigente al dia de la fecha actual, y del tipo correspondiente
             $sql="select fec_inicio,fec_fin from convocatoria_proyectos "
-                    . " where anio=$anio_actual and id_tipo=$id_tipo";
+                    //. " where anio=$anio_actual and id_tipo=$id_tipo";
+                    ." where fec_inicio<='".$actual."' and fec_fin >='".$actual."'"
+                    . " and id_tipo=$id_tipo";
             $resul=toba::db('designa')->consultar($sql);
-            if(count($resul)>0){
-                if($actual>=$resul[0]['fec_inicio'] and $actual<=$resul[0]['fec_fin'] ){
-                    $band=true;
-                }
+            if(count($resul)>0){//si existe un periodo vigente al dia de la fecha entonces lo deja cargar
+//                if($actual>=$resul[0]['fec_inicio'] and $actual<=$resul[0]['fec_fin'] ){
+//                    $band=true;
+//                }
+                $band=true;
             }
             return $band;
 	}
