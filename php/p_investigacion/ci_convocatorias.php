@@ -75,7 +75,7 @@ class ci_convocatorias extends toba_ci
     {
         $this->dep('datos')->tabla('convocatoria_proyectos')->set($datos);
         $this->dep('datos')->tabla('convocatoria_proyectos')->sincronizar();
-        toba::notificacion()->agregar('La convocatoria se ha modificada correctamente', 'info');   
+        toba::notificacion()->agregar('La convocatoria se ha modificado correctamente', 'info');   
     }
 
     function evt__formulario__cancelar()

@@ -1019,12 +1019,16 @@ class ci_pinv_otros extends designa_ci
         function conf__form_adj(toba_ei_formulario $form)
 	{
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $form->ef('ficha_tecnica')->set_obligatorio(1);       
-                $form->ef('cv_dir_codir')->set_obligatorio(1);       
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                if($pi['es_programa']!=1){//ademas agrego el obligatorio para lo que no son programa   
-                   $form->ef('cv_integrantes')->set_obligatorio(1);       
+                if($pi['fec_desde']>='2019-01-01'){//para todos los proyectos a partir de la 1er convocatoria por sistema
+                    $form->ef('ficha_tecnica')->set_obligatorio(1);       
+                    $form->ef('cv_dir_codir')->set_obligatorio(1);       
+                
+                    if($pi['es_programa']!=1){//ademas agrego el obligatorio para lo que no son programa   
+                        $form->ef('cv_integrantes')->set_obligatorio(1);       
+                    }
                 }
+                
                 $datos['es_programa']=$pi['es_programa'];
                 if ($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $ins=$this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
@@ -1059,6 +1063,8 @@ class ci_pinv_otros extends designa_ci
             }
        
         }
+        
+        
         function evt__form_adj__guardar($datos)
         {
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
