@@ -328,38 +328,36 @@ class ci_integrantes_pi extends designa_ci
                             if($pi['estado']=='A'){
                                 $band=$this->dep('datos')->tabla('logs_integrante_interno_pi')->fue_chequeado($int['id_designacion'],$int['pinvest'],$int['desde']);
                             }
-                            //si alguna vez fue chequeado por SCyT entonces solo puede modificar fecha_hasta y nada mas (se supone que lo demas ya es correcto)  
-                              //fecha_hasta porque puede ocurrir que haya una baja del participante o la modificacion de funcion o carga horaria
-                            if($band){
-                                unset($datos['funcion_p']);
-                                unset($datos['cat_investigador']);
-                                unset($datos['identificador_personal']);
-                                unset($datos['carga_horaria']);
-                                unset($datos['desde']);
-                                unset($datos['rescd']);
-                                unset($datos['cat_invest_conicet']);
-                                unset($datos['resaval']);
-                                unset($datos['hs_finan_otrafuente']);
-                                $datos['check_inv']=0;//pierde el check si es que lo tuviera
-                                $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-                                $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
-                                toba::notificacion()->agregar('Ha sido chequeado por SCyT, solo puede modificar fecha hasta y resCD baja/modif', 'info');
+                            $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+                            if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
+                               throw new toba_error('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY');
                             }else{
-                                $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
-                                if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
-                                    toba::notificacion()->agregar('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                if (isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
+                                    throw new toba_error('Nro Resolucion CD Baja/Modif invalida. Debe ingresar en formato XXXX/YYYY');
                                 }else{
-                                    if (isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
-                                        toba::notificacion()->agregar('Nro Resolucion CD Baja Modificacion invalida. Debe ingresar en formato XXXX/YYYY','error');
-                                    }else{
-                                        $datos['check_inv']=0;//pierde el check si es que lo tuviera
-                                        $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
-                                        $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                                    if($band){//si alguna vez fue chequeado por SCyT entonces solo puede modificar fecha_hasta y nada mas (se supone que lo demas ya es correcto)  
+                              //fecha_hasta porque puede ocurrir que haya una baja del participante o la modificacion de funcion o carga horaria
+                                        unset($datos['funcion_p']);
+                                        unset($datos['cat_investigador']);
+                                        unset($datos['identificador_personal']);
+                                        unset($datos['carga_horaria']);
+                                        unset($datos['desde']);
+                                        unset($datos['rescd']);
+                                        unset($datos['cat_invest_conicet']);
+                                        unset($datos['resaval']);
+                                        unset($datos['hs_finan_otrafuente']);
+                                        $mensaje='Ha sido chequeado por SCyT, solo puede modificar fecha hasta y resCD baja/modif';
+                                    }else{//band false significa que puede modificar cualquier cosa
                                         //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
                                         $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($int['id_designacion'],$int['pinvest'],$int['desde'],$datos['desde']);
+                                        $mensaje="Los datos se han guardado correctamente";
                                     }
-                                 }
-                            }
+                                    $datos['check_inv']=0;//pierde el check si es que lo tuviera
+                                    $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
+                                    $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
+                                    toba::notificacion()->agregar($mensaje, 'info');                             
+                                }
+                             }
                     }else{
                         //toba::notificacion()->agregar('Hay superposicion de fechas', 'error');  
                          throw new toba_error("Hay superposicion de fechas");
@@ -494,39 +492,36 @@ class ci_integrantes_pi extends designa_ci
                 //si fue chequeado por SCyT entonces no puede borrar
                 $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
             }
-            if($band){
-                unset($datos['funcion_p']);
-                unset($datos['cat_investigador']);
-                unset($datos['identificador_personal']);
-                unset($datos['carga_horaria']);
-                unset($datos['desde']);
-                unset($datos['rescd']);
-                unset($datos['cat_invest_conicet']);
-                unset($datos['resaval']);
-                unset($datos['hs_finan_otrafuente']);
-                $datos['check_inv']=0;//pierde el check si es que lo tuviera
-                $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
-                $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
-                //$this->s__mostrar_e=0;
-                toba::notificacion()->agregar('Ha sido chequeado por SCyT, solo puede modificar fecha hasta', 'info');
-            }else{//no fue modificado por SCyT entonces puede modificar cualquier dato
-                $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
-                if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
-                    toba::notificacion()->agregar('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY','error');
-                }else{
-                   if ( isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
-                       toba::notificacion()->agregar('Resolucion CD Baja Modificacion Invalida. Debe ingresar en formato XXXX/YYYY','error');
-                    }else{
-                        $datos['check_inv']=0;//pierde el check
-                        $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
-                        $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
-                //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
-                        $this->dep('datos')->tabla('integrante_externo_pi')->modificar_fecha_desde($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde'],$datos['desde']);
-                        toba::notificacion()->agregar('Los datos se han guardado correctamente', 'info');  
-                   }
-                }
-            }
             
+            $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+            if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
+                 throw new toba_error('Resolucion CD Invalida. Debe ingresar en formato XXXX/YYYY');
+            }else{
+               if ( isset($datos['rescd_bm']) && !preg_match($regenorma, $datos['rescd_bm'], $matchFecha) ) {
+                    throw new toba_error('Resolucion CD Baja/Modif Invalida. Debe ingresar en formato XXXX/YYYY');
+                }else{
+                    if($band){//ya fue chequeado por scyt
+                        unset($datos['funcion_p']);
+                        unset($datos['cat_investigador']);
+                        unset($datos['identificador_personal']);
+                        unset($datos['carga_horaria']);
+                        unset($datos['desde']);
+                        unset($datos['rescd']);
+                        unset($datos['cat_invest_conicet']);
+                        unset($datos['resaval']);
+                        unset($datos['hs_finan_otrafuente']);
+                        $mensaje='Ha sido chequeado por SCyT, solo puede modificar fecha hasta';
+                    }else{//no fue modificado por SCyT entonces puede modificar cualquier dato
+                        $mensaje='Los datos se han guardado correctamente';
+                        //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
+                        $this->dep('datos')->tabla('integrante_externo_pi')->modificar_fecha_desde($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde'],$datos['desde']);
+                    }
+                    $datos['check_inv']=0;//pierde el check
+                    $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
+                    $this->dep('datos')->tabla('integrante_externo_pi')->sincronizar();
+                    toba::notificacion()->agregar($mensaje, 'info');  
+               }
+            }
           }//fin de usuario de UA
           //para que el formulario desaparezca despues de la modificacion
           $this->s__mostrar_e=0;
