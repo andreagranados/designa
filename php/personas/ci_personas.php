@@ -109,8 +109,8 @@ class ci_personas extends toba_ci
 
 	function evt__formulario__modificacion($datos)
 	{
-            $datos['apellido']=mb_strtoupper($datos['apellido']);//strtoupper($datos['apellido']);//pasa a mayusculas
-            $datos['nombre']=mb_strtoupper($datos['nombre']);//pasa a mayusculas
+            $datos['apellido']=mb_strtoupper($datos['apellido'],'LATIN1');//strtoupper($datos['apellido']);//pasa a mayusculas
+            $datos['nombre']=mb_strtoupper($datos['nombre'],'LATIN1');//pasa a mayusculas
 	    $this->dep('datos')->tabla('persona')->set($datos);
 	    $this->dep('datos')->sincronizar();
 		
