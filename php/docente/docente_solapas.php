@@ -271,7 +271,6 @@ class docente_solapas extends toba_ci
 	 */
 	function conf__form_docente(toba_ei_formulario $form)
 	{
-            
             $form->ef('legajo')->set_obligatorio('true');
             $form->ef('apellido')->set_obligatorio('true');
             $form->ef('nombre')->set_obligatorio('true');
@@ -284,43 +283,59 @@ class docente_solapas extends toba_ci
 		$datos=$this->controlador()->dep('datos')->tabla('docente')->get();
                 //autocompleto el documento con ceros adelante hasta 8
                 $datos['cuil']=$datos['nro_cuil1'].str_pad($datos['nro_cuil'], 8, '0', STR_PAD_LEFT).$datos['nro_cuil2'];
-                
+                if(isset($datos['registro_firma'])){
+                        $nomb_ft='/designa/1.0/registro_firmas/'.$datos['registro_firma'];
+                        $datos['imagen_vista_previa_rg'] = "<a target='_blank' href='{$nomb_ft}' >registro firma</a>";
+                    }
                 $form->set_datos($datos);
-		} else {//sino es para cargar uno nuevo, por lo tanto elimino el evento borrar (del formulario)
-			$form->eliminar_evento('borrar');
-                        $this->pantalla()->tab("pant_curriculum")->desactivar();	
-                        $this->pantalla()->tab("pant_invest")->desactivar();	
-                        $this->pantalla()->tab("pant_exten")->desactivar();
-                        $this->pantalla()->tab("pant_porcentajes")->desactivar();
-		}
+            } else {//sino es para cargar uno nuevo, por lo tanto elimino el evento borrar (del formulario)
+                $form->eliminar_evento('borrar');
+                $this->pantalla()->tab("pant_curriculum")->desactivar();
+                $this->pantalla()->tab("pant_categorizacion")->desactivar();
+                $this->pantalla()->tab("pant_invest")->desactivar();	
+                $this->pantalla()->tab("pant_exten")->desactivar();
+                $this->pantalla()->tab("pant_porcentajes")->desactivar();  
+	    }
 	}
         
-        //da de alta un nuevo docente
+        //da de alta un nuevo docente o modifica un docente
         function evt__form_docente__guardar($datos)
 	{
-            
-            if($datos['legajo']==0){
+            if($datos['legajo']==0){//si todavia no tiene legajo entoces puede rectificar datos personales
                 $datos['nro_tabla']=1;
                 $datos['nro_cuil1']=substr($datos['cuil'], 0, 2);
                 $datos['nro_cuil']=substr($datos['cuil'], 2, 8);
                 $datos['nro_cuil2']=substr($datos['cuil'], 10, 1);
+                unset($datos['registro_firma']);//cuando el docente no tiene legajo no toca el registro firma
                 $this->controlador()->dep('datos')->tabla('docente')->set($datos);    
                 $this->controlador()->dep('datos')->tabla('docente')->sincronizar();
+            }else{//si el docente tiene legajo entonces solo puede actualizar correos y registro de firma
                 $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
-                $datosc['id_docente']=$doc['id_docente'];      
-                $this->controlador()->dep('datos')->tabla('docente')->cargar($datosc);
-            }else{
-                $datos2['correo_personal']=$datos['correo_personal'];
-                $datos2['correo_institucional']=$datos['correo_institucional'];
-                $this->controlador()->dep('datos')->tabla('docente')->set($datos2);                   
-                $this->controlador()->dep('datos')->tabla('docente')->sincronizar();
-                $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
-                $datosc['id_docente']=$doc['id_docente'];      
-                $this->controlador()->dep('datos')->tabla('docente')->cargar($datosc);
-                $mensaje='SOLO SE PUEDE ACTUALIZAR CORREOS. NO ESTA PERMITIDO MODIFICAR OTROS DATOS DE UN DOCENTE QUE TIENE LEGAJO. LOS MISMOS SERAN ACTUALIZADOS PERIODICAMENTE CON INFORMACIÓN SIU-MAPUCHE';
-                toba::notificacion()->agregar(utf8_decode($mensaje), "info");
+                $band=$this->controlador()->dep('datos')->tabla('docente')->puede_modificar($doc['id_docente']);
+                if($band){
+                    $datos2['correo_personal']=$datos['correo_personal'];
+                    $datos2['correo_institucional']=$datos['correo_institucional'];
+                    if (isset($datos['registro_firma'])) {
+                        $nombre="registro_firma_".$doc['legajo'].".pdf";
+                        $destino="C:/proyectos/toba_2.6.3/proyectos/designa/www/registro_firmas/".$nombre;
+                        //$destino="/home/andrea/toba_2.7.13/proyectos/designa/www/registro_firmas/".$nombre;
+                        if(move_uploaded_file($datos['registro_firma']['tmp_name'], $destino)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                           $datos2['registro_firma']=strval($nombre);}
+                    }
+                    $this->controlador()->dep('datos')->tabla('docente')->set($datos2);                   
+                    $this->controlador()->dep('datos')->tabla('docente')->sincronizar();
+                    $mensaje='SOLO SE PUEDE ACTUALIZAR CORREOS. NO ESTA PERMITIDO MODIFICAR OTROS DATOS DE UN DOCENTE QUE TIENE LEGAJO. LOS MISMOS SERAN ACTUALIZADOS PERIODICAMENTE CON INFORMACIÓN SIU-MAPUCHE';
+                    toba::notificacion()->agregar(utf8_decode($mensaje), "info");   
+                }else{//no es docente de mi facultad
+                    toba::notificacion()->agregar('No es docente de su UA', "info");   
+                }
                }
-            }
+            if (!$this->controlador()->dep('datos')->tabla('docente')->esta_cargada()) {
+                $doc=$this->controlador()->dep('datos')->tabla('docente')->get();
+                $datosc['id_docente']=$doc['id_docente'];      
+                $this->controlador()->dep('datos')->tabla('docente')->cargar($datosc);
+               }
+        }
          
 	//saque el boton por el momento
         function evt__form_docente__borrar($datos)
