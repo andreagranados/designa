@@ -317,8 +317,8 @@ class docente_solapas extends toba_ci
                     $datos2['correo_institucional']=$datos['correo_institucional'];
                     if (isset($datos['registro_firma'])) {
                         $nombre="registro_firma_".$doc['legajo'].".pdf";
-                        $destino="C:/proyectos/toba_2.6.3/proyectos/designa/www/registro_firmas/".$nombre;
-                        //$destino="/home/andrea/toba_2.7.13/proyectos/designa/www/registro_firmas/".$nombre;
+                        //$destino="C:/proyectos/toba_2.6.3/proyectos/designa/www/registro_firmas/".$nombre;
+                        $destino="/home/andrea/toba_2.7.13/proyectos/designa/www/registro_firmas/".$nombre;
                         if(move_uploaded_file($datos['registro_firma']['tmp_name'], $destino)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                            $datos2['registro_firma']=strval($nombre);}
                     }
