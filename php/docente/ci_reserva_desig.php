@@ -144,10 +144,10 @@ class ci_reserva_desig extends designa_ci
                             $this->controlador()->controlador()->dep('datos')->tabla('designacion')->sincronizar();
                             $this->controlador()->controlador()->dep('datos')->tabla('reserva')->set($datos);
                             $this->controlador()->controlador()->dep('datos')->tabla('reserva')->sincronizar();
-                            $this->controlador()->controlador()->dep('datos')->tabla('reserva')->resetear();
+                            //$this->controlador()->controlador()->dep('datos')->tabla('reserva')->resetear();
                             $this->controlador()->controlador()->dep('datos')->tabla('imputacion')->set($datosi);
                             $this->controlador()->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
-                            $this->controlador()->controlador()->dep('datos')->tabla('imputacion')->resetear();
+                            //$this->controlador()->controlador()->dep('datos')->tabla('imputacion')->resetear();
 
                             toba::notificacion()->agregar($mensaje.' Los datos se guardaron correctamente', 'info');
                         }else{
@@ -165,18 +165,18 @@ class ci_reserva_desig extends designa_ci
                         $this->controlador()->controlador()->dep('datos')->tabla('imputacion')->sincronizar();
                         toba::notificacion()->agregar($mensaje.' Los datos se guardaron correctamente', 'info');
                     }
-            if($pudomodificar){
-                $nuevad=$this->controlador()->controlador()->dep('datos')->tabla('designacion')->get();                    
-                $nuevai=$this->controlador()->controlador()->dep('datos')->tabla('imputacion')->get();  
-                $nuevar=$this->controlador()->controlador()->dep('datos')->tabla('reserva')->get();  
-                $datosi['id_designacion']=$nuevai['id_designacion'];
-                $datosi['id_programa']=$nuevai['id_programa'];
-                $datosr['id_reserva']=$nuevar['id_reserva'];
-                $datosd['id_designacion']=$nuevad['id_designacion'];
-                $this->controlador()->controlador()->dep('datos')->tabla('reserva')->cargar($datosr);//busca la reserva con ese id y la carga
-                $this->controlador()->controlador()->dep('datos')->tabla('designacion')->cargar($datosd);
-                $this->controlador()->controlador()->dep('datos')->tabla('imputacion')->cargar($datosd);
-            }        
+//            if($pudomodificar){
+//                $nuevad=$this->controlador()->controlador()->dep('datos')->tabla('designacion')->get();                    
+//                $nuevai=$this->controlador()->controlador()->dep('datos')->tabla('imputacion')->get();  
+//                $nuevar=$this->controlador()->controlador()->dep('datos')->tabla('reserva')->get();  
+//                $datosi['id_designacion']=$nuevai['id_designacion'];
+//                $datosi['id_programa']=$nuevai['id_programa'];
+//                $datosr['id_reserva']=$nuevar['id_reserva'];
+//                $datosd['id_designacion']=$nuevad['id_designacion'];
+//                $this->controlador()->controlador()->dep('datos')->tabla('reserva')->cargar($datosr);//busca la reserva con ese id y la carga
+//                $this->controlador()->controlador()->dep('datos')->tabla('designacion')->cargar($datosd);
+//                $this->controlador()->controlador()->dep('datos')->tabla('imputacion')->cargar($datosd);
+//            }        
            
 	}
 

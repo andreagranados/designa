@@ -505,7 +505,7 @@ class dt_designacion extends toba_datos_tabla
 //                             and t_d.id_docente=t_do.id_docente".$where.")a "
 //                            ." LEFT OUTER JOIN novedad c
 //							ON(a.id_designacion=c.id_designacion
-//							and c.tipo_nov in(2,4,5)
+//							and c.tipo_nov in(2,5)
 //							and c.desde <= '".$udia."' and (c.hasta >= '".$pdia."' or c.hasta is null)
 //							)"
 //                         .")a"
@@ -531,10 +531,10 @@ class dt_designacion extends toba_datos_tabla
                     . "(select a.*,case when c.id_novedad is null then 'NO' else 'SI' end as licd from (select t_d.id_designacion,t_d.uni_acad,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,case when t_d.carac='R' then 'ORDI' else 'INTE' end as carac, t_d.desde,t_d.hasta,t_d.check_presup,t_d.nro_cargo"
                     . " from designacion t_d, docente t_do
                         where t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
-                             and t_d.id_docente=t_do.id_docente".$where.")a "
+                             and t_d.id_docente=t_do.id_docente".$where." and not (t_d.hasta is not null and t_d.hasta<=t_d.desde))a "
                             ." LEFT OUTER JOIN novedad c
 							ON(a.id_designacion=c.id_designacion
-							and c.tipo_nov in(2,4,5)
+							and c.tipo_nov in(2,5)
 							and c.desde <= '".$udia."' and (c.hasta >= '".$pdia."' or c.hasta is null)
 							)"
                          .")a"
@@ -2023,7 +2023,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             }else{
                      $where2=$where;
                 }
-           
+          
 //            $sql="select * from (".
 //            "select distinct b.*,d.descripcion as dep,a.descripcion as area,o.descripcion as ori 
 //                  from (select * from (
