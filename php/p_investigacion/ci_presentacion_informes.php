@@ -36,5 +36,55 @@ class ci_presentacion_informes extends toba_ci
             $cuadro->set_datos($this->dep('datos')->tabla('presentacion_informes')->get_listado());
         }
     }
+    function evt__cuadro__seleccion($datos){
+        $this->dep('datos')->tabla('presentacion_informes')->cargar($datos);
+        $this->set_pantalla('pant_edicion');
+    }
+     //-----------------------------------------------------------------------------------
+    //---- formulario -----------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
+    function conf__formulario(toba_ei_formulario $form)
+    {
+       if ($this->dep('datos')->tabla('presentacion_informes')->esta_cargada()) {
+            $datos=$this->dep('datos')->tabla('presentacion_informes')->get();
+            $form->set_datos($datos);    
+       }
+    }
+    //-----------------------------------------------------------------------------------
+    //---- formulario -------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
+
+    function evt__formulario__alta($datos)
+    {
+        $this->dep('datos')->tabla('presentacion_informes')->set($datos);
+        $this->dep('datos')->tabla('presentacion_informes')->sincronizar();
+        toba::notificacion()->agregar('Se ha ingresado correctamente', 'info');
+        $this->dep('datos')->tabla('presentacion_informes')->resetear();
+        $this->set_pantalla('pant_inicial'); 
+    }
+
+    function evt__formulario__baja()
+    {
+        $this->dep('datos')->tabla('presentacion_informes')->eliminar_todo();
+        $this->dep('datos')->tabla('presentacion_informes')->resetear();
+        toba::notificacion()->agregar('El registro se ha eliminada correctamente', 'info');   
+        $this->set_pantalla('pant_inicial'); 
+    }
+
+    function evt__formulario__modificacion($datos)
+    {
+        $this->dep('datos')->tabla('presentacion_informes')->set($datos);
+        $this->dep('datos')->tabla('presentacion_informes')->sincronizar();
+        toba::notificacion()->agregar('Se ha modificado correctamente', 'info');   
+    }
+
+    function evt__formulario__cancelar()
+    {
+        $this->dep('datos')->tabla('presentacion_informes')->resetear();
+        $this->set_pantalla('pant_inicial');
+    }
+    function evt__alta(){
+      $this->set_pantalla('pant_edicion');   
+    }
 }
 ?>
