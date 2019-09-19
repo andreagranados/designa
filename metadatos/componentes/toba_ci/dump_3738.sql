@@ -180,6 +180,18 @@ INSERT INTO apex_objeto_mt_me (objeto_mt_me_proyecto, objeto_mt_me, ev_procesar_
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
 	'designa', --proyecto
+	'3225', --dep_id
+	'3738', --objeto_consumidor
+	'4377', --objeto_proveedor
+	'ci_adjuntos', --identificador
+	NULL, --parametros_a
+	NULL, --parametros_b
+	NULL, --parametros_c
+	NULL, --inicializar
+	NULL  --orden
+);
+INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
+	'designa', --proyecto
 	'3112', --dep_id
 	'3738', --objeto_consumidor
 	'4248', --objeto_proveedor
@@ -280,18 +292,6 @@ INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objet
 	'3738', --objeto_consumidor
 	'3906', --objeto_proveedor
 	'filtros', --identificador
-	NULL, --parametros_a
-	NULL, --parametros_b
-	NULL, --parametros_c
-	NULL, --inicializar
-	NULL  --orden
-);
-INSERT INTO apex_objeto_dependencias (proyecto, dep_id, objeto_consumidor, objeto_proveedor, identificador, parametros_a, parametros_b, parametros_c, inicializar, orden) VALUES (
-	'designa', --proyecto
-	'3104', --dep_id
-	'3738', --objeto_consumidor
-	'4240', --objeto_proveedor
-	'form_adj', --identificador
 	NULL, --parametros_a
 	NULL, --parametros_b
 	NULL, --parametros_c
@@ -731,8 +731,8 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'designa', --proyecto
 	'1738', --pantalla
 	'3738', --objeto_ci
-	'0', --orden
-	'3104'  --dep_id
+	'1', --orden
+	'3225'  --dep_id
 );
 
 ------------------------------------------------------------

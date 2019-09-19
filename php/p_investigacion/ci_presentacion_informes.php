@@ -47,6 +47,11 @@ class ci_presentacion_informes extends toba_ci
     {
        if ($this->dep('datos')->tabla('presentacion_informes')->esta_cargada()) {
             $datos=$this->dep('datos')->tabla('presentacion_informes')->get();
+            if($datos['tipo_informe']=='IA'){
+                $datos['fec_inicio_proyectos']=$datos['fec_proyectos'];
+            }else{
+                $datos['fec_fin_proyectos']=$datos['fec_proyectos'];
+            }
             $form->set_datos($datos);    
        }
     }
@@ -56,7 +61,15 @@ class ci_presentacion_informes extends toba_ci
 
     function evt__formulario__alta($datos)
     {
-        $this->dep('datos')->tabla('presentacion_informes')->set($datos);
+        $datos2['tipo_informe']=$datos['tipo_informe'];
+        $datos2['desde']=$datos['desde'];
+        $datos2['hasta']=$datos['hasta'];
+        if($datos['tipo_informe']=='IA'){
+            $datos2['fec_proyectos']=$datos['fec_inicio_proyectos'];
+        }else{
+            $datos2['fec_proyectos']=$datos['fec_fin_proyectos'];
+        }
+        $this->dep('datos')->tabla('presentacion_informes')->set($datos2);
         $this->dep('datos')->tabla('presentacion_informes')->sincronizar();
         toba::notificacion()->agregar('Se ha ingresado correctamente', 'info');
         $this->dep('datos')->tabla('presentacion_informes')->resetear();

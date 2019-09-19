@@ -133,9 +133,9 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'4373', --objeto_ei_filtro
 	'designa', --objeto_ei_filtro_proyecto
 	'fecha', --tipo
-	'fec_fin_proyectos', --nombre
-	'fec_fin_proyectos', --expresion
-	'Fecha Fin Proyectos', --etiqueta
+	'fec_proyectos', --nombre
+	'fec_proyectos', --expresion
+	'Fecha Proyectos', --etiqueta
 	NULL, --descripcion
 	'0', --obligatorio
 	'0', --inicial

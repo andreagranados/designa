@@ -90,7 +90,7 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	NULL, --titulo
 	NULL, --subtitulo
 	NULL, --sql
-	'tipo_informe, fec_fin_proyectos', --columnas_clave
+	'tipo_informe, fec_proyectos', --columnas_clave
 	NULL, --columna_descripcion
 	'0', --clave_dbr
 	NULL, --archivos_callbacks
@@ -227,9 +227,9 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'4372', --objeto_cuadro
 	'4564', --objeto_cuadro_col
-	'fec_fin_proyectos', --clave
+	'fec_proyectos', --clave
 	'2', --orden
-	'Fecha Fin Proyectos', --titulo
+	'Fecha Proyectos', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'7', --estilo
 	NULL, --ancho
