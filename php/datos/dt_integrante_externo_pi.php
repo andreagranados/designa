@@ -152,7 +152,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             select distinct tipo_docum,nro_docum,pinvest,max(hasta) from
         (select t_do.tipo_docum,t_do.nro_docum,t_i.pinvest,t_i.hasta
         from pinvestigacion t_p
-        INNER JOIN integrante_interno_pi t_i ON (t_i.pinvest=t_p.id_pinv and funcion_p<>'BCIN' and funcion_p<>'BUIA' and funcion_p<>'BUGI' and funcion_p<>'BUGP')
+        INNER JOIN integrante_interno_pi t_i ON (t_i.pinvest=t_p.id_pinv )
         INNER JOIN designacion t_d ON (t_d.id_designacion=t_i.id_designacion)
         INNER JOIN docente t_do ON (t_do.id_docente=t_d.id_docente)
         where t_p.id_pinv=$id_p and not exists( select * from integrante_interno_pi t_o, designacion t_dd , docente t_doc
@@ -171,7 +171,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         UNION
         select t_d.tipo_docum,t_d.nro_docum,t_i.pinvest,t_i.hasta                                       
         from pinvestigacion t_p
-        INNER JOIN integrante_externo_pi t_i ON (t_i.pinvest=t_p.id_pinv and funcion_p<>'BCIN' and funcion_p<>'BUIA' and funcion_p<>'BUGI' and funcion_p<>'BUGP')
+        INNER JOIN integrante_externo_pi t_i ON (t_i.pinvest=t_p.id_pinv )
         INNER JOIN persona t_d ON (t_i.nro_docum=t_d.nro_docum and t_i.tipo_docum=t_d.tipo_docum)
         where t_p.id_pinv=$id_p and not exists( select * from integrante_externo_pi t_o, persona t_dd 
                                        where t_o.pinvest=t_p.id_pinv
