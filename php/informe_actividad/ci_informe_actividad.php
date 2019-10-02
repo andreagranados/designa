@@ -162,12 +162,12 @@ class ci_informe_actividad extends toba_ci
 
                 foreach ($this->s__listado as $des) {
                     $leyenda='';
-                     if($des['estado']=='L'){
+                     if($des['estado']=='L' or $des['estado']=='B' ){
                          $leyenda.=$des['desc_estado'];
                      }
                      $pdf->ezText(' <b>  AGENTE: <i>'.$des['agente'].'</i></b>'.' LEGAJO: '.$des['legajo'].'  '.$des['desig'], 11);
                      if($leyenda!=''){
-                            $pdf->ezText('<u>'.'   '.$leyenda.'</u>',8,array('justification'=>'justification'));
+                            $pdf->ezText('    '.'<u>'.$leyenda.'</u>',8,array('justification'=>'justification'));
                      }
                      if(isset($des['mat0'])){
                          $materias=$des['mat0'];
