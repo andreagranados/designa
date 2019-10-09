@@ -79,39 +79,6 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'0', --es_seleccion_multiple
 	'0'  --es_autovinculo
 );
-INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
-	'designa', --proyecto
-	'3590', --evento_id
-	'4379', --objeto
-	'limpiar', --identificador
-	NULL, --etiqueta
-	'1', --maneja_datos
-	NULL, --sobre_fila
-	NULL, --confirmacion
-	NULL, --estilo
-	'apex', --imagen_recurso_origen
-	'limpiar.png', --imagen
-	'1', --en_botonera
-	NULL, --ayuda
-	'2', --orden
-	NULL, --ci_predep
-	'0', --implicito
-	'0', --defecto
-	NULL, --display_datos_cargados
-	NULL, --grupo
-	NULL, --accion
-	NULL, --accion_imphtml_debug
-	NULL, --accion_vinculo_carpeta
-	NULL, --accion_vinculo_item
-	NULL, --accion_vinculo_objeto
-	NULL, --accion_vinculo_popup
-	NULL, --accion_vinculo_popup_param
-	NULL, --accion_vinculo_target
-	NULL, --accion_vinculo_celda
-	NULL, --accion_vinculo_servicio
-	'0', --es_seleccion_multiple
-	'0'  --es_autovinculo
-);
 --- FIN Grupo de desarrollo 0
 
 ------------------------------------------------------------
@@ -135,8 +102,8 @@ INSERT INTO apex_objeto_ut_formulario (objeto_ut_formulario_proyecto, objeto_ut_
 	NULL, --clase
 	NULL, --auto_reset
 	NULL, --ancho
-	'150px', --ancho_etiqueta
-	'0', --expandir_descripcion
+	'200px', --ancho_etiqueta
+	'1', --expandir_descripcion
 	NULL, --campo_bl
 	NULL, --scroll
 	NULL, --filas
@@ -416,7 +383,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'4', --orden
 	'CV Director y Codirector', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Currículum Vitae del Director y Codirector', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -574,9 +541,9 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'8', --orden
-	'Plan Trabajo de Integrantes Alumnos', --etiqueta
+	'Plan Trabajo de Int. Alumnos', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Si el proyecto tiene Integrantes Alumnos adjuntar el Plan de Trabajo', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -736,7 +703,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'10', --orden
 	'Nota Aceptación del Asesor', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Si el proyecto tiene Asesor adjuntar la Nota de Aceptación del Asesor', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -896,7 +863,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'6', --orden
 	'CV Integrantes', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Currículum Vitae de los Integrantes', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo

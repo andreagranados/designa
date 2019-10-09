@@ -275,7 +275,7 @@ class ci_pinv_otros extends designa_ci
                               $mensaje.=" Se ha modificado nro de resol de los integrantes";
                         }
                         if(($datos['estado'])!=$pi['estado']){//modifica el estado
-                            if($datos['estado']=='A'){//cuando se activa le coloca el chek a los integrantes
+                            if($datos['estado']=='A'){//cuando se activa le coloca el check a los integrantes
                                 $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->chequeados_ok($pi['id_pinv']);
                                 $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->chequeados_ok($pi['id_pinv']);
                                 if($pi['es_programa']==1){//para ponerle el check a los integrantes de los subproyectos
@@ -284,9 +284,23 @@ class ci_pinv_otros extends designa_ci
                                 $mensaje.=" Ha sido Activado. Ahora los integrantes tienen el check de SCyT";
                                 
                             }//si es programa tambien chequea 
+                            else{if($datos['estado']=='B'){//da de baja el proyecto. Solo la primera vez hace la baja automatica de los integrantes
+                                  if(isset($datos['fec_baja'])&& isset($datos['nro_resol_baja'])){//si completo la fecha de baja y resol baja
+                                      if($pi['fec_hasta']>=$datos['fec_baja'] && $pi['fec_desde']<=$datos['fec_baja'] ){
+                                        $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->dar_baja($pi['id_pinv'],$pi['fec_hasta'],$datos['fec_baja'],$datos['nro_resol_baja']);
+                                        $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->dar_baja($pi['id_pinv'],$pi['fec_hasta'],$datos['fec_baja'],$datos['nro_resol_baja']);
+                                        $mensaje.=' Se ha dado de baja a los participantes';
+                                      }else{
+                                         throw new toba_error('Fecha de baja incorrecta');
+                                      }
+                                  }else{
+                                      throw new toba_error('Debe ingresar la fecha de baja y la resolucion de baja');
+                                  }
+                                 }
+                            }
                             
                         }
-                        
+                        //print_r($datos);exit();
                         if($pi['es_programa']==1){
                             $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos); 
                         }

@@ -1,24 +1,29 @@
 <?php
 class icono_limpiar implements toba_ef_icono_utileria
 {
-   
+    
         function get_html(toba_ef $ef)
 	{
+                //elimino el archivo del plan de trabajo del objeto 
+              
 		$objeto_js = $ef->objeto_js();
-                $javascript = "$objeto_js.resetear_estado();";
-                //$salida = "<a class='icono-utileria' href='#' onclick=' echo 'Hello '>";
-//                $salida = "<a class='icono-utileria' href='#' onclick='echo "."this.ajax('calcular', parametros, this, 0);'>";
-		//$salida = "<script type='text/javascript'> function hello(){alert ('hello');}</script><a class='icono-utileria' href='#' onclick='hello();'>";
+               // $javascript = "alert('Estado actual: ' + $objeto_js.get_estado());$objeto_js.set_estado('1');";//nooooo
+                  $javascript = "alert('Presione Guardar para eliminar este archivo ' + $objeto_js.get_estado());$objeto_js.set_estado(7);";
+               // $javascript = "$objeto_js.set_estado(1);alert('Estado actual: ' + $objeto_js.get_estado());";
+                //$javascript = "alert('Estado actual: ' + $objeto_js.get_estado());";//esto funciona siempre que tenga valor por defecto
+               // $javascript = "$objeto_js.resetear_estado();alert('Se ha borrado el archivo');";//esto funciona siempre que tenga valor por defecto
+                //$javascript = "$objeto_js.resetear_estado();alert('Debe presionar el boton Guardar ');";//esto funciona siempre que tenga valor por defecto
+              //  $javascript = "$objeto_js.resetear_estado();alert('Estado actual: ' + $objeto_js.get_estado());";//funciona devuelve plan_trabajo697.pdf
+		//$salida = "<script type='text/javascript'> function hello(){alert ('hello');}</script><a class='icono-utileria' href='#' onclick='hello();'>";//si funciona
                 $salida = "<a class='icono-utileria' href='#' onclick=\"$javascript\">";
-		$salida .= toba_recurso::imagen_toba('limpiar.png', true, null, null, "Resetear estado actual del campo");
+		$salida .= toba_recurso::imagen_toba('limpiar.png', true, null, null, "Borrar el archivo");
 		$salida .= " </a>";
 		return $salida;
 	}
-
+       
 }
 class ci_adjuntos extends toba_ci
 {
-
     //adjuntos
         function conf__form_adj(toba_ei_formulario $form)
 	{
@@ -32,9 +37,9 @@ class ci_adjuntos extends toba_ci
                         $form->ef('cv_integrantes')->set_obligatorio(1);       
                     }
                 }
-                //-- Para el ef_nota_aceptacion se agrega otra utileria
-		//$form->ef('nota_aceptacion')->agregar_icono_utileria(new icono_limpiar());
-                
+                //-- Para el ef_plan_trabajo se agrega otra utileria
+                //agrega un icono de comportamiento al lado del elemento
+               // $form->ef('plan_trabajo')->agregar_icono_utileria(new icono_limpiar());
                 $datos['es_programa']=$pi['es_programa'];
                 if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
@@ -64,27 +69,33 @@ class ci_adjuntos extends toba_ci
                         $datos['nota_aceptacion']=$ins['nota_aceptacion'];
                         $datos['imagen_vista_previa_nota'] = "<a target='_blank' href='{$nomb_na}' >nota aceptacion</a>";
                     }
+                  
                     return $datos;
                 }
             }
         }
         
-        function evt__form_adj__limpiar($datos)
-        {
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $datos2['id_pinv']=$pi['id_pinv'];
-            $datos2['nota_aceptacion']=null;
-            $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos2);
-            $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();      
-            //unlink($filename);//borra el archivo
-        }
+//        function evt__form_adj__limpiar_pt($datos)
+//        {
+//            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+//            $datos2['id_pinv']=$pi['id_pinv'];
+//            $datos2['plan_trabajo']=null;
+//            $adj=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
+//            //print_r($adj);exit;
+//            $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos2);
+//            $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();      
+//            //unlink('/home/andrea/toba_2.7.13/proyectos/designa/1.0/adjuntos_proyectos_inv/'.$adj['plan_trabajo']);//borra el archivo
+//            unlink('C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/'.$adj['plan_trabajo']);//borra el archivo
+//        }
+      
         function evt__form_adj__guardar($datos)
         {
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                
                 if($pi['estado']<>'I'){//solo en estado I puede modificar        
                    toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Inicial(I)', 'error');   
-                }else{//print_r($datos);
+                }else{
                     $id=$pi['id_pinv'];
                     $datos2['id_pinv']=$pi['id_pinv'];
                     if (isset($datos['ficha_tecnica'])) {
@@ -114,14 +125,16 @@ class ci_adjuntos extends toba_ci
                             $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
                             if(move_uploaded_file($datos['plan_trabajo']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['plan_trabajo']=strval($nombre_pt);}
+                        
                     }
-                     if (isset($datos['nota_aceptacion'])) {
+                    if (isset($datos['nota_aceptacion'])) {
                             $nombre_na="nota_aceptacion".$id.".pdf";
                             //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
                             $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
                             if(move_uploaded_file($datos['nota_aceptacion']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                            $datos2['nota_aceptacion']=strval($nombre_na);}
+                              $datos2['nota_aceptacion']=strval($nombre_na);} 
                     }
+                   
                     $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos2);
                     $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();           
 

@@ -97,24 +97,26 @@ class ci_datos_principales extends toba_ci
         { 
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $mensaje='Solo cambia codigo y responsable de fondos.';
                 $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
-                $datos2['id_respon_sub']=$datos['id_respon_sub'];//responsable de fondos
-                if($pertenece!=0){//es un subproyecto
-                    $mensaje='Solo modifica responsable de fondos. El codigo se modifica desde el programa.';
-                }else{
-                    $datos2['codigo']=$datos['codigo'];
+                //solo si modifica codigo o responsable de subsidios tira cartel
+                if($pi['codigo']!=$datos['codigo'] or $pi['id_respon_sub']!=$datos['id_respon_sub']){
+                    $datos2['id_respon_sub']=$datos['id_respon_sub'];//responsable de fondos
+                    if($pertenece!=0){//es un subproyecto
+                        $mensaje=' Solo modifica responsable de fondos. El codigo se modifica desde el programa.';
+                    }else{
+                        $datos2['codigo']=$datos['codigo'];
                     
-                    if($pi['es_programa']==1){//es un programa
-                        $datos3['codigo']=$datos['codigo'];//Solo codigo, no toca el respon de los subproyectos 
-                        $datos3['estado']=$pi['estado'];//no cambia estado solo es para reutilizar el metodo que sigue
-                        $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos3); 
-                        $mensaje=' Ha modificado codigo de los proyectos de programa';
+                        if($pi['es_programa']==1){//es un programa
+                            $datos3['codigo']=$datos['codigo'];//Solo codigo, no toca el respon de los subproyectos 
+                            $datos3['estado']=$pi['estado'];//no cambia estado solo es para reutilizar el metodo que sigue
+                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos3); 
+                            $mensaje=' Ha modificado codigo de los proyectos de programa';
+                        }
                     }
+                    $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
+                    $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+                    toba::notificacion()->agregar($mensaje, 'info');  
                 }
-                $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
-                $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-                toba::notificacion()->agregar($mensaje, 'info');  
             }
         }
          //modificacion de datos principales del proyecto por el Director 

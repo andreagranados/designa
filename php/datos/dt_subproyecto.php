@@ -52,11 +52,13 @@ class dt_subproyecto extends toba_datos_tabla
             $sql="update integrante_externo_pi set rescd='".$datos['nro_resol']."' where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
             toba::db('designa')->consultar($sql);
         }
-        if($datos['check']==1){//si cambio a A el estado del proyecto check viene en 1
-            $sql="update integrante_interno_pi set check_inv=1 where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
-            toba::db('designa')->consultar($sql);
-            $sql="update integrante_externo_pi set check_inv=1 where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
-            toba::db('designa')->consultar($sql);
+        if(isset($datos['check'])){//si cambio a A el estado del proyecto check viene en 1
+            if($datos['check']==1){
+                $sql="update integrante_interno_pi set check_inv=1 where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
+                toba::db('designa')->consultar($sql);
+                $sql="update integrante_externo_pi set check_inv=1 where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy)";
+                toba::db('designa')->consultar($sql);
+            }
         }
         if(isset($datos['codigo'])){
             $concatenar.=" , codigo='".$datos['codigo']."'";
@@ -78,6 +80,14 @@ class dt_subproyecto extends toba_datos_tabla
         }
         if(isset($datos['disp_asent'])){
             $concatenar.=" , disp_asent="."'".$datos['disp_asent']."'";
+        }
+        if(isset($datos['estado'])=='B'){//si da de baja entonces 
+            if(isset($datos['nro_resol_baja']) && isset($datos['fec_baja'])){
+                $sql="update integrante_interno_pi set hasta='".$datos['fec_baja']."',rescd_bm='".$datos['nro_resol_baja']."' where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy) and hasta in (select fec_hasta from pinvestigacion where id_pinv=$id_proy)";
+                toba::db('designa')->consultar($sql);
+                $sql="update integrante_externo_pi set hasta='".$datos['fec_baja']."',rescd_bm='".$datos['nro_resol_baja']."' where pinvest in (select id_proyecto from subproyecto where id_programa=$id_proy) and hasta in (select fec_hasta from pinvestigacion where id_pinv=$id_proy)";
+                toba::db('designa')->consultar($sql);
+            }
         }
         if(isset($datos['nro_resol_baja'])){
             $concatenar.=" , nro_resol_baja="."'".$datos['nro_resol_baja']."'";
