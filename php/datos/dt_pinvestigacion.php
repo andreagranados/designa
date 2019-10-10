@@ -609,7 +609,7 @@ class dt_pinvestigacion extends toba_datos_tabla
 			pinvestigacion as t_p
                         left outer join (select id2.pinvest,t_do2.apellido,t_do2.nombre,max(id2.hasta)
                                         from integrante_interno_pi id2,designacion t_d2,docente t_do2
-                                        where  (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') 
+                                        where  (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') and check_inv=1
                                         and t_d2.id_designacion=id2.id_designacion   
                                         and t_do2.id_docente=t_d2.id_docente 
                                         group by id2.pinvest,t_do2.apellido,t_do2.nombre) sub on (sub.pinvest=t_p.id_pinv)
@@ -617,21 +617,21 @@ class dt_pinvestigacion extends toba_datos_tabla
                         left outer join (select id3.pinvest,t_d3.apellido,t_d3.nombre,max(hasta)
                                         from integrante_externo_pi id3,persona t_d3
                                         where 
-                                        (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) 
+                                        (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) and check_inv=1
                                         and t_d3.tipo_docum=id3.tipo_docum 
                                         and t_d3.nro_docum=id3.nro_docum
                                         group by id3.pinvest,t_d3.apellido,t_d3.nombre)sub2 on (sub2.pinvest=t_p.id_pinv)
 
                         left outer join (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,max(ic.hasta)
                                         from integrante_interno_pi ic,designacion t_c2 ,docente t_dc2
-                                        where ic.funcion_p='C'
+                                        where ic.funcion_p='C' and check_inv=1
                                         and t_dc2.id_docente=t_c2.id_docente
                                         and t_c2.id_designacion=ic.id_designacion 
                                         group by ic.pinvest,t_dc2.apellido,t_dc2.nombre )sub3 on (sub3.pinvest=t_p.id_pinv) 
 
                          left outer join (select ic3.pinvest,t_c3.apellido,t_c3.nombre,max(hasta)
                                          from integrante_externo_pi ic3,persona t_c3
-                                         where ic3.funcion_p='CE'
+                                         where ic3.funcion_p='CE' and check_inv=1
                                          and t_c3.tipo_docum=ic3.tipo_docum and t_c3.nro_docum=ic3.nro_docum 
                                          group by ic3.pinvest,t_c3.apellido,t_c3.nombre)sub4 on (sub4.pinvest=t_p.id_pinv)
                         left outer join subproyecto as b on (t_p.id_pinv=b.id_proyecto)
