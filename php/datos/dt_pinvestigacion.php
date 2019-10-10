@@ -370,34 +370,133 @@ class dt_pinvestigacion extends toba_datos_tabla
                 }
             }
         }
-//        function get_listado_filtro($filtro=array())
+
+//        function get_listado_filtro($filtro=null)
 //	{
-//		$where = array();
-//		if (isset($filtro['uni_acad'])) {
-//			$where[] = "uni_acad = ".quote($filtro['uni_acad']);
+//                $con="select sigla from unidad_acad ";
+//                $con = toba::perfil_de_datos()->filtrar($con);
+//                $resul=toba::db('designa')->consultar($con);
+//                $usuario=toba::usuario()->get_id();
+//                // Por defecto el sistema se activa sobre el proyecto y usuario actual
+//                $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
+//                $pd = toba::manejador_sesiones()->get_perfil_datos();
+//                //print_r($pf);
+//                $where = " WHERE 1=1 ";
+//                //los directores solo pueden ver sus proyectos
+//                if(isset($pf)){//si tiene perfil funcional investigador_director 
+//                    if($pf[0]=='investigacion_director'){
+//                        $where.=" and usuario='".$usuario."'";
+//                    }    
+//                }
+//                //if(count($resul)<=1){//es usuario de una unidad academica
+//                if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
+//                    $where.=" and t_p.uni_acad = ".quote($resul[0]['sigla']);
+//                }//sino es usuario de la central no filtro a menos que haya elegido
+//                
+//		if (isset($filtro['uni_acad']['valor'])) {
+//			$where .= " and t_p.uni_acad = ".quote($filtro['uni_acad']['valor']);   
 //		}
-//		$sql = "SELECT
+//                if (isset($filtro['fec_desde']['valor'])) {
+//			$where .= " and t_p.fec_desde= ".quote($filtro['fec_desde']['valor']);   
+//		}
+//                if (isset($filtro['fec_hasta']['valor'])) {
+//			$where .= " and t_p.fec_hasta= ".quote($filtro['fec_hasta']['valor']);   
+//		}
+//                if(isset($filtro['respon'])){
+//                    if($filtro['respon']['valor']==1){
+//                        $where.=' and id_respon_sub is not null ';
+//                    }else{
+//                        $where.=' and id_respon_sub is null ';
+//                    }
+//                }
+//                if (isset($filtro['anio']['valor'])) {
+//		    $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+//                    $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
+//                    $where.=" and fec_desde <='".$udia."' and fec_hasta >='".$pdia."' ";                     
+//		}
+//                if (isset($filtro['denominacion']['valor'])) {
+//                    switch ($filtro['denominacion']['condicion']) {
+//                        case 'es_distinto_de':$where.=" and denominacion  !='".$filtro['denominacion']['valor']."'";break;
+//                        case 'es_igual_a':$where.=" and denominacion = '".$filtro['denominacion']['valor']."'";break;
+//                        case 'termina_con':$where.=" and denominacion ILIKE '%".$filtro['denominacion']['valor']."'";break;
+//                        case 'comienza_con':$where.=" and denominacion ILIKE '".$filtro['denominacion']['valor']."%'";break;
+//                        case 'no_contiene':$where.=" and denominacion NOT ILIKE '%".$filtro['denominacion']['valor']."%'";break;
+//                        case 'contiene':$where.=" and denominacion ILIKE '%".$filtro['denominacion']['valor']."%'";break;
+//                    }
+//                 }
+//                  if (isset($filtro['codigo']['valor'])) {
+//                    switch ($filtro['codigo']['condicion']) {
+//                        case 'es_distinto_de':$where.=" and codigo  !='".$filtro['codigo']['valor']."'";break;
+//                        case 'es_igual_a':$where.=" and codigo = '".$filtro['codigo']['valor']."'";break;
+//                        case 'termina_con':$where.=" and codigo ILIKE '%".$filtro['codigo']['valor']."'";break;
+//                        case 'comienza_con':$where.=" and codigo ILIKE '".$filtro['codigo']['valor']."%'";break;
+//                        case 'no_contiene':$where.=" and codigo NOT ILIKE '%".$filtro['codigo']['valor']."%'";break;
+//                        case 'contiene':$where.=" and codigo ILIKE '%".$filtro['codigo']['valor']."%'";break;
+//                    }
+//                 }
+//                  if (isset($filtro['estado']['valor'])) {
+//                      switch ($filtro['estado']['condicion']) {
+//                            case 'es_distinto_de':$where.=" and t_p.estado  !='".$filtro['estado']['valor']."'";break;
+//                            case 'es_igual_a':$where.=" and t_p.estado = '".$filtro['estado']['valor']."'";break;
+//                      }
+//                  }
+//                  if (isset($filtro['tipo']['valor'])) {
+//                      switch ($filtro['tipo']['condicion']) {
+//                            case 'es_distinto_de':$where.=" and tipo  !='".$filtro['tipo']['valor']."'";break;
+//                            case 'es_igual_a':$where.=" and tipo = '".$filtro['tipo']['valor']."'";break;
+//                      }
+//                  }
+//                  $where2='';
+//                  if (isset($filtro['desc_tipo']['valor'])) {
+//                    switch ($filtro['desc_tipo']['condicion']) {
+//                        case 'es_distinto_de':$where2.=" WHERE desc_tipo  !='".$filtro['desc_tipo']['valor']."'";break;
+//                        case 'es_igual_a':$where2.=" WHERE desc_tipo = '".$filtro['desc_tipo']['valor']."'";break;
+//                        case 'termina_con':$where2.=" WHERE desc_tipo ILIKE '%".$filtro['desc_tipo']['valor']."'";break;
+//                        case 'comienza_con':$where2.=" WHERE desc_tipo ILIKE '".$filtro['desc_tipo']['valor']."%'";break;
+//                        case 'no_contiene':$where2.=" WHERE desc_tipo NOT ILIKE '%".$filtro['desc_tipo']['valor']."%'";break;
+//                        case 'contiene':$where2.=" WHERE desc_tipo ILIKE '%".$filtro['desc_tipo']['valor']."%'";break;
+//                    }
+//                 }  
+//		$sql = "SELECT * FROM ("."SELECT distinct
 //			t_p.id_pinv,
 //			t_p.codigo,
-//                        case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'SUB-PROYECTO' else 'PROYECTO' end end es_programa,
+//                        case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'PROYECTO DE PROGRAMA' else 'PROYECTO' end end as desc_tipo,
 //			t_p.denominacion,
 //			t_p.nro_resol,
 //			t_p.fec_resol,
-//			t_ua.descripcion as uni_acad_nombre,
+//			t_p.uni_acad,
 //			t_p.fec_desde,
 //			t_p.fec_hasta,
 //			t_p.nro_ord_cs,
 //			t_p.fecha_ord_cs,
 //			t_p.duracion,
-//			t_p.objetivo
+//			t_p.objetivo,
+//                        t_p.estado,
+//                        t_p.tipo,
+//                        t_p.id_respon_sub,
+//                        case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then 'DE: '||trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as director,
+//                        case when t_dc2.apellido is not null then trim(t_dc2.apellido)||', '||trim(t_dc2.nombre) else case when t_c3.apellido is not null then trim(t_c3.apellido)||', '||trim(t_c3.nombre)  else '' end end as codirector
+//                       
 //		FROM
 //			pinvestigacion as t_p
-//                        LEFT OUTER JOIN unidad_acad as t_ua ON (t_p.uni_acad = t_ua.sigla)
+//                        left outer join integrante_interno_pi id2 on (id2.pinvest=t_p.id_pinv and (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') and t_p.fec_hasta=id2.hasta)
+//                        left outer join designacion t_d2 on (t_d2.id_designacion=id2.id_designacion)    
+//                        left outer join docente t_do2 on (t_do2.id_docente=t_d2.id_docente)  
+//                        
+//                        left outer join integrante_externo_pi id3 on (id3.pinvest=t_p.id_pinv and (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) and t_p.fec_hasta=id3.hasta)
+//                        left outer join persona t_d3 on (t_d3.tipo_docum=id3.tipo_docum and t_d3.nro_docum=id3.nro_docum) 
+//
+//                        left outer join integrante_interno_pi ic on (ic.pinvest=t_p.id_pinv and ic.funcion_p='C' and t_p.fec_hasta=ic.hasta)
+//                        left outer join designacion t_c2 on (t_c2.id_designacion=ic.id_designacion)    
+//                        left outer join docente t_dc2 on (t_dc2.id_docente=t_c2.id_docente)  
+//
+//                        left outer join integrante_externo_pi ic3 on (ic3.pinvest=t_p.id_pinv and ic3.funcion_p='CE' and t_p.fec_hasta=ic3.hasta)
+//                        left outer join persona t_c3 on (t_c3.tipo_docum=ic3.tipo_docum and t_c3.nro_docum=ic3.nro_docum)   
 //                        LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
-//		ORDER BY codigo,es_programa";
-//		if (count($where)>0) {
-//			$sql = sql_concatenar_where($sql, $where);
-//		}
+// 
+//                $where        
+//		ORDER BY codigo,desc_tipo)sub $where2";
+//		
 //		return toba::db('designa')->consultar($sql);
 //	}
         function get_listado_filtro($filtro=null)
@@ -503,25 +602,39 @@ class dt_pinvestigacion extends toba_datos_tabla
                         t_p.estado,
                         t_p.tipo,
                         t_p.id_respon_sub,
-                        case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then 'DE: '||trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as director,
-                        case when t_dc2.apellido is not null then trim(t_dc2.apellido)||', '||trim(t_dc2.nombre) else case when t_c3.apellido is not null then trim(t_c3.apellido)||', '||trim(t_c3.nombre)  else '' end end as codirector
+                        case when sub.apellido is not null then trim(sub.apellido)||', '||trim(sub.nombre) else case when sub2.apellido is not null then 'DE: '||trim(sub2.apellido)||', '||trim(sub2.nombre)  else '' end end as director,
+                        case when sub3.apellido is not null then trim(sub3.apellido)||', '||trim(sub3.nombre) else case when sub4.apellido is not null then trim(sub4.apellido)||', '||trim(sub4.nombre)  else '' end end as codirector
                        
 		FROM
 			pinvestigacion as t_p
-                        left outer join integrante_interno_pi id2 on (id2.pinvest=t_p.id_pinv and (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') and t_p.fec_hasta=id2.hasta)
-                        left outer join designacion t_d2 on (t_d2.id_designacion=id2.id_designacion)    
-                        left outer join docente t_do2 on (t_do2.id_docente=t_d2.id_docente)  
+                        left outer join (select id2.pinvest,t_do2.apellido,t_do2.nombre,max(id2.hasta)
+                                        from integrante_interno_pi id2,designacion t_d2,docente t_do2
+                                        where  (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') 
+                                        and t_d2.id_designacion=id2.id_designacion   
+                                        and t_do2.id_docente=t_d2.id_docente 
+                                        group by id2.pinvest,t_do2.apellido,t_do2.nombre) sub on (sub.pinvest=t_p.id_pinv)
                         
-                        left outer join integrante_externo_pi id3 on (id3.pinvest=t_p.id_pinv and (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) and t_p.fec_hasta=id3.hasta)
-                        left outer join persona t_d3 on (t_d3.tipo_docum=id3.tipo_docum and t_d3.nro_docum=id3.nro_docum) 
+                        left outer join (select id3.pinvest,t_d3.apellido,t_d3.nombre,max(hasta)
+                                        from integrante_externo_pi id3,persona t_d3
+                                        where 
+                                        (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) 
+                                        and t_d3.tipo_docum=id3.tipo_docum 
+                                        and t_d3.nro_docum=id3.nro_docum
+                                        group by id3.pinvest,t_d3.apellido,t_d3.nombre)sub2 on (sub2.pinvest=t_p.id_pinv)
 
-                        left outer join integrante_interno_pi ic on (ic.pinvest=t_p.id_pinv and ic.funcion_p='C' and t_p.fec_hasta=ic.hasta)
-                        left outer join designacion t_c2 on (t_c2.id_designacion=ic.id_designacion)    
-                        left outer join docente t_dc2 on (t_dc2.id_docente=t_c2.id_docente)  
+                        left outer join (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,max(ic.hasta)
+                                        from integrante_interno_pi ic,designacion t_c2 ,docente t_dc2
+                                        where ic.funcion_p='C'
+                                        and t_dc2.id_docente=t_c2.id_docente
+                                        and t_c2.id_designacion=ic.id_designacion 
+                                        group by ic.pinvest,t_dc2.apellido,t_dc2.nombre )sub3 on (sub3.pinvest=t_p.id_pinv) 
 
-                        left outer join integrante_externo_pi ic3 on (ic3.pinvest=t_p.id_pinv and ic3.funcion_p='CE' and t_p.fec_hasta=ic3.hasta)
-                        left outer join persona t_c3 on (t_c3.tipo_docum=ic3.tipo_docum and t_c3.nro_docum=ic3.nro_docum)   
-                        LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
+                         left outer join (select ic3.pinvest,t_c3.apellido,t_c3.nombre,max(hasta)
+                                         from integrante_externo_pi ic3,persona t_c3
+                                         where ic3.funcion_p='CE'
+                                         and t_c3.tipo_docum=ic3.tipo_docum and t_c3.nro_docum=ic3.nro_docum 
+                                         group by ic3.pinvest,t_c3.apellido,t_c3.nombre)sub4 on (sub4.pinvest=t_p.id_pinv)
+                        left outer join subproyecto as b on (t_p.id_pinv=b.id_proyecto)
  
                 $where        
 		ORDER BY codigo,desc_tipo)sub $where2";
