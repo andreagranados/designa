@@ -499,6 +499,7 @@ class dt_pinvestigacion extends toba_datos_tabla
 //		
 //		return toba::db('designa')->consultar($sql);
 //	}
+//      
         function get_listado_filtro($filtro=null)
 	{
                 $con="select sigla from unidad_acad ";
@@ -602,39 +603,60 @@ class dt_pinvestigacion extends toba_datos_tabla
                         t_p.estado,
                         t_p.tipo,
                         t_p.id_respon_sub,
-                        case when sub.apellido is not null then trim(sub.apellido)||', '||trim(sub.nombre) else case when sub2.apellido is not null then 'DE: '||trim(sub2.apellido)||', '||trim(sub2.nombre)  else '' end end as director,
-                        case when sub3.apellido is not null then trim(sub3.apellido)||', '||trim(sub3.nombre) else case when sub4.apellido is not null then trim(sub4.apellido)||', '||trim(sub4.nombre)  else '' end end as codirector
+                        --case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then 'DE: '||trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as director,
+                        --case when t_dc2.apellido is not null then trim(t_dc2.apellido)||', '||trim(t_dc2.nombre) else case when t_c3.apellido is not null then trim(t_c3.apellido)||', '||trim(t_c3.nombre)  else '' end end as codirector
+                        --solo cuando el proyecto esta Activo no muestra el director sino esta chequeado
+                       case when t_p.estado='A' then case when subd.apellido is not null and subd.check_inv=1 then trim(subd.apellido)||', '||trim(subd.nombre) else case when subd2.apellido is not null and subd2.check_inv=1 then 'DE: '||trim(subd2.apellido)||', '||trim(subd2.nombre)  else '' end end else case when subd.apellido is not null then trim(subd.apellido)||', '||trim(subd.nombre) else case when subd2.apellido is not null then 'DE: '||trim(subd2.apellido)||', '||trim(subd2.nombre)  else '' end end end as director ,
+                       case when t_p.estado='A' then case when subc.apellido is not null and subc.check_inv=1 then trim(subc.apellido)||', '||trim(subc.nombre) else case when subc2.apellido is not null and subc2.check_inv=1 then trim(subc2.apellido)||', '||trim(subc2.nombre)  else '' end end else case when subc.apellido is not null then trim(subc.apellido)||', '||trim(subc.nombre) else case when subc2.apellido is not null then trim(subc2.apellido)||', '||trim(subc2.nombre)  else '' end end end as codirector
                        
 		FROM
-			pinvestigacion as t_p
-                        left outer join (select id2.pinvest,t_do2.apellido,t_do2.nombre,max(id2.hasta)
-                                        from integrante_interno_pi id2,designacion t_d2,docente t_do2
-                                        where  (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') and check_inv=1
-                                        and t_d2.id_designacion=id2.id_designacion   
-                                        and t_do2.id_docente=t_d2.id_docente 
-                                        group by id2.pinvest,t_do2.apellido,t_do2.nombre) sub on (sub.pinvest=t_p.id_pinv)
-                        
-                        left outer join (select id3.pinvest,t_d3.apellido,t_d3.nombre,max(hasta)
-                                        from integrante_externo_pi id3,persona t_d3
-                                        where 
-                                        (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) and check_inv=1
-                                        and t_d3.tipo_docum=id3.tipo_docum 
-                                        and t_d3.nro_docum=id3.nro_docum
-                                        group by id3.pinvest,t_d3.apellido,t_d3.nombre)sub2 on (sub2.pinvest=t_p.id_pinv)
-
-                        left outer join (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,max(ic.hasta)
-                                        from integrante_interno_pi ic,designacion t_c2 ,docente t_dc2
-                                        where ic.funcion_p='C' and check_inv=1
+		pinvestigacion as t_p
+                LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
+                --tomo el ultimo director (primero obtengo la max fecha hasta)
+		LEFT OUTER JOIN ( select id2.pinvest,max(id2.hasta) as hasta
+                                        from integrante_interno_pi id2
+                                        where  (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') 
+                                        group by id2.pinvest      ) sub   ON (sub.pinvest=t_p.id_pinv)   
+		LEFT OUTER JOIN (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,ic.hasta,ic.check_inv
+					from integrante_interno_pi ic,designacion t_c2 ,docente t_dc2
+                                        where (ic.funcion_p='DP' or ic.funcion_p='DE'  or ic.funcion_p='D' or ic.funcion_p='DpP') 
                                         and t_dc2.id_docente=t_c2.id_docente
                                         and t_c2.id_designacion=ic.id_designacion 
-                                        group by ic.pinvest,t_dc2.apellido,t_dc2.nombre )sub3 on (sub3.pinvest=t_p.id_pinv) 
-
-                         left outer join (select ic3.pinvest,t_c3.apellido,t_c3.nombre,max(hasta)
-                                         from integrante_externo_pi ic3,persona t_c3
-                                         where ic3.funcion_p='CE' and check_inv=1
-                                         and t_c3.tipo_docum=ic3.tipo_docum and t_c3.nro_docum=ic3.nro_docum 
-                                         group by ic3.pinvest,t_c3.apellido,t_c3.nombre)sub4 on (sub4.pinvest=t_p.id_pinv)
-                        left outer join subproyecto as b on (t_p.id_pinv=b.id_proyecto)
+                                        )  subd  ON (subd.pinvest=t_p.id_pinv and subd.hasta=sub.hasta)      
+		
+		LEFT OUTER JOIN ( select id2.pinvest,max(id2.hasta) as hasta
+                                        from integrante_externo_pi id2
+                                        where  (id2.funcion_p='DE' or id2.funcion_p='DEpP' )
+                                        group by id2.pinvest      ) sub2   ON (sub2.pinvest=t_p.id_pinv) 
+                LEFT OUTER JOIN (select id3.pinvest,t_d3.apellido,t_d3.nombre,id3.hasta,id3.check_inv
+					from integrante_externo_pi id3,persona t_d3
+                                        where (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) 
+                                        and t_d3.tipo_docum=id3.tipo_docum 
+                                        and t_d3.nro_docum=id3.nro_docum
+                                        )  subd2  ON (subd2.pinvest=t_p.id_pinv and subd2.hasta=sub2.hasta)       
+                --tomo el ultimo codirector (primero obtengo la maxima fecha)                       
+                LEFT OUTER JOIN ( select id2.pinvest,max(id2.hasta) as hasta
+                                        from integrante_interno_pi id2
+                                        where  id2.funcion_p='C'
+                                        group by id2.pinvest      ) sub3   ON (sub3.pinvest=t_p.id_pinv)  
+		LEFT OUTER JOIN (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,ic.hasta,ic.check_inv
+					from integrante_interno_pi ic,designacion t_c2 ,docente t_dc2
+                                        where ic.funcion_p='C' 
+                                        and ic.id_designacion=t_c2.id_designacion
+                                        and t_dc2.id_docente=t_c2.id_docente
+                                        )  subc  ON (subc.pinvest=t_p.id_pinv and subc.hasta=sub3.hasta)                                                   
+           	LEFT OUTER JOIN ( select id2.pinvest,max(id2.hasta) as hasta
+                                        from integrante_externo_pi id2
+                                        where  id2.funcion_p='CE' 
+                                        group by id2.pinvest      ) sub4   ON (sub4.pinvest=t_p.id_pinv)   
+                                                
+		LEFT OUTER JOIN (select id3.pinvest,t_d3.apellido,t_d3.nombre,id3.hasta,id3.check_inv
+					from integrante_externo_pi id3,persona t_d3
+                                        where (id3.funcion_p='CE' ) 
+                                        and t_d3.tipo_docum=id3.tipo_docum 
+                                        and t_d3.nro_docum=id3.nro_docum
+                                        )  subc2  ON (subc2.pinvest=t_p.id_pinv and subc2.hasta=sub4.hasta)
+                        
  
                 $where        
 		ORDER BY codigo,desc_tipo)sub $where2";

@@ -80,14 +80,47 @@ class dt_mocovi_credito extends toba_datos_tabla
             return $credito;   
         }
 
-	function get_listado($filtro=array())
+//	function get_listado($filtro=array())
+//	{
+//		$where = '';
+//		if (isset($filtro['id_periodo'])) {
+//			$where.= "t_mpp.anio = ".$filtro['id_periodo'];
+//		}
+//		if (isset($filtro['id_unidad'])) {
+//			$where.= "t_mc.id_unidad = ".quote($filtro['id_unidad']);
+//		}
+//		$sql = "SELECT
+//			t_mc.id_credito,
+//			t_mpp.id_periodo as id_periodo_nombre,
+//			t_mc.id_unidad as id_unidad,
+//			t_e.descripcion as id_escalafon_nombre,
+//			t_mtc.tipo as id_tipo_credito_nombre,
+//			t_mc.descripcion,
+//			t_mc.credito,
+//			t_mp.nombre as id_programa_nombre,
+//                        case when t_mc.documento is not null then  '<a href='||chr(39)||'creditos_dependencia/'||t_mc.documento||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||documento||'</a>' else '' end as documento
+//		FROM
+//			mocovi_credito as t_mc	
+//                        LEFT OUTER JOIN mocovi_periodo_presupuestario as t_mpp ON (t_mc.id_periodo = t_mpp.id_periodo)
+//			LEFT OUTER JOIN escalafon as t_e ON (t_mc.id_escalafon = t_e.id_escalafon)
+//			LEFT OUTER JOIN mocovi_tipo_credito as t_mtc ON (t_mc.id_tipo_credito = t_mtc.id_tipo_credito)
+//			LEFT OUTER JOIN mocovi_programa as t_mp ON (t_mc.id_programa = t_mp.id_programa)
+//                where t_mc.id_escalafon='D'        
+//		ORDER BY id_tipo_credito_nombre,id_programa_nombre";
+//		if (count($where)>0) {
+//			$sql = sql_concatenar_where($sql, $where);
+//		}
+//                
+//		return toba::db('designa')->consultar($sql);
+//	}
+        function get_listado($filtro=array())
 	{
-		$where = array();
+		$where = "  where t_mc.id_escalafon='D'    ";
 		if (isset($filtro['id_periodo'])) {
-			$where[] = "t_mpp.anio = ".$filtro['id_periodo'];
+			$where.= " and t_mpp.anio = ".$filtro['id_periodo'];
 		}
 		if (isset($filtro['id_unidad'])) {
-			$where[] = "t_mc.id_unidad = ".quote($filtro['id_unidad']);
+			$where.= " and t_mc.id_unidad = ".quote($filtro['id_unidad']);
 		}
 		$sql = "SELECT
 			t_mc.id_credito,
@@ -98,19 +131,26 @@ class dt_mocovi_credito extends toba_datos_tabla
 			t_mc.descripcion,
 			t_mc.credito,
 			t_mp.nombre as id_programa_nombre,
-                        case when t_mc.documento is not null then  '<a href='||chr(39)||'creditos_dependencia/'||t_mc.documento||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||documento||'</a>' else '' end as documento
+                        case when t_mc.documento is not null then  '<a href='||chr(39)||'creditos_dependencia/'||t_mc.documento||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||t_mc.documento||'</a>' else '' end as documento,
+                        case when t_mc.credito<0 then 'Cede a: '||sub.id_unidad else 'Recibe de: '||sub.id_unidad end as desc_extra
 		FROM
 			mocovi_credito as t_mc	
                         LEFT OUTER JOIN mocovi_periodo_presupuestario as t_mpp ON (t_mc.id_periodo = t_mpp.id_periodo)
 			LEFT OUTER JOIN escalafon as t_e ON (t_mc.id_escalafon = t_e.id_escalafon)
 			LEFT OUTER JOIN mocovi_tipo_credito as t_mtc ON (t_mc.id_tipo_credito = t_mtc.id_tipo_credito)
 			LEFT OUTER JOIN mocovi_programa as t_mp ON (t_mc.id_programa = t_mp.id_programa)
-                where t_mc.id_escalafon='D'        
+                        LEFT OUTER JOIN (select id_credito,max(auditoria_fecha) as fecha from public_auditoria.logs_mocovi_credito lmc
+                                          group by lmc.id_credito ) subfe ON (subfe.id_credito=t_mc.id_credito)
+                        LEFT OUTER JOIN (SELECT t_mc2.*, fecha
+			                 FROM mocovi_credito as t_mc2
+			                 LEFT OUTER JOIN ( select id_credito,max(auditoria_fecha) as fecha from public_auditoria.logs_mocovi_credito la
+                                          	           group by la.id_credito ) subf ON (subf.id_credito=t_mc2.id_credito)
+                                                           WHERE t_mc2.id_periodo=".$filtro['id_periodo']
+                                                            ." and t_mc2.id_tipo_credito=2
+                                                        )sub ON (sub.descripcion=t_mc.descripcion  and sub.credito*(-1)=t_mc.credito and sub.id_unidad<>t_mc.id_unidad and extract(year from subfe.fecha)=extract(year from sub.fecha) and extract(month from subfe.fecha)=extract(month from sub.fecha) and  extract(day from subfe.fecha)=extract(day from sub.fecha))                 
+                $where        
 		ORDER BY id_tipo_credito_nombre,id_programa_nombre";
-		if (count($where)>0) {
-			$sql = sql_concatenar_where($sql, $where);
-		}
-                
+		
 		return toba::db('designa')->consultar($sql);
 	}
 
