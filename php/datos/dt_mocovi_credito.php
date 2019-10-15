@@ -117,7 +117,7 @@ class dt_mocovi_credito extends toba_datos_tabla
 	{
 		$where = "  where t_mc.id_escalafon='D'    ";
 		if (isset($filtro['id_periodo'])) {
-			$where.= " and t_mpp.anio = ".$filtro['id_periodo'];
+                        $where.= " and t_mc.id_periodo = ".$filtro['id_periodo'];
 		}
 		if (isset($filtro['id_unidad'])) {
 			$where.= " and t_mc.id_unidad = ".quote($filtro['id_unidad']);
