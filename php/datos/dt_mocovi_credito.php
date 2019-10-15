@@ -122,7 +122,7 @@ class dt_mocovi_credito extends toba_datos_tabla
 		if (isset($filtro['id_unidad'])) {
 			$where.= " and t_mc.id_unidad = ".quote($filtro['id_unidad']);
 		}
-		$sql = "SELECT
+		$sql = "SELECT distinct
 			t_mc.id_credito,
 			t_mpp.id_periodo as id_periodo_nombre,
 			t_mc.id_unidad as id_unidad,
@@ -132,7 +132,7 @@ class dt_mocovi_credito extends toba_datos_tabla
 			t_mc.credito,
 			t_mp.nombre as id_programa_nombre,
                         case when t_mc.documento is not null then  '<a href='||chr(39)||'creditos_dependencia/'||t_mc.documento||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||t_mc.documento||'</a>' else '' end as documento,
-                        case when t_mc.credito<0 then 'Cede a: '||sub.id_unidad else 'Recibe de: '||sub.id_unidad end as desc_extra
+                        max(case when t_mc.credito<0 then 'Cede a: '||sub.id_unidad else 'Recibe de: '||sub.id_unidad end) as desc_extra
 		FROM
 			mocovi_credito as t_mc	
                         LEFT OUTER JOIN mocovi_periodo_presupuestario as t_mpp ON (t_mc.id_periodo = t_mpp.id_periodo)
@@ -149,8 +149,9 @@ class dt_mocovi_credito extends toba_datos_tabla
                                                             ." and t_mc2.id_tipo_credito=2
                                                         )sub ON (sub.descripcion=t_mc.descripcion  and sub.credito*(-1)=t_mc.credito and sub.id_unidad<>t_mc.id_unidad and extract(year from subfe.fecha)=extract(year from sub.fecha) and extract(month from subfe.fecha)=extract(month from sub.fecha) and  extract(day from subfe.fecha)=extract(day from sub.fecha))                 
                 $where        
+                GROUP BY t_mc.id_credito,  t_mpp.id_periodo, t_mc.id_unidad, t_e.descripcion,t_mtc.tipo,t_mc.descripcion, t_mc.credito,t_mp.nombre,t_mc.documento
 		ORDER BY id_tipo_credito_nombre,id_programa_nombre";
-		
+		//agrupo para asegurarme de que no repita
 		return toba::db('designa')->consultar($sql);
 	}
 
