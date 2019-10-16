@@ -606,8 +606,51 @@ class dt_pinvestigacion extends toba_datos_tabla
                         --case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then 'DE: '||trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as director,
                         --case when t_dc2.apellido is not null then trim(t_dc2.apellido)||', '||trim(t_dc2.nombre) else case when t_c3.apellido is not null then trim(t_c3.apellido)||', '||trim(t_c3.nombre)  else '' end end as codirector
                         --solo cuando el proyecto esta Activo no muestra el director sino esta chequeado
-                       case when t_p.estado='A' then case when subd.apellido is not null and subd.check_inv=1 then trim(subd.apellido)||', '||trim(subd.nombre) else case when subd2.apellido is not null and subd2.check_inv=1 then 'DE: '||trim(subd2.apellido)||', '||trim(subd2.nombre)  else '' end end else case when subd.apellido is not null then trim(subd.apellido)||', '||trim(subd.nombre) else case when subd2.apellido is not null then 'DE: '||trim(subd2.apellido)||', '||trim(subd2.nombre)  else '' end end end as director ,
-                       case when t_p.estado='A' then case when subc.apellido is not null and subc.check_inv=1 then trim(subc.apellido)||', '||trim(subc.nombre) else case when subc2.apellido is not null and subc2.check_inv=1 then trim(subc2.apellido)||', '||trim(subc2.nombre)  else '' end end else case when subc.apellido is not null then trim(subc.apellido)||', '||trim(subc.nombre) else case when subc2.apellido is not null then trim(subc2.apellido)||', '||trim(subc2.nombre)  else '' end end end as codirector
+                       --case when t_p.estado='A' then case when subd.apellido is not null and subd.check_inv=1 then trim(subd.apellido)||', '||trim(subd.nombre) else case when subd2.apellido is not null and subd2.check_inv=1 then 'DE: '||trim(subd2.apellido)||', '||trim(subd2.nombre)  else '' end end else case when subd.apellido is not null then trim(subd.apellido)||', '||trim(subd.nombre) else case when subd2.apellido is not null then 'DE: '||trim(subd2.apellido)||', '||trim(subd2.nombre)  else '' end end end as director ,
+                       --case when t_p.estado='A' then case when subc.apellido is not null and subc.check_inv=1 then trim(subc.apellido)||', '||trim(subc.nombre) else case when subc2.apellido is not null and subc2.check_inv=1 then trim(subc2.apellido)||', '||trim(subc2.nombre)  else '' end end else case when subc.apellido is not null then trim(subc.apellido)||', '||trim(subc.nombre) else case when subc2.apellido is not null then trim(subc2.apellido)||', '||trim(subc2.nombre)  else '' end end end as codirector
+                  case when subd.apellido is not null then 
+
+                   case when t_p.estado='A' then 
+                        case when (t_p.fec_hasta=subd.hasta and subd.check_inv=1) then trim(subd.apellido)||', '||trim(subd.nombre) else '' end
+                   else case when t_p.estado='B' then 
+                             case when t_p.fec_baja=subd.hasta then trim(subd.apellido)||', '||trim(subd.nombre) else '' end 
+                        else case when t_p.fec_hasta=subd.hasta then trim(subd.apellido)||', '||trim(subd.nombre)  else '' end 
+                        end
+                   end
+
+                 else 
+                     case when subd2.apellido is not null then
+                        case when t_p.estado='A' then 
+                           case when t_p.fec_hasta=subd2.hasta and subd2.check_inv=1 then trim(subd2.apellido)||', '||trim(subd2.nombre) else '' end
+                         else case when t_p.estado='B' then case when t_p.fec_baja=subd2.hasta then trim(subd2.apellido)||', '||trim(subd2.nombre) else '' end 
+                              else case when t_p.fec_hasta=subd2.hasta then trim(subd2.apellido)||', '||trim(subd2.nombre)  else '' end 
+                              end
+                         end
+                      else ''
+                      end 
+
+                 end
+                 as director,
+                  case when subc.apellido is not null then 
+
+                   case when t_p.estado='A' then 
+                     case when t_p.fec_hasta=subc.hasta and subc.check_inv=1 then trim(subc.apellido)||', '||trim(subc.nombre) else '' end
+                   else case when t_p.estado='B' then case when t_p.fec_baja=subc.hasta then trim(subc.apellido)||', '||trim(subc.nombre) else '' end 
+                        else case when t_p.fec_hasta=subc.hasta then trim(subc.apellido)||', '||trim(subc.nombre)  else '' end 
+                        end
+                   end
+
+                 else case when subc2.apellido is not null then
+                        case when t_p.estado='A' then 
+                           case when t_p.fec_hasta=subc2.hasta and subc2.check_inv=1 then trim(subc2.apellido)||', '||trim(subc2.nombre) else '' end
+                         else case when t_p.estado='B' then case when t_p.fec_baja=subc2.hasta then trim(subc2.apellido)||', '||trim(subc2.nombre) else '' end 
+                              else case when t_p.fec_hasta=subc2.hasta then trim(subc2.apellido)||', '||trim(subc2.nombre)  else '' end 
+                              end
+                         end
+                      else ''
+                      end   
+                 end as codirector
+                     
                        
 		FROM
 		pinvestigacion as t_p
