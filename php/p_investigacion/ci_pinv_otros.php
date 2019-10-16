@@ -318,8 +318,8 @@ class ci_pinv_otros extends designa_ci
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $cuadro->set_datos($this->controlador()->dep('datos')->tabla('subsidio')->get_subsidios_de($pi['id_pinv']));
             }
-
 	}
+        
         function evt__cuadro_subsidio__seleccion($datos)
         {
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
