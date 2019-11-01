@@ -1041,7 +1041,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
                 $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
 		
-                //que sea una designacion vigente, dentro del periodo actual o anulado cuando le setean el hasta con el dia anterior al desde
+                //que sea una designacion vigente, dentro del periodo actual o anulada cuando le setean el hasta con el dia anterior al desde
 		$where=" WHERE ((desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)) or (desde>hasta and ".$filtro['anio']."=extract(year from hasta)))";
                 $where.=" AND  nro_540 is null";
                 $where2="";          
@@ -2172,9 +2172,10 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 $sql = toba::perfil_de_datos()->filtrar($sql);
                 $resul=toba::db('designa')->consultar($sql);
                 $sql =  "select * from(" 
-               ."select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+               ."select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
                         t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_p.descripcion as periodo
                         from designacion t_d 
+                        LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
                         LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
                         LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
                         LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
@@ -2194,9 +2195,10 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     
               }else{//el usuario no esta asociado a ningun perfil de datos
                  $sql =  "select * from(" 
-                          ." select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+                          ." select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
                         t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_p.descripcion as periodo
                         from designacion t_d 
+                        LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
                         LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
                         LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
                         LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),

@@ -899,7 +899,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 order by uni_acad";
              return toba::db('designa')->consultar($sql);
         }
-        function get_proyectos($fecha){
+        function get_proyectos($estad){
             $sql="select p.id_pinv,p.tipo,p.codigo,replace(p.denominacion,chr(10),'') as denominacion,p.resumen,lower(trim(replace(replace(p.palabras_clave,'* *','*'),chr(10),''))) as palabras_clave,u.descripcion as ue,d.descripcion as disc,case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(initcap(t_do2.nombre)) else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(initcap(t_d3.nombre))  else '' end end as dir"
                     . ", case when t_dc2.apellido is not null then trim(t_dc2.apellido)||', '||trim(initcap(t_dc2.nombre)) else case when t_c3.apellido is not null then trim(t_c3.apellido)||', '||trim(initcap(t_c3.nombre))  else '' end end as cod"
                     . ",case when t_do2.apellido is not null then t_do2.tipo_sexo else case when t_d3.apellido is not null then t_d3.tipo_sexo  else '' end end as sexod "
@@ -921,7 +921,7 @@ class dt_pinvestigacion extends toba_datos_tabla
 
                         left outer join integrante_externo_pi ic3 on (ic3.pinvest=p.id_pinv and ic3.funcion_p='CE' and p.fec_hasta=ic3.hasta)
                         left outer join persona t_c3 on (t_c3.tipo_docum=ic3.tipo_docum and t_c3.nro_docum=ic3.nro_docum)  "
-                    . " where fec_desde='".$fecha."'"
+                    . " where p.estado='".$estad."'"
                     . " and not exists (select * from subproyecto s"
                                     . " where s.id_proyecto=p.id_pinv)"//descarto los subroyectos
                   

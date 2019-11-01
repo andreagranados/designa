@@ -121,7 +121,15 @@ class dt_mocovi_credito extends toba_datos_tabla
 		}
 		if (isset($filtro['id_unidad'])) {
 			$where.= " and t_mc.id_unidad = ".quote($filtro['id_unidad']);
-		}
+                }else{//no eligio nada entonces aplico la del perfil que tenga
+                    $sql="select sigla,descripcion from unidad_acad ";
+                    $sql = toba::perfil_de_datos()->filtrar($sql);
+                    $resul=toba::db('designa')->consultar($sql);
+                    if(count($resul)==1){//esta asociada a un perfil de datos
+                        $where.= " and t_mc.id_unidad = ".quote($resul[0]['sigla']);
+                       
+                    }
+                }
 		$sql = "SELECT distinct
 			t_mc.id_credito,
 			t_mpp.id_periodo as id_periodo_nombre,

@@ -25,7 +25,7 @@ class ci_cd_anual extends toba_ci
                 'xOrientation' => 'center',
                 'width' => 500
             );
-            $proyectos=$this->dep('datos')->tabla('pinvestigacion')->get_proyectos('2018-01-01');
+            $proyectos=$this->dep('datos')->tabla('pinvestigacion')->get_proyectos('A');//arma el cd con los proyectos Activos
             
             $uni=$proyectos[0]['ue'];
             $pdf->ezText("-----------------------------------------------------------------------------------------------------------------------", 12);
