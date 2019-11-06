@@ -278,13 +278,13 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 a.pinvest =pi.id_pinv
                 and a.id_designacion=b.id_designacion
                 and b.id_docente=doc.id_docente
-                and a.funcion_p<>'AS' and a.funcion_p<>'CO'
+                and a.funcion_p<>'AS' and a.funcion_p<>'CO' and a.funcion_p<>'AT'
                 and a.desde is not null and a.hasta is not null--esto por las dudas
                 and c.desde is not null and c.hasta is not null--esto por las dudas
             
                 and c.pinvest =e.id_pinv 
                 and c.id_designacion=d.id_designacion
-                and c.funcion_p<>'AS' and c.funcion_p<>'CO'
+                and c.funcion_p<>'AS' and c.funcion_p<>'CO' and a.funcion_p<>'AT'
                 and c.pinvest<>a.pinvest
                 and b.id_docente=d.id_docente
                 and not((a.funcion_p='DP' and c.funcion_p='DpP') or (a.funcion_p='DpP' and c.funcion_p='DP'))

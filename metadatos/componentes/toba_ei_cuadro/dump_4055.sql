@@ -21,7 +21,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Varios Proyectos Simultaneo - cuadro', --nombre
-	'Listado de docentes con más de un proyecto al mismo tiempo', --titulo
+	'Listado de integrantes con más de un proyecto al mismo tiempo', --titulo
 	'0', --colapsable
 	NULL, --descripcion
 	NULL, --fuente_datos_proyecto
@@ -126,7 +126,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4055', --objeto_cuadro
 	'4131', --objeto_cuadro_col
 	'denominacion', --clave
-	'2', --orden
+	'4', --orden
 	'Denominación', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -157,7 +157,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4055', --objeto_cuadro
 	'4132', --objeto_cuadro_col
 	'uni_acad', --clave
-	'4', --orden
+	'2', --orden
 	'UA', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -188,7 +188,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4055', --objeto_cuadro
 	'4133', --objeto_cuadro_col
 	'desde', --clave
-	'5', --orden
+	'7', --orden
 	'Desde', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -219,7 +219,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4055', --objeto_cuadro
 	'4134', --objeto_cuadro_col
 	'hasta', --clave
-	'6', --orden
+	'8', --orden
 	'Hasta', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -250,7 +250,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4055', --objeto_cuadro
 	'4135', --objeto_cuadro_col
 	'carga_horaria', --clave
-	'7', --orden
+	'6', --orden
 	'Horas', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -281,7 +281,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4055', --objeto_cuadro
 	'4136', --objeto_cuadro_col
 	'funcion_p', --clave
-	'8', --orden
+	'5', --orden
 	'Función', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -312,7 +312,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4055', --objeto_cuadro
 	'4137', --objeto_cuadro_col
 	'denom2', --clave
-	'9', --orden
+	'11', --orden
 	'Denominación', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -467,7 +467,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4055', --objeto_cuadro
 	'4142', --objeto_cuadro_col
 	'uni_acad2', --clave
-	'11', --orden
+	'9', --orden
 	'UA', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
