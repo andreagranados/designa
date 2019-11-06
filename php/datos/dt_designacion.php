@@ -1501,7 +1501,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
             if (isset($filtro['anio'])) {
               	$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
                 $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
-                $where=" AND ((desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)) or (desde=".$pdia."' and hasta is not null and hasta<desde))";
+                $where=" AND ((desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)) or (desde='".$pdia."' and hasta is not null and hasta<desde))";
 		}     
             if (isset($filtro['anulada'])) {
                $where2= " WHERE anulada='".$filtro['anulada']."'"; 
