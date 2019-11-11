@@ -293,10 +293,10 @@ class dt_integrante_interno_pi extends toba_datos_tabla
 //                order by pi.uni_acad, doc.apellido,doc.nombre)sub   $where "
 //                ;
             $sql="select distinct * from(
-select trim(sub.apellido)||','||trim(sub.nombre) as docente,sub.id_pinv,sub.codigo,sub.uni_acad,substr(sub.denominacion,1,50)||'...' as denominacion,
+select trim(sub.apellido)||', '||trim(sub.nombre) as docente,sub.id_pinv,sub.codigo,sub.uni_acad,substr(sub.denominacion,1,50)||'...' as denominacion,
 sub.funcion_p,sub.carga_horaria,sub.desde,sub.hasta,sub2.id_pinv,sub2.uni_acad as uni_acad2,substr(sub2.denominacion,1,50)||'...' as denom2,sub2.codigo as codigo2,sub2.funcion_p as funcion_p2,sub2.carga_horaria as cargah2,sub2.desde as desde2,sub2.hasta as hasta2
  from
-((select doc.nro_docum,doc.apellido,doc.nombre,doc.legajo,pi.uni_acad,pi.id_pinv,pi.codigo,pi.denominacion,a.desde,a.hasta,funcion_p,carga_horaria
+((select doc.tipo_docum,doc.nro_docum,doc.apellido,doc.nombre,doc.legajo,pi.uni_acad,pi.id_pinv,pi.codigo,pi.denominacion,a.desde,a.hasta,funcion_p,carga_horaria
 from integrante_interno_pi a,pinvestigacion pi, designacion b, docente doc                
 where 
                 a.pinvest =pi.id_pinv
@@ -306,7 +306,7 @@ where
                    and pi.fec_hasta>'2017-10-04'
                 )
  UNION               
- (select p.nro_docum,p.apellido,p.nombre,0,d.uni_acad,d.id_pinv,d.codigo,d.denominacion,c.desde,c.hasta,funcion_p,carga_horaria
+ (select p.tipo_docum,p.nro_docum,p.apellido,p.nombre,0,d.uni_acad,d.id_pinv,d.codigo,d.denominacion,c.desde,c.hasta,funcion_p,carga_horaria
 from integrante_externo_pi c,pinvestigacion d, persona p
 where 
                 c.pinvest =d.id_pinv
@@ -316,9 +316,9 @@ where
                 )
 )sub
 
-left outer join 
+inner join 
 
-((select doc.nro_docum,doc.apellido,doc.nombre,doc.legajo,pi.uni_acad,pi.id_pinv,pi.codigo,pi.denominacion,a.desde,a.hasta,funcion_p,carga_horaria
+((select doc.tipo_docum,doc.nro_docum,doc.apellido,doc.nombre,doc.legajo,pi.uni_acad,pi.id_pinv,pi.codigo,pi.denominacion,a.desde,a.hasta,funcion_p,carga_horaria
 from integrante_interno_pi a,pinvestigacion pi, designacion b, docente doc                
 where 
                 a.pinvest =pi.id_pinv
@@ -328,7 +328,7 @@ where
                    and pi.fec_hasta>'2017-10-04'
                 )
  UNION               
- (select p.nro_docum,p.apellido,p.nombre,0,d.uni_acad,d.id_pinv,d.codigo,d.denominacion,c.desde,c.hasta,funcion_p,carga_horaria
+ (select p.tipo_docum,p.nro_docum,p.apellido,p.nombre,0,d.uni_acad,d.id_pinv,d.codigo,d.denominacion,c.desde,c.hasta,funcion_p,carga_horaria
 from integrante_externo_pi c,pinvestigacion d, persona p
 where 
                 c.pinvest =d.id_pinv
@@ -336,11 +336,10 @@ where
                 and c.funcion_p<>'AS' and c.funcion_p<>'CO' and c.funcion_p<>'AT'                
                    and d.fec_hasta>'2017-10-04'
                 )
-)sub2 on (sub.id_pinv<>sub2.id_pinv and sub.nro_docum=sub2.nro_docum and sub.desde<sub2.hasta and sub.hasta>sub2.desde)
-where sub.desde is not null and sub.hasta is not null
-       and sub2.desde is not null and sub2.hasta is not null
-       and not((sub.funcion_p='DP' and sub2.funcion_p='DpP') or (sub.funcion_p='DpP' and sub2.funcion_p='DP'))
-       )sub3 $where";
+)sub2 on (sub.id_pinv<>sub2.id_pinv and sub.tipo_docum=sub2.tipo_docum and sub.nro_docum=sub2.nro_docum and sub.desde<sub2.hasta and sub.hasta>sub2.desde)
+where not((sub.funcion_p='DP' and sub2.funcion_p='DpP') or (sub.funcion_p='DpP' and sub2.funcion_p='DP'))
+       )sub3 $where"
+                    . " order by uni_acad, apellido,nombre";
         return toba::db('designa')->consultar($sql);
     }
     
