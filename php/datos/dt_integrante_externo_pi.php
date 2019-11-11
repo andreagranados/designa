@@ -241,13 +241,16 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             );";
         toba::db('designa')->consultar($sql);
         $sql="insert into plantilla "
-                ."(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
+                ."(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,case when t_d2.cat_estat is not null then t_d.cat_estat||'-'||t_d.dedic else '' end as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
                 . " from  integrante_interno_pi t_i"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_i.cat_investigador)"
                 . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
                 ."  LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
                 . " LEFT OUTER JOIN funcion_investigador t_f ON (t_i.funcion_p=t_f.id_funcion) "
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
+                . " LEFT OUTER JOIN designacion t_d2 ON (t_d2.id_docente=t_d.id_docente
+                                    and t_d2.cat_mapuche=t_d.cat_mapuche
+                                    and t_d2.desde<t_i.hasta and t_d2.hasta>t_i.desde) "//solo si tiene esa categ vigente dentro de la participacion la muestra
                 . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
                                     from titulos_docente t_t , titulo t_u 
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='PREG'
