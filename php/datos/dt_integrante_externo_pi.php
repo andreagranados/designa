@@ -250,7 +250,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
                 . " LEFT OUTER JOIN designacion t_d2 ON (t_d2.id_docente=t_d.id_docente
                                     and t_d2.cat_mapuche=t_d.cat_mapuche
-                                    and t_d2.desde<t_i.hasta and t_d2.hasta>t_i.desde) "//solo si tiene esa categ vigente dentro de la participacion la muestra
+                                    and t_d2.desde<t_i.hasta and ( t_d2.hasta is null or t_d2.hasta>t_i.desde)) "//solo si tiene esa categ vigente dentro de la participacion la muestra
                 . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
                                     from titulos_docente t_t , titulo t_u 
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='PREG'
