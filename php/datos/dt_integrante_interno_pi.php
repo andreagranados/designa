@@ -339,7 +339,7 @@ where
 )sub2 on (sub.id_pinv<>sub2.id_pinv and sub.tipo_docum=sub2.tipo_docum and sub.nro_docum=sub2.nro_docum and sub.desde<sub2.hasta and sub.hasta>sub2.desde)
 where not((sub.funcion_p='DP' and sub2.funcion_p='DpP') or (sub.funcion_p='DpP' and sub2.funcion_p='DP'))
        )sub3 $where"
-                    . " order by uni_acad, apellido,nombre";
+                    . " order by uni_acad, docente";
         return toba::db('designa')->consultar($sql);
     }
     
