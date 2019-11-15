@@ -126,7 +126,9 @@ class ci_conjuntos extends toba_ci
             $datos['ua']= $ua[0]['sigla'];
             $this->dep('datos')->tabla('conjunto')->set($datos);
             $this->dep('datos')->tabla('conjunto')->sincronizar();
-           // $this->resetear();
+            toba::notificacion()->agregar('El conjunto se ha creado correctamente', 'info'); 
+            $this->dep('datos')->tabla('conjunto')->resetear();
+            $this->s__mostrar_e=0;
 	}
 
 	function evt__form_conj__baja()

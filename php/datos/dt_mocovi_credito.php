@@ -147,15 +147,15 @@ class dt_mocovi_credito extends toba_datos_tabla
 			LEFT OUTER JOIN escalafon as t_e ON (t_mc.id_escalafon = t_e.id_escalafon)
 			LEFT OUTER JOIN mocovi_tipo_credito as t_mtc ON (t_mc.id_tipo_credito = t_mtc.id_tipo_credito)
 			LEFT OUTER JOIN mocovi_programa as t_mp ON (t_mc.id_programa = t_mp.id_programa)
-                        LEFT OUTER JOIN (select id_credito,max(auditoria_fecha) as fecha from public_auditoria.logs_mocovi_credito lmc
+                        LEFT OUTER JOIN (select id_credito,max(auditoria_fecha) as fecha from public_auditoria.logs_mocovi_credito lmc  where auditoria_operacion='I'
                                           group by lmc.id_credito ) subfe ON (subfe.id_credito=t_mc.id_credito)
                         LEFT OUTER JOIN (SELECT t_mc2.*, fecha
 			                 FROM mocovi_credito as t_mc2
-			                 LEFT OUTER JOIN ( select id_credito,max(auditoria_fecha) as fecha from public_auditoria.logs_mocovi_credito la
+			                 LEFT OUTER JOIN ( select id_credito,max(auditoria_fecha) as fecha from public_auditoria.logs_mocovi_credito la where auditoria_operacion='I'
                                           	           group by la.id_credito ) subf ON (subf.id_credito=t_mc2.id_credito)
                                                            WHERE t_mc2.id_periodo=".$filtro['id_periodo']
                                                             ." and t_mc2.id_tipo_credito=2
-                                                        )sub ON (sub.descripcion=t_mc.descripcion  and sub.credito*(-1)=t_mc.credito and sub.id_unidad<>t_mc.id_unidad and extract(year from subfe.fecha)=extract(year from sub.fecha) and extract(month from subfe.fecha)=extract(month from sub.fecha) and  extract(day from subfe.fecha)=extract(day from sub.fecha))                 
+                                                        )sub ON (sub.descripcion=t_mc.descripcion  and sub.credito*(-1)=t_mc.credito and sub.id_unidad<>t_mc.id_unidad and extract(year from subfe.fecha)=extract(year from sub.fecha) and extract(month from subfe.fecha)=extract(month from sub.fecha) and extract(day from subfe.fecha)=extract(day from sub.fecha) and extract(hours from subfe.fecha)=extract(hours from sub.fecha) and extract(minute from subfe.fecha)=extract(minute from sub.fecha))                 
                 $where        
                 GROUP BY t_mc.id_credito,  t_mpp.id_periodo, t_mc.id_unidad, t_e.descripcion,t_mtc.tipo,t_mc.descripcion, t_mc.credito,t_mp.nombre,t_mc.documento
 		ORDER BY id_tipo_credito_nombre,id_programa_nombre";
