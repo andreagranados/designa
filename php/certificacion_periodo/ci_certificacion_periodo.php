@@ -76,6 +76,7 @@ class ci_certificacion_periodo extends toba_ci
            
             $ag=$this->dep('datos')->tabla('docente')->get_agente($this->s__agente['id_docente']);
             $leg=$this->dep('datos')->tabla('docente')->get_legajo($this->s__agente['id_docente']);
+            $salida->set_nombre_archivo('Certif_'.$leg.'_'.$this->s__datos_filtro['anio'].".pdf");
 //           //recupero las designaciones del periodo previamente seleccionado
             $desig=$this->dep('datos')->tabla('docente')->get_designaciones_periodo($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
             $pdf->ezText("\n", 7);
@@ -106,17 +107,14 @@ class ci_certificacion_periodo extends toba_ci
                     $pdf->ezText($texto,12);
                 }
                 
-                $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig($des['id_designacion']);
+                $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig_cert($des['id_designacion'],$this->s__datos_filtro['anio']);
                 $i=0;
                 foreach ($mate as $ma) {//busco todas las materias correspondientes al año previamente seleccionado
-                    if($ma['anio']==$this->s__datos_filtro['anio']){
-                        $datos[$i]=array('col1' => $ma['desc_materia'], 'col2' => $ma['carrera'],'col3' => $ma['periodo'],'col4' => $ma['carga_horaria'],'col5' => $ma['moddes']);
+                        $datos[$i]=array('col1' => $ma['desc_materia'], 'col2' => $ma['carrera'],'col3' => $ma['periodo'],'col4' => $ma['rol'],'col5' => $ma['carga_horaria'],'col6' => $ma['moddes']);
                         $i++;
-                    }
-                    
                 }
                 
-                $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => utf8_decode('Período'),'col4' => 'Hs','col5' => utf8_decode('Módulo')), 'ACTIVIDAD ACADEMICA', $opciones);
+                $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => utf8_decode('Período'),'col4' => 'Rol','col5' => 'Hs','col6' => utf8_decode('Módulo')), 'ACTIVIDAD ACADEMICA', $opciones);
                 $pdf->ezText("\n", 7);
                 //busco la actividad en investigacion
                 $inve=$this->dep('datos')->tabla('integrante_interno_pi')->get_proyinv_docente($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);

@@ -366,7 +366,7 @@ LEFT OUTER JOIN (select  t_m.id_materia,t_m.id_periodo,t_m.anio,count(distinct t
                  }
         }
                 
-        $sql = "SELECT distinct t_a.id_designacion,t_pe.uni_acad||'-'||t_pe.desc_carrera||'('||t_pe.cod_carrera||')' as carrera,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,t_t.desc_item as rol,t_a.id_periodo,t_p.descripcion as periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_o.descripcion as moddes,t_a.anio,t_a.carga_horaria,calculo_conjunto(t_a.id_materia,t_a.id_periodo,t_a.anio) as conj,substr(t_a.observacion,0,20) as observacion"
+        $sql = "SELECT distinct t_a.id_designacion,t_pe.uni_acad||'-'||t_pe.desc_carrera||'('||t_pe.cod_carrera||')' as carrera,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,substring(t_t.desc_item,0,5) as rol,t_a.id_periodo,t_p.descripcion as periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_o.descripcion as moddes,t_a.anio,t_a.carga_horaria,calculo_conjunto(t_a.id_materia,t_a.id_periodo,t_a.anio) as conj,substr(t_a.observacion,0,20) as observacion"
                 . " FROM asignacion_materia t_a "
                 . " LEFT OUTER JOIN materia t_m ON (t_m.id_materia=t_a.id_materia)"
                 . " LEFT OUTER JOIN plan_estudio t_pe ON (t_m.id_plan=t_pe.id_plan)"
@@ -378,7 +378,43 @@ LEFT OUTER JOIN (select  t_m.id_materia,t_m.id_periodo,t_m.anio,count(distinct t
         
 	return toba::db('designa')->consultar($sql);
     }
-    
+    function get_listado_desig_cert($des,$anio){
+        $where="";
+        if (isset($filtro)) {
+             $where=" and anio=".$anio;
+            
+        }
+        $sql="select desc_materia,rol,periodo,moddes,carga_horaria,case when carreras_conj is not null then carreras_conj else cod_carrera end as carrera from       
+(select sub2.desc_materia,sub2.cod_carrera,sub2.rol,sub2.periodo,sub2.moddes,sub2.carga_horaria,string_agg(carreras_conj,'/') as carreras_conj 
+ from 
+ 		(SELECT distinct t_a.id_designacion,t_d.uni_acad,t_a.id_materia,t_pe.desc_carrera||'('||cod_carrera||')' as cod_carrera,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,substring(t_t.desc_item,0,5) as rol,t_a.id_periodo,t_p.descripcion as periodo,
+ 		 t_o.id_modulo as modulo,t_o.descripcion as moddes,t_a.anio,t_a.carga_horaria
+ 
+                    FROM asignacion_materia t_a 
+                    LEFT OUTER JOIN designacion t_d ON (t_a.id_designacion=t_d.id_designacion)
+                    LEFT OUTER JOIN materia t_m ON (t_m.id_materia=t_a.id_materia)
+                    LEFT OUTER JOIN plan_estudio t_pe ON (t_m.id_plan=t_pe.id_plan)
+                    LEFT OUTER JOIN periodo t_p ON (t_p.id_periodo=t_a.id_periodo)
+                    LEFT OUTER JOIN tipo t_t ON (t_a.nro_tab8=t_t.nro_tabla and t_a.rol=t_t.desc_abrev)
+                    LEFT OUTER JOIN modulo t_o ON (t_a.modulo=t_o.id_modulo)
+                    where t_a.id_designacion=".$des
+                    .$where
+                        . " 
+                  )sub2
+                left outer join ( select t_c.id_conjunto,t_p.anio,t_c.id_periodo,t_c.ua,t_e.id_materia
+  			          from en_conjunto t_e,conjunto  t_c, mocovi_periodo_presupuestario t_p
+    				  WHERE t_e.id_conjunto=t_c.id_conjunto and t_p.id_periodo=t_c.id_periodo_pres 
+ 	                        )sub3  on (sub3.ua=sub2.uni_acad and sub3.id_periodo=sub2.id_periodo and sub3.anio=sub2.anio and sub3.id_materia=sub2.id_materia)
+                left outer join (select t_e.id_conjunto,t_e.id_materia,t_p.desc_carrera||'('||t_p.cod_carrera||')' as carreras_conj 
+                                 from en_conjunto t_e,materia t_m ,plan_estudio t_p
+ 	                         where t_e.id_materia=t_m.id_materia
+ 	                         and t_p.id_plan=t_m.id_plan)sub4 on (sub4.id_conjunto=sub3.id_conjunto) 	                        
+       
+group by sub2.desc_materia,sub2.cod_carrera,sub2.rol,sub2.periodo,sub2.moddes,sub2.carga_horaria
+   )sub6             
+   order by periodo,moddes";        
+	return toba::db('designa')->consultar($sql);
+    }
     function get_listado_materias($filtro=array()){
         if (isset($filtro['anio_acad'])) {
             $anio= $filtro['anio_acad'];
