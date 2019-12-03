@@ -109,6 +109,7 @@ class ci_certificacion_periodo extends toba_ci
                 
                 $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig_cert($des['id_designacion'],$this->s__datos_filtro['anio']);
                 $i=0;
+                $datos='';
                 foreach ($mate as $ma) {//busco todas las materias correspondientes al año previamente seleccionado
                         $datos[$i]=array('col1' => $ma['desc_materia'], 'col2' => $ma['carrera'],'col3' => $ma['periodo'],'col4' => $ma['rol'],'col5' => $ma['carga_horaria'],'col6' => $ma['moddes']);
                         $i++;
@@ -119,6 +120,7 @@ class ci_certificacion_periodo extends toba_ci
                 //busco la actividad en investigacion
                 $inve=$this->dep('datos')->tabla('integrante_interno_pi')->get_proyinv_docente($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
                 $i=0;
+                $datosi='';
                 foreach ($inve as $in) {
                     $datosi[$i]=array('col1'=>'<b>Proyecto:</b>'.$in['denominacion']);
                     $i++;
@@ -129,6 +131,7 @@ class ci_certificacion_periodo extends toba_ci
                     $datosi[$i]=array('col1'=>'<b>Desde: </b>'.date_format(date_create($in['desde']),'d/m/Y').' Hasta: '.date_format(date_create($in['hasta']),'d/m/Y'));
                     $i++;
                     $datosi[$i]=array('col1'=>'<b>Hs Semanales: </b>'.$in['carga_horaria']);
+                    $i++;
                   }
                 
             }
