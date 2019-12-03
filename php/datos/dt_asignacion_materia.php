@@ -379,11 +379,7 @@ LEFT OUTER JOIN (select  t_m.id_materia,t_m.id_periodo,t_m.anio,count(distinct t
 	return toba::db('designa')->consultar($sql);
     }
     function get_listado_desig_cert($des,$anio){
-        $where="";
-        if (isset($filtro)) {
-             $where=" and anio=".$anio;
-            
-        }
+        
         $sql="select desc_materia,rol,periodo,moddes,carga_horaria,case when carreras_conj is not null then carreras_conj else cod_carrera end as carrera from       
 (select sub2.desc_materia,sub2.cod_carrera,sub2.rol,sub2.periodo,sub2.moddes,sub2.carga_horaria,string_agg(carreras_conj,'/') as carreras_conj 
  from 
@@ -398,7 +394,7 @@ LEFT OUTER JOIN (select  t_m.id_materia,t_m.id_periodo,t_m.anio,count(distinct t
                     LEFT OUTER JOIN tipo t_t ON (t_a.nro_tab8=t_t.nro_tabla and t_a.rol=t_t.desc_abrev)
                     LEFT OUTER JOIN modulo t_o ON (t_a.modulo=t_o.id_modulo)
                     where t_a.id_designacion=".$des
-                    .$where
+                    . " and anio=".$anio
                         . " 
                   )sub2
                 left outer join ( select t_c.id_conjunto,t_p.anio,t_c.id_periodo,t_c.ua,t_e.id_materia
