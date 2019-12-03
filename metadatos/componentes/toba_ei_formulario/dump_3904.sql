@@ -303,8 +303,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'tipo', --identificador
 	'ef_combo', --elemento_formulario
 	'tipo', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'1', --orden
 	'Tipo', --etiqueta
 	NULL, --etiqueta_estilo
@@ -783,8 +783,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cant_dias', --identificador
 	'ef_editable_numero', --elemento_formulario
 	'cant_dias', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'16', --orden
 	'Cant días', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1023,8 +1023,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'nro_docum_desti', --identificador
 	'ef_combo', --elemento_formulario
 	'nro_docum_desti', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'7', --orden
 	'Destinatario', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1183,8 +1183,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'origen', --identificador
 	'ef_editable', --elemento_formulario
 	'origen', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'11', --orden
 	'Origen', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1263,8 +1263,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'destino', --identificador
 	'ef_editable', --elemento_formulario
 	'destino', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'12', --orden
 	'Destino', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1343,8 +1343,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'fecha_salida', --identificador
 	'ef_editable_fecha_hora', --elemento_formulario
 	'fecha_salida', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'14', --orden
 	'Fecha de Salida', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1423,8 +1423,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'fecha_regreso', --identificador
 	'ef_editable_fecha_hora', --elemento_formulario
 	'fecha_regreso', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'15', --orden
 	'Fecha de Regreso', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1503,8 +1503,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'nombre_actividad', --identificador
 	'ef_editable', --elemento_formulario
 	'nombre_actividad', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'2', --orden
 	'Nombre de la Actividad', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1583,8 +1583,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'medio_transporte', --identificador
 	'ef_combo', --elemento_formulario
 	'medio_transporte', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'13', --orden
 	'Medio de Transporte', --etiqueta
 	NULL, --etiqueta_estilo

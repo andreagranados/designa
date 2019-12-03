@@ -543,19 +543,19 @@ class ci_pinv_otros extends designa_ci
 	}
        
         function conf__form_viatico(toba_ei_formulario $form)
-	{
-             if($this->s__mostrar_v==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
+	{           
+            if($this->s__mostrar_v==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro                
                 $this->dep('form_viatico')->descolapsar(); 
-                $form->ef('tipo')->set_obligatorio('true');
+//                $form->ef('tipo')->set_obligatorio('true');
                 //$form->ef('estado')->set_obligatorio('true');// comento para que funcione el solo lectura
-                $form->ef('nombre_actividad')->set_obligatorio('true');
-                $form->ef('medio_transporte')->set_obligatorio('true');
-                $form->ef('nro_docum_desti')->set_obligatorio('true');
-                $form->ef('origen')->set_obligatorio('true');
-                $form->ef('destino')->set_obligatorio('true');
-                $form->ef('fecha_salida')->set_obligatorio('true');
-                $form->ef('fecha_regreso')->set_obligatorio('true');
-                $form->ef('cant_dias')->set_obligatorio('true');
+//                $form->ef('nombre_actividad')->set_obligatorio('true');
+//                $form->ef('medio_transporte')->set_obligatorio('true');
+//                $form->ef('nro_docum_desti')->set_obligatorio('true');
+//                $form->ef('origen')->set_obligatorio('true');
+//                $form->ef('destino')->set_obligatorio('true');
+//                $form->ef('fecha_salida')->set_obligatorio('true');
+//                $form->ef('fecha_regreso')->set_obligatorio('true');
+                //$form->ef('cant_dias')->set_obligatorio('true');
              }else{
                 $this->dep('form_viatico')->colapsar();
              }
