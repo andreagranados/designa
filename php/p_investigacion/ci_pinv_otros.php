@@ -516,7 +516,6 @@ class ci_pinv_otros extends designa_ci
                 }
                 //agrego una linea con cant dias
                 $datos=$this->controlador()->dep('datos')->tabla('viatico')->get_listado($pi['id_pinv'],$f);
-               //  print_r($datos);
                 if(count($datos)>0){
                      $elem['tipo']='TOTAL DIAS:';
                      $elem['id_viatico']=-1;
@@ -532,14 +531,22 @@ class ci_pinv_otros extends designa_ci
           if($datos['id_viatico']==-1){
               toba::notificacion()->agregar('Debe seleccionar un viatico', 'error');   
           } else{ 
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']<>'A'){//solo en estado A puede modificar
-                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Activo(A)', 'error');   
-            }else{
+            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();  
+            $perfil = toba::usuario()->get_perfil_datos();
+            $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
+            if ($perfil == null) {//es usuario de la SCyT
+                //le deja modificar en cualquier estado
                 $this->s__mostrar_v=1;
                 $this->controlador()->dep('datos')->tabla('viatico')->cargar($datos);
+            }else{
+                if($pi['estado']<>'A'){//solo en estado A puede modificar
+                    toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Activo(A)', 'error');   
+                }else{
+                    $this->s__mostrar_v=1;
+                    $this->controlador()->dep('datos')->tabla('viatico')->cargar($datos);
+                }
+              }  
             }
-          }
 	}
        
         function conf__form_viatico(toba_ei_formulario $form)

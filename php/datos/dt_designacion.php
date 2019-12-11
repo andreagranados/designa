@@ -13,8 +13,8 @@ class dt_designacion extends toba_datos_tabla
        $i=0;$long=count($designaciones);
        while($band and $i<$long) {
            $des=$designaciones[$i]['id_designacion'];
-           $sql="SELECT sub.*,case when sub.tipo_desig=2 then true else case when sub.hasta is not null and sub.hasta<sub.desde then true else case when dias_des-dias_lic<2 then true else case when a.id_materia is not null then true else case when t.id_designacion is not null then true else case when i.id_docente is not null then true else case when pi.id_designacion is not null then true else case when pi2.id_designacion is not null then true else case when pe.id_designacion is not null then true else case when pe2.id_designacion is not null then true else false end end end end  end end end end end end as control FROM
-                (SELECT distinct t_d.id_designacion,t_d.id_docente,t_d.tipo_desig,t_d.desde,t_d.hasta,    	
+           $sql="SELECT sub.*,case when sub.tipo_desig=2 then true else case when sub.hasta is not null and sub.hasta<sub.desde then true else case when dias_des-dias_lic<2 then true else case when a.id_materia is not null then true else case when t.id_designacion is not null then true else case when i.id_docente is not null then true else case when sub2.id_designacion is not null then true else case when pe.id_designacion is not null then true else case when pe2.id_designacion is not null then true else false end end end end  end end end end end  as control FROM
+                (SELECT distinct t_d.id_designacion,t_d.cat_mapuche,t_d.id_docente,t_d.tipo_desig,t_d.desde,t_d.hasta,    	
                                          sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
                                         case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
                                             FROM designacion as t_d 
@@ -26,7 +26,11 @@ class dt_designacion extends toba_datos_tabla
                 left outer join asignacion_tutoria t on (t.id_designacion=sub.id_designacion and t.anio=$anio)
                 left outer join director_dpto i on (sub.id_docente=i.id_docente and i.desde<='".$udia."' and i.hasta>='".$pdia."')
 
-                left outer join integrante_interno_pi pi on (sub.id_designacion=pi.id_designacion and pi.desde<='".$udia."' and pi.hasta>='".$pdia."')
+                left outer join (select d.id_docente,pi.id_designacion,d.cat_mapuche 
+                                 from integrante_interno_pi pi, designacion d
+                		 where pi.id_designacion=d.id_designacion
+                		 and pi.desde<='".$udia."' and pi.hasta>='".$pdia."')sub2 on (sub.id_docente=sub2.id_docente and sub.cat_mapuche=sub2.cat_mapuche)
+                                 
                 left outer join vinculo vin on (vin.desig=sub.id_designacion)
                 left outer join integrante_interno_pi pi2 on (vin.vinc=pi2.id_designacion and pi2.desde<='".$udia."' and pi2.hasta>='".$pdia."')
                 left outer join integrante_interno_pe pe on (sub.id_designacion=pe.id_designacion and pe.desde<='".$udia."' and pe.hasta>='".$pdia."')

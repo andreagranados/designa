@@ -245,6 +245,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                     . " LEFT OUTER JOIN docente c ON (c.id_docente=b.id_docente)"
                     . " where pinvest=".$id_proy
                     . " and a.hasta>='".$fecha_ac."'"." and a.hasta<=p.fec_hasta "
+                    . " and a.check_inv=1 "
                     ." UNION "
                     . " select e.nro_docum as id_destinatario,trim(e.apellido)||', '||trim(e.nombre) as agente  
 		from integrante_externo_pi a           
@@ -252,7 +253,8 @@ class dt_pinvestigacion extends toba_datos_tabla
 		LEFT OUTER JOIN persona e ON (e.nro_docum=a.nro_docum and e.tipo_docum=a.tipo_docum)
 		 where a.pinvest=". $id_proy
 		."  and  a.hasta>='".$fecha_ac."'"." and a.hasta<=p.fec_hasta "
-		."  and e.nro_docum>0 "
+		."  and e.nro_docum>0"
+                    . " and a.check_inv=0 "
                     ." order by agente"
                     ;
             return toba::db('designa')->consultar($sql);
