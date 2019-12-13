@@ -1062,6 +1062,9 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 if (isset($filtro['id_programa'])) {
                     	$where.= " AND id_programa=".$filtro['id_programa'];
 		}
+                if (isset($filtro['tipo_desig'])) {
+                    	$where.= " AND tipo_desig=".$filtro['tipo_desig'];
+		}
                 if (isset($filtro['estado'])) {
                     if($filtro['estado']=='A'){
                         $where2.= " WHERE (estado='".$filtro['estado']."' or estado='R')";

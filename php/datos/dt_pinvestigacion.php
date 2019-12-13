@@ -181,43 +181,47 @@ class dt_pinvestigacion extends toba_datos_tabla
            
         }
         function get_docentes_sininv($filtro=array()){
-            
             //primer y ultimo dia periodo actual
-            $pdia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);
-            $udia = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
-            $concat="";
-            if(count($filtro)>0){
-                if($filtro['tipo']['valor']==2){
-                    $concat=" and fec_desde <= '".$udia."' and (fec_hasta >= '".$pdia."' or fec_hasta is null)";
+                $pdia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);
+                $udia = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
+                $concat="";
+                if(count($filtro)>0){
+                    if($filtro['tipo']['valor']==2){
+                        $concat=" and fec_desde <= '".$udia."' and fec_hasta >= '".$pdia."' and"
+                                . " desde <= '".$udia."' and hasta >= '".$pdia."'"
+                                ." and  hasta>=current_date";
+                    }
+
                 }
-               
-            }
-            $where='';
-            $con="select sigla,descripcion from unidad_acad ";
-            $con = toba::perfil_de_datos()->filtrar($con);
-            $resul=toba::db('designa')->consultar($con);
-            if(isset($resul)){
-                $where=" and uni_acad='".$resul[0]['sigla']."' ";
-            }
-            //revisa en el periodo actual: designaciones correspondientes al periodo actual y proyectos vigentes
-            //designaciones exclusivas y parciales
-            $sql = "select distinct a.id_docente,b.apellido||','||b.nombre as agente,a.cat_estat||a.dedic as categ_estat,a.carac,a.desde,a.hasta,a.uni_acad,b.legajo
-                    from designacion a, docente b, mocovi_periodo_presupuestario c
-                    where 
-                    a.id_docente=b.id_docente
-                    $where
-                    and c.actual
-                    and desde <= c.fecha_fin and (hasta >= c.fecha_inicio or hasta is null)  
-                    and dedic in (1,2)
-                    and not exists (select * from integrante_interno_pi i, pinvestigacion t_i , designacion t_d
-                                    WHERE
-                                    t_i.id_pinv=i.pinvest
-                                    and i.id_designacion=t_d.id_designacion
-                                    and a.id_docente=t_d.id_docente
-                                    ".$concat
-                                .")
-                    order by agente";
-            return toba::db('designa')->consultar($sql);
+                $where='';
+                $con="select sigla,descripcion from unidad_acad ";
+                $con = toba::perfil_de_datos()->filtrar($con);
+                $resul=toba::db('designa')->consultar($con);
+                if(isset($resul)){
+                    $where=" and uni_acad='".$resul[0]['sigla']."' ";
+                }
+                if(isset($filtro['anio']['valor'])){
+                    $where.=" and anio=".$filtro['anio']['valor'];
+                }
+                //revisa en el periodo seleccionado: designaciones correspondientes al periodo y proyectos vigentes
+                //designaciones exclusivas y parciales
+                $sql = "select distinct a.id_docente,b.apellido||','||b.nombre as agente,a.cat_estat||a.dedic as categ_estat,a.carac,a.desde,a.hasta,a.uni_acad,b.legajo
+                        from designacion a, docente b, mocovi_periodo_presupuestario c
+                        where 
+                        a.id_docente=b.id_docente
+                        $where
+                        and desde <= c.fecha_fin and (hasta >= c.fecha_inicio or hasta is null)  
+                        and dedic in (1,2)
+                        and not exists (select * from integrante_interno_pi i, pinvestigacion t_i , designacion t_d
+                                        WHERE
+                                        t_i.id_pinv=i.pinvest
+                                        and i.id_designacion=t_d.id_designacion
+                                        and a.id_docente=t_d.id_docente
+                                        ".$concat
+                                    .")
+                        order by agente";
+                return toba::db('designa')->consultar($sql);
+            
         }
 	function get_descripciones()
 	{

@@ -31,8 +31,10 @@ class ci_sin_investigacion extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-            $cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_docentes_sininv($this->s__datos_filtro));
-            
+            if(isset($this->s__datos_filtro)){
+                 $cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_docentes_sininv($this->s__datos_filtro));
+            }
+           
 	}
 
 	
