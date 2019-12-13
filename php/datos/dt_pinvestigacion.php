@@ -185,21 +185,28 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $pdia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);
                 $udia = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
                 $concat="";
-                if(count($filtro)>0){
+                if(isset($filtro['tipo']['valor'])){
                     if($filtro['tipo']['valor']==2){
                         $concat=" and fec_desde <= '".$udia."' and fec_hasta >= '".$pdia."' and"
                                 . " desde <= '".$udia."' and hasta >= '".$pdia."'"
                                 ." and  hasta>=current_date";
                     }
-
                 }
+               
                 $where='';
-                $con="select sigla,descripcion from unidad_acad ";
-                $con = toba::perfil_de_datos()->filtrar($con);
-                $resul=toba::db('designa')->consultar($con);
-                if(isset($resul)){
-                    $where=" and uni_acad='".$resul[0]['sigla']."' ";
+                $pd = toba::manejador_sesiones()->get_perfil_datos();
+                if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
+                    $con="select sigla,descripcion from unidad_acad ";
+                    $con = toba::perfil_de_datos()->filtrar($con);
+                    $resul=toba::db('designa')->consultar($con);
+                    if(isset($resul)){
+                        $where=" and uni_acad='".$resul[0]['sigla']."' ";
+                    }
+                }else{
+                   
+                    $where=" and uni_acad='".$filtro['uni_acad']['valor']."' ";
                 }
+                
                 if(isset($filtro['anio']['valor'])){
                     $where.=" and anio=".$filtro['anio']['valor'];
                 }
