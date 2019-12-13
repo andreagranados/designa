@@ -258,7 +258,7 @@ class dt_pinvestigacion extends toba_datos_tabla
 		 where a.pinvest=". $id_proy
 		."  and  a.hasta>='".$fecha_ac."'"." and a.hasta<=p.fec_hasta "
 		."  and e.nro_docum>0"
-                    . " and a.check_inv=0 "
+                    . " and a.check_inv=1 "
                     ." order by agente"
                     ;
             return toba::db('designa')->consultar($sql);
