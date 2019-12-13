@@ -205,7 +205,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 }
                 //revisa en el periodo seleccionado: designaciones correspondientes al periodo y proyectos vigentes
                 //designaciones exclusivas y parciales
-                $sql = "select distinct a.id_docente,b.apellido||','||b.nombre as agente,a.cat_estat||a.dedic as categ_estat,a.carac,a.desde,a.hasta,a.uni_acad,b.legajo
+                $sql = "select distinct a.id_docente,trim(b.apellido)||', '||trim(b.nombre) as agente,a.cat_estat||a.dedic as categ_estat,a.carac,a.desde,a.hasta,a.uni_acad,b.legajo
                         from designacion a, docente b, mocovi_periodo_presupuestario c
                         where 
                         a.id_docente=b.id_docente
