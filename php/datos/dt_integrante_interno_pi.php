@@ -3,6 +3,40 @@ require_once 'dt_mocovi_periodo_presupuestario.php';
 require_once 'consultas_mapuche.php';
 class dt_integrante_interno_pi extends toba_datos_tabla
 {
+    function get_designaciones_vencidas($filtro=null){
+        $where = '';
+        if (isset($filtro['estado']['valor'])) {
+            $where .= " and  p.estado = ".quote($filtro['estado']['valor']);   
+	}
+        if (isset($filtro['fec_desde']['valor'])) {
+            $where .= " and  fec_desde= '".$filtro['fec_desde']['valor']."'";   
+	}
+
+        $sql="select * from 
+                (select trim(doc.apellido)||', '||trim(doc.nombre) as agente,doc.legajo,p.codigo,substring(p.denominacion,0,20)||'...' as denominacion,p.uni_acad,i.desde,i.hasta,i.funcion_p,d.cat_mapuche,d.desde as desded,d.hasta as hastad
+                from pinvestigacion p, integrante_interno_pi i, designacion d, docente doc
+                where p.id_pinv=i.pinvest
+                $where
+                and i.id_designacion=d.id_designacion
+                and d.id_docente=doc.id_docente
+                and not (d.desde<=i.hasta and ( d.hasta is null or d.hasta>=i.desde) )
+                and not exists (select * from designacion de
+                                where de.id_docente=d.id_docente
+                                and de.cat_mapuche=d.cat_mapuche
+                                and de.desde<=i.hasta and ( de.hasta is null or de.hasta>=i.desde))
+                        UNION
+                select trim(doc.apellido)||', '||trim(doc.nombre) as agente,doc.legajo,p.codigo,substring(p.denominacion,0,20)||'...' as denominacion,p.uni_acad,i.desde,i.hasta,i.funcion_p,d.cat_mapuche,d.desde as desded,d.hasta as hastad
+                from pinvestigacion p, integrante_interno_pi i, designacion d, docente doc
+                where p.id_pinv=i.pinvest
+                $where
+                and i.id_designacion=d.id_designacion
+                and d.id_docente=doc.id_docente
+                and (d.desde<=i.hasta and ( d.hasta is null or d.hasta>=i.desde)) 
+                and d.hasta is not null and d.hasta<current_date and d.hasta<i.hasta)sub
+                order by uni_acad,denominacion
+                ";
+         return toba::db('designa')->consultar($sql); 
+    }
     function dar_baja($id_pinv,$hastap,$fec_baja,$nro_resol){//modifica la fecha de baja de los intergrantes que estan hasta el final del proyecto
         $sql="update integrante_interno_pi set hasta='".$fec_baja."',rescd_bm='".$nro_resol."' where  pinvest=".$id_pinv." and hasta='".$hastap."'";
         toba::db('designa')->consultar($sql); 
