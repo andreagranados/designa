@@ -4,6 +4,7 @@ require_once 'consultas_mapuche.php';
 class dt_integrante_interno_pi extends toba_datos_tabla
 {
     function get_designaciones_vencidas($filtro=null){
+        //listado de todas los docentes asociados a proyectos con una designación que ya vencio (no fue renovada)
         $where = '';
         if (isset($filtro['estado']['valor'])) {
             $where .= " and  p.estado = ".quote($filtro['estado']['valor']);   
@@ -12,29 +13,54 @@ class dt_integrante_interno_pi extends toba_datos_tabla
             $where .= " and  fec_desde= '".$filtro['fec_desde']['valor']."'";   
 	}
 
-        $sql="select * from 
-                (select trim(doc.apellido)||', '||trim(doc.nombre) as agente,doc.legajo,p.codigo,substring(p.denominacion,0,20)||'...' as denominacion,p.uni_acad,i.desde,i.hasta,i.funcion_p,d.cat_mapuche,d.desde as desded,d.hasta as hastad
-                from pinvestigacion p, integrante_interno_pi i, designacion d, docente doc
-                where p.id_pinv=i.pinvest
-                $where
-                and i.id_designacion=d.id_designacion
-                and d.id_docente=doc.id_docente
-                and not (d.desde<=i.hasta and ( d.hasta is null or d.hasta>=i.desde) )
-                and not exists (select * from designacion de
-                                where de.id_docente=d.id_docente
-                                and de.cat_mapuche=d.cat_mapuche
-                                and de.desde<=i.hasta and ( de.hasta is null or de.hasta>=i.desde))
-                        UNION
-                select trim(doc.apellido)||', '||trim(doc.nombre) as agente,doc.legajo,p.codigo,substring(p.denominacion,0,20)||'...' as denominacion,p.uni_acad,i.desde,i.hasta,i.funcion_p,d.cat_mapuche,d.desde as desded,d.hasta as hastad
-                from pinvestigacion p, integrante_interno_pi i, designacion d, docente doc
-                where p.id_pinv=i.pinvest
-                $where
-                and i.id_designacion=d.id_designacion
-                and d.id_docente=doc.id_docente
-                and (d.desde<=i.hasta and ( d.hasta is null or d.hasta>=i.desde)) 
-                and d.hasta is not null and d.hasta<current_date and d.hasta<i.hasta)sub
+        $sql="select subf.agente,subf.legajo,subf.codigo,subf.denominacion,subf.uni_acad,subf.desde,subf.hasta,subf.funcion_p,subf.cat_mapuche,subf.desded,subf.hastad,string_agg(director,'/') as director
+               from (select sub.*,case when subd.apellido is not null then trim(subd.apellido)||', '||trim(subd.nombre) else case when subd2.apellido is not null then trim(subd2.apellido)||', '||trim(subd2.nombre) else ''  end end as director from 
+                        (select p.id_pinv,trim(doc.apellido)||', '||trim(doc.nombre) as agente,doc.legajo,p.codigo,substring(p.denominacion,0,20)||'...' as denominacion,p.uni_acad,i.desde,i.hasta,i.funcion_p,d.cat_mapuche,d.desde as desded,d.hasta as hastad
+                        from pinvestigacion p, integrante_interno_pi i, designacion d, docente doc
+                        where p.id_pinv=i.pinvest
+                        $where
+                        and i.id_designacion=d.id_designacion
+                        and d.id_docente=doc.id_docente
+                        and not (d.desde<=i.hasta and ( d.hasta is null or d.hasta>=i.desde) )
+                        and not exists (select * from designacion de
+                                        where de.id_docente=d.id_docente
+                                        and de.cat_mapuche=d.cat_mapuche
+                                        and de.desde<=i.hasta and ( de.hasta is null or de.hasta>=i.desde))
+                                UNION
+                        select p.id_pinv,trim(doc.apellido)||', '||trim(doc.nombre) as agente,doc.legajo,p.codigo,substring(p.denominacion,0,20)||'...' as denominacion,p.uni_acad,i.desde,i.hasta,i.funcion_p,d.cat_mapuche,d.desde as desded,d.hasta as hastad
+                        from pinvestigacion p, integrante_interno_pi i, designacion d, docente doc
+                        where p.id_pinv=i.pinvest
+                        $where
+                        and i.id_designacion=d.id_designacion
+                        and d.id_docente=doc.id_docente
+                        and (d.desde<=i.hasta and ( d.hasta is null or d.hasta>=i.desde)) 
+                        and d.hasta is not null and d.hasta<current_date and d.hasta<i.hasta
+                )sub
+                LEFT OUTER JOIN ( select id2.pinvest,max(id2.hasta) as hasta
+                                        from integrante_interno_pi id2
+                                        where  (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') 
+                                        group by id2.pinvest      ) sub2   ON (sub2.pinvest=sub.id_pinv)   
+		LEFT OUTER JOIN (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,ic.hasta,ic.check_inv
+					from integrante_interno_pi ic,designacion t_c2 ,docente t_dc2
+                                        where (ic.funcion_p='DP' or ic.funcion_p='DE'  or ic.funcion_p='D' or ic.funcion_p='DpP') 
+                                        and t_dc2.id_docente=t_c2.id_docente
+                                        and t_c2.id_designacion=ic.id_designacion 
+                                        )  subd  ON (subd.pinvest=sub.id_pinv and subd.hasta=sub.hasta)     
+		LEFT OUTER JOIN ( select id2.pinvest,max(id2.hasta) as hasta
+                                        from integrante_externo_pi id2
+                                        where  (id2.funcion_p='DE' or id2.funcion_p='DEpP' )
+                                        group by id2.pinvest      ) sub3   ON (sub3.pinvest=sub.id_pinv) 
+                LEFT OUTER JOIN (select id3.pinvest,t_d3.apellido,t_d3.nombre,id3.hasta,id3.check_inv
+					from integrante_externo_pi id3,persona t_d3
+                                        where (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) 
+                                        and t_d3.tipo_docum=id3.tipo_docum 
+                                        and t_d3.nro_docum=id3.nro_docum
+                                        )  subd2  ON (subd2.pinvest=sub.id_pinv and subd2.hasta=sub2.hasta)                                           
+		                       
                 order by uni_acad,denominacion
-                ";
+                )subf    
+            group by subf.agente,subf.legajo,subf.codigo,subf.denominacion,subf.uni_acad,subf.desde,subf.hasta,subf.funcion_p,subf.cat_mapuche,subf.desded,subf.hastad
+                ";//esto ultimo es para ver los que la designacion esta dentro del periodo de participacion pero ya se vencio
          return toba::db('designa')->consultar($sql); 
     }
     function dar_baja($id_pinv,$hastap,$fec_baja,$nro_resol){//modifica la fecha de baja de los intergrantes que estan hasta el final del proyecto

@@ -14,6 +14,8 @@ class ci_designacionesvencidas extends toba_ci
             if (isset($this->s__datos_filtro)) {
                 $filtro->set_datos($this->s__datos_filtro);
 		}
+            $filtro->columna('estado')->set_condicion_fija('es_igual_a',true)  ;
+            $filtro->columna('fec_desde')->set_condicion_fija('es_igual_a',true)  ;
 	}
 
 	function evt__filtros__filtrar($datos)
