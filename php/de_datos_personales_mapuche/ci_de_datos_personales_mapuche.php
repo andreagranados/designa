@@ -41,7 +41,7 @@ class ci_de_datos_personales_mapuche extends toba_ci
 
 	function evt__cuadro__seleccion($datos)
 	{
-            //print_r($datos);exit();// ( [id_docente] => 3338 [nro_legaj] => 59381 [desc_appat] => OSSES [desc_nombr] => MARIA LAURA [nro_cuil3] => 27 [nro_cuil4] => 23942461 [nro_cuil5] => 4 [nacim] => 1974-11-18 ) 
+            //print_r($datos);exit();( [id_docente] => 3338 [nro_legaj] => 59381 [desc_appat] => OSSES [desc_nombr] => MARIA LAURA [nro_cuil3] => 27 [nro_cuil4] => 23942461 [nro_cuil5] => 4 [nacim] => 1974-11-18 ) 
             //print_r($this->s__datos);exit();
                 $d=array();
                 $d['id_docente']=$datos['id_docente'];
@@ -56,6 +56,8 @@ class ci_de_datos_personales_mapuche extends toba_ci
                 $valores['tipo_docum']=$datos['tipo_doc'];
                 $valores['tipo_sexo']=$datos['sexo'];
                 $valores['fec_ingreso']=$datos['fec_ingreso'];
+                $valores['telefono']=$datos['telefono'];
+                $valores['telefono_celular']=$datos['telefono_celular'];
                 $this->dep('datos')->tabla('docente')->cargar($d);//carga el docente seleccionado
                 $this->dep('datos')->tabla('docente')->set($valores);
                 $this->dep('datos')->tabla('docente')->sincronizar();

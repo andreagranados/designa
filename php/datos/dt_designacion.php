@@ -2040,9 +2040,10 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 //reemplazo por esta para traer todas la materias en conjunto si las hay
                 $sql="select sub4.uni_acad,d.apellido||', '||d.nombre as docente_nombre,d.legajo,sub4.id_designacion,sub4.cat_est,sub4.carac,sub4.desde,sub4.hasta,t_mo.descripcion as modulo,carga_horaria,observacion,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo, dep.descripcion as dep,ar.descripcion as area,t_o.descripcion as ori,case when materia_conj is not null then materia_conj else m.desc_materia||'('||pl.cod_carrera||' de '||pl.uni_acad|| ')' end as desc_materia
  from(select sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion,string_agg(sub4.materia,'/') as materia_conj from (select distinct * from (
-    select distinct a.anio,b.id_designacion,b.id_docente,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,b.id_departamento,b.id_area,b.id_orientacion
-                          from asignacion_materia a, designacion b
+    select distinct a.anio,b.id_designacion,b.id_docente,d.legajo,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,b.id_departamento,b.id_area,b.id_orientacion
+                          from asignacion_materia a, designacion b, docente d
                           where a.id_designacion=b.id_designacion
+                            and b.id_docente=d.id_docente
                             and not (b.hasta is not null and b.hasta<=b.desde)
                          )sub1
                          ".$where2." )  sub2                   

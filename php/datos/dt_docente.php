@@ -172,16 +172,29 @@ class dt_docente extends toba_datos_tabla
                             nro_cuil5   integer,
                             sexo        character(1),
                             nacim       date,
-                            fec_ingreso date
+                            fec_ingreso date,
+                            telefono_celular character(30),
+                            telefono    character(30)
                     );";
                     toba::db('designa')->consultar($sql);
                     foreach ($datos_mapuche as $valor) {
                         if(isset($valor['fec_ingreso'])){
-                             $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."','".$valor['fec_ingreso']."')";
-                        }else{//si la fecha de ingreso es nula
-                             $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."')";
+                            $ing="'".$valor['fec_ingreso']."'";
+                        }else{
+                            $ing='null';
                         }
-                       
+                        if(isset($valor['telefono_celular'])){
+                            $cel="'".$valor['telefono_celular']."'";
+                        }else{
+                            $cel='null';
+                        }
+                        if(isset($valor['telefono'])){
+                            $tel="'".$valor['telefono']."'";
+                        }else{
+                            $tel='null';
+                        }
+                        $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."',".$ing.",".$cel.",".$tel.")";
+                                             
                         toba::db('designa')->consultar($sql);
                     }
             

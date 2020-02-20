@@ -45,7 +45,7 @@ class ci_materias extends toba_ci
 	function conf__formulario(toba_ei_formulario $form)
 	{
 		if ($this->dep('datos')->esta_cargada()) {
-			$form->set_datos($this->dep('datos')->tabla('materia')->get());
+                    $form->set_datos($this->dep('datos')->tabla('materia')->get());
 		}
                 if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
                     $this->dep('formulario')->descolapsar();

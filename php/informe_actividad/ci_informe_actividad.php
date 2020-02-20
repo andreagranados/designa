@@ -4,6 +4,19 @@ class ci_informe_actividad extends toba_ci
     	protected $s__datos_filtro;
         protected $s__where;
         protected $s__listado;
+        protected $s__columnas;
+        //-----------------------------------------------------------------------------------
+	//---- formulario -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+	function conf__columnas(toba_ei_formulario $form)
+	{
+            $form->set_datos($this->s__columnas);    
+
+	}
+        function evt__columnas__modificacion($datos)
+        {
+            $this->s__columnas = $datos;
+        }
          //-----------------------------------------------------------------------------------
 	//---- filtros ----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -39,8 +52,22 @@ class ci_informe_actividad extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
             if (isset($this->s__datos_filtro)) {
+                //$columnas componentes obligatoras: clave, titulo
+//                $cuadro->limpiar_columnas();
+//                $l['clave'] ='nro_docum';
+//                $l['titulo'] ='DNI';
+//                $c[1] = $l;
+//                $l['clave'] ='legajo';
+//                $l['titulo'] ='Legajo';
+//                $c[0] = $l;
+//                $this->dep('cuadro')->agregar_columnas($c);
+                
+                if($this->s__columnas['nro_docum']==0){
+                        $c=array('nro_docum');
+                        $this->dep('cuadro')->eliminar_columnas($c); 
+                }
                 $this->s__listado=$this->dep('datos')->tabla('asignacion_materia')->informe_actividad($this->s__datos_filtro);
-                $cuadro->set_datos($this->s__listado);    
+                $cuadro->set_datos($this->s__listado);//return $this->s__listado;
 		} 
 	}
         

@@ -40,8 +40,10 @@ class consultas_mapuche
 // 	return $datos_mapuche;
 // 	}
  function get_dh01($documentos){
-    $sql="select a.*,b.fec_ingreso from mapuche.dh01 a"
-            . " left outer join mapuche.dh09 b on (a.nro_legaj=b.nro_legaj) where a.nro_docum in($documentos)";
+    $sql="select a.*,b.fec_ingreso,c.telefono_celular,c.telefono from mapuche.dh01 a"
+            . " left outer join mapuche.dh09 b on (a.nro_legaj=b.nro_legaj) "
+            . " left outer join mapuche.dha1 c on (a.nro_legaj=c.nro_persona and domprincipal) "
+            . " where a.nro_docum in($documentos)";
     $datos_mapuche = toba::db('mapuche')->consultar($sql);
     return $datos_mapuche;
 }

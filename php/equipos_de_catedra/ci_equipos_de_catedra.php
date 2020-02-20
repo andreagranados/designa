@@ -31,7 +31,7 @@ class ci_equipos_de_catedra extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
+		if (isset($this->s__where)) {
                     $datos=$this->dep('datos')->tabla('designacion')->get_equipos_cat($this->s__where);             
 		    $cuadro->set_datos($datos);
 		}
