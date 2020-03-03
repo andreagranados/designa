@@ -10,9 +10,9 @@ class ci_equipos_de_catedra extends toba_ci
 
 	function conf__filtros(toba_ei_filtro $filtro)
 	{
-		if (isset($this->s__datos_filtro)) {
-			$filtro->set_datos($this->s__datos_filtro);
-		}
+            if (isset($this->s__datos_filtro)) {
+                    $filtro->set_datos($this->s__datos_filtro);
+            }
 	}
 
 	function evt__filtros__filtrar($datos)

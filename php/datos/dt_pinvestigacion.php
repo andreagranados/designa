@@ -588,6 +588,9 @@ class dt_pinvestigacion extends toba_datos_tabla
                             case 'es_igual_a':$where.=" and tipo = '".$filtro['tipo']['valor']."'";break;
                       }
                   }
+                  if (isset($filtro['id_convocatoria']['valor'])) {
+			$where .= " and t_p.id_convocatoria = ".$filtro['id_convocatoria']['valor'];   
+                    }
                   $where2='';
                   if (isset($filtro['desc_tipo']['valor'])) {
                     switch ($filtro['desc_tipo']['condicion']) {
@@ -602,6 +605,7 @@ class dt_pinvestigacion extends toba_datos_tabla
 		$sql = "SELECT * FROM ("."SELECT distinct
 			t_p.id_pinv,
 			t_p.codigo,
+                        t_p.id_convocatoria,
                         case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'PROYECTO DE PROGRAMA' else 'PROYECTO' end end as desc_tipo,
 			t_p.denominacion,
 			t_p.nro_resol,

@@ -114,5 +114,11 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
             $sql="select distinct anio from convocatoria_proyectos ";
             return toba::db('designa')->consultar($sql);  
         }
+	function get_descripciones()
+	{
+		$sql = "SELECT id_conv, descripcion FROM convocatoria_proyectos ORDER BY descripcion";
+		return toba::db('designa')->consultar($sql);
+	}
+
 }
 ?>

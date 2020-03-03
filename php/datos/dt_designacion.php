@@ -1992,8 +1992,87 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		$sql = "SELECT id_designacion, cat_mapuche FROM designacion ORDER BY cat_mapuche";
 		return toba::db('designa')->consultar($sql);
 	}
+//idem equipos de catedra excepto que por cada materia del conjunto muestra una fila
+        function get_materias_equipo($filtro=array()){
+            $where=" WHERE 1=1 ";
+            $where2=" WHERE 1=1 ";
+            if (isset($filtro['anio'])) {
+                $where.= " and anio= ".quote($filtro['anio']['valor']);
+            }
+            if (isset($filtro['carrera'])) {
+                    switch ($filtro['carrera']['condicion']) {
+                        case 'contiene':$where2.= " and carrera ILIKE ".quote("%{$filtro['carrera']['valor']}%");break;
+                        case 'no_contiene':$where2.= " and carrera NOT ILIKE ".quote("%{$filtro['carrera']['valor']}%");break;
+                        case 'comienza_con':$where2.= "and carrera ILIKE ".quote("{$filtro['carrera']['valor']}%");break;
+                        case 'termina_con':$where2.= "and carrera ILIKE ".quote("%{$filtro['carrera']['valor']}");break;
+                        case 'es_igual_a':$where2.= " and carrera = ".quote("{$filtro['carrera']['valor']}");break;
+                        case 'es_distinto_de':$where2.= " and carrera <> ".quote("{$filtro['carrera']['valor']}");break;
+                    }	
+	    }
+            if (isset($filtro['legajo'])) {
+                $where2.= " and legajo = ".quote($filtro['legajo']['valor']);
+            }
+//            if (isset($filtro['carrera'])) {
+//                $where2.= " and carrera= ".quote($filtro['carrera']['valor']);
+//            }
+            //si el usuario esta asociado a un perfil de datos
+            $con="select sigla from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            if(count($resul)<=1){//es usuario de una unidad academica
+                $where.=" and uni_acad = ".quote($resul[0]['sigla']);
+            }else{
+                //print_r($filtro);exit;
+                if (isset($filtro['uni_acad'])) {
+                    $where.= " and uni_acad= ".quote($filtro['uni_acad']['valor']);
+                }
+            }
+            
+            $sql="select * from (select 
+                case when conj='sin_conj' then desc_materia else desc_mat_conj end as materia,
+                case when conj='sin_conj' then cod_siu else cod_conj end as cod_siu,
+                case when conj='sin_conj' then cod_carrera else car_conj end as carrera,
+                case when conj='sin_conj' then ordenanza else ord_conj end as ordenanza,
+                docente_nombre,legajo,cat_est,id_designacion,modulo,rol,periodo,id_conjunto
+                from(
+                select sub5.uni_acad,trim(d.apellido)||', '||trim(d.nombre) as docente_nombre,d.legajo,cat_est,sub5.id_designacion,carac,t_mo.descripcion as modulo,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo,
+                case when sub5.desc_materia is not null then 'en_conj' else 'sin_conj' end as conj,id_conjunto,
+                m.desc_materia,m.cod_siu,pl.cod_carrera,pl.ordenanza,
+                sub5.desc_materia as desc_mat_conj,sub5.cod_siu as cod_conj,sub5.cod_carrera as car_conj,sub5.ordenanza as ord_conj
+                 from(
+
+                   select sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,sub2.uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion,sub4.desc_materia ,sub4.cod_carrera,sub4.ordenanza,sub4.cod_siu,sub3.id_conjunto
+                      from (select distinct * from (
+                                        select distinct a.anio,b.id_designacion,b.id_docente,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,b.id_departamento,b.id_area,b.id_orientacion
+                                          from asignacion_materia a, designacion b
+                                          where a.id_designacion=b.id_designacion
+                                            and not (b.hasta is not null and b.hasta<=b.desde)
+                                         )sub1
+                                         --where uni_acad='CRUB' and anio=2020 
+                                         ".$where .")  sub2                   
+                    left outer join                       
+                     ( select t_c.id_conjunto,t_p.anio,t_c.id_periodo,t_c.ua,t_e.id_materia
+                     from en_conjunto t_e,conjunto  t_c, mocovi_periodo_presupuestario t_p
+                     WHERE t_e.id_conjunto=t_c.id_conjunto and t_p.id_periodo=t_c.id_periodo_pres 
+                                        )sub3                        on (sub3.ua=sub2.uni_acad and sub3.id_periodo=sub2.id_periodo and sub3.anio=sub2.anio and sub3.id_materia=sub2.id_materia)
+                    left outer join (select t_e.id_conjunto,t_e.id_materia,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.uni_acad,t_p.ordenanza
+                                         from en_conjunto t_e,materia t_m ,plan_estudio t_p
+                                                      where t_e.id_materia=t_m.id_materia
+                                                      and t_p.id_plan=t_m.id_plan)sub4 on sub4.id_conjunto=sub3.id_conjunto
 
 
+
+                                  )sub5
+                                  LEFT OUTER JOIN docente d ON d.id_docente=sub5.id_docente
+                                  LEFT OUTER JOIN periodo p ON p.id_periodo=sub5.id_periodo
+                                  LEFT OUTER JOIN modulo t_mo ON sub5.modulo=t_mo.id_modulo
+                                  LEFT OUTER JOIN materia m ON m.id_materia=sub5.id_materia
+                                  LEFT OUTER JOIN plan_estudio pl ON pl.id_plan=m.id_plan
+                  )sub6)sub
+                  $where2
+                order by id_conjunto,materia,docente_nombre";
+            return toba::db('designa')->consultar($sql);
+        }
         //solo trae las designaciones que tienen materias asociadas
         //designaciones de la Unidad Academica y del periodo x
         function get_equipos_cat($where=null){
