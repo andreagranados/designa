@@ -261,10 +261,14 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD'
                                     group by id_docente)  b
                     ON (b.id_docente=t_do.id_docente)              "
-               . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
-                                    from titulos_docente t_t , titulo t_u 
-                                    where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='POST'
-                                    group by id_docente)  c
+               . " LEFT OUTER JOIN (select sub1.id_docente,max(desc_titul) as desc_titul from 
+                                    (select * from titulos_docente t_t, titulo t_u 
+                                                     where t_t.codc_titul=t_u.codc_titul and codc_nivel='POST' )sub1
+                                    inner join (select id_docente, max(orden) as orden
+                                                                        from titulos_docente t_t , titulo t_u 
+                                                                        where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='POST'
+                                                                        group by id_docente)sub2 on (sub1.orden=sub2.orden and sub1.id_docente=sub2.id_docente)
+                                    group by sub1.id_docente)  c
                     ON (c.id_docente=t_do.id_docente)              "
                ." where t_i.pinvest in (select t_s.id_proyecto
                                        from pinvestigacion t_p, subproyecto t_s

@@ -3,8 +3,8 @@ class dt_plan_estudio extends toba_datos_tabla
 {
 	function get_descripciones()
 	{
-		$sql = "SELECT id_plan, cod_carrera FROM plan_estudio ORDER BY cod_carrera";
-		return toba::db('designa')->consultar($sql);
+            $sql = "SELECT id_plan, cod_carrera FROM plan_estudio ORDER BY cod_carrera";
+            return toba::db('designa')->consultar($sql);
 	}
 
         function get_planes($id_ua=null)
@@ -18,5 +18,16 @@ class dt_plan_estudio extends toba_datos_tabla
                     . " ORDER BY cod_carrera";
 	    return toba::db('designa')->consultar($sql);
 	}
+        function get_listado($filtro=null){
+            $where=" WHERE ";
+            if(isset($filtro)){
+                $where.=$filtro;
+            }else{
+                $where='';
+            }
+            $sql = "SELECT * "
+                    . " FROM plan_estudio $where ORDER BY cod_carrera";
+            return toba::db('designa')->consultar($sql);
+        }
 }
 ?>
