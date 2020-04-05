@@ -554,6 +554,7 @@ class dt_designacion extends toba_datos_tabla
                         not exists (select * from designacion c, docente d
                                     where 
                                     c.id_docente=d.id_docente
+                                    and c.desde <= '".$udia."' and (c.hasta >= '".$pdia."' or c.hasta is null)
                                     and d.legajo=b.nro_legaj
                                     and c.uni_acad=b.ua 
                                     and c.cat_mapuche=b.codc_categ
