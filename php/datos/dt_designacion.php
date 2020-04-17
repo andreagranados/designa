@@ -493,7 +493,7 @@ class dt_designacion extends toba_datos_tabla
                     )m_o
                     full outer join mapu m_u 
                     on (m_o.nro_docum=m_u.nro_docum and m_o.uni_acad=m_u.uni_acad and m_o.cat_mapuche=m_u.categ)
-                    order by m_o.apellido,m_o.nombre)
+                    order by m_o.apellido,m_o.nombre)sub
                     $where";
             return toba::db('designa')->consultar($sql);
      }
