@@ -465,7 +465,7 @@ class dt_designacion extends toba_datos_tabla
                 $sql=" insert into mapu values ("."'".str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_legaj'].",".$valor['nro_docum'].",'".$valor['codc_categ']."',".$valor['chkstopliq'].",'".$valor['uni_acad']['valor']."',".$valor['dias']['valor'].")";
                 toba::db('designa')->consultar($sql);
             }
-            $sql=" SELECT m_o.apellido||', '||m_o.nombre as agente_moco,m_o.nro_docum,m_o.legajo,m_o.categ,m_o.dias,m_u.ape||', '||m_u.nom as agente_mapu,m_u.nro_docum as docmapu,m_u.categ as catemapu,m_u.dias as diasmapu,
+            $sql=" SELECT m_o.apellido||', '||m_o.nombre as agente_moco,m_o.nro_docum,m_o.legajo,m_o.cat_mapuche,m_o.dias,m_u.ape||', '||m_u.nom as agente_mapu,m_u.nro_docum as docmapu,m_u.categ as catemapu,m_u.dias as diasmapu,
                 case when m_o.nro_docum is not null and m_u.nro_docum is not null and m_u.dias=m_o.dias then 3 else 
             case when  (m_o.nro_docum is null and m_u.nro_docum is not null and m_u.dias>0)or(m_o.nro_docum is not null and m_u.nro_docum is not null and m_u.dias>m_o.dias) then 1 else 
             case when m_o.nro_docum is not null and m_u.nro_docum is null and m_o.dias>0 then 2 else 4 end end end as tipo
@@ -489,7 +489,7 @@ class dt_designacion extends toba_datos_tabla
                     group by apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche
                     )m_o
                     full outer join mapu m_u 
-                    on (m_o.nro_docum=m_u.nro_docum and m_o.uni_acad=m_u.uni_acad and m_o.categ=m_u.categ)
+                    on (m_o.nro_docum=m_u.nro_docum and m_o.uni_acad=m_u.uni_acad and m_o.cat_mapuche=m_u.categ)
                     $where
                     order by m_o.apellido,m_o.nombre";
             return toba::db('designa')->consultar($sql);
