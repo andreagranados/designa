@@ -448,7 +448,7 @@ class dt_designacion extends toba_datos_tabla
             }
          //recupero los cargos de mapuche de ese periodo y esa ua
             $datos_mapuche = consultas_mapuche::get_docentes_categ_dias($ua,$udia,$pdia);
-print_r($datos_mapuche);exit;
+//print_r($datos_mapuche);exit;
             $sql=" CREATE LOCAL TEMP TABLE mapu
             ( 
                 ape             character varying(100),
@@ -462,7 +462,7 @@ print_r($datos_mapuche);exit;
             );";
             toba::db('designa')->consultar($sql);
             foreach ($datos_mapuche as $valor) {
-                $sql=" insert into mapu values ("."'".str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_legaj'].",".$valor['nro_docum'].",'".$valor['codc_categ']."',".$valor['chkstopliq'].",'".$valor['codc_uacad']['valor']."',".$valor['dias']['valor'].")";
+                $sql=" insert into mapu values ("."'".str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_legaj'].",".$valor['nro_docum'].",'".$valor['codc_categ']."',".$valor['chkstopliq'].",'".$valor['codc_uacad']."',".$valor['dias'].")";
                 toba::db('designa')->consultar($sql);
             }
 //            $sql="select * from mapu;";
