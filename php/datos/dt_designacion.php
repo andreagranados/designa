@@ -455,7 +455,7 @@ class dt_designacion extends toba_datos_tabla
                 nom character varying(100),
                 nro_legaj   integer,
                 nro_docum   integer,
-                codc_categ character varying(4),
+                categ character varying(4),
                 chkstopliq  integer,
                 uni_acad   character(5),
                 dias    integer
