@@ -492,7 +492,7 @@ class dt_designacion extends toba_datos_tabla
                     on (m_o.nro_docum=m_u.nro_docum and m_o.uni_acad=m_u.uni_acad and m_o.categ=m_u.categ)
                     $where
                     order by m_o.apellido,m_o.nombre";
-            
+            return toba::db('designa')->consultar($sql);
      }
     function get_comparacion($filtro){
             //print_r($filtro);exit();// Array ( [uni_acad] => FAIF [anio] => 2016 ) 
