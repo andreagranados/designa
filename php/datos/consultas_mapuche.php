@@ -2,7 +2,27 @@
 
 class consultas_mapuche
 {
-	
+  function get_docentes_categ_dias($ua,$udia,$pdia){
+     $sql="select  desc_appat,desc_nombr,nro_legaj,nro_docum,codc_uacad,codc_categ,chkstopliq,sum(case when chkstopliq=1 then 0 else case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic) else 0 end end )as dias
+            from
+            (select distinct b.desc_appat,b.desc_nombr,b.nro_legaj,b.nro_docum,a.codc_uacad,a.nro_cargo,a.codc_categ,a.fec_alta,a.fec_baja,a.chkstopliq,
+             sum(case when l.nro_licencia is null then 0 else (case when (l.fec_desde>'".$udia."' or (l.fec_hasta is not null and l.fec_hasta<'".$pdia."')) then 0 else (case when l.fec_desde<='".$pdia."' then ( case when (l.fec_hasta is null or l.fec_hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((l.fec_hasta-'".$pdia."')+1) end ) else (case when (l.fec_hasta is null or l.fec_hasta>='".$udia."' ) then ((('".$udia."')-l.fec_desde+1)) else ((l.fec_hasta-l.fec_desde+1)) end ) end )end)end) as dias_lic,
+             case when a.fec_alta<='".$pdia."' then ( case when (a.fec_baja>='".$udia."' or a.fec_baja is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((a.fec_baja-'".$pdia."')+1) end ) else (case when (a.fec_baja>='".$udia."' or a.fec_baja is null) then ((('".$udia."')-a.fec_alta+1)) else ((a.fec_baja-a.fec_alta+1)) end ) end as dias_des 
+            from mapuche.dh03 a
+            inner join  mapuche.dh01 b on ( a.nro_legaj=b.nro_legaj)
+            inner join  mapuche.dh11 c on (c.codc_categ=a.codc_categ)
+            left outer join mapuche.dh05 l on ((a.nro_cargo=l.nro_cargo or a.nro_legaj=l.nro_legaj ) and l.fec_desde <= '".$udia."' and (l.fec_hasta >= '".$pdia."' or l.fec_hasta is null))
+            left outer join mapuche.dl02 m on ( l.nrovarlicencia = m.nrovarlicencia and m.es_remunerada=false )
+            WHERE tipo_escal='D' 
+            and a.fec_alta <= '".$udia."' and (a.fec_baja >= '".$pdia."' or a.fec_baja is null)
+            --and a.nro_legaj=52816
+            and a.codc_uacad='".$ua."'
+            and b.tipo_estad<>'P'
+            group by b.desc_appat,b.desc_nombr,b.nro_legaj,b.nro_docum,a.codc_uacad,a.nro_cargo,a.codc_categ,a.fec_alta,a.fec_baja,a.chkstopliq  
+            )sub    
+            group by desc_appat,desc_nombr,nro_legaj,nro_docum,codc_uacad,codc_categ,chkstopliq  "; 
+     return toba::db('mapuche')->consultar($sql);
+  }	
   function get_antiguedad_del_docente($legajo){
   	$sql="select a.nro_legaj,trunc(max(impp_conce)) as antig
 		from mapuche.dh21h a, mapuche.dh03 b

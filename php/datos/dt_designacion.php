@@ -434,6 +434,66 @@ class dt_designacion extends toba_datos_tabla
         
             
     }
+    function get_diferencias($filtro){
+       
+            $udia='2020-04-30';
+            $pdia='2020-04-01';
+            $where=' where 1=1';
+            $ua=trim($filtro['uni_acad']['valor']);
+            if($ua=="ESCM"){
+                $ua='IBMP';
+            };
+            if(isset($filtro['tipo'])){
+               $where.=$where." and tipo=".$filtro['tipo']['valor'];
+            }
+         //recupero los cargos de mapuche de ese periodo y esa ua
+            $datos_mapuche = consultas_mapuche::get_docentes_categ_dias($ua,$udia,$pdia);
+
+            $sql=" CREATE LOCAL TEMP TABLE mapu
+            ( 
+                ape character varying(100),
+                nom character varying(100),
+                nro_legaj   integer,
+                nro_docum   integer,
+                codc_categ character varying(4),
+                chkstopliq  integer,
+                ua   character(5),
+                dias    integer
+            );";
+            toba::db('designa')->consultar($sql);
+            foreach ($datos_mapuche as $valor) {
+                $sql=" insert into mapu values ("."'".str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_legaj'].",".$valor['nro_docum'].",'".$valor['codc_categ']."',".$valor['chkstopliq'].",'".$valor['uni_acad']['valor']."',".$valor['dias']['valor'].")";
+                toba::db('designa')->consultar($sql);
+            }
+            $sql=" SELECT m_o.apellido||', '||m_o.nombre as agente_moco,m_o.nro_docum,m_o.legajo,m_o.categ,m_o.dias,m_u.ape||', '||m_u.nom as agente_mapu,m_u.nro_docum as docmapu,m_u.categ as catemapu,m_u.dias as diasmapu,
+                case when m_o.nro_docum is not null and m_u.nro_docum is not null and m_u.dias=m_o.dias then 3 else 
+            case when  (m_o.nro_docum is null and m_u.nro_docum is not null and m_u.dias>0)or(m_o.nro_docum is not null and m_u.nro_docum is not null and m_u.dias>m_o.dias) then 1 else 
+            case when m_o.nro_docum is not null and m_u.nro_docum is null and m_o.dias>0 then 2 else 4 end end end as tipo
+                   FROM
+                   (SELECT apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic) else 0 end ) as dias 
+                    from (
+                        SELECT distinct t_doc.apellido,t_doc.nombre,t_doc.legajo,t_doc.nro_docum,t_d.uni_acad,t_d.cat_mapuche,t_d.id_designacion,t_d.desde, t_d.hasta, 
+                         sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
+                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
+                            FROM designacion as t_d 
+                            INNER JOIN docente as t_doc ON (t_d.id_docente=t_doc.id_docente)
+                            LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.tipo_norma is not null 
+                           					and t_no.tipo_emite is not null 
+                           					and t_no.norma_legal is not null 
+                           					and t_no.desde<='".$udia."' and t_no.hasta>='".$pdia."')
+                        WHERE  t_d.tipo_desig=1 
+                         and t_d.uni_acad='".$ua."'
+                         and t_d.desde<='".$udia."' and  (t_d.hasta>='".$pdia."' or t_d.hasta is null )
+                        GROUP BY t_doc.apellido,t_doc.nombre,t_doc.legajo,t_doc.nro_docum,t_d.uni_acad,t_d.cat_mapuche,t_d.id_designacion,t_d.desde, t_d.hasta
+                        )sub
+                    group by apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche
+                    )m_o
+                    full outer join mapu m_u 
+                    on (m_o.nro_docum=m_u.nro_docum and m_o.uni_acad=m_u.uni_acad and m_o.categ=m_u.categ)
+                    $where
+                    order by m_o.apellido,m_o.nombre";
+            
+     }
     function get_comparacion($filtro){
             //print_r($filtro);exit();// Array ( [uni_acad] => FAIF [anio] => 2016 ) 
             $salida=array();
