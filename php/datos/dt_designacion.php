@@ -448,7 +448,7 @@ class dt_designacion extends toba_datos_tabla
             }
          //recupero los cargos de mapuche de ese periodo y esa ua
             $datos_mapuche = consultas_mapuche::get_docentes_categ_dias($ua,$udia,$pdia);
-
+print_r($datos_mapuche);exit;
             $sql=" CREATE LOCAL TEMP TABLE mapu
             ( 
                 ape             character varying(100),
