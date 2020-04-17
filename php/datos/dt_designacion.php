@@ -468,10 +468,9 @@ class dt_designacion extends toba_datos_tabla
 //            $sql="select * from mapu;";
 //            $resul=toba::db('designa')->consultar($sql);
 //            print_r($resul);
-            $sql=" SELECT * from (SELECT m_u.uni_acad,m_o.apellido||', '||m_o.nombre as agente_moco,m_o.nro_docum,m_o.legajo,m_o.cat_mapuche,m_o.dias,m_u.ape||', '||m_u.nom as agente_mapu,m_u.nro_docum as docmapu,m_u.nro_legaj,m_u.categ as categ_mapu,m_u.dias as diasmapu,
-                case when m_o.nro_docum is not null and m_u.nro_docum is not null and m_u.dias=m_o.dias then 3 else 
-            case when  (m_o.nro_docum is null and m_u.nro_docum is not null and m_u.dias>0)or(m_o.nro_docum is not null and m_u.nro_docum is not null and m_u.dias>m_o.dias) then 1 else 
-            case when m_o.nro_docum is not null and m_u.nro_docum is null and m_o.dias>0 then 2 else 4 end end end as tipo
+            $sql=" SELECT * from (SELECT case when m_u.uni_acad is not null then m_u.uni_acad else m_o.uni_acad end as uni_acad,m_o.apellido||', '||m_o.nombre as agente_moco,m_o.nro_docum,m_o.legajo,m_o.cat_mapuche,m_o.dias,m_u.ape||', '||m_u.nom as agente_mapu,m_u.nro_docum as docmapu,m_u.nro_legaj,m_u.categ as categ_mapu,m_u.dias as diasmapu,
+                   case when m_o.nro_docum is not null and m_u.nro_docum is not null then case when m_o.dias=m_u.dias then 3 else case when m_o.dias>m_u.dias then 2 else 1 end end 
+                     else case when m_o.nro_docum is not null and m_u.nro_docum is null then 2 else 1 end end as tipo
                    FROM
                    (SELECT apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic) else 0 end ) as dias 
                     from (
