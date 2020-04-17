@@ -373,7 +373,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'designa', --objeto_cuadro_proyecto
 	'4428', --objeto_cuadro
 	'4658', --objeto_cuadro_col
-	'dias_mapu', --clave
+	'diasmapu', --clave
 	'11', --orden
 	'Dias', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
