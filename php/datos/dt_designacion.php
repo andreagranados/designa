@@ -457,7 +457,7 @@ class dt_designacion extends toba_datos_tabla
                 nro_docum   integer,
                 codc_categ character varying(4),
                 chkstopliq  integer,
-                ua   character(5),
+                uni_acad   character(5),
                 dias    integer
             );";
             toba::db('designa')->consultar($sql);
