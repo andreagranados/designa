@@ -465,6 +465,9 @@ class dt_designacion extends toba_datos_tabla
                 $sql=" insert into mapu values ("."'".str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_legaj'].",".$valor['nro_docum'].",'".$valor['codc_categ']."',".$valor['chkstopliq'].",'".$valor['codc_uacad']['valor']."',".$valor['dias']['valor'].")";
                 toba::db('designa')->consultar($sql);
             }
+            $sql="select * from mapu;";
+            $resul=toba::db('designa')->consultar($sql);
+            print_r($resul);
             $sql=" SELECT m_u.uni_acad,m_o.apellido||', '||m_o.nombre as agente_moco,m_o.nro_docum,m_o.legajo,m_o.cat_mapuche,m_o.dias,m_u.ape||', '||m_u.nom as agente_mapu,m_u.nro_docum as docmapu,m_u.categ as categ_mapu,m_u.dias as diasmapu,
                 case when m_o.nro_docum is not null and m_u.nro_docum is not null and m_u.dias=m_o.dias then 3 else 
             case when  (m_o.nro_docum is null and m_u.nro_docum is not null and m_u.dias>0)or(m_o.nro_docum is not null and m_u.nro_docum is not null and m_u.dias>m_o.dias) then 1 else 
