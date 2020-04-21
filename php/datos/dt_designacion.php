@@ -454,6 +454,9 @@ class dt_designacion extends toba_datos_tabla
             if(isset($filtro['tipo'])){
                $where.=" and tipo=".$filtro['tipo']['valor'];
             }
+            if(isset($filtro['legajo'])){
+               $where.=" and (legajo=".$filtro['legajo']['valor']." or nro_legaj=".$filtro['legajo']['valor'].")";
+            }
          //recupero los cargos de mapuche de ese periodo y esa ua
             $datos_mapuche = consultas_mapuche::get_docentes_categ_dias($ua,$udia,$pdia);
 //print_r($datos_mapuche);exit;
