@@ -122,7 +122,12 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_inicial', --identificador
 	'1', --orden
 	'Pantalla Inicial', --etiqueta
-	NULL, --descripcion
+	'Diferencias Mocovi-Mapuche<br>
+Para cada docente suma la cantidad de días por categoría dentro del mes y año seleccionado (por ejemplo, si el docente tiene dos cargos AY11 entonces suma 60 días).<br>
+Seleccione el mes correspondiente a la pre-liquidación a controlar.<br>
+Tipo 1: Esta en Mapuche y no esta en Mocovi, ó tiene más días en Mapuche que en Mocovi.<br>
+Tipo 2: Esta en Mocovi y no esta en Mapuche ó tiene más días en Mocovi que en Mapuche.<br>
+Tipo 3: Esta en Mocovi y en Mapuche y tiene la misma cantidad de días. <br>', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen

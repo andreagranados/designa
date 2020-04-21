@@ -435,9 +435,17 @@ class dt_designacion extends toba_datos_tabla
             
     }
     function get_diferencias($filtro){
-       
-            $udia='2020-04-30';
-            $pdia='2020-04-01';
+            if($filtro['mes']['valor']==2){
+                $udia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'28';
+            }else{
+                if($filtro['mes']['valor']==1 or $filtro['mes']['valor']==3 or $filtro['mes']['valor']==5 or $filtro['mes']['valor']==7 or $filtro['mes']['valor']==8 or $filtro['mes']['valor']==10 or $filtro['mes']['valor']==12){
+                    $udia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'31';
+                }else{
+                    $udia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'30';
+                }  
+            }        
+            //$udia='2020-04-30';
+            $pdia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'01';//$pdia='2020-04-01';
             $where=' where 1=1';
             $ua=trim($filtro['uni_acad']['valor']);
             if($ua=="ESCM"){

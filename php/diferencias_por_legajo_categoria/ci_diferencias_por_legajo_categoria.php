@@ -29,7 +29,6 @@ class ci_diferencias_por_legajo_categoria extends toba_ci
 	{
             if (isset($this->s__datos_filtro)) {
                 $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_diferencias($this->s__datos_filtro));
-	          //$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_diferencias());
             }   
 	}   
 }
