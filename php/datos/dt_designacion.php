@@ -467,13 +467,12 @@ class dt_designacion extends toba_datos_tabla
                 nro_legaj       integer,
                 nro_docum       integer,
                 categ           character varying(4),
-                chkstopliq      integer,
                 uni_acad        character varying(5),
                 dias            integer
             );";
             toba::db('designa')->consultar($sql);
             foreach ($datos_mapuche as $valor) {
-                $sql=" insert into mapu values ("."'".str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_legaj'].",".$valor['nro_docum'].",'".$valor['codc_categ']."',".$valor['chkstopliq'].",'".$valor['codc_uacad']."',".$valor['dias'].")";
+                $sql=" insert into mapu values ("."'".str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_legaj'].",".$valor['nro_docum'].",'".$valor['codc_categ']."','".$valor['codc_uacad']."',".$valor['dias'].")";
                 toba::db('designa')->consultar($sql);
             }
 //            $sql="select * from mapu;";
