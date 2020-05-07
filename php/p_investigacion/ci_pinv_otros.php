@@ -1038,8 +1038,10 @@ class ci_pinv_otros extends designa_ci
         }
         
         function vista_pdf(toba_vista_pdf $salida){
+           // print_r($this->s__pantalla);exit;
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+              $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+              if($this->s__pantalla=='pant_solicitud'){
                 if($pi['estado']=='C' or $pi['estado']=='R'){//solo si esta aceptado o rechazado imprime la ficha
                     $datos=array();
                     //configuramos el nombre que tendrá el archivo pdf
@@ -1263,8 +1265,6 @@ class ci_pinv_otros extends designa_ci
                         $pdf->ezTable($tabla_firma,array('col1'=>'','col2'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>550,'cols'=>array('col1'=>array('justification'=>'center','width'=>275),'col2'=>array('justification'=>'center','width'=>275))));
                     }
 
-
-
                     $tabla_firma=array();
                     $tabla_firma[0]=array('col1'=>'','col2'=>'');
                     $tabla_firma[1]=array('col1'=>'','col2'=>'');
@@ -1284,9 +1284,61 @@ class ci_pinv_otros extends designa_ci
                 }else{
                    // throw new toba_error('El proyecto debe estar Aceptado o Rechazado');
                 //echo("<script> alert('nooo')</script>"); 
-                  
-                
                 }
+            }else{//pant_presupuesto
+                 //configuramos el nombre que tendrá el archivo pdf
+                if(isset($pi['codigo'])){
+                    $id=$pi['codigo'];
+                }else{
+                     $id=$pi['id_pinv'];
+                }
+                $salida->set_nombre_archivo($id."_Planilla_Presupuesto".".pdf");
+                //recuperamos el objteo ezPDF para agregar la cabecera y el pie de página 
+                $salida->set_papel_orientacion('portrait');
+                $salida->inicializar();
+                $pdf = $salida->get_pdf();
+                $pdf->ezSetMargins(120, 50, 55, 45);
+               
+                $opciones = array(
+                    'splitRows'=>0,
+                    'rowGap' => 1,//, the space between the text and the row lines on each row
+                   // 'lineCol' => (r,g,b) array,// defining the colour of the lines, default, black.
+                    'showLines'=>2,//coloca las lineas horizontales
+                    'showHeadings' => true,//muestra el nombre de las columnas
+                    'titleFontSize' => 12,
+                    'fontSize' => 8,
+                    //'shadeCol' => array(1,1,1,1,1,1,1,1,1,1,1,1),
+                    'shadeCol' => array(100,100,100),//darle color a las filas intercaladamente
+                    'outerLineThickness' => 0.7,
+                    'innerLineThickness' => 0.7,
+                    'xOrientation' => 'center',
+                    'width' => 820//,
+                   //'cols' =>array('col2'=>array('justification'=>'center') ,'col3'=>array('justification'=>'center'),'col4'=>array('justification'=>'center') ,'col5'=>array('justification'=>'center'),'col6'=>array('justification'=>'center') ,'col7'=>array('justification'=>'center') ,'col8'=>array('justification'=>'center'),'col9'=>array('justification'=>'center') ,'col10'=>array('justification'=>'center') ,'col11'=>array('justification'=>'center') ,'col12'=>array('justification'=>'center'),'col13'=>array('justification'=>'center') ,'col14'=>array('justification'=>'center') )
+                    );
+                $datos_pres=$this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->get_listado($pi['id_pinv']);
+                if(isset($datos_pres)){
+                    //--planilla presupuestaria
+                    $pdf->ezText('<b>DEPENDENCIA DEL PROYECTO:</b> '.$pi['uni_acad'], 10);
+                    $pdf->ezText(utf8_decode('<b>DENOMINACIÓN DEL PROYECTO:</b> ').$pi['denominacion'], 10);
+                    $datos=array();
+                    $datos[0]=array('col1'=>'<b>PLANILLA PRESUPUESTARIA</b>');
+                    $pdf->ezTable($datos,array('col1'=>''),' ',array('showHeadings'=>0,'shaded'=>0,'width'=>550,'cols'=>array('col1'=>array('justification'=>'center','width'=>550))));
+                    $tabla_pres=array();
+                    //$tabla_pres[0]=array('col1'=>utf8_decode('<b>AÑO</b>'),'col2'=>'<b>RUBRO</b>','col3'=>utf8_decode('<b>DESCRIPCIÓN</b>'),'col4'=>'<b>MONTO</b>');
+                    $i=0;
+                    $anio=$datos_pres[0]['anio'];
+                    $total=0;
+                    foreach ($datos_pres as $clave => $valor) {
+                        $total=$total+$valor['monto'];
+                        $tabla_pres[$i]=array( 'col1'=>$valor['anio'] ,'col2' =>$valor['rubro'],'col3' =>$valor['descripcion'],'col4' =>number_format($valor['monto'],2,',','.') );                        
+                        $i++;
+                    }                
+                    $pdf->ezTable($tabla_pres,array('col1'=>utf8_decode('<b>AÑO</b>'),'col2'=>'<b>RUBRO</b>','col3'=>utf8_decode('<b>DESCRIPCIÓN</b>'),'col4'=>'<b>MONTO</b>'),'',array('shaded'=>0,'width'=>550,'cols'=>array('col1'=>array('width'=>40),'col2'=>array('width'=>100),'col3'=>array('width'=>310),'col4'=>array('justification'=>'right','width'=>100))));
+                    $tabla_tot=array();
+                    $tabla_tot[0]=array('col1' =>'<b>TOTAL:</b>','col2' =>'<b>'.number_format($total,2,',','.') .'</b>');   
+                    $pdf->ezTable($tabla_tot,array('col1'=>'','col2'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>550,'cols'=>array('showHeadings'=>0,'shaded'=>0,'width'=>550,'col1'=>array('justification'=>'right','width'=>450),'col2'=>array('justification'=>'right','width'=>100))));
+                }
+              }
             }
         }
       

@@ -672,7 +672,7 @@ class ci_integrantes_pi extends designa_ci
             }else{
                 $id=$this->s__id;
             }
-            $salida->set_nombre_archivo("Planilla_Integrantes_".$id.".pdf");
+            $salida->set_nombre_archivo($id."_Planilla_Integrantes".".pdf");
             //recuperamos el objteo ezPDF para agregar la cabecera y el pie de página 
             $salida->set_papel_orientacion('landscape');
             $salida->inicializar();

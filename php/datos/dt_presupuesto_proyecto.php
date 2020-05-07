@@ -2,7 +2,8 @@
 class dt_presupuesto_proyecto extends toba_datos_tabla
 {
     function get_listado($id_p){
-        $sql=" select a.*,b.descripcion as rubro from presupuesto_proyecto a"
+        $sql=" select a.*,b.descripcion as rubro "
+                . " from presupuesto_proyecto a"
                 . " left outer join rubro_presupuesto b on (a.id_rubro=b.id_rubro)"
                 . " where id_proyecto=$id_p"
                 . " order by anio,id_rubro";  
