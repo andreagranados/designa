@@ -448,8 +448,9 @@ class dt_designacion extends toba_datos_tabla
             $pdia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'01';//$pdia='2020-04-01';
             $where=' where 1=1';
             $ua=trim($filtro['uni_acad']['valor']);
-            if($ua=="ESCM"){
-                $ua='IBMP';
+            $uni=$ua;
+            if($uni=="ESCM"){
+                $uni='IBMP';
             };
             if(isset($filtro['tipo'])){
                $where.=" and tipo=".$filtro['tipo']['valor'];
@@ -458,7 +459,7 @@ class dt_designacion extends toba_datos_tabla
                $where.=" and (legajo=".$filtro['legajo']['valor']." or nro_legaj=".$filtro['legajo']['valor'].")";
             }
          //recupero los cargos de mapuche de ese periodo y esa ua
-            $datos_mapuche = consultas_mapuche::get_docentes_categ_dias($ua,$udia,$pdia);
+            $datos_mapuche = consultas_mapuche::get_docentes_categ_dias($uni,$udia,$pdia);
 //print_r($datos_mapuche);exit;
             $sql=" CREATE LOCAL TEMP TABLE mapu
             ( 

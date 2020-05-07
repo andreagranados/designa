@@ -18,7 +18,7 @@ class consultas_mapuche
             --and a.nro_legaj=52816
             and a.codc_uacad='".$ua."'
             and b.tipo_estad<>'P'
-            and a.codc_categ<>'SCAT'
+            and a.codc_categ<>'SCAT' and a.codc_categ<>'DOCL'
             group by b.desc_appat,b.desc_nombr,b.nro_legaj,b.nro_docum,a.codc_uacad,a.nro_cargo,a.codc_categ,a.fec_alta,a.fec_baja,a.chkstopliq  
             )sub    
             group by desc_appat,desc_nombr,nro_legaj,nro_docum,codc_uacad,codc_categ  "; 

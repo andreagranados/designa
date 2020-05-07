@@ -12,6 +12,7 @@ class ci_integrantes_pi extends designa_ci
         protected $s__estado;
         protected $s__anio;
         protected $s__codigo;
+        protected $s__id;
       
      
         function ini()//este es para evitar que aparecezcan los formulario cuando uno se sale de la pantalla
@@ -646,6 +647,7 @@ class ci_integrantes_pi extends designa_ci
             $this->s__tiene_direct=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->tiene_director($pi['id_pinv']);
             $this->s__dependencia=$pi['uni_acad'];
             $this->s__codigo=$pi['codigo'];
+            $this->s__id=$pi['id_pinv'];
             $this->s__denominacion=$pi['denominacion'];
             $this->s__estado=$pi['estado'];
             $this->s__anio=date("Y",strtotime($pi['fec_desde']));
@@ -665,7 +667,12 @@ class ci_integrantes_pi extends designa_ci
             $datos=array();
             $i=0;
             //configuramos el nombre que tendrá el archivo pdf
-            $salida->set_nombre_archivo("Planilla.pdf");
+            if(isset($this->s__codigo)){
+                $id=$this->s__codigo;
+            }else{
+                $id=$this->s__id;
+            }
+            $salida->set_nombre_archivo("Planilla_Integrantes_".$id.".pdf");
             //recuperamos el objteo ezPDF para agregar la cabecera y el pie de página 
             $salida->set_papel_orientacion('landscape');
             $salida->inicializar();
