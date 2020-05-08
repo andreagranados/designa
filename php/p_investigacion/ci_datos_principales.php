@@ -41,7 +41,9 @@ class ci_datos_principales extends toba_ci
                 //para eliminar el archivo zip si hubiese sido creado
                 if(isset($pi['codigo'])){
                     $archivo_zip=toba::proyecto()->get_path().'/www/'.substr($pi['codigo'],3,4).".zip";
-                    unlink($archivo_zip);//Destruye el archivo temporal
+                    if(file_exists($archivo_zip)){
+                       unlink($archivo_zip);//Destruye el archivo temporal 
+                    }
                 }
                 $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
                 if($pi['es_programa']==1){

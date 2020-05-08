@@ -60,7 +60,7 @@ class ci_constancia_pase extends toba_ci
                 $dato=array();
                 $i=0;
                 //configuramos el nombre que tendrá el archivo pdf
-                $salida->set_nombre_archivo("Constancia.pdf");
+                $salida->set_nombre_archivo("Constancia_".$this->s__datos_filtro['nro_540']['valor'].'_'.$this->s__anio.".pdf");
                 //recuperamos el objteo ezPDF para agregar la cabecera y el pie de página 
                 $salida->set_papel_orientacion('portrait');//portrait landscape
                 $salida->inicializar();

@@ -288,7 +288,7 @@ class ci_impresion_540 extends toba_ci
                 $numero=$resultado[0]['genera_tkd'];
                 if($numero!=0){//solo generamos el pdf sino es 0
                        //configuramos el nombre que tendrá el archivo pdf
-                        $salida->set_nombre_archivo("Informe_TKD.pdf");
+                        $salida->set_nombre_archivo("Informe_TKD_".$numero.".pdf");
                         //recuperamos el objteo ezPDF para agregar la cabecera y el pie de página 
                         $salida->set_papel_orientacion('landscape');
                         $salida->inicializar();
