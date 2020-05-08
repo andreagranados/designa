@@ -281,13 +281,11 @@ class ci_adjuntos extends toba_ci
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                print_r('hola');exit;
                 $zip = new ZipArchive;
                 $nombre_archivo=substr($pi['codigo'],3,4).'.zip';//utilizo las 4 ultimas letras del codigo para no agregar barras al nombre
-                print_r($nombre_archivo);exit;
+               
                 $res = $zip->open($nombre_archivo,ZipArchive::CREATE | ZipArchive::OVERWRITE);
                 if ($res === TRUE) {
-                    print_r('hola');
                     $adj=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get_adjuntos($pi['id_pinv']);
                     //print_r($adj);exit;Array ( [0] => Array ( [id_pinv] => 678 [ficha_tecnica] => ficha_tecnica678.pdf [cv_dir_codir] => cv_dir_codir678.pdf [cv_integrantes] => cv_integrantes678.pdf [plan_trabajo] => plan_trabajo678.pdf [nota_aceptacion] => nota_aceptacion678.pdf [informe_final_ft] => [informe_final_dp] => [informe_avance_ft] => [informe_avance_dp] => ) )
                    //ficha tecnica
