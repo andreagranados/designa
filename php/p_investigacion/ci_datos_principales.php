@@ -38,6 +38,11 @@ class ci_datos_principales extends toba_ci
             //$this->controlador()->dep('datos')->tabla('viatico')->resetear();//ver si esto va aqui?
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                //para eliminar el archivo zip si hubiese sido creado
+                if(isset($pi['codigo'])){
+                    $archivo_zip=toba::proyecto()->get_path().'/www/'.substr($pi['codigo'],3,4).".zip";
+                    unlink($archivo_zip);//Destruye el archivo temporal
+                }
                 $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
                 if($pi['es_programa']==1){
                     $pi['es_programa']='SI';
