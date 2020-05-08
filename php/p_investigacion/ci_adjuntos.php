@@ -281,6 +281,7 @@ class ci_adjuntos extends toba_ci
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                print_r('hola');exit;
                 $zip = new ZipArchive;
                 $nombre_archivo=substr($pi['codigo'],3,4).'.zip';//utilizo las 4 ultimas letras del codigo para no agregar barras al nombre
                 print_r($nombre_archivo);exit;
