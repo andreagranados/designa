@@ -293,81 +293,82 @@ class ci_adjuntos extends toba_ci
                         //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['ficha_tecnica'];
                         $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['ficha_tecnica'];
                         if(file_exists($filename)){
+                            print_r('hola');
                             $zip->addFile($filename, $nombreft);//el segundo parametro indica el nombre con el que lo voy a guardar en el zip
                         }
                     }
-                   //cv_dir_codir
-                    $nombredc=substr($pi['codigo'],3,4)."_"."cv_dir_codir.pdf";
-                    if(isset($adj[0]['cv_dir_codir'])){
-                        // $filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['cv_dir_codir'];
-                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['cv_dir_codir'];
-                        if(file_exists($filename)){
-                            $zip->addFile($filename, $nombredc);   
-                          }
-                     }
-                    //cv_integrantes
-                    $nombrei=substr($pi['codigo'],3,4)."_"."cv_integrantes.pdf";
-                    if(isset($adj[0]['cv_integrantes'])){
-                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['cv_integrantes'];
-                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['cv_integrantes'];
-                        if(file_exists($filename)){
-                           $zip->addFile($filename, $nombrei); 
-                        }
-                    }
-                      //plan_trabajo
-                    $nombrept=substr($pi['codigo'],3,4)."_"."plan_trabajo.pdf";
-                    if(isset($adj[0]['plan_trabajo'])){
-                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['plan_trabajo'];
-                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['plan_trabajo'];
-                        if(file_exists($filename)){
-                            $zip->addFile($filename, $nombrept);
-                        }
-                    }
-                    //nota aceptacion
-                    $nombrena=substr($pi['codigo'],3,4)."_"."nota_aceptacion.pdf";
-                    if(isset($adj[0]['nota aceptacion'])){
-                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['nota aceptacion'];
-                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['nota aceptacion'];
-                        if(file_exists($filename)){
-                            $zip->addFile($filename, $nombrena);
-                        }
-                    }
-                    //informe_final_ft
-                    $nombrefft=substr($pi['codigo'],3,4)."_"."informe_final_ft.pdf";
-                    if(isset($adj[0]['informe_final_ft'])){
-                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['informe_final_ft'];
-                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['informe_final_ft'];
-                        if(file_exists($filename)){
-                            $zip->addFile($filename,  $nombrefft);
-                        }
-                    }
-                    // informe_final_dp
-                    $nombrefdp=substr($pi['codigo'],3,4)."_"."informe_final_dp.pdf";
-                    if(isset($adj[0]['informe_final_dp'])){
-                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['informe_final_dp'];
-                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['informe_final_dp'];
-                        if(file_exists($filename)){
-                            $zip->addFile($filename, $nombrefdp);
-                        }
-                    }
-                    //informe_avance_ft
-                    $nombreaft=substr($pi['codigo'],3,4)."_"."informe_avance_ft.pdf";
-                    if(isset($adj[0]['informe_avance_ft'])){
-                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['informe_avance_ft'];
-                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['informe_avance_ft'];
-                        if(file_exists($filename)){
-                            $zip->addFile($filename, $nombreaft);
-                        }
-                    }
-                    //informe_avance_dp 
-                    $nombreadp=substr($pi['codigo'],3,4)."_"."informe_avance_dp.pdf";
-                    if(isset($adj[0]['informe_avance_dp'])){
-                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['informe_avance_dp'];
-                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['informe_avance_dp'];
-                        if(file_exists($filename)){
-                            $zip->addFile($filename, $nombreadp);
-                        }
-                    }
+//                   //cv_dir_codir
+//                    $nombredc=substr($pi['codigo'],3,4)."_"."cv_dir_codir.pdf";
+//                    if(isset($adj[0]['cv_dir_codir'])){
+//                        // $filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['cv_dir_codir'];
+//                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['cv_dir_codir'];
+//                        if(file_exists($filename)){
+//                            $zip->addFile($filename, $nombredc);   
+//                          }
+//                     }
+//                    //cv_integrantes
+//                    $nombrei=substr($pi['codigo'],3,4)."_"."cv_integrantes.pdf";
+//                    if(isset($adj[0]['cv_integrantes'])){
+//                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['cv_integrantes'];
+//                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['cv_integrantes'];
+//                        if(file_exists($filename)){
+//                           $zip->addFile($filename, $nombrei); 
+//                        }
+//                    }
+//                      //plan_trabajo
+//                    $nombrept=substr($pi['codigo'],3,4)."_"."plan_trabajo.pdf";
+//                    if(isset($adj[0]['plan_trabajo'])){
+//                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['plan_trabajo'];
+//                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['plan_trabajo'];
+//                        if(file_exists($filename)){
+//                            $zip->addFile($filename, $nombrept);
+//                        }
+//                    }
+//                    //nota aceptacion
+//                    $nombrena=substr($pi['codigo'],3,4)."_"."nota_aceptacion.pdf";
+//                    if(isset($adj[0]['nota aceptacion'])){
+//                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['nota aceptacion'];
+//                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['nota aceptacion'];
+//                        if(file_exists($filename)){
+//                            $zip->addFile($filename, $nombrena);
+//                        }
+//                    }
+//                    //informe_final_ft
+//                    $nombrefft=substr($pi['codigo'],3,4)."_"."informe_final_ft.pdf";
+//                    if(isset($adj[0]['informe_final_ft'])){
+//                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['informe_final_ft'];
+//                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['informe_final_ft'];
+//                        if(file_exists($filename)){
+//                            $zip->addFile($filename,  $nombrefft);
+//                        }
+//                    }
+//                    // informe_final_dp
+//                    $nombrefdp=substr($pi['codigo'],3,4)."_"."informe_final_dp.pdf";
+//                    if(isset($adj[0]['informe_final_dp'])){
+//                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['informe_final_dp'];
+//                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['informe_final_dp'];
+//                        if(file_exists($filename)){
+//                            $zip->addFile($filename, $nombrefdp);
+//                        }
+//                    }
+//                    //informe_avance_ft
+//                    $nombreaft=substr($pi['codigo'],3,4)."_"."informe_avance_ft.pdf";
+//                    if(isset($adj[0]['informe_avance_ft'])){
+//                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['informe_avance_ft'];
+//                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['informe_avance_ft'];
+//                        if(file_exists($filename)){
+//                            $zip->addFile($filename, $nombreaft);
+//                        }
+//                    }
+//                    //informe_avance_dp 
+//                    $nombreadp=substr($pi['codigo'],3,4)."_"."informe_avance_dp.pdf";
+//                    if(isset($adj[0]['informe_avance_dp'])){
+//                        //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['informe_avance_dp'];
+//                        $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['informe_avance_dp'];
+//                        if(file_exists($filename)){
+//                            $zip->addFile($filename, $nombreadp);
+//                        }
+//                    }
                    $zip->close();
                 }
                 
