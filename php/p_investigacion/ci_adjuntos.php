@@ -325,12 +325,12 @@ class ci_adjuntos extends toba_ci
                         }
                     }
                     //nota aceptacion
-                    $nombrena=substr($pi['codigo'],3,4)."_"."nota_aceptacion.pdf";
+                    $nombrenac=substr($pi['codigo'],3,4)."_"."nota_aceptacion.pdf";
                     if(isset($adj[0]['nota aceptacion'])){
                         //$filename='C:\proyectos\toba_2.6.3\proyectos\designa\www\adjuntos_proyectos_inv\\'.$adj[0]['nota aceptacion'];
                         $filename=toba::proyecto()->get_path().'/www/adjuntos_proyectos_inv/'.$adj[0]['nota_aceptacion'];
                         if(file_exists($filename)){
-                            $zip->addFile($filename, $nombrena);
+                            $zip->addFile($filename, $nombrenac);
                         }
                     }
                     //informe_final_ft
