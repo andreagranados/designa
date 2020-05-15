@@ -160,20 +160,22 @@ class ci_adjuntos extends toba_ci
 //   //informe de avance se guarda en el servidor remoto por lo tanto accede al remoto
         function conf__form_adj_ia(toba_ei_formulario $form)
 	{
+            $user=getenv('DB_USER');
+            $host=getenv('DB_HOST');
+            $port=getenv('DB_PORT');
+            $password=getenv('DB_PASS');
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_avance_ft'])){
-                        //$nomb_ft='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];//en windows
-                        $nomb_ft='http://copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];
+                        $nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];
                         $datos['informe_avance_ft']=$ins['informe_avance_ft'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['informe_avance_dp'])){
-                        //$nomb_dir='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
-                        $nomb_dir='http://copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
+                        $nomb_dir='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
                         $datos['informe_avance_dp']=$ins['informe_avance_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }
@@ -183,8 +185,7 @@ class ci_adjuntos extends toba_ci
         }
      
         function evt__form_adj_ia__guardar($datos)
-        {//print_r($datos);exit;// Array ( [informe_avance_ft] => Array ( [name] => manual.pdf [type] => application/pdf [tmp_name] => C:\Windows\Temp\phpE19C.tmp [error] => 0 [size] => 345175 ) [imagen_vista_previa_ft] => [informe_avance_dp] => [imagen_vista_previa_dp] => ) 
-            // Definimos las variables
+        {            // Definimos las variables
             $user=getenv('DB_USER');
             $host=getenv('DB_HOST');
             $port=getenv('DB_PORT');
