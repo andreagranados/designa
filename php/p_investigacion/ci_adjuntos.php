@@ -157,7 +157,7 @@ class ci_adjuntos extends toba_ci
                     }  
               }
             }
-//   //informe de avance 
+//   //informe de avance se guarda en el servidor remoto por lo tanto accede al remoto
         function conf__form_adj_ia(toba_ei_formulario $form)
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
@@ -166,12 +166,14 @@ class ci_adjuntos extends toba_ci
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_avance_ft'])){
-                        $nomb_ft='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];//en windows
+                        //$nomb_ft='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];//en windows
+                        $nomb_ft='http://copia.uncoma.edu.ar:8080/cgi-bin/filemanager/utilRequest.cgi/'.$ins['informe_avance_ft'].'?sid=mgwpope6&func=get_viewer&source_path=%2Fadjuntos_proyectos_inv&source_file='.$ins['informe_avance_ft'].'&r=3451752020/05/13%2014:32:48';
                         $datos['informe_avance_ft']=$ins['informe_avance_ft'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['informe_avance_dp'])){
-                        $nomb_dir='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
+                        //$nomb_dir='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
+                        $nomb_dir='http://copia.uncoma.edu.ar:8080/cgi-bin/filemanager/utilRequest.cgi/'.$ins['informe_avance_dp'].'?sid=mgwpope6&func=get_viewer&source_path=%2Fadjuntos_proyectos_inv&source_file='.$ins['informe_avance_dp'].'&r=3451752020/05/13%2014:32:48';
                         $datos['informe_avance_dp']=$ins['informe_avance_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }
@@ -181,34 +183,63 @@ class ci_adjuntos extends toba_ci
         }
      
         function evt__form_adj_ia__guardar($datos)
-        {
+        {//print_r($datos);exit;// Array ( [informe_avance_ft] => Array ( [name] => manual.pdf [type] => application/pdf [tmp_name] => C:\Windows\Temp\phpE19C.tmp [error] => 0 [size] => 345175 ) [imagen_vista_previa_ft] => [informe_avance_dp] => [imagen_vista_previa_dp] => ) 
+            // Definimos las variables
+            $user=getenv('DB_USER');
+            $host=getenv('DB_HOST');
+            $port=getenv('DB_PORT');
+            $password=getenv('DB_PASS');
+            $ruta="/adjuntos_proyectos_inv";
+
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $band=$this->dep('datos')->tabla('presentacion_informes')->puedo_modificar_informe('IA',$pi['fec_desde']);
                 if(!$band){
                     toba::notificacion()->agregar('Fuera del periodo definido por SCyT para la modificacion de Informe de Avance', 'error');   
                 }else{
-                    $id=$pi['id_pinv'];
-                    $datos2['id_pinv']=$pi['id_pinv'];
-                    if (isset($datos['informe_avance_ft'])) {
-                        $nombre_ca="informe_avance_ft".$id.".pdf";
-                        //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
-                        $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
-                        if(move_uploaded_file($datos['informe_avance_ft']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                        $datos2['informe_avance_ft']=strval($nombre_ca);}
-                    }
+                    //realizamos la conexion
+                    $conn_id=ftp_connect($host,$port);
+                    if($conn_id){
+                        $id=substr($pi['codigo'],3,4);
+                        $datos2['id_pinv']=$pi['id_pinv'];
+                         # Realizamos el login con nuestro usuario y contraseña
+                        if(ftp_login($conn_id,$user,$password)){
+                            ftp_pasv($conn_id, true);//activa modo pasivo. la conexion es iniciada por el cliente
+                            # Cambiamos al directorio especificado
+                            if(ftp_chdir($conn_id,$ruta)){
+                                if(isset($datos['informe_avance_ft'])) {
+                                    $remote_file = $datos['informe_avance_ft']['tmp_name'];
+                                    $nombre_ca=$id."_informe_avance_ft.pdf";//nombre con el que se guarda el archivo
+                                    # Subimos el fichero
+                                    if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                            $datos2['informe_avance_ft']=strval($nombre_ca);   
+                                            echo "Fichero subido correctamente";
+                                    }else
+                                            echo "No ha sido posible subir el fichero";  
+                                }
+                                if(isset($datos['informe_avance_dp'])) {
+                                    $remote_file = $datos['informe_avance_dp']['tmp_name'];
+                                    $nombre_ca=$id."_informe_avance_dp.pdf";//nombre con el que se guarda el archivo
+                                    # Subimos el fichero
+                                    if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                            $datos2['informe_avance_dp']=strval($nombre_ca);   
+                                            echo "Fichero subido correctamente";
+                                    }else
+                                            echo "No ha sido posible subir el fichero";  
+                                }
+                            }else{
+                                echo "No existe el directorio especificado";
+                            }
+                        } else{
+                            echo "El usuario o la contraseña son incorrectos";
+                        }
 
-                    if (isset($datos['informe_avance_dp'])) {
-                        $nombre_int="informe_avance_dp".$id.".pdf";
-                        //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
-                        $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
-                        if(move_uploaded_file($datos['informe_avance_dp']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                        $datos2['informe_avance_dp']=strval($nombre_int);}
+                    }else{
+                        echo "No ha sido posible conectar con el servidor";
                     }
-
+                
                     $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos2);
                     $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();           
-
                     //sino esta cargada la carga
                     if(($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada())!=true){
                         $auxi['id_pinv']=$pi['id_pinv'];
