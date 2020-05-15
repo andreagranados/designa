@@ -167,13 +167,13 @@ class ci_adjuntos extends toba_ci
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_avance_ft'])){
                         //$nomb_ft='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];//en windows
-                        $nomb_ft='http://copia.uncoma.edu.ar:8080/cgi-bin/filemanager/utilRequest.cgi/'.$ins['informe_avance_ft'].'?sid=mgwpope6&func=get_viewer&source_path=%2Fadjuntos_proyectos_inv&source_file='.$ins['informe_avance_ft'].'&r=3451752020/05/13%2014:32:48';
+                        $nomb_ft='http://copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];
                         $datos['informe_avance_ft']=$ins['informe_avance_ft'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['informe_avance_dp'])){
                         //$nomb_dir='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
-                        $nomb_dir='http://copia.uncoma.edu.ar:8080/cgi-bin/filemanager/utilRequest.cgi/'.$ins['informe_avance_dp'].'?sid=mgwpope6&func=get_viewer&source_path=%2Fadjuntos_proyectos_inv&source_file='.$ins['informe_avance_dp'].'&r=3451752020/05/13%2014:32:48';
+                        $nomb_dir='http://copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
                         $datos['informe_avance_dp']=$ins['informe_avance_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }
