@@ -112,28 +112,28 @@ class ci_adjuntos extends toba_ci
                     if (isset($datos['ficha_tecnica'])) {
                             $nombre_ca="ficha_tecnica".$id.".pdf";
                             //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
-                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
+                            $destino_ca=toba::proyecto()->get_path()."/www/adjuntos_proyectos_inv/".$nombre_ca;
                             if(move_uploaded_file($datos['ficha_tecnica']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['ficha_tecnica']=strval($nombre_ca);}
                     }
                     if (isset($datos['cv_dir_codir'])) {
                             $nombre_cvdc="cv_dir_codir".$id.".pdf";
                             //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
-                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_cvdc;
+                            $destino_ca=toba::proyecto()->get_path()."/www/adjuntos_proyectos_inv/".$nombre_cvdc;
                             if(move_uploaded_file($datos['cv_dir_codir']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['cv_dir_codir']=strval($nombre_cvdc);}
                     }
                     if (isset($datos['cv_integrantes'])) {
                             $nombre_int="cv_integrantes".$id.".pdf";
                             //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
-                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
+                            $destino_ca=toba::proyecto()->get_path()."/www/adjuntos_proyectos_inv/".$nombre_int;
                             if(move_uploaded_file($datos['cv_integrantes']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['cv_integrantes']=strval($nombre_int);}
                     }
                     if (isset($datos['plan_trabajo'])) {
                             $nombre_pt="plan_trabajo".$id.".pdf";
                             //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
-                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_pt;
+                            $destino_ca=toba::proyecto()->get_path()."/www/adjuntos_proyectos_inv/".$nombre_pt;
                             if(move_uploaded_file($datos['plan_trabajo']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                             $datos2['plan_trabajo']=strval($nombre_pt);}
                         
@@ -141,7 +141,7 @@ class ci_adjuntos extends toba_ci
                     if (isset($datos['nota_aceptacion'])) {
                             $nombre_na="nota_aceptacion".$id.".pdf";
                             //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
-                            $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_na;
+                            $destino_ca=toba::proyecto()->get_path()."/www/adjuntos_proyectos_inv/".$nombre_na;
                             if(move_uploaded_file($datos['nota_aceptacion']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
                               $datos2['nota_aceptacion']=strval($nombre_na);} 
                     }
@@ -252,18 +252,24 @@ class ci_adjuntos extends toba_ci
         //informe final
          function conf__form_adj_if(toba_ei_formulario $form)
 	{
+            $user=getenv('DB_USER');
+            $host=getenv('DB_HOST');
+            $port=getenv('DB_PORT');
+            $password=getenv('DB_PASS');
+            $ruta="/adjuntos_proyectos_inv";
+            
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_final_ft'])){
-                        $nomb_ft='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_final_ft'];
+                        $nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_ft'];
                         $datos['informe_final_ft']=$ins['informe_final_ft'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['informe_final_dp'])){
-                        $nomb_dir='/designa/1.0/adjuntos_proyectos_inv/'.$ins['informe_final_dp'];
+                        $nomb_dir='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_dp'];
                         $datos['informe_final_dp']=$ins['informe_final_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }
@@ -271,35 +277,63 @@ class ci_adjuntos extends toba_ci
                 }
             }
         }
-        function evt__form_adj_if__guardar($datos)
-        {
+         function evt__form_adj_if__guardar($datos)
+        {            // Definimos las variables
+            $user=getenv('DB_USER');
+            $host=getenv('DB_HOST');
+            $port=getenv('DB_PORT');
+            $password=getenv('DB_PASS');
+            $ruta="/adjuntos_proyectos_inv";
+
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $band=$this->dep('datos')->tabla('presentacion_informes')->puedo_modificar_informe('IF',$pi['fec_hasta']);
                 if(!$band){
-                    toba::notificacion()->agregar('Fuera del periodo definido por SCyT para la modificacion de Informe Final', 'error');   
+                     toba::notificacion()->agregar('Fuera del periodo definido por SCyT para la modificacion de Informe Final', 'error');   
                 }else{
-                    $id=$pi['id_pinv'];
-                    $datos2['id_pinv']=$pi['id_pinv'];
-                    if (isset($datos['informe_final_ft'])) {
-                        $nombre_ca="informe_final_ft".$id.".pdf";
-                        //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
-                        $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_ca;
-                        if(move_uploaded_file($datos['informe_final_ft']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                        $datos2['informe_final_ft']=strval($nombre_ca);}
-                    }
+                    //realizamos la conexion
+                    $conn_id=ftp_connect($host,$port);
+                    if($conn_id){
+                        $id=substr($pi['codigo'],3,4);
+                        $datos2['id_pinv']=$pi['id_pinv'];
+                         # Realizamos el login con nuestro usuario y contraseña
+                        if(ftp_login($conn_id,$user,$password)){
+                            ftp_pasv($conn_id, true);//activa modo pasivo. la conexion es iniciada por el cliente
+                            # Cambiamos al directorio especificado
+                            if(ftp_chdir($conn_id,$ruta)){
+                                if(isset($datos['informe_final_ft'])) {
+                                    $remote_file = $datos['informe_final_ft']['tmp_name'];
+                                    $nombre_ca=$id."_informe_final_ft.pdf";//nombre con el que se guarda el archivo
+                                    # Subimos el fichero
+                                    if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                            $datos2['informe_final_ft']=strval($nombre_ca);   
+                                            echo "Fichero subido correctamente";
+                                    }else
+                                            echo "No ha sido posible subir el fichero";  
+                                }
+                                if(isset($datos['informe_final_dp'])) {
+                                    $remote_file = $datos['informe_final_dp']['tmp_name'];
+                                    $nombre_ca=$id."_informe_final_dp.pdf";//nombre con el que se guarda el archivo
+                                    # Subimos el fichero
+                                    if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                            $datos2['informe_final_dp']=strval($nombre_ca);   
+                                            echo "Fichero subido correctamente";
+                                    }else
+                                            echo "No ha sido posible subir el fichero";  
+                                }
+                            }else{
+                                echo "No existe el directorio especificado";
+                            }
+                        } else{
+                            echo "El usuario o la contraseña son incorrectos";
+                        }
 
-                    if (isset($datos['informe_final_dp'])) {
-                        $nombre_int="informe_final_dp".$id.".pdf";
-                        //$destino_ca="C:/proyectos/toba_2.6.3/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
-                        $destino_ca="/home/andrea/toba_2.7.13/proyectos/designa/www/adjuntos_proyectos_inv/".$nombre_int;
-                        if(move_uploaded_file($datos['informe_final_dp']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
-                        $datos2['informe_final_dp']=strval($nombre_int);}
+                    }else{
+                        echo "No ha sido posible conectar con el servidor";
                     }
-
+                
                     $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos2);
                     $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();           
-
                     //sino esta cargada la carga
                     if(($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada())!=true){
                         $auxi['id_pinv']=$pi['id_pinv'];
@@ -308,8 +342,8 @@ class ci_adjuntos extends toba_ci
                 }
               }
         }
-	
-	function evt__generar_zip()
+
+        function evt__generar_zip()
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
