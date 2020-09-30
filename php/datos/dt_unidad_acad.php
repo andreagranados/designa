@@ -44,11 +44,10 @@ class dt_unidad_acad extends toba_datos_tabla
             $sql = toba::perfil_de_datos()->filtrar($sql);
             $resul=toba::db('designa')->consultar($sql);
             
+            $condicion=" WHERE id_tipo_dependencia<>1 ";
             if(count($resul)==1){//si solo tiene un registro entonces esta asociado a un perfil de datos departamento
-                $condicion=" WHERE sigla='".$resul[0]['idunidad_academica']."'";
-            } else{
-                $condicion="";
-            }
+                $condicion.=" and sigla='".$resul[0]['idunidad_academica']."'";
+            } 
            
             $sql="select sigla,descripcion from unidad_acad ".$condicion. " order by descripcion";
             $sql = toba::perfil_de_datos()->filtrar($sql);

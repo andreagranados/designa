@@ -1014,7 +1014,13 @@ class dt_pinvestigacion extends toba_datos_tabla
             }else{
                $where='';
             }
-            //print_r($filtro);
+             //print_r($filtro);
+            $sql="select * from unidad_acad ";
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+            $resul=toba::db('designa')->consultar($sql);
+            if(count($resul)==1){//si solo tiene un registro entonces esta asociado a un perfil de datos departamento
+                $where.=" and uni_acad='".$resul[0]['sigla']."'";
+            } 
             $sql="select * from 
                     (select p.id_pinv,p.estado,p.codigo,p.uni_acad,trim(doc.apellido)||', '||trim(doc.nombre) as agente,d.cat_estat||d.dedic as categ,i.desde,i.hasta,funcion_p,i.carga_horaria,i.check_inv
                     from integrante_interno_pi i
