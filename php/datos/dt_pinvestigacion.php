@@ -720,7 +720,6 @@ class dt_pinvestigacion extends toba_datos_tabla
  
                 $where        
 		ORDER BY codigo,desc_tipo)sub $where2";
-		
 		return toba::db('designa')->consultar($sql);
 	}
 	function get_listado()
