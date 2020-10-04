@@ -1020,18 +1020,21 @@ class dt_pinvestigacion extends toba_datos_tabla
             if(count($resul)==1){//si solo tiene un registro entonces esta asociado a un perfil de datos departamento
                 $where.=" and uni_acad='".$resul[0]['sigla']."'";
             } 
-            $sql="select * from 
-                    (select p.id_pinv,p.estado,p.codigo,p.uni_acad,trim(doc.apellido)||', '||trim(doc.nombre) as agente,d.cat_estat||d.dedic as categ,i.desde,i.hasta,funcion_p,i.carga_horaria,i.check_inv,rescd,rescd_bm
+            $sql="select * ,case when nuevo=1 then 'Perdio Check' else 'NUEVO' end as check from 
+                     (select distinct p.id_pinv,p.estado,p.codigo,p.uni_acad,trim(doc.apellido)||', '||trim(doc.nombre) as agente,d.cat_estat||d.dedic as categ,i.desde,i.hasta,i.funcion_p,i.carga_horaria,i.check_inv,i.rescd,i.rescd_bm,l.check_inv as nuevo
                     from integrante_interno_pi i
                     left outer join pinvestigacion p on (p.id_pinv=i.pinvest)
                     left outer join designacion d on (i.id_designacion=d.id_designacion)
                     left outer join docente doc on (d.id_docente=doc.id_docente)
+                    left outer join public_auditoria.logs_integrante_interno_pi l  on(l.id_designacion=i.id_designacion and l.desde=i.desde and l.pinvest=i.pinvest and l.check_inv=1)
+                    
                     UNION
-                    select p.id_pinv,p.estado,p.codigo,p.uni_acad,trim(d.apellido)||', '||trim(d.nombre) as agente,n.nombre_institucion as categ,i.desde,i.hasta, funcion_p,i.carga_horaria,i.check_inv,rescd,rescd_bm
+                    select distinct p.id_pinv,p.estado,p.codigo,p.uni_acad,trim(d.apellido)||', '||trim(d.nombre) as agente,n.nombre_institucion as categ,i.desde,i.hasta, i.funcion_p,i.carga_horaria,i.check_inv,i.rescd,i.rescd_bm,l.check_inv as nuevo
                     from integrante_externo_pi i
                     left outer join pinvestigacion p on (p.id_pinv=i.pinvest)
                     left outer join persona d on (i.nro_docum=d.nro_docum and i.tipo_docum=d.tipo_docum)
                     left outer join institucion n on (n.id_institucion=i.id_institucion)
+                    left outer join public_auditoria.logs_integrante_externo_pi l  on (l.tipo_docum=i.tipo_docum and l.nro_docum=i.nro_docum and l.desde=i.desde and l.pinvest=i.pinvest and l.check_inv=1)
                     )sub
                 where check_inv=0 and estado ='A' ".$where
                 ." order by uni_acad,id_pinv,agente,desde";
