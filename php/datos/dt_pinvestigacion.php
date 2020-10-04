@@ -1021,20 +1021,20 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $where.=" and uni_acad='".$resul[0]['sigla']."'";
             } 
             $sql="select * from 
-                    (select p.id_pinv,p.estado,p.codigo,p.uni_acad,trim(doc.apellido)||', '||trim(doc.nombre) as agente,d.cat_estat||d.dedic as categ,i.desde,i.hasta,funcion_p,i.carga_horaria,i.check_inv
+                    (select p.id_pinv,p.estado,p.codigo,p.uni_acad,trim(doc.apellido)||', '||trim(doc.nombre) as agente,d.cat_estat||d.dedic as categ,i.desde,i.hasta,funcion_p,i.carga_horaria,i.check_inv,rescd,rescd_bm
                     from integrante_interno_pi i
                     left outer join pinvestigacion p on (p.id_pinv=i.pinvest)
                     left outer join designacion d on (i.id_designacion=d.id_designacion)
                     left outer join docente doc on (d.id_docente=doc.id_docente)
                     UNION
-                    select p.id_pinv,p.estado,p.codigo,p.uni_acad,trim(d.apellido)||', '||trim(d.nombre) as agente,n.nombre_institucion as categ,i.desde,i.hasta, funcion_p,i.carga_horaria,i.check_inv
+                    select p.id_pinv,p.estado,p.codigo,p.uni_acad,trim(d.apellido)||', '||trim(d.nombre) as agente,n.nombre_institucion as categ,i.desde,i.hasta, funcion_p,i.carga_horaria,i.check_inv,rescd,rescd_bm
                     from integrante_externo_pi i
                     left outer join pinvestigacion p on (p.id_pinv=i.pinvest)
                     left outer join persona d on (i.nro_docum=d.nro_docum and i.tipo_docum=d.tipo_docum)
                     left outer join institucion n on (n.id_institucion=i.id_institucion)
                     )sub
                 where check_inv=0 and estado ='A' ".$where
-                ." order by uni_acad,id_pinv,agente";
+                ." order by uni_acad,id_pinv,agente,desde";
             return  toba::db('designa')->consultar($sql);
         }
 }
