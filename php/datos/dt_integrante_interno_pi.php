@@ -82,7 +82,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         return toba::db('designa')->consultar($sql); 
     }
     function get_listado($id_proy){
-        $sql=" select t_i.pinvest,t_i.desde,t_i.hasta,trim(t_do.apellido)||', '||trim(t_do.nombre) as id_docente,t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'-'||t_d.uni_acad||'(id:'||t_d.id_designacion||')' as id_desig,t_d.id_designacion,t_c.descripcion as cat_investigador,funcion_p,carga_horaria,cat_invest_conicet,resaval,check_inv,ua,t_i.identificador_personal,t_i.rescd,rescd_bm,hs_finan_otrafuente"
+        $sql=" select t_i.pinvest,t_i.desde,t_i.hasta,t_do.nro_docum,trim(t_do.apellido)||', '||trim(t_do.nombre) as id_docente,t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'-'||t_d.uni_acad||'(id:'||t_d.id_designacion||')' as id_desig,t_d.id_designacion,t_c.descripcion as cat_investigador,funcion_p,carga_horaria,cat_invest_conicet,resaval,check_inv,ua,t_i.identificador_personal,t_i.rescd,rescd_bm,hs_finan_otrafuente"
                 . " from integrante_interno_pi t_i"
                 . " left outer join designacion t_d on (t_i.id_designacion=t_d.id_designacion)"
                 . " left outer join docente t_do on (t_do.id_docente=t_d.id_docente)"

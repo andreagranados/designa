@@ -333,7 +333,7 @@ class ci_integrantes_pi extends designa_ci
                             $band=false;
                             if($pi['estado']=='A'){
                                 $band=$this->dep('datos')->tabla('logs_integrante_interno_pi')->fue_chequeado($int['id_designacion'],$int['pinvest'],$int['desde']);
-                            }
+                            }  
                             $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
                             if ( !preg_match($regenorma, $datos['rescd'], $matchFecha) ) {
                                throw new toba_error('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY');
