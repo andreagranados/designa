@@ -468,7 +468,7 @@ class ci_pinv_otros extends designa_ci
         function evt__form_pres__baja()
 	{
             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['$estado']<>'I'){
+            if($pi['estado']<>'I'){
                 toba::notificacion()->agregar(utf8_decode('El proyecto debe estar en estado Inicial(I) para poder modificar presupuesto. '), 'error');  
             }else{
                 $this->controlador()->dep('datos')->tabla('presupuesto_proyecto')->eliminar_todo();
