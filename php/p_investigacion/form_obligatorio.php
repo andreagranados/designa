@@ -16,10 +16,35 @@ class form_obligatorio extends toba_ei_formulario
 				switch (this.ef('estado').get_estado()) {
                               
 					case 'B':
-						this.obligatorio(true);
+                                                this.resobligatorio(true);
+                                                this.obligatorio(true);
 						break;
-                                        
+                                        case 'N': 
+                                                this.resobligatorio(true);
+                                                this.obligatorio(false);
+                                                break;   
+                                        case 'R': 
+                                                this.resobligatorio(false);
+                                                this.obligatorio(false);
+                                                break;        
+                                        case 'C': 
+                                                this.resobligatorio(true);
+                                                this.obligatorio(false);
+                                                break;
+                                        case 'A': 
+                                                this.resobligatorio(true);
+                                                this.obligatorio(false);
+                                                break; 
+                                        case 'F': 
+                                                this.resobligatorio(true);
+                                                this.obligatorio(false);
+                                                break;         
+                                        case 'X': 
+                                                this.resobligatorio(true);
+                                                this.obligatorio(false);
+                                                break;         
 					default:
+                                                this.resobligatorio(false);
 						this.obligatorio(false);
 						break;					
 				}
@@ -30,7 +55,12 @@ class form_obligatorio extends toba_ei_formulario
                                 this.ef('fec_baja').mostrar(visible);
 
 			}
-			
+			 {$this->objeto_js}.resobligatorio = function(visible)
+			{
+				this.ef('nro_resol').mostrar(visible);
+                                this.ef('fec_resol').mostrar(visible);
+
+			}
                         ";
     }
 }

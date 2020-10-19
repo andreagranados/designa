@@ -202,9 +202,11 @@ class ci_pinv_otros extends designa_ci
                             if($datos['estado']<>'E'){//si cambia  estado
                               
                                 if( $datos['estado']=='I' or $datos['estado']=='C' or $datos['estado']=='R'){//puede reabrir o aceptar o rechazar
-                                    //cuando la UA cambia el estado entonces verifica que esten cargadas las resoluciones de la pertenencia
-                                   $verifica=$this->controlador()->dep('datos')->tabla('unidades_proyecto')->get_verifica_resoluciones($pi['id_pinv']);
-                                   //$verifica=false;
+                                   $verifica=true;
+                                    //cuando la UA cambia el estado a ACEPTADO entonces verifica que esten cargadas las resoluciones de la pertenencia
+                                   if($datos['estado']=='C'){
+                                       $verifica=$this->controlador()->dep('datos')->tabla('unidades_proyecto')->get_verifica_resoluciones($pi['id_pinv']);
+                                   }
                                    if($verifica){
                                        if($pi['es_programa']==1){//debe cambiar el estado de todos los subproyectos
                                            $datos2['estado']=$datos['estado'];//para cambiar el estado del programa
@@ -229,7 +231,7 @@ class ci_pinv_otros extends designa_ci
                                 $datos2['estado']=$pi['estado'];
                             }
                             $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
-                            if ( !preg_match($regenorma, $datos['nro_resol'], $matchFecha) ) {
+                            if ( isset($datos['nro_resol']) and !preg_match($regenorma, $datos['nro_resol'], $matchFecha) ) {
                             //toba::notificacion()->agregar('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY','error');
                                 throw new toba_error('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY');
                             }else{
@@ -249,7 +251,7 @@ class ci_pinv_otros extends designa_ci
                                    $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
                                 }
                             }
-                            toba::notificacion()->agregar($mensaje, 'info');  
+                            toba::notificacion()->agregar($mensaje, 'info');   
                        }else{
                            switch ($pi['estado']) {
                                 case 'C':throw new toba_error('El proyecto ya ha sido "aCeptado". Ya no puede cambiar el estado.');

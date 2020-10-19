@@ -57,7 +57,7 @@ class ci_adjuntos extends toba_ci
                     if(isset($ins['cv_integrantes'])){
                         $nomb_int='/designa/1.0/adjuntos_proyectos_inv/'.$ins['cv_integrantes'];
                         $datos['cv_integrantes']=$ins['cv_integrantes'];
-                        $datos['imagen_vista_previa_int'] = "<a target='_blank' href='{$nomb_int}' >cv int</a>";
+                        $datos['imagen_vista_previa_int'] = "<a target='_blank' href='{$nomb_int}' >cv part</a>";
                     }
                     if(isset($ins['plan_trabajo'])){
                         $nomb_pt='/designa/1.0/adjuntos_proyectos_inv/'.$ins['plan_trabajo'];
