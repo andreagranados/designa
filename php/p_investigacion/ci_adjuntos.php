@@ -46,27 +46,27 @@ class ci_adjuntos extends toba_ci
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['ficha_tecnica'])){
                         $nomb_ft='/designa/1.0/adjuntos_proyectos_inv/'.$ins['ficha_tecnica'];//en windows
-                        $datos['ficha_tecnica']=$ins['ficha_tecnica'];
+                        $datos['ficha_tecnica']=' ';//para que no aparezca el nombre del archivo $ins['ficha_tecnica'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['cv_dir_codir'])){
                         $nomb_dir='/designa/1.0/adjuntos_proyectos_inv/'.$ins['cv_dir_codir'];
-                        $datos['cv_dir_codir']=$ins['cv_dir_codir'];
+                        $datos['cv_dir_codir']=' ';//$ins['cv_dir_codir'];
                         $datos['imagen_vista_previa_codir'] = "<a target='_blank' href='{$nomb_dir}' >cv dir y codir</a>";
                     }
                     if(isset($ins['cv_integrantes'])){
                         $nomb_int='/designa/1.0/adjuntos_proyectos_inv/'.$ins['cv_integrantes'];
-                        $datos['cv_integrantes']=$ins['cv_integrantes'];
+                        $datos['cv_integrantes']=' ';//$ins['cv_integrantes'];
                         $datos['imagen_vista_previa_int'] = "<a target='_blank' href='{$nomb_int}' >cv part</a>";
                     }
                     if(isset($ins['plan_trabajo'])){
                         $nomb_pt='/designa/1.0/adjuntos_proyectos_inv/'.$ins['plan_trabajo'];
-                        $datos['plan_trabajo']=$ins['plan_trabajo'];
+                        $datos['plan_trabajo']=' ';//$ins['plan_trabajo'];
                         $datos['imagen_vista_previa_pt'] = "<a target='_blank' href='{$nomb_pt}' >plan trabajo</a>";
                     }
                     if(isset($ins['nota_aceptacion'])){
                         $nomb_na='/designa/1.0/adjuntos_proyectos_inv/'.$ins['nota_aceptacion'];
-                        $datos['nota_aceptacion']=$ins['nota_aceptacion'];
+                        $datos['nota_aceptacion']=' ';//$ins['nota_aceptacion'];
                         $datos['imagen_vista_previa_nota'] = "<a target='_blank' href='{$nomb_na}' >nota aceptacion</a>";
                     }
                     //el archivo zip siempre se guarda con los ultimos 4 caracteres del codigo del proyecto
