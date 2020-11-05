@@ -197,7 +197,8 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'jornada', --expresion
 	'Jornada', --etiqueta
 	'C (Completa >=30)<br>
-P (Parcial: >=4<=29)', --descripcion
+P (Parcial: >=4<=29)<br>
+S (Simple <4)', --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'2', --orden

@@ -223,8 +223,9 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         }
          if (isset($filtro['jornada']['valor'])) {
                       switch ($filtro['jornada']['valor']) {
-                            case 'C':$where.=" and carga_horaria>=30";break;
-                            case 'P':$where.=" and carga_horaria>=4 and carga_horaria<30";break;
+                            case 'C':$where.=" and carga_horaria>=30 ";break;
+                            case 'P':$where.=" and carga_horaria>=4 and carga_horaria<30 ";break;
+                            case 'S':$where.=" and carga_horaria<4 ";break;
                       }
         }
          if (isset($filtro['tipo_sexo']['valor'])) {
@@ -241,7 +242,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                         case 'es_mayor_igual_que':$where.=" and edad >=".$filtro['edad']['valor'];break;
                         case 'es_menor_que':$where.=" and edad <".$filtro['edad']['valor'];break;
                         case 'es_menor_igual_que':$where.=" and edad <= ".$filtro['edad']['valor'];break;
-                        case 'entre':$where.=" and edad>=".$filtro['edad']['valor']['desde']." and "." and edad<=".$filtro['edad']['valor']['hasta'];break;
+                        case 'entre':$where.=" and edad>=".$filtro['edad']['valor']['desde']." and edad<=".$filtro['edad']['valor']['hasta'];break;
                     }
           }
         $sql=$this->get_plantilla(0);
