@@ -398,9 +398,9 @@ class dt_integrante_externo_pi extends toba_datos_tabla
             if($id_p==0){//todas las plantillas
                 $where=" where p.estado='A' and p.tipo<>'RECO' and check_inv=1";
                 $where2=" where p.estado='A' and p.tipo<>'RECO' and check_inv=1";
-                $orden=' order by codigo,orden';
+                $orden=' order by codigo,orden,nombre';
             }else{//la plantilla de un proyecto en particular   
-                $orden=" order by orden ";
+                $orden=" order by orden,nombre ";
                 $sql="select estado from pinvestigacion where id_pinv=".$id_p;
                 $resul= toba::db('designa')->consultar($sql); 
                 if($resul[0]['estado']=='A'){//si el proyecto esta A entonces solo muestra los chequeados
