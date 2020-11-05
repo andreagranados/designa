@@ -3,7 +3,7 @@ class ci_p_investigacion extends toba_ci
 {
 	protected $s__datos_filtro;
         protected $s__where;
-       
+        protected $s__columnas;
        
         //-----------------------------------------------------------------------------------
 	//---- filtros ----------------------------------------------------------------------
@@ -28,12 +28,40 @@ class ci_p_investigacion extends toba_ci
             unset($this->s__where);
 	}
 	
+        //-----------------------------------------------------------------------------------
+	//---- formulario columnas-------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+	function conf__columnas(toba_ei_formulario $form)
+	{
+            $form->colapsar();
+            $form->set_datos($this->s__columnas);    
 
+	}
+        function evt__columnas__modificacion($datos)
+        {
+            $this->s__columnas = $datos;
+        }
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
+                    if($this->s__columnas['cod_regional']==0){
+                        $c=array('cod_regional');
+                        $this->dep('cuadro')->eliminar_columnas($c); 
+                     }
+                     if($this->s__columnas['disciplina']==0){
+                        $c=array('disciplina');
+                        $this->dep('cuadro')->eliminar_columnas($c); 
+                     }
+                     if($this->s__columnas['objetivo']==0){
+                        $c=array('objetivo');
+                        $this->dep('cuadro')->eliminar_columnas($c); 
+                     }
+                      if($this->s__columnas['tipo_inv']==0){
+                        $c=array('tipo_inv');
+                        $this->dep('cuadro')->eliminar_columnas($c); 
+                     }
                     $cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_listado_filtro($this->s__datos_filtro));
                     //$cuadro->set_titulo(utf8_decode('Listado  ').date('d/m/Y (H:i:s)'));
 		} 

@@ -1,8 +1,9 @@
 <?php
-class ci_sin_check extends toba_ci
+class ci_listado_mincyt extends toba_ci
 {
         protected $s__datos_filtro;
         protected $s__where;
+        
         //-----------------------------------------------------------------------------------
 	//---- filtros ----------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -25,18 +26,11 @@ class ci_sin_check extends toba_ci
             unset($this->s__datos_filtro);
             unset($this->s__where);
 	}
-	//-----------------------------------------------------------------------------------
-	//---- cuadro -----------------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function conf__cuadro(toba_ei_cuadro $cuadro)
-	{
-            if (isset($this->s__where)) {
-                $cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_sin_check($this->s__where));
+        function conf__cuadro(toba_ei_cuadro $cuadro){
+		//get_todas_plantillas
+            if (isset($this->s__datos_filtro)) {
+               $cuadro->set_datos($this->dep('datos')->tabla('integrante_externo_pi')->get_todas_plantillas($this->s__datos_filtro));    
             }
 	}
-
-	
-
 }
 ?>

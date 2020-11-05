@@ -6,7 +6,7 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
             $actual=date('Y-m-d');
             $anio_actual= date("Y", strtotime($actual));
              switch ($tipo) {
-                case 'RECO':$id_tipo=1;
+                case 3:$id_tipo=1;//3 es reco
                    break;
                 default:$id_tipo=2;
                     break;
@@ -79,7 +79,6 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
 	{
             $band=false;
             $actual=date('Y-m-d');
-            $anio_actual= date("Y", strtotime($actual));
             switch ($tipo) {//tipo 3 es RECO
                 case 3: $id_tipo=1;
                    break;
@@ -88,19 +87,29 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
             }
             //trae la convocatoria que se encuentra vigente al dia de la fecha actual, y del tipo correspondiente
             $sql="select fec_inicio,fec_fin from convocatoria_proyectos "
-                    //. " where anio=$anio_actual and id_tipo=$id_tipo";
                     ." where fec_inicio<='".$actual."' and fec_fin >='".$actual."'"
                     . " and id_tipo=$id_tipo";
             
             $resul=toba::db('designa')->consultar($sql);
-            if(count($resul)>0){//si existe un periodo vigente al dia de la fecha entonces lo deja cargar
-//                if($actual>=$resul[0]['fec_inicio'] and $actual<=$resul[0]['fec_fin'] ){
-//                    $band=true;
-//                }
+            if(count($resul)>0){
                 $band=true;
             }
             return $band;
 	}
+        function get_permitido_borrar($id_conv)
+        {
+            $band=false;
+            $actual=date('Y-m-d');
+            //verifico si la convocatoria se encuentra vigente
+            $sql="select fec_inicio,fec_fin from convocatoria_proyectos "
+                    ." where id_conv=".$id_conv
+                    ." and fec_inicio<='".$actual."' and fec_fin >='".$actual."'";
+            $resul=toba::db('designa')->consultar($sql);
+            if(count($resul)>0){
+                $band=true;
+            }
+            return $band;
+        }
         function get_listado($where=null){
            if(!is_null($where)){
                     $condicion=' and '.$where;

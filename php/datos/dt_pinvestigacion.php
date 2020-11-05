@@ -588,6 +588,30 @@ class dt_pinvestigacion extends toba_datos_tabla
                             case 'es_igual_a':$where.=" and tipo = '".$filtro['tipo']['valor']."'";break;
                       }
                   }
+                  if (isset($filtro['id_disciplina']['valor'])) {
+                      switch ($filtro['id_disciplina']['condicion']) {
+                            case 'es_distinto_de':$where.=" and t_p.id_disciplina  !=".$filtro['id_disciplina']['valor'];break;
+                            case 'es_igual_a':$where.=" and t_p.id_disciplina = ".$filtro['id_disciplina']['valor'];break;
+                      }
+                  }
+                  if (isset($filtro['id_obj']['valor'])) {
+                      switch ($filtro['id_obj']['condicion']) {
+                            case 'es_distinto_de':$where.=" and t_p.id_obj  !=".$filtro['id_obj']['valor'];break;
+                            case 'es_igual_a':$where.=" and t_p.id_obj = ".$filtro['id_obj']['valor'];break;
+                      }
+                  }
+                  if (isset($filtro['tdi']['valor'])) {
+                      switch ($filtro['tdi']['condicion']) {
+                            case 'es_distinto_de':$where.=" and t_p.tdi  !=".$filtro['tdi']['valor'];break;
+                            case 'es_igual_a':$where.=" and t_p.tdi = ".$filtro['tdi']['valor'];break;
+                      }
+                  }
+                  if (isset($filtro['cod_regional']['valor'])) {
+                      switch ($filtro['cod_regional']['condicion']) {
+                            case 'es_distinto_de':$where.=" and t_ua.cod_regional  !='".$filtro['cod_regional']['valor']."'";break;
+                            case 'es_igual_a':$where.=" and t_ua.cod_regional = '".$filtro['cod_regional']['valor']."'";break;
+                      }
+                  }
                   if (isset($filtro['id_convocatoria']['valor'])) {
 			$where .= " and t_p.id_convocatoria = ".$filtro['id_convocatoria']['valor'];   
                     }
@@ -611,6 +635,7 @@ class dt_pinvestigacion extends toba_datos_tabla
 			t_p.nro_resol,
 			t_p.fec_resol,
 			t_p.uni_acad,
+                        t_ua.cod_regional,
 			t_p.fec_desde,
 			t_p.fec_hasta,
 			t_p.nro_ord_cs,
@@ -620,6 +645,12 @@ class dt_pinvestigacion extends toba_datos_tabla
                         t_p.estado,
                         t_p.tipo,
                         t_p.id_respon_sub,
+                        t_p.id_disciplina,
+                        t_di.descripcion as disciplina,
+                        t_p.id_obj,
+                        t_os.descripcion as objetivo,
+                        t_p.tdi,
+                        t_in.descripcion as tipo_inv,
                         --case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(t_do2.nombre) else case when t_d3.apellido is not null then 'DE: '||trim(t_d3.apellido)||', '||trim(t_d3.nombre)  else '' end end as director,
                         --case when t_dc2.apellido is not null then trim(t_dc2.apellido)||', '||trim(t_dc2.nombre) else case when t_c3.apellido is not null then trim(t_c3.apellido)||', '||trim(t_c3.nombre)  else '' end end as codirector
                         --solo cuando el proyecto esta Activo no muestra el director sino esta chequeado
@@ -671,6 +702,10 @@ class dt_pinvestigacion extends toba_datos_tabla
                        
 		FROM
 		pinvestigacion as t_p
+                INNER JOIN disciplina t_di ON t_di.id_disc=t_p.id_disciplina
+                INNER JOIN objetivo_se t_os ON t_os.id_obj=t_p.id_obj
+                INNER JOIN tipo_de_inv t_in ON t_in.id=t_p.tdi
+                INNER JOIN unidad_acad t_ua ON t_ua.sigla=t_p.uni_acad
                 LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
                 --tomo el ultimo director (primero obtengo la max fecha hasta)
 		LEFT OUTER JOIN ( select id2.pinvest,max(id2.hasta) as hasta
@@ -717,7 +752,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                                         and t_d3.nro_docum=id3.nro_docum
                                         )  subc2  ON (subc2.pinvest=t_p.id_pinv and subc2.hasta=sub4.hasta)
                         
- 
+       
                 $where        
 		ORDER BY codigo,desc_tipo)sub $where2";
 		return toba::db('designa')->consultar($sql);

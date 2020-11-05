@@ -212,36 +212,239 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 and a.fecha=t_i.hasta)sub";
         return toba::db('designa')->consultar($sql);
     }
-    function get_plantilla($id_p){
-        $concat='';
-        $sql="select estado from pinvestigacion where id_pinv=".$id_p;
-        $resul= toba::db('designa')->consultar($sql); 
-        if($resul[0]['estado']=='A'){//si el proyecto esta A entonces solo muestra los chequeados
-            $concat=' and check_inv=1 ';
+    function get_todas_plantillas($filtro=null){
+        $where=" where 1=1";
+        if (isset($filtro['clas']['valor'])) {
+                      switch ($filtro['clas']['valor']) {
+                            case 'I':$where.=" and (funcion_p='D' or funcion_p='DpP' or funcion_p='C' or funcion_p='ID')";break;
+                            case 'B':$where.=" and (funcion_p='BA' or funcion_p='BUGI' or funcion_p='BUGP' or funcion_p='BCNA' or funcion_p='BF')";break;
+                            case 'T':$where.=" and (funcion_p='IA' or funcion_p='AT' or funcion_p='IND' or funcion_p='EU'  or funcion_p='BCIN' or  or funcion_p='BUIA' or  or funcion_p='IAp')";break;
+                      }
         }
-        $sql=" CREATE LOCAL TEMP TABLE plantilla (
-                nombre          text,
-                fec_nacim	date,
-                tipo_docum	character(4),
-                nro_docum       integer,
-                tipo_sexo 	character(1),
-                categoria       text, 
-                ua              text,
-                carga_horaria   integer,
-                funcion_p       character(4),
-                cat_invest      character(10),
-                cuil            text,
-                identificador_personal character(10),
-                titulo          text,
-                titulop         text,
-                cat_invest_conicet  character(30),
-                orden           integer,
-                desde           date
-                
-            );";
-        toba::db('designa')->consultar($sql);
-        $sql="insert into plantilla "
-                ."(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,case when t_d2.cat_estat is not null then t_d.cat_estat||'-'||t_d.dedic else '' end as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
+         if (isset($filtro['jornada']['valor'])) {
+                      switch ($filtro['jornada']['valor']) {
+                            case 'C':$where.=" and carga_horaria>=30";break;
+                            case 'P':$where.=" and carga_horaria>=4 and carga_horaria<30";break;
+                      }
+        }
+         if (isset($filtro['tipo_sexo']['valor'])) {
+                      switch ($filtro['tipo_sexo']['valor']) {
+                            case 'F':$where.=" and tipo_sexo='F'";break;
+                            case 'M':$where.=" and tipo_sexo='M'";break;
+                      }
+        }
+        if (isset($filtro['edad']['valor'])) {
+               switch ($filtro['edad']['condicion']) {
+                        case 'es_distinto_de':$where.=" and edad<>".$filtro['edad']['valor'];break;
+                        case 'es_igual_a':$where.=" and edad = ".$filtro['edad']['valor'];break;
+                        case 'es_mayor_que':$where.=" and edad>".$filtro['edad']['valor'];break;
+                        case 'es_mayor_igual_que':$where.=" and edad >=".$filtro['edad']['valor'];break;
+                        case 'es_menor_que':$where.=" and edad <".$filtro['edad']['valor'];break;
+                        case 'es_menor_igual_que':$where.=" and edad <= ".$filtro['edad']['valor'];break;
+                        case 'entre':$where.=" and edad>=".$filtro['edad']['valor']['desde']." and "." and edad<=".$filtro['edad']['valor']['hasta'];break;
+                    }
+          }
+        $sql=$this->get_plantilla(0);
+        $sql="select * from (select * , edad(fec_nacim) as edad from (".$sql.") sub)sub2". $where;
+        return toba::db('designa')->consultar($sql);
+    }
+//    function get_plantilla($id_p){
+//        $concat='';
+//        $sql="select estado from pinvestigacion where id_pinv=".$id_p;
+//        $resul= toba::db('designa')->consultar($sql); 
+//        if($resul[0]['estado']=='A'){//si el proyecto esta A entonces solo muestra los chequeados
+//            $concat=' and check_inv=1 ';
+//        }
+//        $sql=" CREATE LOCAL TEMP TABLE plantilla (
+//                nombre          text,
+//                fec_nacim	date,
+//                tipo_docum	character(4),
+//                nro_docum       integer,
+//                tipo_sexo 	character(1),
+//                categoria       text, 
+//                ua              text,
+//                carga_horaria   integer,
+//                funcion_p       character(4),
+//                cat_invest      character(10),
+//                cuil            text,
+//                identificador_personal character(10),
+//                titulo          text,
+//                titulop         text,
+//                cat_invest_conicet  character(30),
+//                orden           integer,
+//                desde           date
+//                
+//            );";
+//        toba::db('designa')->consultar($sql);
+//        $sql="insert into plantilla "
+//                ."(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,case when t_d2.cat_estat is not null then t_d.cat_estat||'-'||t_d.dedic else '' end as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
+//                . " from  integrante_interno_pi t_i"
+//                . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_i.cat_investigador)"
+//                . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
+//                ."  LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
+//                . " LEFT OUTER JOIN funcion_investigador t_f ON (t_i.funcion_p=t_f.id_funcion) "
+//                . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
+//                . " LEFT OUTER JOIN designacion t_d2 ON (t_d2.id_docente=t_d.id_docente
+//                                    and t_d2.cat_mapuche=t_d.cat_mapuche and t_d2.cat_estat<>'AYS'
+//                                    and t_d2.desde<t_i.hasta and ( t_d2.hasta is null or t_d2.hasta>t_i.desde)) "//solo si tiene esa categ vigente dentro de la participacion la muestra
+//                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+//                                    from titulos_docente t_t , titulo t_u 
+//                                    where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='PREG'
+//                                    group by id_docente)  d
+//                    ON (d.id_docente=t_do.id_docente)              "
+//                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+//                                    from titulos_docente t_t , titulo t_u 
+//                                    where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD'
+//                                    group by id_docente)  b
+//                    ON (b.id_docente=t_do.id_docente)              "
+//               . " LEFT OUTER JOIN (select sub1.id_docente,max(desc_titul) as desc_titul from 
+//                                    (select * from titulos_docente t_t, titulo t_u 
+//                                                     where t_t.codc_titul=t_u.codc_titul and codc_nivel='POST' )sub1
+//                                    inner join (select id_docente, max(orden) as orden
+//                                                                        from titulos_docente t_t , titulo t_u 
+//                                                                        where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='POST'
+//                                                                        group by id_docente)sub2 on (sub1.orden=sub2.orden and sub1.id_docente=sub2.id_docente)
+//                                    group by sub1.id_docente)  c
+//                    ON (c.id_docente=t_do.id_docente)              "
+//               ." where t_i.pinvest in (select t_s.id_proyecto
+//                                       from pinvestigacion t_p, subproyecto t_s
+//                                       where t_p.id_pinv=".$id_p." and t_p.id_pinv=t_s.id_programa
+//                                       UNION
+//                                       select id_pinv from pinvestigacion
+//                                      where id_pinv=".$id_p." 
+//                                       )"
+//                             ." and t_i.hasta=p.fec_hasta  $concat) "
+//                ." UNION"
+//                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,trim(t_i.nombre_institucion) as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
+//                . " from integrante_externo_pi t_e"
+//                . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_e.cat_invest)"
+//                . " LEFT OUTER JOIN persona t_p ON (t_e.tipo_docum=t_p.tipo_docum and t_e.nro_docum=t_p.nro_docum)"
+//                . " LEFT OUTER JOIN funcion_investigador t_f ON (t_e.funcion_p=t_f.id_funcion) "
+//                . " LEFT OUTER JOIN pinvestigacion p ON (t_e.pinvest=p.id_pinv) "
+//                . " LEFT OUTER JOIN institucion t_i ON (t_e.id_institucion=t_i.id_institucion) "
+//                . " LEFT OUTER JOIN titulo t_t ON (t_p.titulog=t_t.codc_titul) "
+//                . " LEFT OUTER JOIN titulo t_ti ON (t_p.titulop=t_ti.codc_titul) "
+//                . " where t_e.pinvest in (select t_s.id_proyecto
+//                                       from pinvestigacion t_p, subproyecto t_s
+//                                       where t_p.id_pinv=".$id_p."  and t_p.id_pinv=t_s.id_programa
+//                                       UNION
+//                                       select id_pinv from pinvestigacion
+//                                      where id_pinv=".$id_p."  
+//                                       )"
+//                . " and  t_e.hasta=p.fec_hasta $concat)"
+//                . " order by orden";
+//        toba::db('designa')->consultar($sql);  
+//       // $sql="select * from plantilla";
+//        $sql=" select * from plantilla "//todos los de la plantilla sumado los becarios que no estan hasta el final. De los becarios los considero si la fecha hasta >fecha actual
+//     ." UNION "
+//     ." select * from ("
+//     ."(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
+//                . " from  integrante_interno_pi t_i"
+//                . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_i.cat_investigador)"
+//                . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
+//                ."  LEFT OUTER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
+//                . " LEFT OUTER JOIN funcion_investigador t_f ON (t_i.funcion_p=t_f.id_funcion) "
+//                . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
+//                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+//                                    from titulos_docente t_t , titulo t_u 
+//                                    where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='PREG'
+//                                    group by id_docente)  d
+//                    ON (d.id_docente=t_do.id_docente)              "
+//                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+//                                    from titulos_docente t_t , titulo t_u 
+//                                    where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD'
+//                                    group by id_docente)  b
+//                    ON (b.id_docente=t_do.id_docente)              "
+//               . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+//                                    from titulos_docente t_t , titulo t_u 
+//                                    where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='POST'
+//                                    group by id_docente)  c
+//                    ON (c.id_docente=t_do.id_docente)              "
+//               ." where t_i.pinvest in (select t_s.id_proyecto
+//                                       from pinvestigacion t_p, subproyecto t_s
+//                                       where t_p.id_pinv=".$id_p." and t_p.id_pinv=t_s.id_programa
+//                                       UNION
+//                                       select id_pinv from pinvestigacion
+//                                      where id_pinv=".$id_p." 
+//                                       )"
+//                             ." and t_i.funcion_p in ('BCIN','BUGI','BUIA','BUGP') and t_i.hasta>=current_date  $concat) "
+//                ." UNION"
+//                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,trim(t_i.nombre_institucion) as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
+//                . " from integrante_externo_pi t_e"
+//                . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_e.cat_invest)"
+//                . " LEFT OUTER JOIN persona t_p ON (t_e.tipo_docum=t_p.tipo_docum and t_e.nro_docum=t_p.nro_docum)"
+//                . " LEFT OUTER JOIN funcion_investigador t_f ON (t_e.funcion_p=t_f.id_funcion) "
+//                . " LEFT OUTER JOIN pinvestigacion p ON (t_e.pinvest=p.id_pinv) "
+//                . " LEFT OUTER JOIN institucion t_i ON (t_e.id_institucion=t_i.id_institucion) "
+//                . " LEFT OUTER JOIN titulo t_t ON (t_p.titulog=t_t.codc_titul) "
+//                . " LEFT OUTER JOIN titulo t_ti ON (t_p.titulop=t_ti.codc_titul) "
+//                . " where t_e.pinvest in (select t_s.id_proyecto
+//                                       from pinvestigacion t_p, subproyecto t_s
+//                                       where t_p.id_pinv=".$id_p."  and t_p.id_pinv=t_s.id_programa
+//                                       UNION
+//                                       select id_pinv from pinvestigacion
+//                                      where id_pinv=".$id_p."  
+//                                       )"
+//                . " and  t_e.funcion_p in ('BCIN','BUGI','BUIA','BUGP') and t_e.hasta>=current_date $concat)"
+//                . ")sub"
+//                ." where not exists (select * from plantilla t_p where t_p.nro_docum=sub.nro_docum and t_p.tipo_docum=sub.tipo_docum)"
+//                . " order by orden";
+////        print_r($sql);
+//        //union con los integrantes externos
+//        return toba::db('designa')->consultar($sql);  
+//    }
+        function get_plantilla($id_p){
+            $concat='';
+            if($id_p==0){//todas las plantillas
+                $where=" where p.estado='A' and p.tipo<>'RECO' and check_inv=1";
+                $where2=" where p.estado='A' and p.tipo<>'RECO' and check_inv=1";
+                $orden=' order by codigo,orden';
+            }else{//la plantilla de un proyecto en particular   
+                $orden=" order by orden ";
+                $sql="select estado from pinvestigacion where id_pinv=".$id_p;
+                $resul= toba::db('designa')->consultar($sql); 
+                if($resul[0]['estado']=='A'){//si el proyecto esta A entonces solo muestra los chequeados
+                    $concat=' and check_inv=1 ';
+                }
+                $where=" where t_i.pinvest in (select t_s.id_proyecto
+                                       from pinvestigacion t_p, subproyecto t_s
+                                       where t_p.id_pinv=".$id_p." and t_p.id_pinv=t_s.id_programa
+                                       UNION
+                                       select id_pinv from pinvestigacion
+                                      where id_pinv=".$id_p." 
+                                       )";
+                $where2=" where t_e.pinvest in (select t_s.id_proyecto
+                                       from pinvestigacion t_p, subproyecto t_s
+                                       where t_p.id_pinv=".$id_p."  and t_p.id_pinv=t_s.id_programa
+                                       UNION
+                                       select id_pinv from pinvestigacion
+                                      where id_pinv=".$id_p."  
+                                       )";
+            }
+        
+//        $sql=" CREATE LOCAL TEMP TABLE plantilla (
+//                nombre          text,
+//                fec_nacim	date,
+//                tipo_docum	character(4),
+//                nro_docum       integer,
+//                tipo_sexo 	character(1),
+//                categoria       text, 
+//                ua              text,
+//                carga_horaria   integer,
+//                funcion_p       character(4),
+//                cat_invest      character(10),
+//                cuil            text,
+//                identificador_personal character(10),
+//                titulo          text,
+//                titulop         text,
+//                cat_invest_conicet  character(30),
+//                orden           integer,
+//                desde           date
+//                
+//            );";
+        //toba::db('designa')->consultar($sql);
+        //$sql="insert into plantilla ("
+          $sql=      " select distinct p.codigo,upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,case when t_d2.cat_estat is not null then t_d.cat_estat||'-'||t_d.dedic else '' end as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
                 . " from  integrante_interno_pi t_i"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_i.cat_investigador)"
                 . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
@@ -249,8 +452,8 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " LEFT OUTER JOIN funcion_investigador t_f ON (t_i.funcion_p=t_f.id_funcion) "
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
                 . " LEFT OUTER JOIN designacion t_d2 ON (t_d2.id_docente=t_d.id_docente
-                                    and t_d2.cat_mapuche=t_d.cat_mapuche and t_d2.cat_estat<>'AYS'
-                                    and t_d2.desde<t_i.hasta and ( t_d2.hasta is null or t_d2.hasta>t_i.desde)) "//solo si tiene esa categ vigente dentro de la participacion la muestra
+                                    and t_d2.cat_mapuche=t_d.cat_mapuche and t_d2.cat_estat<>'AYS' and
+                                    t_d2.desde < t_i.hasta and ( t_d2.hasta is null or t_d2.hasta>t_i.desde)) "//solo si tiene esa categ vigente dentro de la participacion la muestra
                 . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
                                     from titulos_docente t_t , titulo t_u 
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='PREG'
@@ -270,16 +473,11 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                                                         group by id_docente)sub2 on (sub1.orden=sub2.orden and sub1.id_docente=sub2.id_docente)
                                     group by sub1.id_docente)  c
                     ON (c.id_docente=t_do.id_docente)              "
-               ." where t_i.pinvest in (select t_s.id_proyecto
-                                       from pinvestigacion t_p, subproyecto t_s
-                                       where t_p.id_pinv=".$id_p." and t_p.id_pinv=t_s.id_programa
-                                       UNION
-                                       select id_pinv from pinvestigacion
-                                      where id_pinv=".$id_p." 
-                                       )"
-                             ." and t_i.hasta=p.fec_hasta  $concat) "
+               . $where
+                             ." and t_i.hasta=p.fec_hasta  $concat"
+                  //. ") "
                 ." UNION"
-                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,trim(t_i.nombre_institucion) as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
+                . " (select distinct p.codigo, upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,trim(t_i.nombre_institucion) as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
                 . " from integrante_externo_pi t_e"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_e.cat_invest)"
                 . " LEFT OUTER JOIN persona t_p ON (t_e.tipo_docum=t_p.tipo_docum and t_e.nro_docum=t_p.nro_docum)"
@@ -288,21 +486,16 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " LEFT OUTER JOIN institucion t_i ON (t_e.id_institucion=t_i.id_institucion) "
                 . " LEFT OUTER JOIN titulo t_t ON (t_p.titulog=t_t.codc_titul) "
                 . " LEFT OUTER JOIN titulo t_ti ON (t_p.titulop=t_ti.codc_titul) "
-                . " where t_e.pinvest in (select t_s.id_proyecto
-                                       from pinvestigacion t_p, subproyecto t_s
-                                       where t_p.id_pinv=".$id_p."  and t_p.id_pinv=t_s.id_programa
-                                       UNION
-                                       select id_pinv from pinvestigacion
-                                      where id_pinv=".$id_p."  
-                                       )"
-                . " and  t_e.hasta=p.fec_hasta $concat)"
-                . " order by orden";
-        toba::db('designa')->consultar($sql);  
-       // $sql="select * from plantilla";
-        $sql=" select * from plantilla "//todos los de la plantilla sumado los becarios que no estan hasta el final. De los becarios los considero si la fecha hasta >fecha actual
+                . $where2
+                . " and  t_e.hasta=p.fec_hasta $concat"
+                .")"
+               // . " order by orden";
+        //toba::db('designa')->consultar($sql);  
+      
+        //$sql=" select * from plantilla "//todos los de la plantilla sumado los becarios que no estan hasta el final. De los becarios los considero si la fecha hasta >fecha actual
      ." UNION "
      ." select * from ("
-     ."(select distinct upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
+     ."(select distinct p.codigo,upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,t_d.cat_estat||'-'||t_d.dedic as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde"
                 . " from  integrante_interno_pi t_i"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_i.cat_investigador)"
                 . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
@@ -324,16 +517,10 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='POST'
                                     group by id_docente)  c
                     ON (c.id_docente=t_do.id_docente)              "
-               ." where t_i.pinvest in (select t_s.id_proyecto
-                                       from pinvestigacion t_p, subproyecto t_s
-                                       where t_p.id_pinv=".$id_p." and t_p.id_pinv=t_s.id_programa
-                                       UNION
-                                       select id_pinv from pinvestigacion
-                                      where id_pinv=".$id_p." 
-                                       )"
+               .$where
                              ." and t_i.funcion_p in ('BCIN','BUGI','BUIA','BUGP') and t_i.hasta>=current_date  $concat) "
-                ." UNION"
-                . " (select distinct upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,trim(t_i.nombre_institucion) as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
+                ." UNION "
+                . " (select distinct p.codigo,upper(trim(t_p.apellido)||', '||trim(t_p.nombre)) as nombre,t_p.fec_nacim,t_e.tipo_docum,t_e.nro_docum,t_p.tipo_sexo,'' as categoria,trim(t_i.nombre_institucion) as ua,t_e.carga_horaria,t_e.funcion_p,t_c.descripcion as cat_invest,case when t_p.tipo_docum='EXTR' then docum_extran else calculo_cuil(t_p.tipo_sexo,t_p.nro_docum) end as cuil,identificador_personal,t_t.desc_titul as titulo,t_ti.desc_titul as titulop,t_e.cat_invest_conicet,t_f.orden,t_e.desde"
                 . " from integrante_externo_pi t_e"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_e.cat_invest)"
                 . " LEFT OUTER JOIN persona t_p ON (t_e.tipo_docum=t_p.tipo_docum and t_e.nro_docum=t_p.nro_docum)"
@@ -342,21 +529,34 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " LEFT OUTER JOIN institucion t_i ON (t_e.id_institucion=t_i.id_institucion) "
                 . " LEFT OUTER JOIN titulo t_t ON (t_p.titulog=t_t.codc_titul) "
                 . " LEFT OUTER JOIN titulo t_ti ON (t_p.titulop=t_ti.codc_titul) "
-                . " where t_e.pinvest in (select t_s.id_proyecto
-                                       from pinvestigacion t_p, subproyecto t_s
-                                       where t_p.id_pinv=".$id_p."  and t_p.id_pinv=t_s.id_programa
-                                       UNION
-                                       select id_pinv from pinvestigacion
-                                      where id_pinv=".$id_p."  
-                                       )"
+                . $where2
                 . " and  t_e.funcion_p in ('BCIN','BUGI','BUIA','BUGP') and t_e.hasta>=current_date $concat)"
                 . ")sub"
-                ." where not exists (select * from plantilla t_p where t_p.nro_docum=sub.nro_docum and t_p.tipo_docum=sub.tipo_docum)"
-                . " order by orden";
-//        print_r($sql);
-        //union con los integrantes externos
-        return toba::db('designa')->consultar($sql);  
+                //." where not exists (select * from plantilla t_p where t_p.nro_docum=sub.nro_docum and t_p.tipo_docum=sub.tipo_docum)"
+                . " where not exists ("."select * from (
+                                       select t_do.tipo_docum,t_do.nro_docum 
+                                       from integrante_interno_pi t_i
+                                       INNER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)
+                                       INNER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente)
+                                       LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv)"
+                                       .$where ." and t_i.hasta=p.fec_hasta  $concat"
+                                       ." UNION "
+                                       ." select t_p.tipo_docum,t_p.nro_docum 
+                                        from integrante_externo_pi t_e
+                                        LEFT OUTER JOIN persona t_p ON (t_e.tipo_docum=t_p.tipo_docum and t_e.nro_docum=t_p.nro_docum)
+                                        LEFT OUTER JOIN pinvestigacion p ON (t_e.pinvest=p.id_pinv)"
+                                       .$where2." and  t_e.hasta=p.fec_hasta $concat"
+                                    .")plant where plant.nro_docum=sub.nro_docum and plant.tipo_docum=sub.tipo_docum "
+                         .")"
+                . $orden ;
+        
+         if($id_p==0){
+             return $sql;  
+         }else{
+            return toba::db('designa')->consultar($sql);      
+         }
     }
+    
     function get_proyectos_de($where=null){
         if(!is_null($where)){
                     $where=' WHERE '.$where;

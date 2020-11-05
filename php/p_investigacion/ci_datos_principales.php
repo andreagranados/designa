@@ -204,7 +204,7 @@ class ci_datos_principales extends toba_ci
         function evt__formulario__baja()
 	{
          $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-         $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($pi['tipo']);
+         $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido_borrar($pi['id_convocatoria']);
          if($band){
               if($pi['estado']<>'I'){
                toba::notificacion()->agregar('No puede eliminar el proyecto porque el mismo no se encuentra en estado Inicial (I)', 'error');  
