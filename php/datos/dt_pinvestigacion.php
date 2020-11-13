@@ -702,9 +702,9 @@ class dt_pinvestigacion extends toba_datos_tabla
                        
 		FROM
 		pinvestigacion as t_p
-                INNER JOIN disciplina t_di ON t_di.id_disc=t_p.id_disciplina
-                INNER JOIN objetivo_se t_os ON t_os.id_obj=t_p.id_obj
-                INNER JOIN tipo_de_inv t_in ON t_in.id=t_p.tdi
+                LEFT OUTER disciplina t_di ON t_di.id_disc=t_p.id_disciplina
+                LEFT OUTER objetivo_se t_os ON t_os.id_obj=t_p.id_obj
+                LEFT OUTER tipo_de_inv t_in ON t_in.id=t_p.tdi
                 INNER JOIN unidad_acad t_ua ON t_ua.sigla=t_p.uni_acad
                 LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
                 --tomo el ultimo director (primero obtengo la max fecha hasta)
