@@ -34,6 +34,8 @@ class ci_planes extends toba_ci
             if (isset($this->s__where)) {
                 $this->s__listado=$this->dep('datos')->tabla('plan_estudio')->get_listado($this->s__where);
 		$cuadro->set_datos($this->s__listado);
+             }else{
+                $cuadro->evento('guardar')->ocultar(); 
              } 
 	}
          /**
@@ -44,42 +46,33 @@ class ci_planes extends toba_ci
 	function evt__cuadro__multiple_con_etiq($datos)
 	{
             $this->s__seleccionadas=$datos;
-
 	}
         //aca tiene que mostrar el tilde en funcion a campo activo
         //metodo para mostrar el tilde cuando esta seleccionada 
         function conf_evt__cuadro__multiple_con_etiq(toba_evento_usuario $evento, $fila)
         {
-            //$evento->set_check_activo(true);
-            //print_r($this->     s__listado);
-            $sele=array();
-            //para cada registro del listado me fijo si el plan esta activo
-            foreach ($this->s__listado as $key=>$value) {
-                if($value['activo']){
-                    $sele[]=$value['id_plan'];  
-                }
-            }  
-//            //print_r($sele);
-//            if(in_array($this->s__listado[$fila]['id_plan'],$sele)){
-//                $evento->set_check_activo(true);
-//            }else{
-//                $evento->set_check_activo(false);   
-//            }
-//            foreach ($this->s__listado as $key=>$value) {
-//                if($value['activo']){
-//                    $sele[]=$value['id_plan'];  
-//                }
-//            }  
-//            //print_r($sele);
-//            if(in_array($this->s__listado[$fila]['id_plan'],$sele)){
-//                $evento->set_check_activo(true);
-//            }else{
-//                $evento->set_check_activo(false);   
-//            }
+            if (isset($this->s__listado)) {//si hay seleccionados
+                        if($this->s__listado[$fila]['activo']){
+                            $evento->set_check_activo(true);
+                        }else{
+                            $evento->set_check_activo(false);   
+                        }
+                    }
         }
+      
         function evt__cuadro__guardar($datos)
         {
-          // print_r($datos);
+            $sele=array();
+            foreach ($this->s__seleccionadas as $key => $value) {
+                $sele[]=$value['id_plan']; 
+            }
+            foreach ($this->s__listado as $key=>$value) {
+               if(in_array ( $value['id_plan'],$sele)){
+                    $this->dep('datos')->tabla('plan_estudio')->activar($value['id_plan']);     
+               }else{
+                   $this->dep('datos')->tabla('plan_estudio')->desactivar($value['id_plan']);     
+               }
+            } 
         }
 	
 }

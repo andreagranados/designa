@@ -29,5 +29,13 @@ class dt_plan_estudio extends toba_datos_tabla
                     . " FROM plan_estudio $where ORDER BY cod_carrera";
             return toba::db('designa')->consultar($sql);
         }
+        function activar($id_plan=null){
+            $sql = "update plan_estudio set activo=true where id_plan=".$id_plan." and not activo";
+            return toba::db('designa')->consultar($sql);
+        }
+        function desactivar($id_plan=null){
+            $sql = "update plan_estudio set activo=false where id_plan=".$id_plan." and activo";
+            return toba::db('designa')->consultar($sql);
+        }
 }
 ?>

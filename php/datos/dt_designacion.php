@@ -4,6 +4,22 @@ require_once 'consultas_mapuche.php';
 
 class dt_designacion extends toba_datos_tabla
 {
+    //retorna true si alguna de las desig seleccionadas tiene tkd
+    function control_regulares_con_tkd($designaciones=array()){
+        $sele=array();
+        foreach ($designaciones as $key => $value) {
+            $sele[]=$value['id_designacion']; 
+        }
+        $comma_separated = implode(',', $sele);
+        $sql="select * from designacion where id_designacion in (".$comma_separated.")"
+                ." and nro_540 is not null";
+        $resul=toba::db('designa')->consultar($sql);
+        if(count($resul)>0){//si encuentra casos entonces retorna true
+                return true;
+        }else{
+                return false;
+        }
+    }
 //recorre las designaciones y para cada una verifica si tiene actividad
    function control_actividad($designaciones=array(),$anio){
        //print_r(           $designaciones[0]['id_designacion']);
@@ -1121,7 +1137,13 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		
                 //que sea una designacion vigente, dentro del periodo actual o anulada cuando le setean el hasta con el dia anterior al desde
 		$where=" WHERE ((desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)) or (desde>hasta and ".$filtro['anio']."=extract(year from hasta)))";
-                $where.=" AND  nro_540 is null";
+                //cuando selecciona caracter:R tipo: normal y tilde todos entonces trae todos los regulares a pesar de tener tkd
+                
+                 //if (!(isset($filtro['especial']) and $filtro['especial']==1 and isset($filtro['uni_acad']) and $filtro['caracter']=='R' and isset($filtro['tipo_desig']) and $filtro['tipo_desig']==1 and !isset($filtro['id_programa'])  and
+                 //!isset($filtro['estado']) )){
+                   $where.=" AND  nro_540 is null";
+                 //}
+                
                 $where2="";          
                 
 		if (isset($filtro['uni_acad'])) {

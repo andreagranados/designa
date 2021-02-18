@@ -8,7 +8,19 @@ class ci_impresion_540 extends toba_ci
         protected $s__seleccionadas;
         protected $s__seleccionar_todos;
         protected $s__deseleccionar_todos;
-       
+        protected $s__especial;
+        //-----------------------------------------------------------------------------------
+	//---- formulario -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+	function conf__especial(toba_ei_formulario $form)
+	{
+            $form->colapsar();
+            $form->set_datos($this->s__especial);    
+	}
+        function evt__especial__modificacion($datos)
+        {
+            $this->s__especial = $datos;
+        }
           
 	//---- Filtro -----------------------------------------------------------------------
 
@@ -32,6 +44,7 @@ class ci_impresion_540 extends toba_ci
         function evt__filtro__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
+               // print_r($this->s__datos_filtro);
 	}
 	function evt__filtro__cancelar()
 	{
@@ -56,6 +69,10 @@ class ci_impresion_540 extends toba_ci
                    if($band){
                         toba::notificacion()->agregar(utf8_decode("Existen designaciones dentro del período que no alcanzan el 100% de imputación o con imputación al 0%"), "error");
                    }else{
+                        if($this->s__especial['todos_regulares']==1){//tildo para traer todos los regulares
+                           //solo aplica cuando eligio solo Caracter R
+                            $this->s__datos_filtro['especial']=1;
+                           }
                         $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro); 
                         $cuadro->set_datos($this->s__listado);//hasta que no presiona filtrar no aparece nada
                    }
@@ -498,6 +515,10 @@ class ci_impresion_540 extends toba_ci
                 $band=$this->dep('datos')->tabla('designacion')->control_actividad($this->s__seleccionadas, $this->s__anio);
                 if($band){
                    //le saco la notificacion 16 nov 2018 // toba::notificacion()->agregar(utf8_decode('A partir de Octubre 2018 no podrá imprimir TKD si el mismo incluye designaciones sin actividad.'),'info');
+                    $band=$this->dep('datos')->tabla('designacion')->control_regulares_con_tkd($this->s__seleccionadas);
+                    if($band){
+                        toba::notificacion()->agregar('Algunas de las designaciones seleccionadas tienen TKD.','info');
+                    }
                     $this->set_pantalla('pant_impresion');
                 }else{
                     toba::notificacion()->agregar('Hay designaciones seleccionadas que no tienen actividad.','info');
