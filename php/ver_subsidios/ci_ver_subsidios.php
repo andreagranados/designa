@@ -19,7 +19,7 @@ class ci_ver_subsidios extends toba_ci
 		$this->s__datos_filtro = $datos;
                 $this->s__where = $this->dep('filtros')->get_sql_where();
                 //actualiza el estado de los que estan vencidos
-                $this->dep('datos')->tabla('subsidio')->actualiza_vencidos();
+               // $this->dep('datos')->tabla('subsidio')->actualiza_vencidos();
 	}
 
 	function evt__filtros__cancelar()

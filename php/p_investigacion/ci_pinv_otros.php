@@ -2,7 +2,7 @@
 class ci_pinv_otros extends designa_ci
 {
 
-        protected $s__mostrar;
+//        protected $s__mostrar;
         protected $s__mostrar_s;
         protected $s__mostrar_v;
         protected $s__mostrar_p;
@@ -20,7 +20,7 @@ class ci_pinv_otros extends designa_ci
             $this->s__mostrar_form_tiene=0;//muestra formulario de estimulo
             $this->s__mostrar_s=0;//muestra formulario de subsidio
             $this->s__mostrar_v=0;//muestra formulario de viatico
-            $this->s__mostrar=0;//subsidio
+//            $this->s__mostrar=0;//subsidio
 	}
  
         function get_cant_dias($fs, $fr){
@@ -310,82 +310,7 @@ class ci_pinv_otros extends designa_ci
                     }
                 }
         }
-	//-----------------------------------------------------------------------------------
-	//---- cuadro_subsidio --------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
 
-	function conf__cuadro_subsidio(toba_ei_cuadro $cuadro)
-	{
-            if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $cuadro->set_datos($this->controlador()->dep('datos')->tabla('subsidio')->get_subsidios_de($pi['id_pinv']));
-            }
-	}
-        
-        function evt__cuadro_subsidio__seleccion($datos)
-        {
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($pi['estado']=='A' or $pi['estado']=='F'){
-                $this->controlador()->dep('datos')->tabla('subsidio')->cargar($datos);
-                $this->s__mostrar=1; 
-            }else{
-                toba::notificacion()->agregar('Los datos no pueden ser modificados porque el proyecto no esta en estado Finalizado(F) o Activo(A)', 'error');   
-            }
-        }
-	//-----------------------------------------------------------------------------------
-	//---- form_subsidio ----------------------------------------------------------------
-	//-----------------------------------------------------------------------------------
-
-	function conf__form_subsidio(toba_ei_formulario $form)
-	{
-            if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario para dar de alta un nuevo registro
-                $this->dep('form_subsidio')->descolapsar();
-            }else{
-                 $this->dep('form_subsidio')->colapsar();
-             }
-            if ($this->controlador()->dep('datos')->tabla('subsidio')->esta_cargada()) {
-                $form->set_datos($this->controlador()->dep('datos')->tabla('subsidio')->get());
-            }
-	}
-
-	function evt__form_subsidio__alta($datos)
-	{
-            $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $datos['id_proyecto']=$pi['id_pinv'];
-            $this->controlador()->dep('datos')->tabla('subsidio')->set($datos);
-            $this->controlador()->dep('datos')->tabla('subsidio')->sincronizar();
-            $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
-            $this->s__mostrar=0;
-	}
-
-	function evt__form_subsidio__baja()
-	{
-            $this->controlador()->dep('datos')->tabla('subsidio')->eliminar_todo();
-            $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
-            $this->s__mostrar=0;
-            toba::notificacion()->agregar('El subsidio se ha eliminado correctamente', 'info');  
-	}
-    //este es para la central
-	function evt__form_subsidio__modificacion($datos)
-	{
-            $this->controlador()->dep('datos')->tabla('subsidio')->set($datos);
-            $this->controlador()->dep('datos')->tabla('subsidio')->sincronizar();
-            toba::notificacion()->agregar('El subsidio se ha modificado correctamente', 'info');  
-	}
-        //boton modificacion para las unidades academicas
-        //solo cargan memo y nota
-        function evt__form_subsidio__modificacion_ua($datos)
-	{
-            $datos2['memo']=$datos['memo'];
-            $datos2['nota']=$datos['nota'];
-            $this->controlador()->dep('datos')->tabla('subsidio')->set($datos2);
-            $this->controlador()->dep('datos')->tabla('subsidio')->sincronizar();
-	}
-	function evt__form_subsidio__cancelar()
-	{
-            $this->controlador()->dep('datos')->tabla('subsidio')->resetear();
-            $this->s__mostrar=0;
-	}
         //-----------------------------------------------------------------------------------
 	//---- filtros ----------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -859,7 +784,8 @@ class ci_pinv_otros extends designa_ci
          if ($perfil == null) {//es usuario de la SCyT
                  switch ($this->s__pantalla) {
                     case "pant_winsip":$this->s__mostrar_s=1; $this->controlador()->dep('datos')->tabla('winsip')->resetear();break;
-                    case "pant_subsidios":
+                    case "pant_subsidios":  
+                        $this->dep('ci_subsidios')->mostrar_form_subsidio();
                         $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                          if($pi['estado']=='A' or $pi['estado']=='F'){
                             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
@@ -908,17 +834,6 @@ class ci_pinv_otros extends designa_ci
                          break;   
                  }
             }
-//         $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-//         if($pi['estado']<>'I' and $pi['estado']<>'A'){
-//                toba::notificacion()->agregar('No es posible porque el proyecto no esta en estado Inicial(I) o Activo(A)', 'error');   
-//         }else{
-//            switch ($this->s__pantalla) {
-//                case "pant_winsip":$this->s__mostrar_s=1; $this->controlador()->dep('datos')->tabla('winsip')->resetear();break;
-//                case "pant_subsidios":$this->s__mostrar=1; $this->controlador()->dep('datos')->tabla('subsidio')->resetear();break;   
-//                case "pant_estimulos":$this->s__mostrar_form_tiene=1; $this->controlador()->dep('datos')->tabla('tiene_estimulo')->resetear();break;   
-//                case "pant_viaticos":$this->s__mostrar_v=1;$this->controlador()->dep('datos')->tabla('viatico')->resetear();break;
-//            }
-//         }
         }
         
         function evt__enviar(){

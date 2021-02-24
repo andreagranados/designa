@@ -1,6 +1,34 @@
 <?php
 class dt_subsidios extends designa_datos_tabla
 {
+    //retorna 1 si puedo ingresar el comprobante porque no supera el total del subsidio, y 0 en caso contrario
+        function puedo_ingresar($idp,$nro,$monto_subsidio,$importe){
+            $sql="select case when sum(importe) is null then 1 else case when sum(importe)+$importe<= $monto_subsidio then 1 else 0 end end as bandera"          
+                  ." from comprob_rendicion_subsidio
+                  where id_proyecto=$idp
+                  and nro_subsidio=$nro
+                  ";
+            $salida=toba::db('designa')->consultar($sql);
+            if(count($salida)>0){
+                return $salida[0]['bandera'];
+            }else{//no hay comprobantes cargados
+                return 1;
+            }
+        }
+        function puedo_modificar($idp,$nro,$monto_subsidio,$importe,$id_comp){
+            $sql="select case when sum(importe)+$importe<= $monto_subsidio then 1 else 0 end as bandera
+                  from comprob_rendicion_subsidio
+                  where id_proyecto=$idp
+                  and nro_subsidio=$nro
+                      and id<>$id_comp
+                  ";
+            $salida=toba::db('designa')->consultar($sql);
+            if(count($salida)>0){
+                return $salida[0]['bandera'];
+            }else{//no hay comprobantes cargados
+                return 1;
+            }
+        }
         function actualiza_vencidos(){
             //los subsidios que fueron pagados y no se rindieron(es decir el estado es distinto de rendido)
             //y la fecha actual es mayor a fecha pago + 13 meses (es decir pasaron mas de 13 meses de la fecha de pago) entonces quedan vencidos
@@ -13,8 +41,13 @@ class dt_subsidios extends designa_datos_tabla
             
         }
         function get_subsidios_de($id_proy){
-            $sql="select t_s.*,trim(t_d.apellido)||','||trim(t_d.nombre) as responsable from subsidio t_s "
-                    . "LEFT OUTER JOIN docente t_d ON (t_s.id_respon_sub=t_d.id_docente)"
+            $sql="select t_s.*,trim(t_d.apellido)||','||trim(t_d.nombre) as responsable, case when sub.nro_subsidio is null then t_s.monto else t_s.monto-sub.total end as saldo "
+                    . " from subsidio t_s "
+                    . " LEFT OUTER JOIN docente t_d ON (t_s.id_respon_sub=t_d.id_docente)"
+                    . " LEFT OUTER JOIN (select nro_subsidio,id_proyecto,sum(importe)as total "
+                    . "                  from comprob_rendicion_subsidio"
+                    . "                  group by nro_subsidio,id_proyecto )sub ON sub.nro_subsidio=t_s.numero"
+                    . "                                                          and sub.id_proyecto=t_s.id_proyecto"
                     . " where t_s.id_proyecto=".$id_proy
                     ." order by t_s.numero";
             return toba::db('designa')->consultar($sql);
@@ -49,11 +82,16 @@ class dt_subsidios extends designa_datos_tabla
 			t_s.estado,
 			t_s.nota,
 			t_s.memo,
-                        t_d.apellido||','||t_d.nombre as respon
+                        t_d.apellido||', '||t_d.nombre as respon,
+                        t_c.total as rendido
 		FROM
 			subsidio as t_s
                         LEFT OUTER JOIN pinvestigacion t_i ON (t_i.id_pinv=t_s.id_proyecto)
                         LEFT OUTER JOIN docente t_d ON (t_d.id_docente=t_s.id_respon_sub)
+                        LEFT OUTER JOIN (select nro_subsidio,id_proyecto,sum(importe) as total
+                                         from comprob_rendicion_subsidio  
+                                         group by nro_subsidio,id_proyecto) t_c ON (t_c.nro_subsidio=t_s.numero and t_c.id_proyecto=t_s.id_proyecto)
+                        
                         )sub
                         $where
                             

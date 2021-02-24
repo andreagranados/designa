@@ -77,16 +77,6 @@ INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, r
 INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
 	'designa', --proyecto
 	'investigacion_director', --usuario_grupo_acc
-	'19'  --restriccion_funcional
-);
-INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
-	'designa', --proyecto
-	'investigacion_director', --usuario_grupo_acc
-	'37'  --restriccion_funcional
-);
-INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
-	'designa', --proyecto
-	'investigacion_director', --usuario_grupo_acc
 	'38'  --restriccion_funcional
 );
 INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
