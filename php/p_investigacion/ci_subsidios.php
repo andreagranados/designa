@@ -240,7 +240,8 @@ class ci_subsidios extends designa_ci
                     $datos=$this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->get();
                     //autocompleto el documento con ceros adelante hasta 8
                     $datos['cuit']=$datos['nro_cuit1'].str_pad($datos['nro_cuit'], 8, '0', STR_PAD_LEFT).$datos['nro_cuit2'];
-                    if(isset($datos['archivo_comprob'])){
+                    
+                    if($datos['archivo_comprob']<>null and $datos['archivo_comprob']<>''){//tiene valor
                                 // Definimos las variables
                         $user=getenv('DB_USER_SL');
                         $password=getenv('DB_PASS_SL');

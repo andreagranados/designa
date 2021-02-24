@@ -16,7 +16,7 @@ class dt_subsidios extends designa_datos_tabla
             }
         }
         function puedo_modificar($idp,$nro,$monto_subsidio,$importe,$id_comp){
-            $sql="select case when sum(importe)+$importe<= $monto_subsidio then 1 else 0 end as bandera
+            $sql="select case when sum(importe) is null then case when $importe<=$monto_subsidio then 1 else 0 end else case when sum(importe)+$importe<= $monto_subsidio then 1 else 0 end end as bandera
                   from comprob_rendicion_subsidio
                   where id_proyecto=$idp
                   and nro_subsidio=$nro
