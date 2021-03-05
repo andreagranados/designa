@@ -17,5 +17,8 @@ class dt_comprob_rendicion_subsidio extends toba_datos_tabla
         $sql="update comprob_rendicion_subsidio set archivo_comprob='".$valor."' where id=".$id;
         toba::db('designa')->consultar($sql);
     }
+  function x(){
+      
+  }  
 }
 ?>

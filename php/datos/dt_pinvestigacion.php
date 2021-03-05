@@ -166,7 +166,7 @@ class dt_pinvestigacion extends toba_datos_tabla
         }
         function get_responsable($id_proy){
            $salida=array();
-           $sql="select t_do.id_docente,trim(t_do.apellido)||','||trim(t_do.nombre) as descripcion"
+           $sql="select t_do.id_docente,trim(t_do.apellido)||', '||trim(t_do.nombre) as descripcion"
                    . " from pinvestigacion t_p, docente t_do "
                    . " where t_p.id_pinv=".$id_proy
                    . " and t_p.id_respon_sub=t_do.id_docente ";

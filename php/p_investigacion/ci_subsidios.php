@@ -3,7 +3,9 @@ class ci_subsidios extends designa_ci
 {
         protected $s__mostrar;
         protected $s__mostrar_c;
-    
+        protected $s__listado;
+      
+                
         function ini()
         {
             $this->s__mostrar=0;//subsidio
@@ -100,7 +102,7 @@ class ci_subsidios extends designa_ci
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $cuadro->set_datos($this->controlador()->controlador()->dep('datos')->tabla('subsidio')->get_subsidios_de($pi['id_pinv']));
-                $this->pantalla()->tab("pant_rendicion")->desactivar();  
+                $this->pantalla()->tab("pant_rendicion")->desactivar(); 
             }
 	}
         
@@ -186,17 +188,18 @@ class ci_subsidios extends designa_ci
             if ($this->controlador()->controlador()->dep('datos')->tabla('subsidio')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $comp=$this->controlador()->controlador()->dep('datos')->tabla('subsidio')->get();
-                $this->datos=$this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->get_comprobantes($comp);
-                foreach ($this->datos as $key => $value) {
-                    if($this->datos[$key]['archivo_comprob']<>null and $this->datos[$key]['archivo_comprob']<>''){//tiene valor
+                $this->s__datos=$this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->get_comprobantes($comp);
+                foreach ($this->s__datos as $key => $value) {
+                    if($this->s__datos[$key]['archivo_comprob']<>null and $this->s__datos[$key]['archivo_comprob']<>''){//tiene valor
                         $user=getenv('DB_USER_SL');
                         $password=getenv('DB_PASS_SL');
-                        $nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/subsidios/'.$this->datos[$key]['archivo_comprob'];
-                        $this->datos[$key]['archivo']="<a href='{$nomb_ft}' target='_blank'>archivo</a>";
+                        $nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/subsidios/'.$this->s__datos[$key]['archivo_comprob'];
+                        $this->s__datos[$key]['archivo']="<a href='{$nomb_ft}' target='_blank'>archivo</a>";
                     }
                 }
-                $cuadro->set_titulo('PLANILLA DE RENDICION '.$pi['codigo'].'    SUBSIDIO: '.$comp['numero'].' MONTO: $'.$comp['monto']);
-                $cuadro->set_datos($this->datos);
+                $cuadro->set_titulo(str_replace(':','' ,'PLANILLA DE RENDICION '.'    SUBSIDIO: '.$comp['numero'].' MONTO: $'.$comp['monto']));
+                $cuadro->set_datos($this->s__datos);
+                $this->controlador()->pantalla('pan_subsidios')->evento('agregar')->ocultar();
             }
 	}
         
@@ -386,7 +389,104 @@ class ci_subsidios extends designa_ci
             $this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->resetear();
             $this->s__mostrar_c=0;
 	}
+        function vista_pdf(toba_vista_pdf $salida){  
+           if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $usuario = toba::usuario()->get_nombre();
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $dir=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get_director($pi['id_pinv']);
+                $codir=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get_codirector($pi['id_pinv']);
+                $resp=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get_responsable($pi['id_pinv']);
+                if(count($resp)>0){
+                    $responsable=$resp[0]['descripcion'];
+                }else{
+                    $responsable='';
+                }
+                if ($this->controlador()->controlador()->dep('datos')->tabla('subsidio')->esta_cargada()) {
+                    $subs=$this->controlador()->controlador()->dep('datos')->tabla('subsidio')->get();
+                    $datos=array();
+                    $i=0;
 
+                    $salida->set_nombre_archivo("Planilla".".pdf");
+                    //recuperamos el objteo ezPDF para agregar la cabecera y el pie de página 
+                    $salida->set_papel_orientacion('landscape');
+                    $salida->inicializar();
+                    $pdf = $salida->get_pdf();
+                    $pdf->ezSetMargins(50, 50, 7, 7);
+                    //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
+                    //Primero definimos la plantilla para el número de página.
+                    $formato = utf8_decode('Página {PAGENUM} de {TOTALPAGENUM}');
+                    $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+                    $titulo="";
+                   //Configuración de Título.
+                   // $salida->titulo(utf8_d_seguro('PLANILLA DE RENDICIÓN')); 
+                   $pdf->ezText(utf8_d_seguro('<b>PLANILLA DE RENDICIÓN</b>'), 12,array('justification' =>'center')); 
+                   $pdf->ezText("\n");
+                    //print_r($this->s__datos);exit;  
+                   $suma=0;
+                   foreach ($this->s__datos as $des) {
+                       $fec=date("d/m/Y",strtotime($des['fecha']));
+                       $suma=$suma+$des['importe'];
+                       $datos[$i]=array( 'col2'=>$fec,'col3' => $des['tipo_desc'],'col4' =>  $des['comprobante'],'col5' => $des['rubro'],'col6' => $des['detalle'],'col7' => $des['razon_social'],'col8' =>$des['nro_cuit1'].'-'.$des['nro_cuit'].'-'.$des['nro_cuit2'],'col9' => number_format($des['importe'],2,',','.'));
+                       $i++;
+                   }   
+                   $i=$i-1;
+
+                   $fec_inicio=date("d/m/Y",strtotime($pi['fec_desde']));
+                   $fec_fin=date("d/m/Y",strtotime($pi['fec_hasta']));
+                   $pdf->ezText('    CODIGO DEL PROYECTO: <b>'.$pi['codigo'].'</b>'.'                '.'FECHA INICIO DEL PI: '.$fec_inicio.' FECHA FINALIZACION: '.$fec_fin, 10);
+                   $pdf->ezText('    DIRECTOR: '.$dir, 10);
+                   $pdf->ezText('    CODIRECTOR: '.$codir, 10);
+
+                   $pdf->ezText('    RESPONSABLE DE LA ADMINISTRACION DE PI: '.$responsable, 10);
+                   $pdf->ezText("\n", 10);
+
+                   $f=date("d/m/Y",strtotime($subs['fecha_pago']));
+                   $tabla_dp=array();
+                   $pdf->ezTable($tabla_dp,array('col1'=>'<b>SUBSIDIO N'.utf8_decode('°: ').$subs['numero'].'</b>'.' EXPEDIENTE: '.$subs['expediente'].' FECHA PAGO: '.$f),'',array('fontSize' => 12,'shaded'=>0,'showLines'=>1,'width'=>800,'cols'=>array('col1'=>array('justification'=>'center','width'=>800)) ));
+
+                   $tabla_dp=array();
+                   $pdf->ezTable($tabla_dp,array('col1'=>'<b>TOTAL SUBSIDIO</b>','col2'=>'$'.number_format($subs['monto'],2,',','.')),'',array('fontSize' => 12,'shaded'=>0,'showLines'=>1,'rowGap' => 3,'width'=>800,'cols'=>array('col1'=>array('justification'=>'right','width'=>710),'col2'=>array('justification'=>'right','width'=>90)) ));
+
+                   $cols=array('col2'=>'<b>FECHA</b>','col3' => '<b>TIPO</b>','col4' => '<b>NUMERO</b>','col5' => '<b>RUBRO</b>','col6' => '<b>DETALLE</b>','col7' => '<b>RAZON SOCIAL</b>','col8' => '<b>CUIL</b>','col9' => '<b>IMPORTE</b>');
+                   $opc=array('showLines'=>2,'shaded'=>0,'rowGap' => 1,'width'=>800,'cols'=>array('col2'=>array('width'=>70),'col3'=>array('width'=>60),'col4'=>array('width'=>90),'col5'=>array('width'=>60),'col6'=>array('width'=>240),'col7'=>array('width'=>110),'col8'=>array('width'=>80),'col9'=>array('width'=>90,'justification'=>'right')));
+                   $pdf->ezTable($datos, $cols, $titulo, $opc);
+
+                   $tabla_dp=array();
+                   $pdf->ezTable($tabla_dp,array('col1'=>'<b>TOTAL RENDIDO</b>','col2'=>'$'.number_format($suma,2,',','.')),'',array('fontSize' => 12,'shaded'=>0,'showLines'=>2,'width'=>800,'cols'=>array('col1'=>array('justification'=>'right','width'=>710),'col2'=>array('width'=>90,'justification'=>'right')) ));
+
+                   $saldo=$subs['monto']-$suma;
+                   $tabla_dp=array();
+                   $pdf->ezTable($tabla_dp,array('col1'=>'<b>SALDO</b>','col2'=>'$'.number_format($saldo,2,',','.')),'',array('fontSize' => 12,'shaded'=>0,'showLines'=>2,'width'=>800,'cols'=>array('col1'=>array('justification'=>'right','width'=>710),'col2'=>array('justification'=>'right','width'=>90)) ));
+
+                    $tabla_dj=array();
+                    $rend=utf8_decode('Rendición');
+                    $carac=utf8_decode('carácter');
+                    $dec=utf8_decode('declaración');
+                    $pdf->ezTable($tabla_dj,array('col1'=>'Se deja constancia que la presente '.$rend.' tiene '.$carac.' de '.$dec.' jurada'),'',array('shaded'=>0,'showLines'=>0,'width'=>800,'cols'=>array('col1'=>array('justification'=>'center','width'=>800)) ));
+                    $pdf->ezText("\n\n", 10);
+
+                    $pdf->addText(100,80,8,'--------------------------------------------------------------------'); 
+                    $firma=utf8_decode('Firma y Aclaración');
+                    $pdf->addText(100,70,8,$firma); 
+                    $pdf->addText(100,60,8,'Responsable del PI'); 
+                    $pdf->addText(350,80,8,'--------------------------------------------------------------------'); 
+                    $pdf->addText(350,70,8,$firma); 
+                    $pdf->addText(350,60,8,'Responsable de la UAP'); 
+                    $pdf->addText(600,80,8,'--------------------------------------------------------------------'); 
+                    $pdf->addText(600,70,8,$firma); 
+                    $pdf->addText(600,60,8,'Secretario de CyT de la Unco'); 
+
+
+                    //Recorremos cada una de las hojas del documento para agregar fecha al pie
+                    foreach ($pdf->ezPages as $pageNum=>$id){ 
+                        $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                        //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+                        $pdf->addText(450,20,8,'Generado desde Mocovi por usuario: '.$usuario.' '.date('d/m/Y h:i:s a')); 
+                        $pdf->closeObject(); 
+                    } 
+           }
+        }
+        }   
 	
 }
 ?>
