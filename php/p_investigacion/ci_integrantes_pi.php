@@ -319,9 +319,9 @@ class ci_integrantes_pi extends designa_ci
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $int=$this->dep('datos')->tabla('integrante_interno_pi')->get();
                 //Solo si cambia algo pierde el check
-                if($int['id_designacion']<>$datos['id_designacion'] or $int['funcion_p']<>$datos['funcion_p'] or $int['cat_investigador']<>$datos['cat_investigador'] or $int['carga_horaria']<>$datos['carga_horaria'] or $int['desde']<>$datos['desde'] or $int['hasta']<>$datos['hasta'] or $int['rescd']<>$datos['rescd'] or $int['rescd_bm']<>$datos['rescd_bm'] or $int['cat_invest_conicet']<>$datos['cat_invest_conicet'] or $int['resaval']<>$datos['resaval'] or $int['hs_finan_otrafuente']<>$datos['hs_finan_otrafuente'] ){
-                    $datos['check_inv']=0;//pierde el check si es que lo tuviera. Solo cuando cambia algo
-                }
+//                if($int['funcion_p']<>$datos['funcion_p'] or $int['cat_investigador']<>$datos['cat_investigador'] or $int['carga_horaria']<>$datos['carga_horaria'] or $int['desde']<>$datos['desde'] or $int['hasta']<>$datos['hasta'] or $int['rescd']<>$datos['rescd'] or $int['rescd_bm']<>$datos['rescd_bm'] or $int['cat_invest_conicet']<>$datos['cat_invest_conicet'] or $int['resaval']<>$datos['resaval'] or $int['hs_finan_otrafuente']<>$datos['hs_finan_otrafuente'] ){
+//                    $datos['check_inv']=0;//pierde el check si es que lo tuviera. Solo cuando cambia algo
+//                }
                                     
                 if($datos['desde']<$pi['fec_desde'] or $datos['hasta']>$pi['fec_hasta']){//no puede ir fuera del periodo del proyecto
                     //toba::notificacion()->agregar('Revise las fechas. Fuera del periodo del proyecto!', 'error');                    
@@ -352,11 +352,19 @@ class ci_integrantes_pi extends designa_ci
                                         unset($datos['cat_invest_conicet']);
                                         unset($datos['resaval']);
                                         unset($datos['hs_finan_otrafuente']);
+                                        //Solo si cambia hasta y resol bm pierde el check
+                                        if( $int['hasta']<>$datos['hasta'] or $int['rescd_bm']<>$datos['rescd_bm'] ){
+                                            $datos['check_inv']=0;//pierde el check si es que lo tuviera. Solo cuando cambia algo
+                                        }
                                         $mensaje='Ha sido chequeado por SCyT, solo puede modificar fecha hasta y resCD baja/modif';
                                     }else{//band false significa que puede modificar cualquier cosa
                                         //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
                                         $this->dep('datos')->tabla('integrante_interno_pi')->modificar_fecha_desde($int['id_designacion'],$int['pinvest'],$int['desde'],$datos['desde']);
                                         $mensaje="Los datos se han guardado correctamente";
+                                         //Solo si cambia algo pierde el check
+                                        if($int['funcion_p']<>$datos['funcion_p'] or $int['cat_investigador']<>$datos['cat_investigador'] or $int['carga_horaria']<>$datos['carga_horaria'] or $int['desde']<>$datos['desde'] or $int['hasta']<>$datos['hasta'] or $int['rescd']<>$datos['rescd'] or $int['rescd_bm']<>$datos['rescd_bm'] or $int['cat_invest_conicet']<>$datos['cat_invest_conicet'] or $int['resaval']<>$datos['resaval'] or $int['hs_finan_otrafuente']<>$datos['hs_finan_otrafuente'] ){
+                                            $datos['check_inv']=0;//pierde el check si es que lo tuviera. Solo cuando cambia algo
+                                        }
                                     }
                                     $this->dep('datos')->tabla('integrante_interno_pi')->set($datos);
                                     $this->dep('datos')->tabla('integrante_interno_pi')->sincronizar();
@@ -493,10 +501,10 @@ class ci_integrantes_pi extends designa_ci
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
             $band=false;
             $int=$this->dep('datos')->tabla('integrante_externo_pi')->get();
-            //Solo si cambia algo pierde el check
-            if($int['id_designacion']<>$datos['id_designacion'] or $int['funcion_p']<>$datos['funcion_p'] or $int['cat_investigador']<>$datos['cat_investigador'] or $int['carga_horaria']<>$datos['carga_horaria'] or $int['desde']<>$datos['desde'] or $int['hasta']<>$datos['hasta'] or $int['rescd']<>$datos['rescd'] or $int['rescd_bm']<>$datos['rescd_bm'] or $int['cat_invest_conicet']<>$datos['cat_invest_conicet'] or $int['resaval']<>$datos['resaval'] or $int['hs_finan_otrafuente']<>$datos['hs_finan_otrafuente'] ){
-                $datos['check_inv']=0;//pierde el check si es que lo tuviera. Solo cuando cambia algo
-            }
+//            //Solo si cambia algo pierde el check
+//            if($int['id_designacion']<>$datos['id_designacion'] or $int['funcion_p']<>$datos['funcion_p'] or $int['cat_investigador']<>$datos['cat_investigador'] or $int['carga_horaria']<>$datos['carga_horaria'] or $int['desde']<>$datos['desde'] or $int['hasta']<>$datos['hasta'] or $int['rescd']<>$datos['rescd'] or $int['rescd_bm']<>$datos['rescd_bm'] or $int['cat_invest_conicet']<>$datos['cat_invest_conicet'] or $int['resaval']<>$datos['resaval'] or $int['hs_finan_otrafuente']<>$datos['hs_finan_otrafuente'] ){
+//                $datos['check_inv']=0;//pierde el check si es que lo tuviera. Solo cuando cambia algo
+//            }
             if($pi['estado']=='A'){//solo en estado A chequea check investigacion
                 //si fue chequeado por SCyT entonces no puede borrar
                 $band=$this->dep('datos')->tabla('logs_integrante_externo_pi')->fue_chequeado($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde']);
@@ -520,10 +528,17 @@ class ci_integrantes_pi extends designa_ci
                         unset($datos['resaval']);
                         unset($datos['hs_finan_otrafuente']);
                         $mensaje='Ha sido chequeado por SCyT, solo puede modificar fecha hasta';
+                        if($int['hasta']<>$datos['hasta'] or $int['rescd_bm']<>$datos['rescd_bm']){
+                            $datos['check_inv']=0;//pierde el check si es que lo tuviera. Solo cuando cambia algo
+                        }
                     }else{//no fue modificado por SCyT entonces puede modificar cualquier dato
                         $mensaje='Los datos se han guardado correctamente';
                         //esto lo hago porque el set de toba no modifica la fecha desde por ser parte de la clave            
                         $this->dep('datos')->tabla('integrante_externo_pi')->modificar_fecha_desde($int['tipo_docum'],$int['nro_docum'],$int['pinvest'],$int['desde'],$datos['desde']);
+                        //Solo si cambia algo pierde el check
+                        if($int['funcion_p']<>$datos['funcion_p'] or $int['cat_investigador']<>$datos['cat_investigador'] or $int['carga_horaria']<>$datos['carga_horaria'] or $int['desde']<>$datos['desde'] or $int['hasta']<>$datos['hasta'] or $int['rescd']<>$datos['rescd'] or $int['rescd_bm']<>$datos['rescd_bm'] or $int['cat_invest_conicet']<>$datos['cat_invest_conicet'] or $int['resaval']<>$datos['resaval'] or $int['hs_finan_otrafuente']<>$datos['hs_finan_otrafuente'] ){
+                            $datos['check_inv']=0;//pierde el check si es que lo tuviera. Solo cuando cambia algo
+                        }
                     }
                     
                     $this->dep('datos')->tabla('integrante_externo_pi')->set($datos);
