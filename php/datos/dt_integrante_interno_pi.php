@@ -185,15 +185,45 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 case 'es_distinto_de':  $where.=" and denominacion <> ".quote("{$filtro['denominacion']['valor']}");  break;
             }
         }
+         if (isset($filtro['cod_cati']['valor'])) {
+            switch ($filtro['cod_cati']['condicion']) {
+                case 'contiene':  $where.=" and cod_cati ILIKE ".quote("%{$filtro['cod_cati']['valor']}%");  break;
+                case 'no_contiene':   $where.=" and cod_cati NOT ILIKE ".quote("%{$filtro['cod_cati']['valor']}%"); break;
+                case 'comienza_con': $where.=" and cod_cati ILIKE ".quote("{$filtro['cod_cati']['valor']}%");   break;
+                case 'termina_con':  $where.=" and cod_cati ILIKE ".quote("%{$filtro['cod_cati']['valor']}");  break;
+                case 'es_igual_a': $where.=" and cod_cati = ".quote("{$filtro['cod_cati']['valor']}");   break;
+                case 'es_distinto_de':  $where.=" and cod_cati <> ".quote("{$filtro['cod_cati']['valor']}");  break;
+                
+            }
+        }
         
-        $sql="select * from ("
-                . "select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria,d.cat_estat||d.dedic||'-'||d.carac||'('|| extract(year from d.desde)||'-'||case when (extract (year from case when d.hasta is null then '1800-01-11' else d.hasta end) )=1800 then '' else cast (extract (year from d.hasta) as text) end||')'||d.uni_acad as designacion"
-                . " from integrante_interno_pi i, docente t_do ,pinvestigacion t_i,designacion d, funcion_investigador f "
-                . " WHERE i.id_designacion=d.id_designacion "
-                . "and d.id_docente=t_do.id_docente
-                    and t_i.id_pinv=i.pinvest 
-                    and i.funcion_p=f.id_funcion
-                    order by apellido,nombre,t_i.codigo) b $where";
+//        $sql="select * from ("
+//                . "select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria,d.cat_estat||d.dedic||'-'||d.carac||'('|| extract(year from d.desde)||'-'||case when (extract (year from case when d.hasta is null then '1800-01-11' else d.hasta end) )=1800 then '' else cast (extract (year from d.hasta) as text) end||')'||d.uni_acad as designacion"
+//                . " from integrante_interno_pi i, docente t_do ,pinvestigacion t_i,designacion d, funcion_investigador f "
+//                . " WHERE i.id_designacion=d.id_designacion "
+//                . "and d.id_docente=t_do.id_docente
+//                    and t_i.id_pinv=i.pinvest 
+//                    and i.funcion_p=f.id_funcion
+//                    order by apellido,nombre,t_i.codigo) b $where";
+        $sql="select * from (select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria,d.cat_estat||d.dedic||'-'||d.carac||'('|| extract(year from d.desde)||'-'||case when (extract (year from case when d.hasta is null then '1800-01-11' else d.hasta end) )=1800 then '' else cast (extract (year from d.hasta) as text) end||')'||d.uni_acad as designacion,t_c.descripcion as cat_investigador,t_c.cod_cati
+                 from integrante_interno_pi i 
+                 INNER JOIN designacion d ON (i.id_designacion=d.id_designacion)
+                 INNER JOIN docente t_do ON (d.id_docente=t_do.id_docente)
+                 INNER JOIN pinvestigacion t_i ON (t_i.id_pinv=i.pinvest )
+                 INNER JOIN funcion_investigador f ON (i.funcion_p=f.id_funcion)
+                 INNER JOIN categoria_invest t_c ON (i.cat_investigador=t_c.cod_cati)"
+                 
+                . " UNION "
+                . "select trim(t_pe.apellido)||', '||trim(t_pe.nombre) as agente,t_pe.nro_docum,t_p.uni_acad,'',t_p.codigo,t_p.denominacion,t_p.fec_desde,t_p.fec_hasta,t_e.desde,t_e.hasta,
+                  t_e.funcion_p,f.descripcion,t_e.carga_horaria,'' as designacion,t_c.descripcion as cat_investigador,t_c.cod_cati
+                from integrante_externo_pi t_e
+                INNER JOIN pinvestigacion t_p ON (t_e.pinvest=t_p.id_pinv)
+                INNER JOIN persona t_pe ON (t_pe.tipo_docum=t_e.tipo_docum and t_pe.nro_docum=t_e.nro_docum)
+                INNER JOIN categoria_invest t_c ON (t_e.cat_invest=t_c.cod_cati)
+                INNER JOIN funcion_investigador f ON (t_e.funcion_p=f.id_funcion)
+                )b $where"
+                . "order by agente,codigo"
+                ;
         
         return toba::db('designa')->consultar($sql);
             
