@@ -222,7 +222,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 INNER JOIN categoria_invest t_c ON (t_e.cat_invest=t_c.cod_cati)
                 INNER JOIN funcion_investigador f ON (t_e.funcion_p=f.id_funcion)
                 )b $where"
-                . "order by agente,codigo"
+                . "order by agente,codigo,desde"
                 ;
         
         return toba::db('designa')->consultar($sql);
