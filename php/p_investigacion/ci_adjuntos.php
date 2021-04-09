@@ -160,10 +160,10 @@ class ci_adjuntos extends toba_ci
 //   //informe de avance se guarda en el servidor remoto por lo tanto accede al remoto
         function conf__form_adj_ia(toba_ei_formulario $form)
 	{
-            $user=getenv('DB_USER');
+            $user=getenv('DB_USER_SL');
+            $password=getenv('DB_PASS_SL');
             $host=getenv('DB_HOST');
             $port=getenv('DB_PORT');
-            $password=getenv('DB_PASS');
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
@@ -252,11 +252,10 @@ class ci_adjuntos extends toba_ci
         //informe final
          function conf__form_adj_if(toba_ei_formulario $form)
 	{
-            $user=getenv('DB_USER');
+            $user=getenv('DB_USER_SL');
+            $password=getenv('DB_PASS_SL');
             $host=getenv('DB_HOST');
             $port=getenv('DB_PORT');
-            $password=getenv('DB_PASS');
-            $ruta="/adjuntos_proyectos_inv";
             
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
