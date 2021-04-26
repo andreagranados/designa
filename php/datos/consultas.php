@@ -81,6 +81,7 @@ class consultas
 			
 		return toba::db('designa')->consultar($sql);
 	}
+        
 }
 
 ?>
