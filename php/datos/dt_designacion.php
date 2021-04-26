@@ -2251,13 +2251,22 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                inner join mocovi_periodo_presupuestario p on (a.anio=p.anio)
                left outer join ( select t_n.*,extract(year from t_n.desde) as anio
                                  from novedad t_n 
-                                 where t_n.tipo_nov in (2,3,5)
+                                 where t_n.tipo_nov in (1,4,2,3,5)
                                 ) lic on (lic.id_designacion = a.id_designacion 
                                           and lic.anio=a.anio 
-                                          and ( (a.id_periodo=1 and lic.desde<=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD')and lic.hasta>=p.fecha_inicio) or
-                                                 (a.id_periodo=2 and lic.desde<=p.fecha_fin and lic.hasta>=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD'))  or
-                                                 ((a.id_periodo=3 or a.id_periodo=4) and lic.desde<=p.fecha_fin and lic.hasta>=p.fecha_inicio )
-                                                 )
+                                          and ((lic.tipo_nov in (2,3,5) and
+                                            ((a.id_periodo=1 and lic.desde<=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD')and lic.hasta>=p.fecha_inicio) or
+                                                                                             (a.id_periodo=2 and lic.desde<=p.fecha_fin and lic.hasta>=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD'))  or
+                                                                                             ((a.id_periodo=3 or a.id_periodo=4) and lic.desde<=p.fecha_fin and lic.hasta>=p.fecha_inicio )
+                                                                                             )
+                                            ) or
+                                            (
+                                            lic.tipo_nov in (1,4) and 
+                                            ((a.id_periodo=1 and lic.desde<=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD')and lic.desde>=p.fecha_inicio) or
+                                                                                             (a.id_periodo=2 and lic.desde<=p.fecha_fin and lic.desde>=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD'))  or
+                                                                                             ((a.id_periodo=3 or a.id_periodo=4) and lic.desde<=p.fecha_fin and lic.desde>=p.fecha_inicio )
+                                                                                             )
+                                            ) )     
                                          )
                 where not (b.hasta is not null and b.hasta<=b.desde)
                          )sub1
