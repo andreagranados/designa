@@ -90,7 +90,7 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	NULL, --titulo
 	NULL, --subtitulo
 	NULL, --sql
-	'id_docente,tipo_doc,nro_legaj,desc_appat,desc_nombr,nro_cuil3,nro_cuil4,nro_cuil5,nacim,sexo,fec_ingreso,telefono_celular,telefono', --columnas_clave
+	'id_docente,tipo_doc,nro_legaj,desc_appat,desc_nombr,nro_cuil3,nro_cuil4,nro_cuil5,nacim,sexo,fec_ingreso,telefono_celular,telefono,correo_electronico', --columnas_clave
 	NULL, --columna_descripcion
 	'0', --clave_dbr
 	NULL, --archivos_callbacks
@@ -259,7 +259,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'3086', --objeto_cuadro_col
 	'fec_nacim', --clave
-	'6', --orden
+	'7', --orden
 	'Fec Nacim', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'7', --estilo
@@ -290,7 +290,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'3090', --objeto_cuadro_col
 	'tipo_sexo', --clave
-	'7', --orden
+	'8', --orden
 	'Sexo', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -321,7 +321,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'3098', --objeto_cuadro_col
 	'nro_doc', --clave
-	'12', --orden
+	'13', --orden
 	'Nro Docum', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -383,7 +383,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'3100', --objeto_cuadro_col
 	'nro_legaj', --clave
-	'8', --orden
+	'9', --orden
 	'Legajo', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -414,7 +414,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'3101', --objeto_cuadro_col
 	'desc_appat', --clave
-	'9', --orden
+	'10', --orden
 	'Apellido', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -445,7 +445,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'3102', --objeto_cuadro_col
 	'desc_nombr', --clave
-	'10', --orden
+	'11', --orden
 	'Nombre', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -476,7 +476,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'3103', --objeto_cuadro_col
 	'nacim', --clave
-	'13', --orden
+	'15', --orden
 	'Fec Nacim', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -507,7 +507,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'3104', --objeto_cuadro_col
 	'sexo', --clave
-	'14', --orden
+	'16', --orden
 	'Sexo', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -538,7 +538,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'3105', --objeto_cuadro_col
 	'tipo_doc', --clave
-	'11', --orden
+	'12', --orden
 	'Tipo Doc', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -569,7 +569,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3614', --objeto_cuadro
 	'4544', --objeto_cuadro_col
 	'fec_ingreso', --clave
-	'15', --orden
+	'17', --orden
 	'Fecha Ingreso', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'7', --estilo
@@ -593,6 +593,68 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	NULL, --vinculo_servicio
 	'0', --permitir_html
 	NULL, --grupo
+	NULL  --evento_asociado
+);
+INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro, objeto_cuadro_col, clave, orden, titulo, estilo_titulo, estilo, ancho, formateo, vinculo_indice, no_ordenar, mostrar_xls, mostrar_pdf, pdf_propiedades, desabilitado, total, total_cc, usar_vinculo, vinculo_carpeta, vinculo_item, vinculo_popup, vinculo_popup_param, vinculo_target, vinculo_celda, vinculo_servicio, permitir_html, grupo, evento_asociado) VALUES (
+	'designa', --objeto_cuadro_proyecto
+	'3614', --objeto_cuadro
+	'4757', --objeto_cuadro_col
+	'cuil', --clave
+	'6', --orden
+	'Cuil', --titulo
+	'ei-cuadro-col-tit', --estilo_titulo
+	'4', --estilo
+	NULL, --ancho
+	'1', --formateo
+	NULL, --vinculo_indice
+	'0', --no_ordenar
+	NULL, --mostrar_xls
+	NULL, --mostrar_pdf
+	NULL, --pdf_propiedades
+	NULL, --desabilitado
+	'0', --total
+	NULL, --total_cc
+	'0', --usar_vinculo
+	NULL, --vinculo_carpeta
+	NULL, --vinculo_item
+	NULL, --vinculo_popup
+	NULL, --vinculo_popup_param
+	NULL, --vinculo_target
+	NULL, --vinculo_celda
+	NULL, --vinculo_servicio
+	'0', --permitir_html
+	'Designaciones', --grupo
+	NULL  --evento_asociado
+);
+INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro, objeto_cuadro_col, clave, orden, titulo, estilo_titulo, estilo, ancho, formateo, vinculo_indice, no_ordenar, mostrar_xls, mostrar_pdf, pdf_propiedades, desabilitado, total, total_cc, usar_vinculo, vinculo_carpeta, vinculo_item, vinculo_popup, vinculo_popup_param, vinculo_target, vinculo_celda, vinculo_servicio, permitir_html, grupo, evento_asociado) VALUES (
+	'designa', --objeto_cuadro_proyecto
+	'3614', --objeto_cuadro
+	'4758', --objeto_cuadro_col
+	'cuilm', --clave
+	'14', --orden
+	'Cuil', --titulo
+	'ei-cuadro-col-tit', --estilo_titulo
+	'4', --estilo
+	NULL, --ancho
+	'1', --formateo
+	NULL, --vinculo_indice
+	'0', --no_ordenar
+	NULL, --mostrar_xls
+	NULL, --mostrar_pdf
+	NULL, --pdf_propiedades
+	NULL, --desabilitado
+	'0', --total
+	NULL, --total_cc
+	'0', --usar_vinculo
+	NULL, --vinculo_carpeta
+	NULL, --vinculo_item
+	NULL, --vinculo_popup
+	NULL, --vinculo_popup_param
+	NULL, --vinculo_target
+	NULL, --vinculo_celda
+	NULL, --vinculo_servicio
+	'0', --permitir_html
+	'Mapuche', --grupo
 	NULL  --evento_asociado
 );
 --- FIN Grupo de desarrollo 0
