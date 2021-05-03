@@ -203,20 +203,20 @@ class dt_docente extends toba_datos_tabla
                         toba::db('designa')->consultar($sql);
                     }
             
-                    $sql = "SELECT * from ("
-                                    . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim "
+                    $sql = "SELECT * , b.nro_cuil3||'-'||b.nro_cuil4||'-'||b.nro_cuil5 as cuilm from ("
+                                    . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim,a.nro_cuil1||'-'||a.nro_cuil||'-'||a.nro_cuil2 as cuil "
                                     . " from docente a, designacion b"
                                     . " where a.id_docente=b.id_docente ".$where
-                                    . " and a.legajo=0) a INNER JOIN auxi b "
+                                    . " and a.legajo<>0) a INNER JOIN auxi b "
                                     .                                    " ON (a.legajo=b.nro_legaj)"
                             . "WHERE a.apellido<>b.desc_appat or"
                             . "      a.nombre<>b.desc_nombr or "
                             . "      a.nro_docum<>b.nro_doc or"
-                           // . "      a.nro_cuil1<>b.nro_cuil3 or"
-                            //. "      a.nro_cuil <>b.nro_cuil4 or"
-                            //. "      a.nro_cuil2<>b.nro_cuil5 or"
+                            . "      a.nro_cuil1<>b.nro_cuil3 or"
+                            . "      a.nro_cuil <>b.nro_cuil4 or"
+                            . "      a.nro_cuil2<>b.nro_cuil5 or"
                             . "      a.tipo_sexo<>b.sexo or"
-                            . "      a.fec_nacim<>b.nacim"
+                            . "      a.fec_nacim<>b.nacim "
                             //. "      a.correo_institucional<>b.correo_electronico";
                             ;
                     
@@ -298,8 +298,8 @@ class dt_docente extends toba_datos_tabla
                         toba::db('designa')->consultar($sql);
                     }
             
-                    $sql = "SELECT * from ("
-                    . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim "
+                    $sql = "SELECT *, b.nro_cuil3||'-'||b.nro_cuil4||'-'||b.nro_cuil5 as cuilm from ("
+                    . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim, a.nro_cuil1||'-'||a.nro_cuil||'-'||a.nro_cuil2 as cuil "
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente ".$where
                     . " and a.legajo=0) a INNER JOIN auxi b "
