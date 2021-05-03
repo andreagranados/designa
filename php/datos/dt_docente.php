@@ -203,7 +203,7 @@ class dt_docente extends toba_datos_tabla
                         toba::db('designa')->consultar($sql);
                     }
             
-                    $sql = "SELECT a.*,b.nro_legaj,b.desc_appat,upper(trim(translate(b.desc_nombr,'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU'))) as desc_nombr,b.tipo_doc,b.nro_doc,b.nro_cuil3,b.nro_cuil4,b.nro_cuil5,b.sexo,b.nacim,b.fec_ingreso,b.telefono_celular,b.telefono,b.correo_electronico,a.nro_cuil1||'-'||a.nro_cuil||'-'||a.nro_cuil2 as cuil, b.nro_cuil3||'-'||b.nro_cuil4||'-'||b.nro_cuil5 as cuilm from ("
+                    $sql = "SELECT a.*,b.nro_legaj,b.desc_appat,upper(trim(translate(convert_to(b.desc_nombr,'UTF8'),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU'))) as desc_nombr,b.tipo_doc,b.nro_doc,b.nro_cuil3,b.nro_cuil4,b.nro_cuil5,b.sexo,b.nacim,b.fec_ingreso,b.telefono_celular,b.telefono,b.correo_electronico,a.nro_cuil1||'-'||a.nro_cuil||'-'||a.nro_cuil2 as cuil, b.nro_cuil3||'-'||b.nro_cuil4||'-'||b.nro_cuil5 as cuilm from ("
                                     . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim,a.nro_cuil1,a.nro_cuil,a.nro_cuil2,a.correo_institucional "
                                     . " from docente a, designacion b"
                                     . " where a.id_docente=b.id_docente ".$where
