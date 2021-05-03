@@ -209,8 +209,8 @@ class dt_docente extends toba_datos_tabla
                                     . " where a.id_docente=b.id_docente ".$where
                                     . " and a.legajo<>0) a INNER JOIN auxi b "
                                     .                                    " ON (a.legajo=b.nro_legaj)"
-                            . "WHERE replace(replace(replace(replace(replace(upper(trim(a.apellido)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')<>replace(replace(replace(replace(replace(upper(trim(b.desc_appat)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U') or"
-                            . "      replace(replace(replace(replace(replace(upper(trim(a.nombre)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')<>replace(replace(replace(replace(replace(upper(trim(b.desc_nombr)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U') or "
+                            . "WHERE trim(replace(replace(replace(replace(replace(upper(trim(a.apellido)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(trim(b.desc_appat)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or"
+                            . "      trim(replace(replace(replace(replace(replace(upper(trim(a.nombre)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(trim(b.desc_nombr)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or "
                             . "      a.nro_docum<>b.nro_doc or"
                             . "      a.nro_cuil1<>b.nro_cuil3 or"
                             . "      a.nro_cuil <>b.nro_cuil4 or"
