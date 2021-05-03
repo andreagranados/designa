@@ -32,11 +32,14 @@ class ci_de_datos_personales_mapuche extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__where)) {
-                    $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_sin_legajo($this->s__where);
-                    
-                    $cuadro->set_datos($this->s__datos);
-		} 
+            if (isset($this->s__where)) {
+                if ($this->s__datos_filtro['legajo']) {//con legajo
+                    $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_con_legajo($this->s__where);    
+                }else{
+                    $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_sin_legajo($this->s__where);    
+                }
+                $cuadro->set_datos($this->s__datos);
+            } 
 	}
 
 	function evt__cuadro__seleccion($datos)
@@ -58,6 +61,7 @@ class ci_de_datos_personales_mapuche extends toba_ci
                 $valores['fec_ingreso']=$datos['fec_ingreso'];
                 $valores['telefono']=$datos['telefono'];
                 $valores['telefono_celular']=$datos['telefono_celular'];
+                $valores['correo_institucional']=$datos['correo_electronico'];
                 $this->dep('datos')->tabla('docente')->cargar($d);//carga el docente seleccionado
                 $this->dep('datos')->tabla('docente')->set($valores);
                 $this->dep('datos')->tabla('docente')->sincronizar();

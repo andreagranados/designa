@@ -135,6 +135,101 @@ class dt_docente extends toba_datos_tabla
             }
             return $hi;
         }
+        function get_listado_con_legajo($where=null){
+ 
+            if(!is_null($where)){
+                    $where= ' and '.$where;
+            }else{
+                    $where='';
+            }
+            //veo cuales son los docentes que tienen legajo 
+            $sql=" SELECT distinct a.legajo "
+                    . " from docente a, designacion b"
+                    . " where a.id_docente=b.id_docente".$where
+                    . " and a.legajo<>0";
+            $documentos=toba::db('designa')->consultar($sql);
+           
+            if(count($documentos)>0){
+                 
+                $leg=array();
+                foreach ($documentos as $value) {
+                    $leg[]=$value['legajo'];
+                }
+                $conjunto=implode(",",$leg);
+                //recupero de mapuche los datos de las personas con legajo x
+                       
+                $datos_mapuche = consultas_mapuche::get_dh01_legajos($conjunto);
+                if(count($datos_mapuche)>0){ 
+                    $sql=" CREATE LOCAL TEMP TABLE auxi(
+                            nro_legaj   integer,
+                            desc_appat  character(20),
+                            desc_nombr  character(20),
+                            tipo_doc    character(4),
+                            nro_doc     integer, 
+                            nro_cuil3   integer,
+                            nro_cuil4   integer,
+                            nro_cuil5   integer,
+                            sexo        character(1),
+                            nacim       date,
+                            fec_ingreso date,
+                            telefono_celular character(30),
+                            telefono    character(30),
+                            correo_electronico  character(60)
+                    );";
+                    toba::db('designa')->consultar($sql);
+                    foreach ($datos_mapuche as $valor) {
+                        if(isset($valor['fec_ingreso'])){
+                            $ing="'".$valor['fec_ingreso']."'";
+                        }else{
+                            $ing='null';
+                        }
+                        if(isset($valor['telefono_celular'])){
+                            $cel="'".$valor['telefono_celular']."'";
+                        }else{
+                            $cel='null';
+                        }
+                        if(isset($valor['telefono'])){
+                            $tel="'".$valor['telefono']."'";
+                        }else{
+                            $tel='null';
+                        }
+                        if(isset($valor['correo_electronico'])){
+                            $cor="'".$valor['correo_electronico']."'";
+                        }else{
+                            $cor='null';
+                        }
+                        $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."',".$ing.",".$cel.",".$tel.",".$cor.")";
+                                             
+                        toba::db('designa')->consultar($sql);
+                    }
+            
+                    $sql = "SELECT * from ("
+                                    . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim "
+                                    . " from docente a, designacion b"
+                                    . " where a.id_docente=b.id_docente ".$where
+                                    . " and a.legajo=0) a INNER JOIN auxi b "
+                                    .                                    " ON (a.legajo=b.nro_legaj)"
+                            . "WHERE a.apellido<>b.desc_appat or"
+                            . "      a.nombre<>b.desc_nombr or "
+                            . "      a.nro_docum<>b.nro_doc or"
+                           // . "      a.nro_cuil1<>b.nro_cuil3 or"
+                            //. "      a.nro_cuil <>b.nro_cuil4 or"
+                            //. "      a.nro_cuil2<>b.nro_cuil5 or"
+                            . "      a.tipo_sexo<>b.sexo or"
+                            . "      a.fec_nacim<>b.nacim"
+                            //. "      a.correo_institucional<>b.correo_electronico";
+                            ;
+                    
+                    return toba::db('designa')->consultar($sql);
+                    
+                }else{//no encontro nada en mapuche
+                    return array();//retorna arreglo vacio
+                }
+                   
+            }else{//no hay docentes con legajo
+                return array();
+            }
+        }
         function get_listado_sin_legajo($where=null)
         {
             
@@ -174,7 +269,8 @@ class dt_docente extends toba_datos_tabla
                             nacim       date,
                             fec_ingreso date,
                             telefono_celular character(30),
-                            telefono    character(30)
+                            telefono    character(30),
+                            correo_electronico  character(60)
                     );";
                     toba::db('designa')->consultar($sql);
                     foreach ($datos_mapuche as $valor) {
@@ -193,7 +289,12 @@ class dt_docente extends toba_datos_tabla
                         }else{
                             $tel='null';
                         }
-                        $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."',".$ing.",".$cel.",".$tel.")";
+                        if(isset($valor['correo_electronico'])){
+                            $cor="'".$valor['correo_electronico']."'";
+                        }else{
+                            $cor='null';
+                        }
+                        $sql=" insert into auxi values (".$valor['nro_legaj'].",'".str_replace('\'','',$valor['desc_appat'])."','".str_replace('\'','',$valor['desc_nombr'])."','".$valor['tipo_docum']."',". $valor['nro_docum'].",".$valor['nro_cuil1'].",".$valor['nro_cuil'].",".$valor['nro_cuil2'].",'".$valor['tipo_sexo']."','".$valor['fec_nacim']."',".$ing.",".$cel.",".$tel.",".$cor.")";
                                              
                         toba::db('designa')->consultar($sql);
                     }
