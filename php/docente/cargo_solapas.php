@@ -172,9 +172,9 @@ class cargo_solapas extends toba_ci
                         $mensaje='NO SE DISPONE DE CRÉDITO PARA INGRESAR LA DESIGNACIÓN';
                         toba::notificacion()->agregar(utf8_decode($mensaje), "error"); 
                     }
-             }else{
-                 $mensaje='Verifique que el período de la suplencia este dentro del período de la licencia.';
-                 toba::notificacion()->agregar(utf8_decode($mensaje), "error");
+             }else{  
+                 //toba::notificacion()->agregar(utf8_decode("Verifique que el período de la suplencia este dentro del período de la licencia."), "error");
+                 throw new toba_error(utf8_decode("Verifique que el período de la suplencia este dentro del período de la licencia."));
              }
             }else{//esta intentando ingresar una designacion que no pertenece al periodo actual ni al periodo presup
                  $mensaje='Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.';

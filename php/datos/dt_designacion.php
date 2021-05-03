@@ -109,42 +109,58 @@ class dt_designacion extends toba_datos_tabla
     //el periodo de la designacion suplente debe estar dentro del periodo de la licencia al que suple
     function control_suplente($desde,$hasta,$id_desig_suplente){
        //busco todas las licencias de la designacion que ingresa
-//        $sql="SELECT distinct t_n.desde,t_n.hasta FROM designacion t_d"
+       //novedades vigentes en el periodo
+       $anio=date("Y", strtotime($desde)); 
+       $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
+       $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
+        $sql="SELECT distinct t_n.desde,t_n.hasta 
+                   FROM novedad t_n
+                   WHERE t_n.id_designacion=$id_desig_suplente
+                     and t_n.tipo_nov in (2,3,5)
+                     and t_n.desde<='".$udia."' and t_n.hasta>='".$pdia."'"
+                . " ORDER BY t_n.desde,t_n.hasta"; 
+        $licencias=toba::db('designa')->consultar($sql);
+        $i=0;$seguir=true;$long=count($licencias);$primera=true;
+        while(($i<$long) and $seguir){
+            if($primera){
+                $a=$licencias[$i]['desde'];
+                $b=$licencias[$i]['hasta'];
+                $primera=false;
+            }else{
+                if($desde>=$licencias[$i]['desde']){
+                    $a=$licencias[$i]['desde'];
+                    $b=$licencias[$i]['hasta'];
+                }
+                if($hasta<=$licencias[$i]['hasta']){
+                    $seguir=false;
+                }
+               
+                if(($licencias[$i]['desde']==date("Y-m-d",strtotime($b."+ 1 days"))) or ($licencias[$i]['desde']==$b)){
+                    $b=$licencias[$i]['hasta'];
+                }
+            }
+            $i++;
+        }
+        if($long>0){
+            if($desde>=$a and $hasta<=$b){
+                return true;
+            }else{
+                return false;
+            }
+        }else{//no tiene novedades
+            return false;
+        }
+
+//       $sql="select * from designacion t_d"
 //               . " INNER JOIN novedad t_n ON (t_d.id_designacion=t_n.id_designacion and t_n.tipo_nov in (2,3,5) )"
-//               . "  WHERE t_d.id_designacion=$id_desig_suplente"
-//                . " ORDER BY t_n.desde,t_n.hasta"; 
-//        $licencias=toba::db('designa')->consultar($sql);
-//        foreach ($licencias as $key => $value) {
-//            if($key==0){
-//                $a=$value['desde'];
-//                $b=$value['hasta'];
-//            }else{
-//                $sig=date("Y-m-d",strtotime($b."+ 1 days"));
-//                if($value['desde']==$b or $value['desde']==$sig){
-//                    $b=$value['hasta'];
-//                }
-//            }
-//        }
-//         if(count($licencias)>0){
-//            if($desde>=$a and $hasta<=$b){
-//                return true;
-//            }else{
-//                return false;
-//            }
-//         }else{
-//             return false;
-//         }
-        
-       $sql="select * from designacion t_d"
-               . " INNER JOIN novedad t_n ON (t_d.id_designacion=t_n.id_designacion and t_n.tipo_nov in (2,3,5) )"
-               . " where t_d.id_designacion=$id_desig_suplente"
-               . " and '".$desde."'>=t_n.desde and '".$hasta."'<=t_n.hasta";
-       $res=toba::db('designa')->consultar($sql);
-       if(count($res)>0){
-           return true;
-       }else{
-           return false;
-       }
+//               . " where t_d.id_designacion=$id_desig_suplente"
+//               . " and '".$desde."'>=t_n.desde and '".$hasta."'<=t_n.hasta";
+//       $res=toba::db('designa')->consultar($sql);
+//       if(count($res)>0){
+//           return true;
+//       }else{
+//           return false;
+//       }
     }
     function get_novedad($id_designacion,$anio,$tipo){
         
@@ -2241,55 +2257,57 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 //                    . " order by desc_materia,periodo,modulo "
 //                     ; 
                 //reemplazo por esta para traer todas la materias en conjunto si las hay
-                $sql="select sub4.uni_acad,d.apellido||', '||d.nombre as docente_nombre,d.legajo,coalesce(d.correo_institucional,'')||' '|| coalesce(d.correo_personal,'') as correo,sub4.id_designacion,sub4.cat_est,sub4.carac,sub4.desde,sub4.hasta,t_mo.descripcion as modulo,carga_horaria,observacion,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo, dep.descripcion as dep,ar.descripcion as area,t_o.descripcion as ori,case when materia_conj is not null then materia_conj else m.desc_materia||'('||pl.cod_carrera||' de '||pl.uni_acad|| ')' end as desc_materia
- from(select sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion,string_agg(sub4.materia,'/') as materia_conj from (select distinct * from (
-               select distinct a.anio,b.id_designacion,b.id_docente,d.legajo,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,b.desde,b.hasta,b.id_departamento,b.id_area,b.id_orientacion,case when lic.id_novedad is null then 0 else 1 end as licencia
-               from asignacion_materia a
-               inner join designacion b on (a.id_designacion=b.id_designacion)
-               inner join docente d on (b.id_docente=d.id_docente)
-               --esto para saber si esta de licencia dentro del periodo y anio en el que esta designado. Entonces con el filtro puedo descartar a los que no estan ejerciendo
-               inner join mocovi_periodo_presupuestario p on (a.anio=p.anio)
-               left outer join ( select t_n.*,extract(year from t_n.desde) as anio
-                                 from novedad t_n 
-                                 where t_n.tipo_nov in (1,4,2,3,5)
-                                ) lic on (lic.id_designacion = a.id_designacion 
-                                          and lic.anio=a.anio 
-                                          and ((lic.tipo_nov in (2,3,5) and
-                                            ((a.id_periodo=1 and lic.desde<=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD')and lic.hasta>=p.fecha_inicio) or
-                                                                                             (a.id_periodo=2 and lic.desde<=p.fecha_fin and lic.hasta>=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD'))  or
-                                                                                             ((a.id_periodo=3 or a.id_periodo=4) and lic.desde<=p.fecha_fin and lic.hasta>=p.fecha_inicio )
-                                                                                             )
-                                            ) or
-                                            (
-                                            lic.tipo_nov in (1,4) and 
-                                            ((a.id_periodo=1 and lic.desde<=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD')and lic.desde>=p.fecha_inicio) or
-                                                                                             (a.id_periodo=2 and lic.desde<=p.fecha_fin and lic.desde>=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD'))  or
-                                                                                             ((a.id_periodo=3 or a.id_periodo=4) and lic.desde<=p.fecha_fin and lic.desde>=p.fecha_inicio )
-                                                                                             )
-                                            ) )     
-                                         )
-                where not (b.hasta is not null and b.hasta<=b.desde)
-                         )sub1
-                         ".$where2." )  sub2                   
-    left outer join                       
-( select t_c.id_conjunto,t_p.anio,t_c.id_periodo,t_c.ua,t_e.id_materia
-  from en_conjunto t_e,conjunto  t_c, mocovi_periodo_presupuestario t_p
-    WHERE t_e.id_conjunto=t_c.id_conjunto and t_p.id_periodo=t_c.id_periodo_pres 
- 	                )sub3                        on (sub3.ua=sub2.uni_acad and sub3.id_periodo=sub2.id_periodo and sub3.anio=sub2.anio and sub3.id_materia=sub2.id_materia)
- 	             left outer join (select t_e.id_conjunto,t_e.id_materia,t_m.desc_materia||'('||t_p.cod_carrera||' de '||t_p.uni_acad||')' as materia from en_conjunto t_e,materia t_m ,plan_estudio t_p
- 	                              where t_e.id_materia=t_m.id_materia
- 	                              and t_p.id_plan=t_m.id_plan)sub4 on sub4.id_conjunto=sub3.id_conjunto
- 	          group by sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion)sub4
- 	          LEFT OUTER JOIN docente d ON d.id_docente=sub4.id_docente
- 	          LEFT OUTER JOIN periodo p ON p.id_periodo=sub4.id_periodo
- 	          LEFT OUTER JOIN modulo t_mo ON sub4.modulo=t_mo.id_modulo
- 	          LEFT OUTER JOIN departamento dep ON dep.iddepto=sub4.id_departamento
- 	          LEFT OUTER JOIN area ar ON ar.idarea=sub4.id_area
- 	          LEFT OUTER JOIN orientacion t_o ON (sub4.id_orientacion=t_o.idorient and ar.idarea=t_o.idarea)
- 	          LEFT OUTER JOIN materia m ON m.id_materia=sub4.id_materia
- 	          LEFT OUTER JOIN plan_estudio pl ON pl.id_plan=m.id_plan
-                 $where3
- 	          order by desc_materia,periodo,modulo,rol";
+                $sql="select sub4.uni_acad,d.apellido||', '||d.nombre as docente_nombre,d.nro_docum,d.legajo,coalesce(d.correo_institucional,'')||' '|| coalesce(d.correo_personal,'') as correo,sub4.id_designacion,sub4.cat_est,sub4.carac,sub4.desde,sub4.hasta,t_mo.descripcion as modulo,carga_horaria,observacion,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo, dep.descripcion as dep,ar.descripcion as area,t_o.descripcion as ori,case when materia_conj is not null then materia_conj else m.desc_materia||'('||pl.cod_carrera||' de '||pl.uni_acad|| ')' end as desc_materia
+                      from(select sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion,string_agg(sub4.materia,'/') as materia_conj 
+                           from (select distinct * from (
+                                   select distinct a.anio,b.id_designacion,b.id_docente,d.legajo,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,b.desde,b.hasta,b.id_departamento,b.id_area,b.id_orientacion,case when lic.id_novedad is null then 0 else 1 end as licencia
+                                   from asignacion_materia a
+                                   INNER JOIN designacion b ON (a.id_designacion=b.id_designacion)
+                                   INNER JOIN docente d ON (b.id_docente=d.id_docente)
+                                   --esto para saber si esta de licencia dentro del periodo y anio en el que esta designado. Entonces con el filtro puedo descartar a los que no estan ejerciendo
+                                   INNER JOIN mocovi_periodo_presupuestario p ON (a.anio=p.anio)
+                                   LEFT OUTER JOIN ( select t_n.*,extract(year from t_n.desde) as anio
+                                                     from novedad t_n 
+                                                     where t_n.tipo_nov in (1,4,2,3,5)
+                                                    ) lic ON (lic.id_designacion = a.id_designacion 
+                                                              and lic.anio=a.anio 
+                                                              and ((lic.tipo_nov in (2,3,5) and
+                                                                ((a.id_periodo=1 and lic.desde<=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD')and lic.hasta>=p.fecha_inicio) or
+                                                                                                                 (a.id_periodo=2 and lic.desde<=p.fecha_fin and lic.hasta>=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD'))  or
+                                                                                                                 ((a.id_periodo=3 or a.id_periodo=4) and lic.desde<=p.fecha_fin and lic.hasta>=p.fecha_inicio )
+                                                                                                                 )
+                                                                ) or
+                                                                (
+                                                                lic.tipo_nov in (1,4) and 
+                                                                ((a.id_periodo=1 and lic.desde<=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD')and lic.desde>=p.fecha_inicio) or
+                                                                                                                 (a.id_periodo=2 and lic.desde<=p.fecha_fin and lic.desde>=to_date(cast(p.anio as text)||'-07-01','YYYY-MM-DD'))  or
+                                                                                                                 ((a.id_periodo=3 or a.id_periodo=4) and lic.desde<=p.fecha_fin and lic.desde>=p.fecha_inicio )
+                                                                                                                 )
+                                                                ) )     
+                                                             )
+                                    where not (b.hasta is not null and b.hasta<=b.desde)
+                                 )sub1
+                                 ".$where2." )  sub2                   
+                        LEFT OUTER JOIN                       
+                            ( select t_c.id_conjunto,t_p.anio,t_c.id_periodo,t_c.ua,t_e.id_materia
+                              from en_conjunto t_e,conjunto  t_c, mocovi_periodo_presupuestario t_p
+                              WHERE t_e.id_conjunto=t_c.id_conjunto and t_p.id_periodo=t_c.id_periodo_pres 
+                             )sub3  ON (sub3.ua=sub2.uni_acad and sub3.id_periodo=sub2.id_periodo and sub3.anio=sub2.anio and sub3.id_materia=sub2.id_materia)
+                        LEFT OUTER JOIN 
+                            (select t_e.id_conjunto,t_e.id_materia,t_m.desc_materia||'('||t_p.cod_carrera||' de '||t_p.uni_acad||')' as materia from en_conjunto t_e,materia t_m ,plan_estudio t_p
+                             where t_e.id_materia=t_m.id_materia
+                             and t_p.id_plan=t_m.id_plan)sub4 ON sub4.id_conjunto=sub3.id_conjunto
+                        group by sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion)sub4
+                        LEFT OUTER JOIN docente d ON d.id_docente=sub4.id_docente
+                        LEFT OUTER JOIN periodo p ON p.id_periodo=sub4.id_periodo
+                        LEFT OUTER JOIN modulo t_mo ON sub4.modulo=t_mo.id_modulo
+                        LEFT OUTER JOIN departamento dep ON dep.iddepto=sub4.id_departamento
+                        LEFT OUTER JOIN area ar ON ar.idarea=sub4.id_area
+                        LEFT OUTER JOIN orientacion t_o ON (sub4.id_orientacion=t_o.idorient and ar.idarea=t_o.idarea)
+                        LEFT OUTER JOIN materia m ON m.id_materia=sub4.id_materia
+                        LEFT OUTER JOIN plan_estudio pl ON pl.id_plan=m.id_plan
+                       $where3
+                       order by desc_materia,periodo,modulo,rol";
             return toba::db('designa')->consultar($sql);
         }
         

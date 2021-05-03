@@ -136,7 +136,7 @@ INSERT INTO apex_objeto_ut_formulario (objeto_ut_formulario_proyecto, objeto_ut_
 	NULL, --auto_reset
 	NULL, --ancho
 	'150px', --ancho_etiqueta
-	'0', --expandir_descripcion
+	'1', --expandir_descripcion
 	NULL, --campo_bl
 	NULL, --scroll
 	NULL, --filas
@@ -176,7 +176,10 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'2', --orden
 	'Expediente', --etiqueta
 	NULL, --etiqueta_estilo
-	NULL, --descripcion
+	'Formato:  NNNNN/EEE-AAAA<br>
+NNNNN: número<br>
+EEE: extensión <br>
+AAAA: año', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
@@ -203,8 +206,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'0', --carga_permite_no_seteado
 	NULL, --carga_no_seteado
 	NULL, --carga_no_seteado_ocultar
-	'14', --edit_tamano
-	NULL, --edit_maximo
+	'20', --edit_tamano
+	'14', --edit_maximo
 	NULL, --edit_mascara
 	NULL, --edit_unidad
 	NULL, --edit_rango
