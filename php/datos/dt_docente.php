@@ -209,15 +209,15 @@ class dt_docente extends toba_datos_tabla
                                     . " where a.id_docente=b.id_docente ".$where
                                     . " and a.legajo<>0) a INNER JOIN auxi b "
                                     .                                    " ON (a.legajo=b.nro_legaj)"
-                            . "WHERE trim(replace(replace(replace(replace(replace(upper(trim(a.apellido)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(trim(b.desc_appat)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or"
-                            . "      trim(replace(replace(replace(replace(replace(upper(trim(a.nombre)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(trim(b.desc_nombr)), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or "
-                            . "      a.nro_docum<>b.nro_doc or"
-                            . "      a.nro_cuil1<>b.nro_cuil3 or"
-                            . "      a.nro_cuil <>b.nro_cuil4 or"
-                            . "      a.nro_cuil2<>b.nro_cuil5 or"
-                            . "      a.tipo_sexo<>b.sexo or"
-                            . "      a.fec_nacim<>b.nacim or "
-                            . "      trim(a.correo_institucional)<>trim(b.correo_electronico)";
+                            . "WHERE trim(replace(replace(replace(replace(replace(upper(a.apellido), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_appat), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or"
+                            . "      trim(replace(replace(replace(replace(replace(upper(a.nombre), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_nombr), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or "
+//                            . "      a.nro_docum<>b.nro_doc or"
+//                            . "      a.nro_cuil1<>b.nro_cuil3 or"
+//                            . "      a.nro_cuil <>b.nro_cuil4 or"
+//                            . "      a.nro_cuil2<>b.nro_cuil5 or"
+//                            . "      a.tipo_sexo<>b.sexo or"
+//                            . "      a.fec_nacim<>b.nacim or "
+//                            . "      trim(a.correo_institucional)<>trim(b.correo_electronico)";
                             ;
                     
                     return toba::db('designa')->consultar($sql);
