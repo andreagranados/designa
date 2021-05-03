@@ -203,21 +203,24 @@ class dt_docente extends toba_datos_tabla
                         toba::db('designa')->consultar($sql);
                     }
             
-                    $sql = "SELECT a.*,b.nro_legaj,cast (position('Í' in b.desc_nombr),text) as b.desc_appat,b.desc_nombr,b.tipo_doc,b.nro_doc,b.nro_cuil3,b.nro_cuil4,b.nro_cuil5,b.sexo,b.nacim,b.fec_ingreso,b.telefono_celular,b.telefono,b.correo_electronico,a.nro_cuil1||'-'||a.nro_cuil||'-'||a.nro_cuil2 as cuil, b.nro_cuil3||'-'||b.nro_cuil4||'-'||b.nro_cuil5 as cuilm from ("
+                    $sql = "SELECT a.*,b.nro_legaj,b.desc_nombr,b.desc_nombr,b.tipo_doc,b.nro_doc,b.nro_cuil3,b.nro_cuil4,b.nro_cuil5,b.sexo,b.nacim,b.fec_ingreso,b.telefono_celular,b.telefono,b.correo_electronico,a.nro_cuil1||'-'||a.nro_cuil||'-'||a.nro_cuil2 as cuil, b.nro_cuil3||'-'||b.nro_cuil4||'-'||b.nro_cuil5 as cuilm from ("
                                     . " SELECT distinct a.id_docente,a.legajo,a.apellido,a.nombre,a.tipo_docum,a.nro_docum ,tipo_sexo,a.fec_nacim,a.nro_cuil1,a.nro_cuil,a.nro_cuil2,a.correo_institucional "
                                     . " from docente a, designacion b"
                                     . " where a.id_docente=b.id_docente ".$where
                                     . " and a.legajo<>0) a INNER JOIN auxi b "
                                     .                                    " ON (a.legajo=b.nro_legaj)"
-                            . "WHERE trim(replace(replace(replace(replace(replace(upper(a.apellido), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_appat), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or"
-                            . "      trim(replace(replace(replace(replace(replace(upper(a.nombre), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_nombr), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))  "
-//                            . "      a.nro_docum<>b.nro_doc or"
-//                            . "      a.nro_cuil1<>b.nro_cuil3 or"
-//                            . "      a.nro_cuil <>b.nro_cuil4 or"
-//                            . "      a.nro_cuil2<>b.nro_cuil5 or"
-//                            . "      a.tipo_sexo<>b.sexo or"
-//                            . "      a.fec_nacim<>b.nacim or "
-//                            . "      trim(a.correo_institucional)<>trim(b.correo_electronico)";
+                            . " WHERE "
+                            //. "trim(replace(replace(replace(replace(replace(upper(a.apellido), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_appat), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or"
+                            //. "      trim(replace(replace(replace(replace(replace(upper(a.nombre), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_nombr), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))  "
+                            ." trim(upper(a.apellido))<> trim(upper(b.desc_appat)) or "
+                            . " trim(upper(a.nombre)) <> trim(upper(b.desc_nombr)) or"
+                            . "      a.nro_docum<>b.nro_doc or"
+                            . "      a.nro_cuil1<>b.nro_cuil3 or"
+                            . "      a.nro_cuil <>b.nro_cuil4 or"
+                            . "      a.nro_cuil2<>b.nro_cuil5 or"
+                            . "      a.tipo_sexo<>b.sexo or"
+                            . "      a.fec_nacim<>b.nacim or "
+                            . "      trim(a.correo_institucional)<>trim(b.correo_electronico)";
                             ;
                     
                     return toba::db('designa')->consultar($sql);
