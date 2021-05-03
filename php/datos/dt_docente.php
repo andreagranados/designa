@@ -230,14 +230,13 @@ class dt_docente extends toba_datos_tabla
                 return array();
             }
         }
-        function get_listado_sin_legajo($where=null)
+        function get_listado_sin_legajo($filtro=array())
         {
-            
-            if(!is_null($where)){
-                    $where= ' and '.$where;
-            }else{
-                    $where='';
+            $where='';
+            if (isset($filtro['uni_acad'])) {
+                $where.=" and uni_acad = ".quote($filtro['uni_acad']);
             }
+            
             //veo cuales son los docentes que tienen legajo 0
             $sql=" SELECT distinct a.nro_docum "
                     . " from docente a, designacion b"
