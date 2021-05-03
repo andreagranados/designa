@@ -210,7 +210,7 @@ class dt_docente extends toba_datos_tabla
                                     . " and a.legajo<>0) a INNER JOIN auxi b "
                                     .                                    " ON (a.legajo=b.nro_legaj)"
                             . "WHERE trim(replace(replace(replace(replace(replace(upper(a.apellido), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_appat), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or"
-                            . "      trim(replace(replace(replace(replace(replace(upper(a.nombre), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_nombr), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or "
+                            . "      trim(replace(replace(replace(replace(replace(upper(a.nombre), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_nombr), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))  "
 //                            . "      a.nro_docum<>b.nro_doc or"
 //                            . "      a.nro_cuil1<>b.nro_cuil3 or"
 //                            . "      a.nro_cuil <>b.nro_cuil4 or"
