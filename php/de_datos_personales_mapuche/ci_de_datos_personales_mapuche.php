@@ -24,11 +24,11 @@ class ci_de_datos_personales_mapuche extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
             if (isset($this->s__datos_filtro)) {
-                //if ($this->s__datos_filtro['legajo']) {//con legajo
-                  //  $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_con_legajo($this->s__where);    
-                //}else{
+                if ($this->s__datos_filtro['legajo']) {//con legajo 
+                    $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_con_legajo($this->s__datos_filtro);    
+                }else{
                     $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_sin_legajo($this->s__datos_filtro);    
-                //}
+                }
                 $cuadro->set_datos($this->s__datos);
             } 
 	}
