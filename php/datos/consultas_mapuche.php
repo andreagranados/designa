@@ -75,10 +75,14 @@ class consultas_mapuche
     return $datos_mapuche;
 }
  function get_dh01_legajos($legajos){
-    $sql="select a.*,b.fec_ingreso,c.telefono_celular,c.telefono,c.correo_electronico from mapuche.dh01 a"
+    $sql="select a.nro_legaj,a.desc_appat,a.desc_apmat,a.desc_apcas,translate(a.desc_nombr,'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') as a.desc_nombr,a.nro_tabla,a.tipo_docum,a.nro_docum,a.nro_cuil1,a.nro_cuil,a.nro_cuil2,a.tipo_sexo,a.fec_nacim,b.fec_ingreso,c.telefono_celular,c.telefono,c.correo_electronico from mapuche.dh01 a"
             . " left outer join mapuche.dh09 b on (a.nro_legaj=b.nro_legaj) "
             . " left outer join mapuche.dha1 c on (a.nro_legaj=c.nro_persona and domprincipal) "
             . " where a.nro_legaj in($legajos)";
+//    $sql="select a.*,b.fec_ingreso,c.telefono_celular,c.telefono,c.correo_electronico from mapuche.dh01 a"
+//            . " left outer join mapuche.dh09 b on (a.nro_legaj=b.nro_legaj) "
+//            . " left outer join mapuche.dha1 c on (a.nro_legaj=c.nro_persona and domprincipal) "
+//            . " where a.nro_legaj in($legajos)";
     $datos_mapuche = toba::db('mapuche')->consultar($sql);
     return $datos_mapuche;
 }
