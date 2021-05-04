@@ -170,7 +170,7 @@ class dt_docente extends toba_datos_tabla
                     $where2.=' or fec_nacim <> nacim ';
                 }
                 if($masfiltros['correo']==1){
-                    $where2.=' or trim(correo_institucional)<>trim(correo_electronico)';
+                    $where2.=" or trim(REPLACE(correo_institucional, CHR(64), ''))<>trim(REPLACE(correo_electronico, CHR(64), ''))";
                 }
                 
                 
