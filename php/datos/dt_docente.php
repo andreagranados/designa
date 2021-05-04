@@ -164,7 +164,7 @@ class dt_docente extends toba_datos_tabla
                     $where2.=' or trim(upper(apellido))<> trim(upper(desc_appat)) ';
                 }
                 if($masfiltros['nombre']==1){
-                    $where2.=' or fec_nacim <> nacim ';
+                    $where2.=' or trim(upper(nombre)) <> trim(upper(desc_nombr)) ';
                 }
                 if($masfiltros['nacim']==1){
                     $where2.=' or fec_nacim <> nacim ';
