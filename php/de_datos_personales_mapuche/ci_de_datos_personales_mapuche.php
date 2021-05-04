@@ -3,7 +3,22 @@ class ci_de_datos_personales_mapuche extends toba_ci
 {
 	protected $s__datos_filtro;
         protected $s__datos;
+        protected $s__masfiltros;
+        
+        //-----------------------------------------------------------------------------------
+	//---- formulario -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+	function conf__masfiltros(toba_ei_formulario $form)
+	{
+            $form->colapsar();
+            $this->s__masfiltros['dni']=1;//siempre tildado dni
+            $form->set_datos($this->s__masfiltros);    
 
+	}
+        function evt__masfiltros__modificacion($datos)
+        {
+            $this->s__masfiltros = $datos;
+        }
        //---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtro(toba_ei_formulario $filtro)
@@ -25,7 +40,7 @@ class ci_de_datos_personales_mapuche extends toba_ci
 	{
             if (isset($this->s__datos_filtro)) {
                 if ($this->s__datos_filtro['legajo']) {//con legajo 
-                    $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_con_legajo($this->s__datos_filtro);    
+                    $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_con_legajo($this->s__datos_filtro,$this->s__masfiltros);    
                 }else{//sin legajo
                     $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_sin_legajo($this->s__datos_filtro);    
                 }

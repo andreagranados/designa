@@ -135,7 +135,7 @@ class dt_docente extends toba_datos_tabla
             }
             return $hi;
         }
-        function get_listado_con_legajo($filtro=array()){
+        function get_listado_con_legajo($filtro=array(),$masfiltros=array()){
  
             $where='';
             if (isset($filtro['uni_acad'])) {
@@ -150,7 +150,31 @@ class dt_docente extends toba_datos_tabla
             $documentos=toba::db('designa')->consultar($sql);
            
             if(count($documentos)>0){
-                 
+                //-----------------
+                $where2=' nro_docum <> nro_doc ';
+                if($masfiltros['sexo']==1){
+                    $where2.=' or tipo_sexo<>sexo';
+                }
+                if($masfiltros['cuil']==1){
+                    $where2.=' or nro_cuil1 <> nro_cuil3 '.
+                             ' or nro_cuil <> nro_cuil4 '.
+                             ' or nro_cuil2 <> nro_cuil5 ';
+                }
+                if($masfiltros['apellido']==1){
+                    $where2.=' or trim(upper(apellido))<> trim(upper(desc_appat)) ';
+                }
+                if($masfiltros['nombre']==1){
+                    $where2.=' or fec_nacim <> nacim ';
+                }
+                if($masfiltros['nacim']==1){
+                    $where2.=' or fec_nacim <> nacim ';
+                }
+                if($masfiltros['correo']==1){
+                    $where2.=' or trim(correo_institucional)<>trim(correo_electronico)';
+                }
+                
+                
+                //-----------------
                 $leg=array();
                 foreach ($documentos as $value) {
                     $leg[]=$value['legajo'];
@@ -209,19 +233,19 @@ class dt_docente extends toba_datos_tabla
                                     . " where a.id_docente=b.id_docente ".$where
                                     . " and a.legajo<>0) a INNER JOIN auxi b "
                                     .                                    " ON (a.legajo=b.nro_legaj)"
-                            . " WHERE "
+                            . " WHERE ".$where2
                             //no funciona el translate ni el replace en los datos traidos de mapuche
                             //. "trim(replace(replace(replace(replace(replace(upper(a.apellido), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_appat), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U')) or"
                             //. "      trim(replace(replace(replace(replace(replace(upper(a.nombre), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))<>trim(replace(replace(replace(replace(replace(upper(b.desc_nombr), 'Á', 'A'),'É','E'),'Í','I'),'Ó','O'),'Ú','U'))  "
-                            ." trim(upper(a.apellido))<> trim(upper(b.desc_appat)) or "
-                            . " trim(upper(a.nombre)) <> trim(upper(b.desc_nombr)) or"
-                            . "      a.nro_docum<>b.nro_doc or"
-                            . "      a.nro_cuil1<>b.nro_cuil3 or"
-                            . "      a.nro_cuil <>b.nro_cuil4 or"
-                            . "      a.nro_cuil2<>b.nro_cuil5 or"
-                            . "      a.tipo_sexo<>b.sexo or"
-                            . "      a.fec_nacim<>b.nacim or "
-                            . "      trim(a.correo_institucional)<>trim(b.correo_electronico)";
+//                            ." trim(upper(a.apellido))<> trim(upper(b.desc_appat)) or "
+//                            . " trim(upper(a.nombre)) <> trim(upper(b.desc_nombr)) or"
+//                            . "      a.nro_docum<>b.nro_doc or"
+//                            . "      a.nro_cuil1<>b.nro_cuil3 or"
+//                            . "      a.nro_cuil <>b.nro_cuil4 or"
+//                            . "      a.nro_cuil2<>b.nro_cuil5 or"
+//                            . "      a.tipo_sexo<>b.sexo or"
+//                            . "      a.fec_nacim<>b.nacim or "
+//                            . "      trim(a.correo_institucional)<>trim(b.correo_electronico)";
                             ;
                     
                     return toba::db('designa')->consultar($sql);
