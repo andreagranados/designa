@@ -251,11 +251,45 @@ class dt_docente extends toba_datos_tabla
                     //return toba::db('designa')->consultar($sql);
                     $result=toba::db('designa')->consultar($sql);
                     foreach ($result as $key => $value) {
-                      
+                        //solo tilda correo y los correos son iguales entonces elimino
+                      if($masfiltros['sexo']==0 and $masfiltros['cuil']==0 and $masfiltros['nombre']==0 and $masfiltros['apellido']==0 and $masfiltros['sexo']==0 and $masfiltros['nacim']==0 and $masfiltros['correo']==1){
                         if(strcasecmp (trim($value['correo_institucional']),trim($value['correo_electronico']))==0){// son iguales
-                            unset($result[$key]);
-                            
-                        }
+                            unset($result[$key]);  
+                        }   
+                      }
+                       //tilda nombre,ap y correo y los 3 iguales entonces elimino
+                      if($masfiltros['sexo']==0 and $masfiltros['cuil']==0 and $masfiltros['nombre']==1 and $masfiltros['apellido']==1 and $masfiltros['sexo']==0 and $masfiltros['nacim']==0 and $masfiltros['correo']==1){
+                        if((strcasecmp (trim($value['correo_institucional']),trim($value['correo_electronico']))==0) and
+                                (strcasecmp (trim($value['nombre']),trim($value['desc_nombr']))==0) and 
+                                (strcasecmp (trim($value['apellido']),trim($value['desc_appat']))==0)){// son iguales
+                            unset($result[$key]);  
+                        }   
+                      }//solo nombre 
+                      if($masfiltros['sexo']==0 and $masfiltros['cuil']==0 and $masfiltros['nombre']==1 and $masfiltros['apellido']==0 and $masfiltros['sexo']==0 and $masfiltros['nacim']==0 and $masfiltros['correo']==0){
+                        if(strcasecmp (trim($value['nombre']),trim($value['desc_nombr']))==0){// son iguales
+                            unset($result[$key]);  
+                        }   
+                      }//solo ap
+                      if($masfiltros['sexo']==0 and $masfiltros['cuil']==0 and $masfiltros['nombre']==0 and $masfiltros['apellido']==1 and $masfiltros['sexo']==0 and $masfiltros['nacim']==0 and $masfiltros['correo']==0){
+                        if(strcasecmp (trim($value['apellido']),trim($value['desc_appat']))==0){// son iguales
+                            unset($result[$key]);  
+                        }   
+                      }///ape y nomb
+                      if($masfiltros['sexo']==0 and $masfiltros['cuil']==0 and $masfiltros['nombre']==1 and $masfiltros['apellido']==1 and $masfiltros['sexo']==0 and $masfiltros['nacim']==0 and $masfiltros['correo']==0){
+                        if(strcasecmp (trim($value['apellido']),trim($value['desc_appat']))==0 and strcasecmp (trim($value['nombre']),trim($value['desc_nombr']))==0){// son iguales
+                            unset($result[$key]);  
+                        }   
+                      }//ape y correo
+                      if($masfiltros['sexo']==0 and $masfiltros['cuil']==0 and $masfiltros['nombre']==0 and $masfiltros['apellido']==1 and $masfiltros['sexo']==0 and $masfiltros['nacim']==0 and $masfiltros['correo']==1){
+                        if(strcasecmp (trim($value['apellido']),trim($value['desc_appat']))==0 and strcasecmp (trim($value['nombre']),trim($value['desc_nombr']))==0 and strcasecmp (trim($value['correo_institucional']),trim($value['correo_electronico']))==0){// son iguales
+                            unset($result[$key]);  
+                        }   
+                      }//nom y correo
+                      if($masfiltros['sexo']==0 and $masfiltros['cuil']==0 and $masfiltros['nombre']==1 and $masfiltros['apellido']==0 and $masfiltros['sexo']==0 and $masfiltros['nacim']==0 and $masfiltros['correo']==1){
+                        if(strcasecmp (trim($value['correo_institucional']),trim($value['correo_electronico']))==0 and strcasecmp (trim($value['nombre']),trim($value['desc_nombr']))==0 and strcasecmp (trim($value['correo_institucional']),trim($value['correo_electronico']))==0){// son iguales
+                            unset($result[$key]);  
+                        }   
+                      }
                     }
                     return $result;
                 }else{//no encontro nada en mapuche
