@@ -21,9 +21,9 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'de Datos Personales Mapuche - CI - masfiltros', --nombre
-	'Mas Filtros', --titulo
+	'Más Filtros', --titulo
 	'1', --colapsable
-	NULL, --descripcion
+	'Tilde los campos a comparar. Si tilda más de uno obtendrá un listado de docentes con diferencias en alguno de los campos seleccionados.', --descripcion
 	'designa', --fuente_datos_proyecto
 	'designa', --fuente_datos
 	NULL, --solicitud_registrar
