@@ -252,7 +252,7 @@ class dt_docente extends toba_datos_tabla
                     $result=toba::db('designa')->consultar($sql);
                     foreach ($result as $key => $value) {
                       
-                        if(strcasecmp ($value['correo_institucional'],$value['correo_electronico'])==0){// son iguales
+                        if(strcasecmp (trim($value['correo_institucional']),trim($value['correo_electronico']))==0){// son iguales
                             unset($result[$key]);
                             
                         }
