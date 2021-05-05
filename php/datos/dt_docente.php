@@ -245,11 +245,19 @@ class dt_docente extends toba_datos_tabla
 //                            . "      a.nro_cuil2<>b.nro_cuil5 or"
 //                            . "      a.tipo_sexo<>b.sexo or"
 //                            . "      a.fec_nacim<>b.nacim or "
-//                            . "      trim(a.correo_institucional)<>trim(b.correo_electronico)";
+//                            . "      trim(a.correo_institucional)<>trim(b.correo_electronico)
                             ;
                     
-                    return toba::db('designa')->consultar($sql);
-                    
+                    //return toba::db('designa')->consultar($sql);
+                    $result=toba::db('designa')->consultar($sql);
+                    foreach ($result as $key => $value) {
+                      
+                        if(strcasecmp ($value['correo_institucional'],$value['correo_electronico'])==0){// son iguales
+                            unset($result[$key]);
+                            
+                        }
+                    }
+                    return $result;
                 }else{//no encontro nada en mapuche
                     return array();//retorna arreglo vacio
                 }
