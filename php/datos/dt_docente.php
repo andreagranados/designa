@@ -48,7 +48,7 @@ class dt_docente extends toba_datos_tabla
                      LEFT OUTER JOIN norma t_nn ON (t_nn.id_norma=t_n.id_norma and t_nn.tipo_norma='ORDE' )
                      
                      where id_docente=".$id_doc
-                     ." and t_d.desde<='".$udia."' and (t_d.hasta >='".$udia."' or t_d.hasta is null)
+                     ." and t_d.desde<='".$udia."' and (t_d.hasta >='".$pdia."' or t_d.hasta is null)
                    order by t_d.desde) sub1 
                    order by fecha desc
                      
