@@ -365,7 +365,7 @@ LEFT OUTER JOIN (select  t_m.id_materia,t_m.id_periodo,t_m.anio,count(distinct t
              $where=" and anio=".date('Y');
                  }
         }
-                
+             
         $sql = "SELECT distinct t_a.id_designacion,t_pe.uni_acad||'-'||t_pe.desc_carrera||'('||t_pe.cod_carrera||')' as carrera,t_a.id_materia,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,substring(t_t.desc_item,0,5) as rol,t_a.id_periodo,t_p.descripcion as periodo,(case when t_a.externa=0 then 'NO' else 'SI' end) as externa,t_o.id_modulo as modulo,t_o.descripcion as moddes,t_a.anio,t_a.carga_horaria,calculo_conjunto(t_a.id_materia,t_a.id_periodo,t_a.anio) as conj,substr(t_a.observacion,0,20) as observacion"
                 . " FROM asignacion_materia t_a "
                 . " LEFT OUTER JOIN materia t_m ON (t_m.id_materia=t_a.id_materia)"

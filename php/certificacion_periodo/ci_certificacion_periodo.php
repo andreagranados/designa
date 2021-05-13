@@ -71,13 +71,13 @@ class ci_certificacion_periodo extends toba_ci
                 'outerLineThickness' => 0,
                 'innerLineThickness' => 0,
                 'xOrientation' => 'center',
-                'width' => 500
+                'width' => 500,
             );
            
             $ag=$this->dep('datos')->tabla('docente')->get_agente($this->s__agente['id_docente']);
             $leg=$this->dep('datos')->tabla('docente')->get_legajo($this->s__agente['id_docente']);
             $salida->set_nombre_archivo('Certif_'.$leg.'_'.$this->s__datos_filtro['anio'].".pdf");
-//           //recupero las designaciones del periodo previamente seleccionado
+           //recupero las designaciones del periodo previamente seleccionado
             $desig=$this->dep('datos')->tabla('docente')->get_designaciones_periodo($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
             $pdf->ezText("\n", 7);
             $texto="Docente: <b>".$ag."</b> Legajo ".$leg;
@@ -106,7 +106,7 @@ class ci_certificacion_periodo extends toba_ci
                     $texto= utf8_decode("Lic:")." <b>".$des['lic']."</b>";
                     $pdf->ezText($texto,12);
                 }
-                
+                $pdf->ezText("\n", 7);
                 $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig_cert($des['id_designacion'],$this->s__datos_filtro['anio']);
                 $i=0;
                 $datos='';
@@ -114,32 +114,38 @@ class ci_certificacion_periodo extends toba_ci
                         $datos[$i]=array('col1' => $ma['desc_materia'], 'col2' => $ma['carrera'],'col3' => $ma['periodo'],'col4' => $ma['rol'],'col5' => $ma['carga_horaria'],'col6' => $ma['moddes']);
                         $i++;
                 }
+               
                 
                 $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => utf8_decode('Período'),'col4' => 'Rol','col5' => 'Hs','col6' => utf8_decode('Módulo')), 'ACTIVIDAD ACADEMICA', $opciones);
                 $pdf->ezText("\n", 7);
-                //busco la actividad en investigacion
-                $inve=$this->dep('datos')->tabla('integrante_interno_pi')->get_proyinv_docente($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
-                $i=0;
-                $datosi='';
-                foreach ($inve as $in) {
-                    $datosi[$i]=array('col1'=>'<b>Proyecto:</b>'.$in['denominacion']);
-                    $i++;
-                    $datosi[$i]=array('col1'=>'<b>Codigo: </b>'.$in['codigo']);
-                    $i++;
-                    $datosi[$i]=array('col1'=>'<b>Funcion: </b>'.$in['funcion_p'].' Categoria:'.$in['categ']);
-                    $i++;
-                    $datosi[$i]=array('col1'=>'<b>Desde: </b>'.date_format(date_create($in['desde']),'d/m/Y').' Hasta: '.date_format(date_create($in['hasta']),'d/m/Y'));
-                    $i++;
-                    $datosi[$i]=array('col1'=>'<b>Hs Semanales: </b>'.$in['carga_horaria']);
-                    $i++;
-                  }
-                
             }
-            
-            $pdf->ezTable($datosi, array('col1'=>''), 'INVESTIGACION', $opciones);
-            
+            //busco la actividad en investigacion
+            $inve=$this->dep('datos')->tabla('integrante_interno_pi')->get_proyinv_docente($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
+            $i=0;
+            $datosi=array();
+            foreach ($inve as $in) {
+                $datosi[$i]=array('col1'=>'<b>Proyecto: </b>'.$in['denominacion']);
+                $i++;
+                $datosi[$i]=array('col1'=>'<b>'.utf8_decode('Código: ').'</b>'.$in['codigo']);
+                $i++;
+                $datosi[$i]=array('col1'=>'<b>'.utf8_decode('Función: ').'</b>'.$in['funcion_p'].'<b>'.utf8_decode('Categoría: ').'</b> '.$in['categ']);
+                $i++;
+                $datosi[$i]=array('col1'=>'<b>Desde: </b>'.date_format(date_create($in['desde']),'d/m/Y').'<b> Hasta: </b>'.date_format(date_create($in['hasta']),'d/m/Y'));
+                $i++;
+                $datosi[$i]=array('col1'=>'<b>Hs Semanales: </b>'.$in['carga_horaria']);
+                $i++;
+              }
+            $titulo=array();
+            $titulo[0]=array('dato'=>utf8_decode('<b>INVESTIGACION</b>'));
+            $pdf->ezTable($titulo,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+            $pdf->ezTable($datosi,array('col1'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+             
             $pdf->ezText("\n\n\n", 10);
-            
+            foreach ($pdf->ezPages as $pageNum=>$id){ 
+                   $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+                   $pdf->addText(200,15,8,utf8_decode("Sistema MOCOVI-Módulo Designaciones Docentes").date('d/m/Y h:i:s a'));
+                   $pdf->closeObject(); 
+                }  
         }
 	
 

@@ -52,27 +52,46 @@ class ci_certificacion extends toba_ci
 	{
             $this->pantalla()->tab("pant_edicion")->desactivar();
 	}
+        function evt__volver($datos)
+        {
+            unset($this->s__datos_filtro);
+            unset($this->s__where);
+            $this->set_pantalla('pant_edicion');
+            $this->pantalla()->tab("pant_certif")->desactivar();
+        }
+	//-----------------------------------------------------------------------------------
+	//---- JAVASCRIPT -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function extender_objeto_js()
+	{
+		echo "
+		//---- Eventos ---------------------------------------------
+		
+		{$this->objeto_js}.evt__volver = function()
+		{
+		}
+		";
+	}
+
+        
+        
+        
         function vista_pdf(toba_vista_pdf $salida)
         {
             $salida->set_papel_orientacion('landscape');
             $salida->inicializar();
             $pdf = $salida->get_pdf();
            
-                //modificamos los márgenes de la hoja top, bottom, left, right
+            //modificamos los márgenes de la hoja top, bottom, left, right
             $pdf->ezSetMargins(80, 50, 5, 5);
                 //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
                 //Primero definimos la plantilla para el número de página.
             $formato = 'Página {PAGENUM} de {TOTALPAGENUM}';
                 //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
             $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
-                //Luego definimos la ubicación de la fecha en el pie de página.
-            $pdf->addText(480,20,8,"Sistema MOCOVI-Modulo Designaciones Docentes".date('d/m/Y h:i:s a')); 
-            $pdf->addText(80,170,10,"Se extiende el presente certificado el ".date("d/m/Y")." a las ".date("h").":".date("i")." ".date("A").", a pedido del interesado, y a los efectos de ser presentado ante quien corresponda."."\n"); 
-            $pdf->addText(750,90,10,"------------------"); 
-            $pdf->addText(750,80,10,"Firma y Sello"); 
-                //Configuración de Título.
+            //Configuración de Título.
             $salida->titulo(utf8_d_seguro("Certificado de Actividades Académicas"));
- 
             $titulo=" ";
             //-- Cuadro con datos
             $opciones = array(
@@ -92,7 +111,7 @@ class ci_certificacion extends toba_ci
             $ag=$this->dep('datos')->tabla('docente')->get_agente($this->s__agente['id_docente']);
             $leg=$this->dep('datos')->tabla('docente')->get_legajo($this->s__agente['id_docente']);
             $desig=$this->dep('datos')->tabla('docente')->get_designaciones($this->s__agente['id_docente']);
-                 
+            $salida->set_nombre_archivo('Certif_'.$leg.".pdf");     
             $i=0;
             
             $texto="<b>CERTIFICO QUE: </b>".$ag." Legajo ".$leg." se ".utf8_decode('desempeña/ó')." en la Universidad Nacional del Comahue como:"."\n";
@@ -101,43 +120,45 @@ class ci_certificacion extends toba_ci
                  
             
             foreach ($desig as $des) {
-               $norma="";
-               if($des['tipo_norma']!=null){
-                   $norma=", ".$des['tipo_norma'].$des['nro_norma']."/".date('Y',strtotime($des['fecha'])).", ";
-               }
-               if($des['hasta']==null){
-                   $hasta="";
-               }else{
-                   $hasta=" hasta ".date_format(date_create($des['hasta']),'d/m/Y');
-               }
-               $texto="<b>".trim($des['cat'])."</b> ".trim($des['caracter'])." (".trim($des['ua'])." Departamento: ".trim($des['depto']).") con ".utf8_decode('dedicación ').trim($des['ded']).$norma." desde ". date_format(date_create($des['desde']),'d/m/Y').$hasta;
-               $datos[$i]=array('col1' => $texto);
-               $i++;
-               $lic=$this->dep('datos')->tabla('designacion')->get_licencias($des['id_designacion']);
-               
-               foreach ($lic as $value) {
-                   $texto="<i>".trim($value['descripcion'])." desde ".date_format(date_create($value['desde']),'d/m/Y')." hasta ".date_format(date_create($value['hasta']),'d/m/Y')."</i>)";
+                //verificar que no este anulada previo a listarla hasta is null t_d.hasta<=t_d.desde
+             if(!(isset($des['hasta']) and $des['hasta']<=$des['desde'])){//sino esta anulada
+                   $norma="";
+                   if($des['tipo_norma']!=null){
+                       $norma=", ".$des['tipo_norma'].$des['nro_norma']."/".date('Y',strtotime($des['fecha'])).", ";
+                   }
+                   if($des['hasta']==null){
+                       $hasta="";
+                   }else{
+                       $hasta=" hasta ".date_format(date_create($des['hasta']),'d/m/Y');
+                   }
+                   $texto="<b>".trim($des['cat'])."</b> ".trim($des['caracter'])." (".trim($des['ua'])." Departamento: ".trim($des['depto']).") con ".utf8_decode('dedicación ').trim($des['ded']).$norma." desde ". date_format(date_create($des['desde']),'d/m/Y').$hasta;
                    $datos[$i]=array('col1' => $texto);
                    $i++;
-               }
-               
-               $primera=true;
-               $mat=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig($des['id_designacion']);
-               foreach ($mat as $value) {
-                   if($primera){
-                        $texto="    en las siguientes materias: ";
-                        $datos[$i]=array('col1' => $texto);
-                        $primera=false;
+                   $lic=$this->dep('datos')->tabla('designacion')->get_licencias($des['id_designacion']);
+
+                   foreach ($lic as $value) {
+                       $texto="<i>".trim($value['descripcion'])." desde ".date_format(date_create($value['desde']),'d/m/Y')." hasta ".date_format(date_create($value['hasta']),'d/m/Y')."</i>";
+                       $datos[$i]=array('col1' => $texto);
+                       $i++;
                    }
+
+                   $primera=true;
+                   $mat=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig($des['id_designacion']);
+                   foreach ($mat as $value) {
+                       if($primera){
+                            $texto="    en las siguientes materias: ";
+                            $datos[$i]=array('col1' => $texto);
+                            $primera=false;
+                            $i++;
+                       }
+                       $texto="       *".$value['desc_materia']." ".utf8_decode('Año: ')." ".$value['anio']." ".$value['periodo']." ".$value['moddes']." Rol: ".$value['rol'];
+                       $datos[$i]=array('col1' => $texto); 
+                       $i++;
+                   }
+
+                   $datos[$i]=array('col1' => '   ');
                    $i++;
-                   
-                   $texto="       *".$value['desc_materia']." ".$value['id_periodo']." ".utf8_decode('año')." ".$value['anio'];
-                   $datos[$i]=array('col1' => $texto); 
-               }
-               
-               $datos[$i]=array('col1' => '   ');
-               $i++;
-               
+             }
             }
             $pdf->ezTable($datos, array('col1'=>''), $titulo, $opciones);
             
@@ -150,10 +171,12 @@ class ci_certificacion extends toba_ci
                 //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
                 $pdf->addJpegFromFile($imagen, 20, 515, 70, 66); 
                 $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
+                //Luego definimos la ubicación de la fecha en el pie de página.
+                $pdf->addText(480,20,8,"Sistema MOCOVI-Modulo Designaciones Docentes".date('d/m/Y h:i:s a')); 
                 $pdf->closeObject();                  
             }
             
         }
-
+       
 }
 ?>

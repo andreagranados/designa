@@ -30,34 +30,40 @@ class dt_docente extends toba_datos_tabla
         function get_designaciones_periodo($id_doc,$anio){
             $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
             $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
-//ordena primero por la fecha desde de las designaciones (aqui tengo la norma ultima), y luego por las fechas desde de las normas historicas
-            $sql= "select 
-                    sub.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub.desde,sub.hasta,cat,caracter,ded,string_agg(sub.tipo_norma||':'||sub.nro_norma||'/'||extract(year from fecha),' ,') as norma_ant,string_agg(t_t.desc_corta||' '|| t_v.tipo_norma||' '||t_v.tipo_emite||':'||to_char(t_v.desde, 'DD/MM/YYYY')||' '|| to_char(t_v.hasta, 'DD/MM/YYYY'),' ,') as lic
-                from (select * from 
-                   (select distinct t_d.id_designacion,t_d.cat_estat,t_d.dedic,t_no.tipo_norma||': '||t_no.nro_norma||'/'||extract(year from t_no.fecha) as norma_ultima,t_dep.descripcion as depto,t_a.descripcion as area,t_or.descripcion as orient,t_u.descripcion as ua,t_d.desde,t_d.hasta,t_e.descripcion as cat, t_c.descripcion as caracter,t_de.descripcion as ded,t_nn.tipo_norma,t_nn.nro_norma,t_nn.fecha
-                     from designacion t_d 
-                     LEFT OUTER JOIN categ_estatuto t_e ON (t_e.codigo_est=t_d.cat_estat)
-                     LEFT OUTER JOIN caracter t_c ON (t_c.id_car=t_d.carac)
-                     LEFT OUTER JOIN dedicacion t_de ON (t_d.dedic=t_de.id_ded)
-                     LEFT OUTER JOIN unidad_acad t_u ON (t_d.uni_acad=t_u.sigla)
-                     LEFT OUTER JOIN norma t_no ON (t_d.id_norma=t_no.id_norma) 
-                     LEFT OUTER JOIN departamento t_dep ON (t_d.id_departamento=t_dep.iddepto)
-                     LEFT OUTER JOIN area t_a ON (t_d.id_area=t_a.idarea)
-                     LEFT OUTER JOIN orientacion t_or ON (t_or.idorient=t_d.id_orientacion and t_or.idarea=t_a.idarea)
-                     LEFT OUTER JOIN norma_desig t_n ON t_n.id_designacion=t_d.id_designacion
-                     LEFT OUTER JOIN norma t_nn ON (t_nn.id_norma=t_n.id_norma and t_nn.tipo_norma='ORDE' )
-                     
-                     where id_docente=".$id_doc
-                     ." and t_d.desde<='".$udia."' and (t_d.hasta >='".$pdia."' or t_d.hasta is null)
-                   order by t_d.desde) sub1 
-                   order by fecha desc
-                     
+//ordena primero por la fecha desde de las designaciones (aqui tengo la norma ultima), y luego por las fechas desde de las normas historica
+            $sql="select 
+                    sub.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub.desde,sub.hasta,cat,caracter,ded,norma_ant,
+                    string_agg(nov.desc_corta||' '|| nov.tipo_norma||' '||nov.tipo_emite||' '||nov.norma_legal||': '||to_char(nov.desde, 'DD/MM/YYYY')||' '|| to_char(nov.hasta, 'DD/MM/YYYY'),', ') as lic
+                from (select sub1.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub1.desde,sub1.hasta,cat,caracter,ded,norma_ant from 
+                         ( select distinct t_d.id_designacion,t_d.cat_estat,t_d.dedic,t_no.tipo_norma||': '||t_no.nro_norma||'/'||extract(year from t_no.fecha) as norma_ultima,t_dep.descripcion as depto,t_a.descripcion as area,t_or.descripcion as orient,t_u.descripcion as ua,t_d.desde,t_d.hasta,t_e.descripcion as cat, t_c.descripcion as caracter,t_de.descripcion as ded,string_agg(norm.tipo_norma||':'||norm.nro_norma||'/'||extract(year from norm.fecha),', ') as norma_ant
+                           from designacion t_d 
+                           LEFT OUTER JOIN categ_estatuto t_e ON (t_e.codigo_est=t_d.cat_estat)
+                           LEFT OUTER JOIN caracter t_c ON (t_c.id_car=t_d.carac)
+                           LEFT OUTER JOIN dedicacion t_de ON (t_d.dedic=t_de.id_ded)
+                           LEFT OUTER JOIN unidad_acad t_u ON (t_d.uni_acad=t_u.sigla)
+                           LEFT OUTER JOIN norma t_no ON (t_d.id_norma=t_no.id_norma) 
+                           LEFT OUTER JOIN departamento t_dep ON (t_d.id_departamento=t_dep.iddepto)
+                           LEFT OUTER JOIN area t_a ON (t_d.id_area=t_a.idarea)
+                           LEFT OUTER JOIN orientacion t_or ON (t_or.idorient=t_d.id_orientacion and t_or.idarea=t_a.idarea)
+                           LEFT OUTER JOIN (select * from norma_desig t_n,norma t_nn 
+                                            where t_nn.id_norma=t_n.id_norma
+                                            and t_nn.tipo_norma='ORDE' 
+                                            order by fecha desc )norm ON (norm.id_designacion=t_d.id_designacion)
+                           
+                          where id_docente=".$id_doc
+                               ." and t_d.desde<='".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
+                                 and not (t_d.hasta is not null and t_d.hasta<=t_d.desde)
+                          group by t_d.id_designacion,t_d.cat_estat,t_d.dedic,t_no.tipo_norma,t_no.nro_norma,t_no.fecha,t_dep.descripcion,t_a.descripcion,t_or.descripcion,t_u.descripcion,t_d.desde,t_d.hasta,t_e.descripcion, t_c.descripcion,t_de.descripcion
+                          order by t_d.desde
+                         ) sub1 
+                         
+                                       
                    )sub
-                   LEFT OUTER JOIN novedad t_v ON (t_v.id_designacion=sub.id_designacion and t_v.tipo_nov in(2,4,5)
-							and t_v.desde <= '".$udia."' and (t_v.hasta >= '".$pdia."' or t_v.hasta is null) )
-                   LEFT OUTER JOIN tipo_novedad t_t ON (t_t.id_tipo=t_v.tipo_nov)                                                           
-                     group by sub.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub.desde,sub.hasta,cat,caracter,ded  ";
-            //print_r($sql);exit;
+                   LEFT OUTER JOIN (select * from novedad t_v, tipo_novedad t_t
+                                    where t_t.id_tipo=t_v.tipo_nov
+                                    and t_v.desde <= '".$udia."' and (t_v.hasta >= '".$pdia."' or t_v.hasta is null)
+                                    and t_v.tipo_nov in(2,4,5))nov ON (nov.id_designacion=sub.id_designacion )
+     group by sub.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub.desde,sub.hasta,cat,caracter,ded,norma_ant";
             return toba::db('designa')->consultar($sql);
         }
         function get_designaciones($id_doc){
