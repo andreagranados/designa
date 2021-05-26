@@ -1,5 +1,5 @@
 <?php
-require_once 'dt_mocovi_periodo_presupuestario.php';
+//require_once 'dt_mocovi_periodo_presupuestario.php';
 class ci_de_licencias_por_maternidad extends toba_ci
 {
 	protected $s__datos_filtro;
