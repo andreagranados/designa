@@ -98,5 +98,26 @@ class dt_novedad extends toba_datos_tabla
             }
             return $estad;
         }
+        function cargar_lic_mate($desde,$hasta,$id_desig){
+            $sql="insert into novedad (tipo_nov, desde, hasta, id_designacion, tipo_norma, tipo_emite, norma_legal, observaciones, nro_tab10, sub_tipo, porcen) "
+                    . " values(2,'".$desde."','".$hasta."',".$id_desig.",'NOTA','DECA','MATE','maternidad',10,'MATE',1)";
+            toba::db('designa')->consultar($sql);
+            $sql="update designacion set nro_540=null,check_presup=0 where id_designacion=".$id_desig;
+            toba::db('designa')->consultar($sql);
+        }
+        function tiene_lic_mate($desde,$id_desig){
+            $sql="select * from novedad t_n "
+                        . " where t_n.tipo_nov=2 "
+                        . " and t_n.nro_tab10=10 "
+                        . " and t_n.sub_tipo='MATE' "
+                        . " and t_n.id_designacion=".$id_desig
+                        ." and t_n.desde='".$desde."'";
+            $res=toba::db('designa')->consultar($sql);
+            if (count($res)>0){
+                return true;
+            }else{
+                return false;
+            }
+        }
 }
 ?>

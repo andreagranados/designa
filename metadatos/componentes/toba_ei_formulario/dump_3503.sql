@@ -60,10 +60,10 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'filtrar.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
-	'0', --orden
+	'1', --orden
 	NULL, --ci_predep
-	NULL, --implicito
-	NULL, --defecto
+	'0', --implicito
+	'1', --defecto
 	NULL, --display_datos_cargados
 	'cargado,no_cargado', --grupo
 	NULL, --accion
@@ -93,10 +93,10 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'limpiar.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
-	'1', --orden
+	'2', --orden
 	NULL, --ci_predep
-	NULL, --implicito
-	NULL, --defecto
+	'0', --implicito
+	'0', --defecto
 	NULL, --display_datos_cargados
 	'cargado', --grupo
 	NULL, --accion

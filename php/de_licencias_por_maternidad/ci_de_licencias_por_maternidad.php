@@ -1,4 +1,5 @@
 <?php
+require_once 'dt_mocovi_periodo_presupuestario.php';
 class ci_de_licencias_por_maternidad extends toba_ci
 {
 	protected $s__datos_filtro;
@@ -34,29 +35,49 @@ class ci_de_licencias_por_maternidad extends toba_ci
 	}
 
 	function evt__cuadro__seleccion($datos)
-	{
-            
-            //cuando selecciona ese usuario tiene que agregar la novedad de tipo 2 LSGH, subtipo MATE 
-            //veo si la designacion seleccionada
-            $sql2="select * from novedad t_n "
-                        . " where t_n.tipo_nov=2 "
-                        . " and t_n.nro_tab10=10 "
-                        . " and t_n.sub_tipo='MATE' "
-                        . " and t_n.id_designacion=".$datos['id_designacion']
-                        ." and t_n.desde='".$datos['desde']."'";
-            $res=toba::db('designa')->consultar($sql2);
-
-            if (count($res)==0){//si la designacion no tiene la licencia cargada
-                    $sql3="insert into novedad (tipo_nov, desde, hasta, id_designacion, tipo_norma, 
-                    tipo_emite, norma_legal, observaciones, nro_tab10, sub_tipo, porcen) values(2,'".$datos['desde']."','".$datos['hasta']."',".$datos['id_designacion'].",'NOTA','DECA','MATE','maternidad',10,'MATE',1)";
-                    toba::db('designa')->consultar($sql3);
-                    toba::notificacion()->agregar('La licencia se ha importado exitosamente.','info');
-                    $sql4="update designacion set nro_540=null,check_presup=0 where id_designacion=".$datos['id_designacion'];
-                    toba::db('designa')->consultar($sql4);
+	{//cuando selecciona ese usuario tiene que agregar la novedad de tipo 2 LSGH, subtipo MATE 
+            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($this->s__anio);
+            $sql='select * from designacion where id_designacion='.$datos['id_designacion'];
+            $des=toba::db('designa')->consultar($sql);
+            $seguir=true;
+            if(isset($des[0]['hasta'])){
+               if($datos['desde']>$des[0]['hasta']){
+                   $seguir=false;
+               }
             }else{
-                toba::notificacion()->agregar(utf8_decode('La designación ya tiene asociada esta licencia'),'info');
-                
+                if($datos['desde']>$udia){
+                   $seguir=false;
+               }
             }
+            if($seguir){//el periodo de la lic esta dentro del periodo de la designacion
+                if($datos['desde']<$des[0]['desde']){
+                    $f_desde=$des[0]['desde'];
+                }else{
+                    $f_desde=$datos['desde'];
+                }
+                if(isset($des[0]['hasta'])){
+                    if($datos['hasta']>$des[0]['hasta']){
+                        $f_hasta=$des[0]['hasta'];
+                    }else{
+                        $f_hasta=$datos['hasta'];
+                    }
+                }else{
+                    if($datos['hasta']>$udia){
+                        $f_hasta=$udia;
+                    }else{
+                        $f_hasta=$datos['hasta'];
+                    }
+                }
+
+                //veo si la designacion seleccionada
+                $band=$this->dep('datos')->tabla('novedad')->tiene_lic_mate($f_desde,$datos['id_designacion']);
+                if (!$band){//si la designacion no tiene la licencia cargada
+                    $this->dep('datos')->tabla('novedad')->cargar_lic_mate($f_desde,$f_hasta,$datos['id_designacion']);
+                    toba::notificacion()->agregar('La licencia se ha importado exitosamente.','info');
+                }else{
+                    toba::notificacion()->agregar(utf8_decode('La designación ya tiene asociada esta licencia'),'info');
+                }
+            }    
         }
 
 	
