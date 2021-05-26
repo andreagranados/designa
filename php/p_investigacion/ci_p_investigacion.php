@@ -85,7 +85,12 @@ class ci_p_investigacion extends toba_ci
 
 	function evt__agregar()
 	{
-            $this->set_pantalla('pant_edicion');
+            $band = $this->dep('datos')->tabla('convocatoria_proyectos')->existe_convocatoria_vigente();
+            if($band){
+                $this->set_pantalla('pant_edicion');   
+            }else{
+                toba::notificacion()->agregar('No existen convocatorias vigentes', 'info');   
+            }
 	}
 
 	function evt__volver()

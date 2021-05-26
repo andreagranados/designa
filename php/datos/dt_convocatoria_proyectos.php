@@ -129,6 +129,76 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
 		$sql = "SELECT id_conv, descripcion FROM convocatoria_proyectos ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
+        function control_alta($anio,$tipo,$desde,$hasta){
+            $salida=array();
+            $band=true;
+            $mensaje='';
+            
+            if($tipo==2){//otro no reconocido. Solo una convocatoria por anio
+                 $sql="select * from convocatoria_proyectos
+                    where id_tipo=".$tipo
+                    ." and anio=".$anio;
+                 $resul=toba::db('designa')->consultar($sql);
+                 if(count($resul)>0){
+                     $mensaje='No puede haber más de una convocatoria por año.';
+                     $band=false;
+                 }
+            }
+            if($band){//controlo que no haya superposicion de fechas
+                $sql="select * from convocatoria_proyectos
+                    where id_tipo=".$tipo.
+                    " and '".$desde."'"." <= fec_fin and '".$hasta."'"." >=fec_inicio";
+                $resul=toba::db('designa')->consultar($sql);
+                if(count($resul)>0){
+                    $band=false;
+                    $mensaje='Hay superposición de fechas con otra convocatoria de este tipo';
+                }
+            }
+            $salida[0]['mensaje']=$mensaje;
+            $salida[0]['bandera']=$band;
+            return $salida;
+        }
+        function control_modif($id_conv,$anio,$tipo,$desde,$hasta){
+            $salida=array();
+            $band=true;
+            $mensaje='';
+            if($tipo==2){//otro no reconocido. Solo una convocatoria por anio
+                $sql="select * from convocatoria_proyectos
+                    where id_tipo=".$tipo
+                    ." and anio=".$anio
+                    ." and id_conv<>".$id_conv    ;
+                 $resul=toba::db('designa')->consultar($sql);
+                 if(count($resul)>0){
+                     $mensaje='No puede haber más de una convocatoria por año.';
+                     $band=false;
+                 }
+            }
+            if($band){//controlo que no haya superposicion de fechas
+                $sql="select * from convocatoria_proyectos
+                    where id_tipo=".$tipo.
+                    " and '".$desde."'"." <= fec_fin and '".$hasta."'"." >=fec_inicio"
+                        . " and id_conv<>".$id_conv  ;
+                $resul=toba::db('designa')->consultar($sql);
+                if(count($resul)>0){
+                    $band=false;
+                    $mensaje='Hay superposición de fechas con otra convocatoria de este tipo';
+                }
+            }
+            $salida[0]['mensaje']=$mensaje;
+            $salida[0]['bandera']=$band;
+            return $salida;
+        }
+        function existe_convocatoria_vigente(){
+            $actual=date('Y-m-d');
+            $sql="select * from convocatoria_proyectos"
+                   ." where fec_inicio<='".$actual."' and fec_fin >='".$actual."'"  ;
+            $resul=toba::db('designa')->consultar($sql);
+            if(count($resul)>0){
+                return true;
+            }else{
+                return false;
+            }
+        }
 
 }
 ?>

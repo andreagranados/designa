@@ -56,11 +56,18 @@ class ci_convocatorias extends toba_ci
 
     function evt__formulario__alta($datos)
     {
-        $this->dep('datos')->tabla('convocatoria_proyectos')->set($datos);
-        $this->dep('datos')->tabla('convocatoria_proyectos')->sincronizar();
-        toba::notificacion()->agregar('Se ha ingresado correctamente', 'info');
-        $this->dep('datos')->tabla('convocatoria_proyectos')->resetear();
-        $this->set_pantalla('pant_inicial'); 
+        $seguir=$this->dep('datos')->tabla('convocatoria_proyectos')->control_alta($datos['anio'],$datos['id_tipo'],$datos['fec_inicio'],$datos['fec_fin']);
+        if($seguir[0]['bandera']){
+            $this->dep('datos')->tabla('convocatoria_proyectos')->set($datos);
+            $this->dep('datos')->tabla('convocatoria_proyectos')->sincronizar();
+            toba::notificacion()->agregar('Se ha ingresado correctamente', 'info');
+            $this->dep('datos')->tabla('convocatoria_proyectos')->resetear();
+            $this->set_pantalla('pant_inicial'); 
+            
+        }else{
+           //toba::notificacion()->agregar($seguir[0]['mensaje'], 'info');
+            throw new toba_error(utf8_decode($seguir[0]['mensaje']));
+        }
     }
 
     function evt__formulario__baja()
@@ -73,9 +80,18 @@ class ci_convocatorias extends toba_ci
 
     function evt__formulario__modificacion($datos)
     {
-        $this->dep('datos')->tabla('convocatoria_proyectos')->set($datos);
-        $this->dep('datos')->tabla('convocatoria_proyectos')->sincronizar();
-        toba::notificacion()->agregar('La convocatoria se ha modificado correctamente', 'info');   
+        if($this->dep('datos')->tabla('convocatoria_proyectos')->esta_cargada()){
+            $conv=$this->dep('datos')->tabla('convocatoria_proyectos')->get();
+            $seguir=$this->dep('datos')->tabla('convocatoria_proyectos')->control_modif($conv['id_conv'],$datos['anio'],$datos['id_tipo'],$datos['fec_inicio'],$datos['fec_fin']);
+            if($seguir[0]['bandera']){
+                $this->dep('datos')->tabla('convocatoria_proyectos')->set($datos);
+                $this->dep('datos')->tabla('convocatoria_proyectos')->sincronizar();
+                toba::notificacion()->agregar('La convocatoria se ha modificado correctamente', 'info');   
+            }else{
+                 throw new toba_error(utf8_decode($seguir[0]['mensaje']));
+            }
+        }
+        
     }
 
     function evt__formulario__cancelar()

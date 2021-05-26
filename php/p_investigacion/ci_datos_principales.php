@@ -230,6 +230,7 @@ class ci_datos_principales extends toba_ci
         //nuevo proyecto de investigacion
         function evt__formulario__alta($datos)
 	{//solo puede ingresar nuevos proyectos dentro del periodo de la convocatoria
+            //verifico que exista vigente una convocatoria para ese tipo de proyectos
          $band = $this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_permitido($datos['tipo']);
          if($band){
             $id_conv=$this->controlador()->controlador()->dep('datos')->tabla('convocatoria_proyectos')->get_convocatoria_actual($datos['tipo']);
