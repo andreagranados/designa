@@ -1,5 +1,4 @@
 <?php
-//require_once 'dt_mocovi_periodo_presupuestario.php';
 class ci_de_licencias_por_maternidad extends toba_ci
 {
 	protected $s__datos_filtro;
@@ -36,20 +35,21 @@ class ci_de_licencias_por_maternidad extends toba_ci
 
 	function evt__cuadro__seleccion($datos)
 	{//cuando selecciona ese usuario tiene que agregar la novedad de tipo 2 LSGH, subtipo MATE 
-            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($this->s__anio);
+           // $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($this->s__anio);
             $sql='select * from designacion where id_designacion='.$datos['id_designacion'];
             $des=toba::db('designa')->consultar($sql);
-            $seguir=true;
-            if(isset($des[0]['hasta'])){
-               if($datos['desde']>$des[0]['hasta']){
-                   $seguir=false;
-               }
-            }else{
-                if($datos['desde']>$udia){
-                   $seguir=false;
-               }
-            }
-            if($seguir){//el periodo de la lic esta dentro del periodo de la designacion
+            //$seguir=true;
+           // $seguir=$this->dep('datos')->tabla('designacion')->lic_dentro_desig($datos['id_designacion'],$datos['desde'],$datos['hasta']);
+//            if(isset($des[0]['hasta'])){
+//               if($datos['desde']>$des[0]['hasta']){
+//                   $seguir=false;
+//               }
+//            }else{
+//                if($datos['desde']>$udia){
+//                   $seguir=false;
+//               }
+//            }
+          //  if($seguir){//el periodo de la lic esta dentro del periodo de la designacion
                 if($datos['desde']<$des[0]['desde']){
                     $f_desde=$des[0]['desde'];
                 }else{
@@ -77,7 +77,7 @@ class ci_de_licencias_por_maternidad extends toba_ci
                 }else{
                     toba::notificacion()->agregar(utf8_decode('La designación ya tiene asociada esta licencia'),'info');
                 }
-            }    
+           // }    
         }
 
 	
