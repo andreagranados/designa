@@ -311,7 +311,7 @@ class dt_designacion extends toba_datos_tabla
                 . " and t_a.nro_legaj=t_do.legajo"
                 . " and t_d.desde<='".$udia."' and (t_d.hasta>='".$pdia."' or t_d.hasta is null)"
                 . " and t_d.uni_acad='".$filtro['uni_acad']."'"
-                . " and (t_d.hasta is null or (t_d.hasta is not null and t_a.desde>t_d.hasta))"
+                . " and (t_d.hasta is null or (t_d.hasta is not null and t_a.desde<=t_d.hasta))"
                 . " order by agente";  
         
         $res=toba::db('designa')->consultar($sql);
