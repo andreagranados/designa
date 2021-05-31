@@ -8,7 +8,7 @@ class ci_departamentos extends toba_ci
         protected $s__alta_area;
         protected $s__alta_orien;
         protected $s__alta_direc;
-
+        protected $s__alta_codirec;
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtros(toba_ei_filtro $filtro)
@@ -39,7 +39,9 @@ class ci_departamentos extends toba_ci
             $this->pantalla()->tab("pant_orientaciones")->desactivar();	
             $this->pantalla()->tab("pant_final")->desactivar();	
             $this->pantalla()->tab("pant_director")->desactivar();
+            $this->pantalla()->tab("pant_codirector")->desactivar();
             $this->s__alta_direc=0;
+            $this->s__alta_codirec=0;
             $this->s__alta_area=0;
             $this->s__alta_orien=0;
             if (isset($this->s__datos_filtro)) {
@@ -72,7 +74,16 @@ class ci_departamentos extends toba_ci
                 $this->set_pantalla('pant_director');
             }
 	}
-        
+         function evt__cuadro__suscodirec($datos)
+	{
+            $desc=$this->dep('datos')->tabla('departamento')->get_descripcion($datos['iddepto']);
+            if($desc=='SIN DEPARTAMENTO'){
+                toba::notificacion()->agregar('No corresponde codirectores', 'info');
+            }else{
+                $this->dep('datos')->tabla('departamento')->cargar($datos);
+                $this->set_pantalla('pant_codirector');
+            }
+	}
 
 	//---- Formulario -------------------------------------------------------------------
 
@@ -136,7 +147,10 @@ class ci_departamentos extends toba_ci
                                     $this->s__alta_orien = 1; break;
                 case 'pant_director':
                                     $this->dep('datos')->tabla('director_dpto')->resetear();
-                                    $this->s__alta_direc = 1; break;                
+                                    $this->s__alta_direc = 1; break;    
+                case 'pant_codirector':
+                                    $this->dep('datos')->tabla('codirector_dpto')->resetear();
+                                    $this->s__alta_codirec = 1; break;  
                     
             }
         }
@@ -158,6 +172,11 @@ class ci_departamentos extends toba_ci
                  case 'pant_director':
                     $this->dep('datos')->tabla('director_dpto')->resetear();
                     $this->s__alta_direc=0;
+                    $this->set_pantalla('pant_edicion');
+                    break;
+                 case 'pant_codirector':
+                    $this->dep('datos')->tabla('codirector_dpto')->resetear();
+                    $this->s__alta_codirec=0;
                     $this->set_pantalla('pant_edicion');
                     break;
             }
@@ -183,6 +202,10 @@ class ci_departamentos extends toba_ci
         function conf__pant_director()
         {
             $this->s__pantalla = "pant_director";
+        }
+        function conf__pant_codirector()
+        {
+            $this->s__pantalla = "pant_codirector";
         }
 	//-----------------------------------------------------------------------------------
 	//---- JAVASCRIPT -------------------------------------------------------------------
@@ -395,8 +418,8 @@ class ci_departamentos extends toba_ci
 	{
             $this->pantalla()->tab("pant_area")->desactivar();	
             $this->pantalla()->tab("pant_orientaciones")->desactivar();	
+            $this->pantalla()->tab("pant_codirector")->desactivar();	
             $depto=$this->dep('datos')->tabla('departamento')->get();
-            //print_r($depto);
             $cuadro->set_datos($this->dep('datos')->tabla('director_dpto')->get_descripciones($depto));
 	}
         
@@ -404,7 +427,91 @@ class ci_departamentos extends toba_ci
            $this->dep('datos')->tabla('director_dpto')->cargar($datos); 
            $this->s__alta_direc=1;
         }
+        //-----------------------------------------------------------------------------------
+	//---- cuadro_dir -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
 
+	function conf__cuadro_codir(toba_ei_cuadro $cuadro)
+	{
+            $this->pantalla()->tab("pant_area")->desactivar();	
+            $this->pantalla()->tab("pant_orientaciones")->desactivar();	
+            $this->pantalla()->tab("pant_director")->desactivar();	
+            $depto=$this->dep('datos')->tabla('departamento')->get();
+            $cuadro->set_datos($this->dep('datos')->tabla('codirector_dpto')->get_descripciones($depto));
+	}
+        
+        function evt__cuadro_codir__seleccion($datos){
+           $this->dep('datos')->tabla('codirector_dpto')->cargar($datos); 
+           $this->s__alta_codirec=1;
+        }
+        //-----------------------------------------------------------------------------------
+	//---- form_codirec -------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function conf__form_codir(toba_ei_formulario $form)
+	{
+            if($this->s__alta_codirec==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
+                $this->dep('form_codir')->descolapsar();
+            }	
+            else{
+                $this->dep('form_codir')->colapsar();
+              }
+            if ($this->dep('datos')->tabla('codirector_dpto')->esta_cargada()) {
+		$form->set_datos($this->dep('datos')->tabla('codirector_dpto')->get());
+	    }
+	}
+        function evt__form_codir__guardar($datos)
+	{
+            if($datos['hasta']>$datos['desde']){
+                $dep=$this->dep('datos')->tabla('departamento')->get();
+                $band=$this->dep('datos')->tabla('codirector_dpto')->control_superposicion($dep['iddepto'],$datos['desde'],$datos['hasta']);
+                if($band){
+                    $datos['iddepto']=$dep['iddepto'];
+                    $this->dep('datos')->tabla('codirector_dpto')->set($datos);
+                    $this->dep('datos')->tabla('codirector_dpto')->sincronizar();
+                    $this->dep('datos')->tabla('codirector_dpto')->resetear();   
+                    $this->s__alta_codirec=0;
+                }else{
+                    throw new toba_error("Hay superposicion de fechas con alguno de los periodos cargados");
+                }
+                
+             }else{
+                throw new toba_error("La fecha hasta debe ser mayor a la desde");
+            }
+	}
+
+	function evt__form_codir__baja()
+	{
+            $this->dep('datos')->tabla('codirector_dpto')->eliminar_todo();
+            $this->dep('datos')->tabla('codirector_dpto')->resetear();
+            $this->s__alta_codirec=0;
+	}
+
+	function evt__form_codir__modificacion($datos)
+	{
+           if($datos['hasta']>$datos['desde']){
+               $dep=$this->dep('datos')->tabla('codirector_dpto')->get();//id_docente, iddepto, desde
+               $band=$this->dep('datos')->tabla('codirector_dpto')->control_superposicion_modif($dep['id_docente'],$dep['iddepto'],$dep['desde'],$datos['desde'],$datos['hasta']);
+               if($band){
+                    $this->dep('datos')->tabla('codirector_dpto')->set($datos);
+                    $this->dep('datos')->tabla('codirector_dpto')->sincronizar();
+                    $this->dep('datos')->tabla('codirector_dpto')->resetear();   
+                    toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+                    $this->s__alta_codirec=0;
+               }else{
+                    toba::notificacion()->agregar('Hay superposicion de fechas', 'info');
+               }
+              
+           }else{
+               toba::notificacion()->agregar('La fecha hasta debe ser mayor a la fecha desde', 'info');
+           }
+	}
+
+	function evt__form_codir__cancelar()
+	{
+            $this->dep('datos')->tabla('codirector_dpto')->resetear();
+            $this->s__alta_codirec=0;
+	}
 	//-----------------------------------------------------------------------------------
 	//---- form_direc -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
