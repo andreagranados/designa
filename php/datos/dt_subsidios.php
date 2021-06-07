@@ -41,7 +41,7 @@ class dt_subsidios extends designa_datos_tabla
             
         }
         function get_subsidios_de($id_proy){
-            $sql="select t_s.*,trim(t_d.apellido)||','||trim(t_d.nombre) as responsable, case when sub.nro_subsidio is null then t_s.monto else t_s.monto-sub.total end as saldo "
+            $sql="select t_s.*,trim(t_d.apellido)||','||trim(t_d.nombre) as responsable, case when t_s.fecha_pago is null or extract(year from t_s.fecha_pago)<2021 then 0 else case when sub.nro_subsidio is null then t_s.monto else t_s.monto-sub.total end end as saldo"
                     . " from subsidio t_s "
                     . " LEFT OUTER JOIN docente t_d ON (t_s.id_respon_sub=t_d.id_docente)"
                     . " LEFT OUTER JOIN (select nro_subsidio,id_proyecto,sum(importe)as total "
