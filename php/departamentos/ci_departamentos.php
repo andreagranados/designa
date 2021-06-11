@@ -460,21 +460,16 @@ class ci_departamentos extends toba_ci
 		$form->set_datos($this->dep('datos')->tabla('codirector_dpto')->get());
 	    }
 	}
+        //puede haber varios codirectores en el mismo periodo
         function evt__form_codir__guardar($datos)
 	{
             if($datos['hasta']>$datos['desde']){
                 $dep=$this->dep('datos')->tabla('departamento')->get();
-                $band=$this->dep('datos')->tabla('codirector_dpto')->control_superposicion($dep['iddepto'],$datos['desde'],$datos['hasta']);
-                if($band){
-                    $datos['iddepto']=$dep['iddepto'];
-                    $this->dep('datos')->tabla('codirector_dpto')->set($datos);
-                    $this->dep('datos')->tabla('codirector_dpto')->sincronizar();
-                    $this->dep('datos')->tabla('codirector_dpto')->resetear();   
-                    $this->s__alta_codirec=0;
-                }else{
-                    throw new toba_error("Hay superposicion de fechas con alguno de los periodos cargados");
-                }
-                
+                $datos['iddepto']=$dep['iddepto'];
+                $this->dep('datos')->tabla('codirector_dpto')->set($datos);
+                $this->dep('datos')->tabla('codirector_dpto')->sincronizar();
+                $this->dep('datos')->tabla('codirector_dpto')->resetear();   
+                $this->s__alta_codirec=0;
              }else{
                 throw new toba_error("La fecha hasta debe ser mayor a la desde");
             }

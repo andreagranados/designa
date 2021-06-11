@@ -78,15 +78,8 @@ class dt_departamento extends toba_datos_tabla
                 }else{
                     $where='';
                 }
-//            $sql="select sub.*, trim(doc.apellido)||', '||trim(doc.nombre) as director from "
-//                    . " (select d.*,max(di.desde) as desde from departamento d "
-//                    . " LEFT OUTER JOIN director_dpto di ON (d.iddepto=di.iddepto)"
-//                    . $where
-//                    ." group by d.iddepto,d.idunidad_academica,d.descripcion)sub "
-//                    . " LEFT OUTER JOIN director_dpto dr ON (dr.iddepto=sub.iddepto and sub.desde=dr.desde )"
-//                    . " LEFT OUTER JOIN docente doc ON (doc.id_docente=dr.id_docente)"
-//                    . "order by sub.descripcion"; 
-            $sql="select sub.*, trim(doc.apellido)||', '||trim(doc.nombre) as director,trim(cdoc.apellido)||', '||trim(cdoc.nombre) as codirector 
+                //puede tener varios codirectores en el mismo periodo
+            $sql="select sub.*, trim(doc.apellido)||', '||trim(doc.nombre) as director,string_agg(trim(cdoc.apellido)||', '||trim(cdoc.nombre),'/') as codirector 
                 from 
                      (select d.*, max(di.desde) as desde, max(ci.desde) as desdec
                       from departamento d 
@@ -98,6 +91,7 @@ class dt_departamento extends toba_datos_tabla
                      LEFT OUTER JOIN docente doc ON (doc.id_docente=dr.id_docente)
                      LEFT OUTER JOIN codirector_dpto cdr ON (cdr.iddepto=sub.iddepto and sub.desdec=cdr.desde )
                      LEFT OUTER JOIN docente cdoc ON (cdoc.id_docente=cdr.id_docente)
+                     group by sub.iddepto,sub.idunidad_academica,descripcion,sub.desde,desdec,doc.apellido,doc.nombre
                     order by sub.descripcion  ";   
             return toba::db('designa')->consultar($sql);
         }
