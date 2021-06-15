@@ -38,6 +38,7 @@ class ci_datos_principales extends toba_ci
             //$this->controlador()->dep('datos')->tabla('viatico')->resetear();//ver si esto va aqui?
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+              
                 //para eliminar el archivo zip si hubiese sido creado
                 if(isset($pi['codigo'])){
                     $archivo_zip=toba::proyecto()->get_path().'/www/'.substr($pi['codigo'],3,4).".zip";
@@ -65,7 +66,7 @@ class ci_datos_principales extends toba_ci
                     $pi['programa']=$pertenece;
                 }else{$pi['programa']=0;}
               
-               // $form->set_datos($pi);
+               //$form->set_datos($pi);
                  $componente->set_datos($pi);
 		}
             else{//si el proyecto no esta cargado no habilito las pantalla
@@ -81,22 +82,10 @@ class ci_datos_principales extends toba_ci
                 $this->controlador()->pantalla()->tab("pant_adjuntos")->desactivar();	 
                 $this->pantalla()->tab("pant_pertenencia")->desactivar();	 
                 }
-                    
+               
             //pregunto si el usuario logueado esta asociado a un perfil para desactivar los campos que no debe completar
             $perfil = toba::usuario()->get_perfil_datos();
-            if ($perfil != null) {
-                $sql="select sigla,descripcion from unidad_acad ";
-                $sql = toba::perfil_de_datos()->filtrar($sql);
-                $resul=toba::db('designa')->consultar($sql);
-              
-                if(trim($resul[0]['sigla'])=='ASMA' or trim($resul[0]['sigla'])=='AUZA'){
-                    $componente->ef('disp_asent')->set_obligatorio(1);      
-                }
-                 //$componente->ef('estado')->set_obligatorio(0);     
-                //$componente->ef('estado')->set_solo_lectura(true);//para que funcione no tiene que ser obligatorio 
-               // $componente->ef('codigo')->set_solo_lectura(true); //lo agregue como restriccion al perfil funcional
-                //$componente->ef('tdi')->set_expandido(false);//oculto el campo para que no lo vea la UA
-            }  
+           
 	}
         //boton solo para SCyT. Aqui modifica el codigo y el respons subsidios
         //en el caso de los proyectos de programa no toca nada, emite cartel

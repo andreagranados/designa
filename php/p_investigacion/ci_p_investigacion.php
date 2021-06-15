@@ -68,7 +68,7 @@ class ci_p_investigacion extends toba_ci
 	}
 
 	function evt__cuadro__seleccion($datos)
-	{
+	{           
 		$this->dep('datos')->tabla('pinvestigacion')->cargar($datos);
                 $this->dep('datos')->tabla('proyecto_adjuntos')->cargar($datos); 
 		$this->set_pantalla('pant_edicion');

@@ -530,13 +530,20 @@ class dt_pinvestigacion extends toba_datos_tabla
                         $where.=" and usuario='".$usuario."'";
                     }    
                 }
-                //if(count($resul)<=1){//es usuario de una unidad academica
                 if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
-                    $where.=" and t_p.uni_acad = ".quote($resul[0]['sigla']);
+                    if(trim($resul[0]['sigla'])=='ASMA'){
+                        $where .= " and t_p.codigo like '04/S%'";
+                    }else{
+                        $where.=" and t_p.uni_acad = ".quote($resul[0]['sigla']);
+                    }
                 }//sino es usuario de la central no filtro a menos que haya elegido
                 
-		if (isset($filtro['uni_acad']['valor'])) {
-			$where .= " and t_p.uni_acad = ".quote($filtro['uni_acad']['valor']);   
+		if (isset($filtro['uni_acad']['valor'])) {//no es obligatorio este filtro
+                    if(trim($filtro['uni_acad']['valor'])=='ASMA'){
+                        $where.=" and t_p.uni_acad ='FACA'";
+                    }else{
+                        $where .= " and t_p.uni_acad = ".quote($filtro['uni_acad']['valor']);      
+                    }
 		}
                 if (isset($filtro['fec_desde']['valor'])) {
 			$where .= " and t_p.fec_desde= ".quote($filtro['fec_desde']['valor']);   
@@ -626,6 +633,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                         case 'contiene':$where2.=" WHERE desc_tipo ILIKE '%".$filtro['desc_tipo']['valor']."%'";break;
                     }
                  }  
+                 
 		$sql = "SELECT * FROM ("."SELECT distinct
 			t_p.id_pinv,
 			t_p.codigo,
