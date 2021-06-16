@@ -540,7 +540,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 
 		if (isset($filtro['uni_acad']['valor'])) {//no es obligatorio este filtro
                     if(trim($filtro['uni_acad']['valor'])=='ASMA'){
-                        $where.=" and t_p.uni_acad ='FACA'";
+                        $where.=" and t_p.uni_acad ='FACA'"." and t_p.codigo like '04/S%'";
                     }else{
                         $where .= " and t_p.uni_acad = ".quote($filtro['uni_acad']['valor']);      
                     }
