@@ -45,7 +45,7 @@ class dt_impresion_540 extends toba_datos_tabla
             if (isset($filtro['nro_540']['valor'])) {
                 $where="WHERE nro_540=".$filtro['nro_540']['valor']." and expediente is not null and expediente<>''";//con esto aseguro que sino tiene expediente no salga nada en el cuadro
 
-                $sql="select agente, legajo,id_designacion,cat_mapuche,carac,desde,hasta,expediente,norma,string_agg(novedad,' /') as norma 
+                $sql="select agente, legajo,id_designacion,cat_mapuche,carac,desde,hasta,expediente,norma,string_agg(novedad,' /') as novedad 
 from (select distinct trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_d.id_designacion,cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,t_i.expediente ,substr(t_n.tipo_norma,1,3)||' '||substr(t_n.emite_norma,1,1)||substr(t_n.emite_norma,3,1)||' N'||chr(176)||':'||nro_norma||'/'||extract(year from t_n.fecha) as norma
                 , case when t_no.id_novedad is not null then 'B('||substr(t_no.tipo_norma,1,3)||' '||substr(t_no.tipo_emite,1,1)||substr(t_no.tipo_emite,3,1)||':'||trim(t_no.norma_legal)||')' else case when t_nol.id_novedad is not null then 'L('||substr(t_nol.tipo_norma,1,3)||' '||substr(t_nol.tipo_emite,1,1)||substr(t_nol.tipo_emite,3,1)||': '||trim(t_nol.norma_legal)||')' else '' end end as novedad
                 from designacion t_d
