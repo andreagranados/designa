@@ -426,7 +426,7 @@ class ci_subsidios extends designa_ci
                    foreach ($this->s__datos as $des) {
                        $fec=date("d/m/Y",strtotime($des['fecha']));
                        $suma=$suma+$des['importe'];
-                       $datos[$i]=array( 'col2'=>$fec,'col3' => $des['tipo_desc'],'col4' =>  $des['comprobante'],'col5' => $des['rubro'],'col6' => $des['detalle'],'col7' => $des['razon_social'],'col8' =>$des['nro_cuit1'].'-'.$des['nro_cuit'].'-'.$des['nro_cuit2'],'col9' => number_format($des['importe'],2,',','.'));
+                       $datos[$i]=array( 'col2'=>$fec,'col3' => $des['tipo_desc'],'col4' =>  $des['comprobante'],'col5' => $des['rubro'],'col6' => $des['detalle'],'col7' => $des['razon_social'],'col8' =>$des['nro_cuit1'].'-'.str_pad($des['nro_cuit'],8,'0',STR_PAD_LEFT).'-'.$des['nro_cuit2'],'col9' => number_format($des['importe'],2,',','.'));
                        $i++;
                    }   
                    $i=$i-1;
