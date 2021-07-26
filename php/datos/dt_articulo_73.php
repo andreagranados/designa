@@ -216,7 +216,7 @@ class dt_articulo_73 extends designa_datos_tabla
                        .$concatenar
                       
                             . ") a"
-                            . " INNER JOIN auxi b "
+                            
                             ." LEFT OUTER JOIN auxi b "
                             .                   " ON (a.legajo=b.nro_legaj)"
                             . " order by descripcion";
