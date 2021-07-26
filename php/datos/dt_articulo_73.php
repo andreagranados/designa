@@ -179,9 +179,17 @@ class dt_articulo_73 extends designa_datos_tabla
             $sql=" SELECT distinct a.legajo"
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente"
-                    . " and b.desde <= '2018-03-23' "//and (b.hasta >= '2016-06-01' or b.hasta is null)
+                    . " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
+                    . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
+                    . " and dedic<>4"
+                    ." and legajo<>0"
                         ." and b.carac='I' and (b.cat_estat='AYP' or b.cat_estat='ASD' or b.cat_estat='PAD')
-                        and b.uni_acad='".$ua."'";
+                        and b.uni_acad='".$ua."'"
+                    . " and exists (select * from designacion c
+                                    where c.id_docente=b.id_docente
+                                    and c.cat_mapuche=b.cat_mapuche
+                                    and c.desde<='2018-03-23' and carac='I'
+                                     )";
                     
             $legajos=toba::db('designa')->consultar($sql);
             if(count($legajos)>0){//si hay docentes 
@@ -209,10 +217,17 @@ class dt_articulo_73 extends designa_datos_tabla
                      $sql = " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente"
-                    . " and b.desde <= '2018-03-23' 
-                        and b.carac='I' and (b.cat_estat='AYP' or b.cat_estat='ASD' or b.cat_estat='PAD')"
+                    . " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
+                    . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
+                    . " and dedic<>4"
+                    . " and legajo<>0"
+                    . " and b.carac='I' and (b.cat_estat='AYP' or b.cat_estat='ASD' or b.cat_estat='PAD')"
                         ." and b.uni_acad='".$ua."'"
-                        
+                            . " and exists (select * from designacion c
+                                    where c.id_docente=b.id_docente
+                                    and c.cat_mapuche=b.cat_mapuche
+                                    and c.desde<='2018-03-23' and carac='I'
+                                     ) "
                        .$concatenar
                       
                             . ") a"
