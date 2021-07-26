@@ -49,6 +49,12 @@ class dt_tipo extends toba_datos_tabla
             $sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=12 ORDER BY desc_item";
             return toba::db('designa')->consultar($sql);
         }
+        function get_continuidad_etapa4(){
+            $sql = "SELECT desc_abrev, desc_item FROM tipo "
+                    . " where nro_tabla=12 and desc_abrev in('CCCA','SCIC','SCCP','SCAC','SCDC')"
+                    . " ORDER BY desc_item";
+            return toba::db('designa')->consultar($sql);
+        }
         function get_viaticos()
 	{
             $sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=13 ORDER BY desc_item";

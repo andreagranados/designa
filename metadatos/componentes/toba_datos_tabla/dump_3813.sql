@@ -172,7 +172,7 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	'3813', --objeto
 	'1636', --col_id
 	'acta', --columna
-	'B', --tipo
+	'X', --tipo
 	'0', --pk
 	'', --secuencia
 	NULL, --largo
@@ -186,7 +186,7 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	'3813', --objeto
 	'1637', --col_id
 	'resolucion', --columna
-	'B', --tipo
+	'X', --tipo
 	'0', --pk
 	'', --secuencia
 	NULL, --largo

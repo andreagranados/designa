@@ -49,25 +49,28 @@ class ci_articulo73 extends toba_ci
             if (isset($this->s__datos_filtro)) {
                 //cuando muestro el cuadro recupero todos los registros en una variabla
                 $this->s__datos=$this->dep('datos')->tabla('articulo_73')->get_listado($this->s__where);
-                $cuadro->set_datos($this->s__datos);            
+                $cuadro->set_datos($this->s__datos);   
                 }
 	}
 
 	function evt__cuadro__seleccion($datos)
-	{
+	{           
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
             $art=$this->dep('datos')->tabla('articulo_73')->get();
             
-            if($art['etapa']==1 or $art['etapa']==2){
-                toba::notificacion()->agregar('Ya paso a Superior, no se puede modificar', 'info');
+            if($art['etapa']==1 or $art['etapa']==2 or $art['etapa']==3){
+                toba::notificacion()->agregar('Etapa Cerrada. No puede editar.', 'info');
             }else{
                 if($art['check_academica']){
                     toba::notificacion()->agregar('Ya tiene el check de academica, no se puede modificar', 'info');
                 }else{
-                    $this->set_pantalla('pant_visualizacion');
+                    if($art['paso_superior']){
+                        toba::notificacion()->agregar('Paso al Superior, no se puede modificar', 'info');
+                    }else{
+                        $this->set_pantalla('pant_visualizacion');
+                    }
                 }
             }
-            
         }
         //esta funcion es invocada desde javascript
         //cuando se presiona el boton pdf_acta
@@ -102,6 +105,98 @@ class ci_articulo73 extends toba_ci
                 $respuesta->set(-1);
             }
         }
+//        function vista_pdf(toba_vista_pdf $salida){
+//          if($this->s__imprimir==1){
+//                    $salida->set_nombre_archivo("Informe.pdf");
+//                    $salida->set_papel_orientacion('landscape');
+//                    $salida->inicializar();
+//                    $pdf = $salida->get_pdf();
+//                    $pdf->ezSetMargins(80, 50, 5, 5);
+//                    //Configuramos el pie de página. El mismo, tendra el número de página centrado en la página y la fecha ubicada a la derecha. 
+//                    //Primero definimos la plantilla para el número de página.
+//                    $formato = 'Página {PAGENUM} de {TOTALPAGENUM}';
+//                    //Determinamos la ubicación del número página en el pié de pagina definiendo las coordenadas x y, tamaño de letra, posición, texto, pagina inicio 
+//                    $pdf->ezStartPageNumbers(300, 20, 8, 'left', utf8_d_seguro($formato), 1); 
+//                    //Luego definimos la ubicación de la fecha en el pie de página.
+//                    $pdf->addText(480,20,8,date('d/m/Y h:i:s a')); 
+//                    $salida->titulo(utf8_decode("Informe Artículo 73"));
+//                    $titulo=" ";
+//                    $opciones = array(
+//                    'splitRows'=>0,
+//                    'rowGap' => 1,
+//                    'showHeadings' => true,
+//                    'titleFontSize' => 12,
+//                    'fontSize' => 12,
+//                    'shadeCol' => array(0.9,3,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9),
+//                    'outerLineThickness' => 0.7,
+//                    'innerLineThickness' => 0.7,
+//                    'xOrientation' => 'center',
+//                    'width' => 700
+//                    );
+//                    $art=$this->dep('datos')->tabla('articulo_73')->get();
+//                    
+//                    $dat=$this->dep('datos')->tabla('articulo_73')->get_datos($art['id_designacion']);
+//                    
+//                    $i=0;
+//                    $datos[0]=array('col1' => utf8_decode('<b>LEGAJO:</b> ') .$dat[0]['legajo']);
+//                    $datos[1]=array('col1' => utf8_decode('<b>DESIGNACIÓN:</b> ') .$dat[0]['designacion']);
+//                    $datos[2]=array('col1' => utf8_decode('<b>ANTIGÜEDAD: </b> ').$dat[0]['antiguedad']);
+//                    $datos[3]=array('col1' => '<b>CONTINUIDAD:</b> '.$dat[0]['desc_continuidad']);
+//                    $datos[4]=array('col1' => '<b>MODO DE INGRESO:</b> '.$dat[0]['desc_modo_ingreso']);
+//                    $datos[5]=array('col1' => utf8_decode('<b>OBSERVACIÓN:</b> ').$dat[0]['observacion']);
+//                    $datos[6]=array('col1' => utf8_decode('<b>RESOLUCIÓN:</b> ').$dat[0]['nro_resolucion']);
+//                    $datos[7]=array('col1' => utf8_decode('<b>CATEGORÍA PROPUESTA POR LA UA PARA REGULARIZAR:</b> ').$dat[0]['cat_est_reg']);
+//                    $datos[8]=array('col1' => '<b>DEPARTAMENTO:</b> '.$dat[0]['departamento']);
+//                    $datos[9]=array('col1' => utf8_decode('<b>ÁREA: </b>').$dat[0]['area']);
+//                    $datos[10]=array('col1' => utf8_decode('<b>ORIENTACIÓN: </b>').$dat[0]['orientacion']);
+//                    $datos[11]=array('col1' => '<b>EXPEDIENTE:</b> '.$dat[0]['expediente']);
+//                    $datos[12]=array('col1' => utf8_decode('<b>OBSERVACIÓN ACADÉMICA:</b> ').$dat[0]['observacion_acad']);
+//                    $datos[13]=array('col1' => utf8_decode('<b>VERIFICACIÓN ACADÉMICA:</b> ').$dat[0]['ca']);
+//                    $datos[14]=array('col1' => utf8_decode('<b>OBSERVACIÓN PRESUPUESTARIA:</b> ').$dat[0]['observacion_presup']);
+//                        $datos[15]=array('col1' => utf8_decode('<b>VERIFICACIÓN PRESUPUESTARIA:</b> ').$dat[0]['cp']);
+//                    
+//                    
+//                    $pdf->ezTable($datos, array('col1'=>'<b>UA: '.$dat[0]['uni_acad'].'</b>'), $titulo, $opciones);
+//                    foreach ($pdf->ezPages as $pageNum=>$id){ 
+//                        $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
+//                        //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
+//                        $imagen = toba::proyecto()->get_path().'/www/img/logo_sti.jpg';
+//                        $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
+//                        $pdf->addJpegFromFile($imagen, 10, 525, 70, 66); 
+//                        $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
+//                        $pdf->closeObject(); 
+//                    
+//                    }
+//           }else{           
+//            if(isset($this->s__designacion)){
+//                $ar['id_designacion']=$this->s__designacion;
+//                $this->dep('datos')->tabla('articulo_73')->resetear();//limpia
+//                $this->dep('datos')->tabla('articulo_73')->cargar($ar);//carga el articulo que se selecciono
+//                $artic=$this->dep('datos')->tabla('articulo_73')->get();   
+//                if($this->s__pdf=='acta'){
+//                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
+//                    if (isset($fp_imagen)) {
+//                        header("Content-type:applicattion/pdf");
+//                        //header("Content-Disposition:attachment;filename=acta.pdf");
+//                        header("Content-Disposition:attachment;filename=".$this->s__nombre);
+//                        echo(stream_get_contents($fp_imagen)) ;exit;
+//                    }
+//               }else{
+//                   $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('resolucion');
+//                    if (isset($fp_imagen)) {
+//                        header("Content-type:applicattion/pdf");
+//                        //header("Content-Disposition:attachment;filename=resol.pdf");
+//                        header("Content-Disposition:attachment;filename=".$this->s__nombre);
+//                        echo(stream_get_contents($fp_imagen)) ;exit;
+//                    } 
+//               }
+//               //limpio las variables
+//               unset($this->s__designacion);
+//               unset($this->s__pdf);
+//            }
+//            }
+//                
+//        }
         function vista_pdf(toba_vista_pdf $salida){
           if($this->s__imprimir==1){
                     $salida->set_nombre_archivo("Informe.pdf");
@@ -166,42 +261,29 @@ class ci_articulo73 extends toba_ci
                     }
            }else{           
             if(isset($this->s__designacion)){
-                $ar['id_designacion']=$this->s__designacion;
-                $this->dep('datos')->tabla('articulo_73')->resetear();//limpia
-                $this->dep('datos')->tabla('articulo_73')->cargar($ar);//carga el articulo que se selecciono
-                $artic=$this->dep('datos')->tabla('articulo_73')->get();   
-                if($this->s__pdf=='acta'){
-                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
-                    if (isset($fp_imagen)) {
-                        header("Content-type:applicattion/pdf");
-                        //header("Content-Disposition:attachment;filename=acta.pdf");
-                        header("Content-Disposition:attachment;filename=".$this->s__nombre);
-                        echo(stream_get_contents($fp_imagen)) ;exit;
-                    }
+               
+               if($this->s__pdf=='acta'){
+                   $nombre=$this->s__designacion.'_acta.pdf';
                }else{
-                   $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('resolucion');
-                    if (isset($fp_imagen)) {
-                        header("Content-type:applicattion/pdf");
-                        //header("Content-Disposition:attachment;filename=resol.pdf");
-                        header("Content-Disposition:attachment;filename=".$this->s__nombre);
-                        echo(stream_get_contents($fp_imagen)) ;exit;
-                    } 
+                   $nombre=$this->s__designacion.'_reso.pdf';
                }
+               header("Content-type:applicattion/pdf");
+               header("Content-Disposition:attachment;filename=".$this->s__nombre);  
+               readfile("./articulo_73/".$nombre);exit;      
                //limpio las variables
                unset($this->s__designacion);
                unset($this->s__pdf);
             }
-            }
-                
+            }       
         }
-        
         function evt__cuadro__editar($datos)
         {
            $this->dep('datos')->tabla('articulo_73')->cargar($datos);
            $art=$this->dep('datos')->tabla('articulo_73')->get();
             
-            if($art['etapa']==1){
-                toba::notificacion()->agregar('Ya paso a Superior, no se puede modificar', 'info');
+            if($art['etapa']==1 or $art['etapa']==2 or $art['etapa']==3){
+                //toba::notificacion()->agregar('Ya paso a Superior, no se puede modificar', 'info');
+                toba::notificacion()->agregar('Etapa Cerrado, no se puede editar', 'info');
             }else{
                     $this->set_pantalla('pant_academica');
                     $this->s__imprimir=1;
@@ -212,8 +294,9 @@ class ci_articulo73 extends toba_ci
 	{
             $this->dep('datos')->tabla('articulo_73')->cargar($datos);
             $art=$this->dep('datos')->tabla('articulo_73')->get();
-            if($art['etapa']==1){
-                toba::notificacion()->agregar('Ya paso a Superior', 'info');
+            if($art['etapa']==1 or $art['etapa']==2 or $art['etapa']==3 ){
+               // toba::notificacion()->agregar('Ya paso a Superior', 'info');
+                 toba::notificacion()->agregar('Etapa Cerrada', 'info');
             }else{
                 if($art['check_academica']==1){
                     $datos['check_academica']=false;
@@ -269,57 +352,132 @@ class ci_articulo73 extends toba_ci
 	//---- formulario -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
 
+//	function conf__formulario(toba_ei_formulario $form)
+//	{
+//                if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()) {
+//                    $datos=$this->dep('datos')->tabla('articulo_73')->get();
+//                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
+//                    
+//                    if (isset($fp_imagen)) {
+//                       // $temp_nombre = md5(uniqid(time())).'.pdf';
+//                        $temp_nombre = $datos['id_designacion'].'_acta'.'.pdf';
+//                        $temp_archivo = toba::proyecto()->get_www_temp($temp_nombre); 
+//                         //-- Se pasa el contenido al archivo temporal
+//                        $temp_fp = fopen($temp_archivo['path'], 'w');
+//                        stream_copy_to_stream($fp_imagen, $temp_fp);
+//                        fclose($temp_fp);
+//                         //-- Se muestra la imagen temporal
+//                        $tamano = round(filesize($temp_archivo['path']) / 1024);
+//                        //$datos['imagen_vista_previa'] = "<a href='{$temp_archivo['url']}' >acta</a>";
+//                        //print_r($temp_archivo['url']);/designa/1.0/temp/3334acta.pdf
+//                        //definimos el path a la imagen de logo de la organizacion 
+//                        //$ruta='/designa/1.0/temp/adjunto.jpg';
+//                        //$datos['imagen_vista_previa'] = "<img src='{$ruta}' alt=''>";
+//			$datos['imagen_vista_previa'] = "<a target='_blank' href='{$temp_archivo['url']}' >acta</a>";
+//		  	$datos['acta'] = 'tamano: '.$tamano. ' KB';
+//                                                
+//                      } else {
+//                        $datos['acta'] = null;  
+//                        }
+//                    $fp_imagenr = $this->dep('datos')->tabla('articulo_73')->get_blob('resolucion');
+//                    if (isset($fp_imagenr)) {
+//                        //$temp_nombre = md5(uniqid(time())).'.pdf';
+//                        $temp_nombre = $datos['id_designacion'].'_reso'.'.pdf';
+//                        $temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);      
+//                         //-- Se pasa el contenido al archivo temporal
+//                        $temp_fp = fopen($temp_archivo['path'], 'w');
+//                        stream_copy_to_stream($fp_imagenr, $temp_fp);
+//                        fclose($temp_fp);
+//                         //-- Se muestra la imagen temporal
+//                        $tamano = round(filesize($temp_archivo['path']) / 1024);
+//                        $datos['imagen_vista_previar'] = "<a target='_blank' href='{$temp_archivo['url']}' >resolucion</a>";
+//		  	$datos['resolucion'] = 'tamano: '.$tamano. ' KB';                         
+//                      } else{
+//                         $datos['resolucion'] = null;   
+//                      }
+//                    //$datos['cat_est_reg']='ASD3';
+//                    $auxi=trim($datos['cat_est_reg']).$datos['dedic_reg'];
+//                    $datos['cat_est_reg']=$auxi;
+//                    return $datos;
+//                  
+//		}
+//	}
 	function conf__formulario(toba_ei_formulario $form)
 	{
-                if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()) {
-                    $datos=$this->dep('datos')->tabla('articulo_73')->get();
-                    $fp_imagen = $this->dep('datos')->tabla('articulo_73')->get_blob('acta');
-                    
-                    if (isset($fp_imagen)) {
-                        $temp_nombre = md5(uniqid(time())).'.pdf';
-                        $temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);      
-                        //print_r($temp_archivo['path']);
-                         //-- Se pasa el contenido al archivo temporal
-                        $temp_fp = fopen($temp_archivo['path'], 'w');
-                        stream_copy_to_stream($fp_imagen, $temp_fp);
-                        fclose($temp_fp);
-                         //-- Se muestra la imagen temporal
-                        $tamano = round(filesize($temp_archivo['path']) / 1024);
-                        //$datos['imagen_vista_previa'] = "<a href='{$temp_archivo['url']}' >acta</a>";
-                        //print_r($temp_archivo['url']);/designa/1.0/temp/3334acta.pdf
-                        //definimos el path a la imagen de logo de la organizacion 
-                        //$ruta='/designa/1.0/temp/adjunto.jpg';
-                        //$datos['imagen_vista_previa'] = "<img src='{$ruta}' alt=''>";
-			$datos['imagen_vista_previa'] = "<a target='_blank' href='{$temp_archivo['url']}' >acta</a>";
-		  	$datos['acta'] = 'tamano: '.$tamano. ' KB';
-                                                
-                      } else {
-                        $datos['acta'] = null;  
-                        }
-                    $fp_imagenr = $this->dep('datos')->tabla('articulo_73')->get_blob('resolucion');
-                    if (isset($fp_imagenr)) {
-                        $temp_nombre = md5(uniqid(time())).'.pdf';
-                        $temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);      
-                         //-- Se pasa el contenido al archivo temporal
-                        $temp_fp = fopen($temp_archivo['path'], 'w');
-                        stream_copy_to_stream($fp_imagenr, $temp_fp);
-                        fclose($temp_fp);
-                         //-- Se muestra la imagen temporal
-                        $tamano = round(filesize($temp_archivo['path']) / 1024);
-                        $datos['imagen_vista_previar'] = "<a target='_blank' href='{$temp_archivo['url']}' >resolucion</a>";
-		  	$datos['resolucion'] = 'tamano: '.$tamano. ' KB';                         
-                      } else{
-                         $datos['resolucion'] = null;   
-                      }
-                    //$datos['cat_est_reg']='ASD3';
-                    $auxi=trim($datos['cat_est_reg']).$datos['dedic_reg'];
-                    $datos['cat_est_reg']=$auxi;
-                    return $datos;
-                  
-		}
+            if ($this->dep('datos')->tabla('articulo_73')->esta_cargada()) {
+                $datos=$this->dep('datos')->tabla('articulo_73')->get();
+                if(isset($datos['acta'])){
+                    $nomb_ft="/designa/1.0/articulo_73/".$datos['acta'];
+                    //$nomb_ft=toba::proyecto()->get_path()."/www/articulo_73/".$datos['acta'];
+                    $datos['imagen_vista_previa'] = "<a target='_blank' href='{$nomb_ft}' >acta</a>";
+                }                    
+                if(isset($datos['resolucion'])){
+                    $nomb_ft="/designa/1.0/articulo_73/".$datos['resolucion'];
+                    //$nomb_ft=toba::proyecto()->get_path()."/www/articulo_73/".$datos['resolucion'];
+                    $datos['imagen_vista_previar'] = "<a target='_blank' href='{$nomb_ft}' >resolucion</a>";
+                }                    
+                //$datos['cat_est_reg']='ASD3';
+                $auxi=trim($datos['cat_est_reg']).$datos['dedic_reg'];
+                $datos['cat_est_reg']=$auxi;
+                return $datos;
+            }
 	}
-
-	function evt__formulario__alta($datos)
+//	function evt__formulario__alta($datos)
+//	{
+//         $tiene=$this->dep('datos')->tabla('designacion')->tiene_dao($datos['id_designacion']);
+//         if($tiene==1){
+//            $auxi=$datos['cat_est_reg'];
+//            $datos['cat_est_reg']=substr($auxi, 0,strlen($auxi)-1 );
+//            $datos['dedic_reg']=substr($auxi, strlen($auxi)-1,strlen($auxi) );
+//            $datos['nro_tab12']=12;
+//            $datos['nro_tab11']=11;
+//            $datos['check_academica']=false;
+//            $datos['pase_superior']=false;
+//            $datos['etapa']=3;
+//            $dao=$this->dep('datos')->tabla('designacion')->get_dao($datos['id_designacion']);
+//            if(count($dao)>0){//guardo departamento, area y orientacion de la designacion previamente seleccionada
+//                $datos['id_departamento']=$dao[0]['id_departamento'];    
+//                $datos['id_area']=$dao[0]['id_area'];    
+//                $datos['id_orientacion']=$dao[0]['id_orientacion'];    
+//            }
+//                       
+//            $this->dep('datos')->tabla('articulo_73')->set($datos);
+//            //-----------acta-----------------------
+//            if (is_array($datos['acta'])) {//si adjunto un pdf entonces "pdf" viene con los datos del archivo adjuntado
+//                //$s__temp_archivo = $datos['acta']['tmp_name'];//C:\Windows\Temp\php9A45.tmp
+//                 // Almacena un 'file pointer' en un campo binario o blob de la tabla.
+//                //print_r($datos['acta']);//Array ( [name] => TC051168.pdf [type] => application/pdf [tmp_name] => C:\Windows\Temp\phpE148.tmp [error] => 0 [size] => 656209 )
+//                if($datos['acta']['size']>$this->tamano_byte){
+//                    toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');
+//                    $fp=null;
+//                }else{
+//                    $fp = fopen($datos['acta']['tmp_name'], 'rb');
+//                    $this->dep('datos')->tabla('articulo_73')->set_blob('acta',$fp);
+//                }
+//              
+//            }else{
+//                $this->dep('datos')->tabla('articulo_73')->set_blob('acta',null);
+//            }
+//            //-----------resolucion-----------------------
+//            if (is_array($datos['resolucion'])) {
+//                 if($datos['resolucion']['size']>$this->tamano_byte){
+//                    toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');
+//                    $fp=null;
+//                }else{
+//                    $fp = fopen($datos['resolucion']['tmp_name'], 'rb');
+//                    $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',$fp);
+//                }
+//            }else{
+//                $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',null);
+//            }
+//            $this->dep('datos')->tabla('articulo_73')->sincronizar();
+//            $this->resetear();
+//            $this->set_pantalla('pant_inicial');
+//         }else{
+//             toba::notificacion()->agregar('La designacion debe tener departamento, area y orientacion', 'error');
+//         } 
+//	}
+        function evt__formulario__alta($datos)
 	{
          $tiene=$this->dep('datos')->tabla('designacion')->tiene_dao($datos['id_designacion']);
          if($tiene==1){
@@ -330,43 +488,33 @@ class ci_articulo73 extends toba_ci
             $datos['nro_tab11']=11;
             $datos['check_academica']=false;
             $datos['pase_superior']=false;
-            $datos['etapa']=3;
+            $datos['etapa']=4;
             $dao=$this->dep('datos')->tabla('designacion')->get_dao($datos['id_designacion']);
             if(count($dao)>0){//guardo departamento, area y orientacion de la designacion previamente seleccionada
                 $datos['id_departamento']=$dao[0]['id_departamento'];    
                 $datos['id_area']=$dao[0]['id_area'];    
                 $datos['id_orientacion']=$dao[0]['id_orientacion'];    
             }
-                       
-            $this->dep('datos')->tabla('articulo_73')->set($datos);
+           
             //-----------acta-----------------------
-            if (is_array($datos['acta'])) {//si adjunto un pdf entonces "pdf" viene con los datos del archivo adjuntado
-                //$s__temp_archivo = $datos['acta']['tmp_name'];//C:\Windows\Temp\php9A45.tmp
-                 // Almacena un 'file pointer' en un campo binario o blob de la tabla.
-                //print_r($datos['acta']);//Array ( [name] => TC051168.pdf [type] => application/pdf [tmp_name] => C:\Windows\Temp\phpE148.tmp [error] => 0 [size] => 656209 )
-                if($datos['acta']['size']>$this->tamano_byte){
-                    toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');
-                    $fp=null;
-                }else{
-                    $fp = fopen($datos['acta']['tmp_name'], 'rb');
-                    $this->dep('datos')->tabla('articulo_73')->set_blob('acta',$fp);
+            if(isset($datos['acta'])){
+                $nombre_acta=$datos['id_designacion'].'_acta.pdf';
+                $destino_ca=toba::proyecto()->get_path()."/www/articulo_73/".$nombre_acta;
+                if(move_uploaded_file($datos['acta']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                       //$valor=strval($nombre_acta);  
+                    $datos['acta']=strval($nombre_acta);  
                 }
-              
-            }else{
-                $this->dep('datos')->tabla('articulo_73')->set_blob('acta',null);
-            }
+             }
             //-----------resolucion-----------------------
-            if (is_array($datos['resolucion'])) {
-                 if($datos['resolucion']['size']>$this->tamano_byte){
-                    toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');
-                    $fp=null;
-                }else{
-                    $fp = fopen($datos['resolucion']['tmp_name'], 'rb');
-                    $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',$fp);
+            if(isset($datos['resolucion'])){
+                $nombre_reso=$datos['id_designacion'].'_reso.pdf';
+                $destino_ca=toba::proyecto()->get_path()."/www/articulo_73/".$nombre_reso;
+                if(move_uploaded_file($datos['resolucion']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                    $datos['resolucion']=strval($nombre_reso);
                 }
-            }else{
-                $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',null);
-            }
+               
+             }
+            $this->dep('datos')->tabla('articulo_73')->set($datos);   
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
             $this->resetear();
             $this->set_pantalla('pant_inicial');
@@ -374,7 +522,6 @@ class ci_articulo73 extends toba_ci
              toba::notificacion()->agregar('La designacion debe tener departamento, area y orientacion', 'error');
          } 
 	}
-
 	function evt__formulario__baja()
 	{
             $this->dep('datos')->tabla('articulo_73')->eliminar_todo();
@@ -382,7 +529,64 @@ class ci_articulo73 extends toba_ci
             $this->set_pantalla('pant_inicial');
         }
 
-	function evt__formulario__modificacion($datos)
+//	function evt__formulario__modificacion($datos)
+//	{
+//         $tiene=$this->dep('datos')->tabla('designacion')->tiene_dao($datos['id_designacion']);
+//         if($tiene==1){
+//            $auxi=$datos['cat_est_reg'];
+//            $datos['cat_est_reg']=substr($auxi, 0,strlen($auxi)-1 );
+//            $datos['dedic_reg']=substr($auxi, strlen($auxi)-1,strlen($auxi) );
+//            $datos['nro_tab12']=12;
+//            $datos['nro_tab11']=11;
+//            $datos['check_academica']=false;
+//            $datos['pase_superior']=false;
+//            $dao=$this->dep('datos')->tabla('designacion')->get_dao($datos['id_designacion']);
+//            if(count($dao)>0){//guardo departamento, area y orientacion de la designacion previamente seleccionada
+//                $datos['id_departamento']=$dao[0]['id_departamento'];    
+//                $datos['id_area']=$dao[0]['id_area'];    
+//                $datos['id_orientacion']=$dao[0]['id_orientacion'];    
+//            }
+//             
+//            $this->dep('datos')->tabla('articulo_73')->set($datos);
+//            if (is_array($datos['acta'])) {//si adjunto un pdf entonces "pdf" viene con los datos del archivo adjuntado
+//                //$s__temp_archivo = $datos['acta']['tmp_name'];//C:\Windows\Temp\php9A45.tmp
+//                 // Almacena un 'file pointer' en un campo binario o blob de la tabla.
+//                //print_r($datos['acta']);//Array ( [name] => TC051168.pdf [type] => application/pdf [tmp_name] => C:\Windows\Temp\phpE148.tmp [error] => 0 [size] => 656209 )
+//                if($datos['acta']['size']>0 ){
+//                    if($datos['acta']['size']>$this->tamano_byte ){
+//                        toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');  
+//                        $fp=null;
+//                    }
+//                    else{$fp = fopen($datos['acta']['tmp_name'], 'rb');}
+//                }else{
+//                    $fp=null;
+//                }
+//                
+//                $this->dep('datos')->tabla('articulo_73')->set_blob('acta',$fp);
+//               // fclose($fp); esto borra el archivo!!!!
+//            }
+//            if (is_array($datos['resolucion'])) {
+//                if($datos['resolucion']['size']>0){
+//                    if($datos['resolucion']['size']>$this->tamano_byte ){
+//                        toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');  
+//                        $fp=null;
+//                    }
+//                    else{
+//                        $fp = fopen($datos['resolucion']['tmp_name'], 'rb');
+//                    }
+//                }else{
+//                    $fp=null;
+//                }
+//                $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',$fp);
+//            }
+//            $this->dep('datos')->tabla('articulo_73')->sincronizar();
+//            $this->resetear();
+//            $this->set_pantalla('pant_inicial');
+//         }else{
+//             toba::notificacion()->agregar('La designacion debe tener departamento, area y orientacion', 'error');
+//         }
+//	}
+        function evt__formulario__modificacion($datos)
 	{
          $tiene=$this->dep('datos')->tabla('designacion')->tiene_dao($datos['id_designacion']);
          if($tiene==1){
@@ -399,39 +603,29 @@ class ci_articulo73 extends toba_ci
                 $datos['id_area']=$dao[0]['id_area'];    
                 $datos['id_orientacion']=$dao[0]['id_orientacion'];    
             }
-             
+            $art=$this->dep('datos')->tabla('articulo_73')->get();
+            if(isset($art['acta'])){//tiene valor el campo
+                $nombre_ca_acta=$art['acta'];
+                $datos['acta']=strval($art['acta']);//esto xq sino deja en nulo el campo archivo 
+            }
+            if(isset($art['resolucion'])){//tiene valor el campo
+                $nombre_ca_reso=$art['resolucion'];
+                $datos['resolucion']=strval($art['resolucion']);//esto xq sino deja en nulo el campo archivo 
+            }
+            //si resol o acta tenian valor y no se modifica entonces el campo queda con el valor y no se anula
+            if (isset($datos['acta'])) {//esta adjuntando el acta
+                $nombre_ca_acta=$art['id_designacion']."_acta.pdf";
+                $datos['acta']= $nombre_ca_acta;
+                $destino_ca=toba::proyecto()->get_path()."/www/articulo_73/".$nombre_ca_acta;
+                move_uploaded_file($datos['acta']['tmp_name'], $destino_ca);//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no                       
+            }
+            if (isset($datos['resolucion'])) {//esta adjuntando el acta
+                $nombre_ca_reso=$art['id_designacion']."_reso.pdf";
+                $datos['resolucion']= $nombre_ca_reso;
+                $destino_ca=toba::proyecto()->get_path()."/www/articulo_73/".$nombre_ca_reso;
+                move_uploaded_file($datos['resolucion']['tmp_name'], $destino_ca);//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no                       
+            }
             $this->dep('datos')->tabla('articulo_73')->set($datos);
-            if (is_array($datos['acta'])) {//si adjunto un pdf entonces "pdf" viene con los datos del archivo adjuntado
-                //$s__temp_archivo = $datos['acta']['tmp_name'];//C:\Windows\Temp\php9A45.tmp
-                 // Almacena un 'file pointer' en un campo binario o blob de la tabla.
-                //print_r($datos['acta']);//Array ( [name] => TC051168.pdf [type] => application/pdf [tmp_name] => C:\Windows\Temp\phpE148.tmp [error] => 0 [size] => 656209 )
-                if($datos['acta']['size']>0 ){
-                    if($datos['acta']['size']>$this->tamano_byte ){
-                        toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');  
-                        $fp=null;
-                    }
-                    else{$fp = fopen($datos['acta']['tmp_name'], 'rb');}
-                }else{
-                    $fp=null;
-                }
-                
-                $this->dep('datos')->tabla('articulo_73')->set_blob('acta',$fp);
-               // fclose($fp); esto borra el archivo!!!!
-            }
-            if (is_array($datos['resolucion'])) {
-                if($datos['resolucion']['size']>0){
-                    if($datos['resolucion']['size']>$this->tamano_byte ){
-                        toba::notificacion()->agregar('El tamaño del archivo debe ser menor a '.$this->tamano_mega.'MB', 'error');  
-                        $fp=null;
-                    }
-                    else{
-                        $fp = fopen($datos['resolucion']['tmp_name'], 'rb');
-                    }
-                }else{
-                    $fp=null;
-                }
-                $this->dep('datos')->tabla('articulo_73')->set_blob('resolucion',$fp);
-            }
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
             $this->resetear();
             $this->set_pantalla('pant_inicial');
@@ -459,8 +653,6 @@ class ci_articulo73 extends toba_ci
             $this->s__imprimir=0;
             $this->set_pantalla('pant_inicial');
 	}
-
-	
 
 }
 ?>
