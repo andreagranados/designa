@@ -186,25 +186,25 @@ class dt_articulo_73 extends designa_datos_tabla
             $legajos=toba::db('designa')->consultar($sql);
             if(count($legajos)>0){//si hay docentes 
                  
-//                $doc=array();
-//                foreach ($legajos as $value) {
-//                    $leg[]=$value['legajo'];
-//                }
-//                $conjunto=implode(",",$leg);
-//                //recupero de mapuche la antiguedad de los legajos que van como argumento
-//                       
-//                $datos_mapuche = consultas_mapuche::get_antiguedad_docente($conjunto);
+                $doc=array();
+                foreach ($legajos as $value) {
+                    $leg[]=$value['legajo'];
+                }
+                $conjunto=implode(",",$leg);
+                //recupero de mapuche la antiguedad de los legajos que van como argumento
+                       
+                $datos_mapuche = consultas_mapuche::get_antiguedad_docente($conjunto);
                 
-               //if(count($datos_mapuche)>0){ 
-//                    $sql=" CREATE LOCAL TEMP TABLE auxi(
-//                        nro_legaj integer,
-//                        antiguedad integer
-//                    );";
-//                    toba::db('designa')->consultar($sql);//creo la tabla auxi
-//                    foreach ($datos_mapuche as $valor) {
-//                        $sql=" insert into auxi values (".$valor['nro_legaj'].",".$valor['antig'].")";
-//                        toba::db('designa')->consultar($sql);
-//                    }
+               if(count($datos_mapuche)>0){ 
+                    $sql=" CREATE LOCAL TEMP TABLE auxi(
+                        nro_legaj integer,
+                        antiguedad integer
+                    );";
+                    toba::db('designa')->consultar($sql);//creo la tabla auxi
+                    foreach ($datos_mapuche as $valor) {
+                        $sql=" insert into auxi values (".$valor['nro_legaj'].",".$valor['antig'].")";
+                        toba::db('designa')->consultar($sql);
+                    }
                     $sql = "SELECT a.*,0 as antiguedad from (".
                      $sql = " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
                     . " from docente a, designacion b"
@@ -216,16 +216,16 @@ class dt_articulo_73 extends designa_datos_tabla
                        .$concatenar
                       
                             . ") a"
-                            //. " INNER JOIN auxi b "
-//                            ." LEFT OUTER JOIN auxi b "
-//                            .                   " ON (a.legajo=b.nro_legaj)"
+                            . " INNER JOIN auxi b "
+                            ." LEFT OUTER JOIN auxi b "
+                            .                   " ON (a.legajo=b.nro_legaj)"
                             . " order by descripcion";
 
                     
                     $res=toba::db('designa')->consultar($sql);
                     return $res;
                     
-                 //}
+                 }
                 }
             }
          
