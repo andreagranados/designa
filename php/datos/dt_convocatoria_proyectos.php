@@ -54,7 +54,8 @@ class dt_convocatoria_proyectos extends toba_datos_tabla
             switch ($tipo) {
                case 0:$anios='+4 year';break;//proin duran 4
                case 1:$anios='+4 year';break;//pin1 duran 4
-               case 2:$anios='+3 year';break;//pin2 duran 3
+               //case 2:$anios='+3 year';break;//pin2 duran 3
+               case 2:$anios='+4 year';break;//pin2 pasan a duran 3 a partir resol 2021
                default: break;
             }
            

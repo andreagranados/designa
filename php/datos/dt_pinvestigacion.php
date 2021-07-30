@@ -321,6 +321,9 @@ class dt_pinvestigacion extends toba_datos_tabla
                     $ar['id_tipo']=1;
                     $ar['descripcion']='PIN1 ';
                     $res[]=$ar;
+                    $ar['id_tipo']=2;
+                    $ar['descripcion']='PIN2 ';
+                    $res[]=$ar;
                 }
               
             };
@@ -334,7 +337,8 @@ class dt_pinvestigacion extends toba_datos_tabla
             switch ($tipo) {
                 case 0:return 4;break;//son PROIN 0
                 case 1:return 4;break;//son PIN1 1
-                case 2:return 3;break;//son PIN2 2
+                //case 2:return 3;break;//son PIN2 2
+                case 2:return 4;break;//son PIN2 2 cambia a partir resol 2021
                 case 3:break;//son RECO no retorna nada
             }
              
