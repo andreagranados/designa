@@ -40,6 +40,7 @@ class ci_adjuntos extends designa_ci
         $this->s__port=getenv('DB_PORT');
         $this->s__user_guardar=getenv('DB_USER');
         $this->s__password_guardar=getenv('DB_PASS');
+        $this->s__pantalla='pant_inicial';        
         
 	}
          function conf__pant_inicial(toba_ei_pantalla $pantalla)
