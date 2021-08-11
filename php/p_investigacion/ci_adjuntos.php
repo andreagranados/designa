@@ -194,7 +194,7 @@ class ci_adjuntos extends designa_ci
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
-                    print_r($this->s__pantalla);
+                    
                     if($this->s__pantalla=='pant_inicial'){
                         $this->dep('form_adj_eval')->desactivar_efs(array('informe_avance_eval1','informe_avance_eval2','informe_avance_eval3','informe_avance_eval4','informe_avance_eval5','informe_final_eval1','informe_final_eval2','informe_final_eval3','informe_final_eval4','informe_final_eval5'));
                         $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_if1','imagen_vista_previa_if2','imagen_vista_previa_if3','imagen_vista_previa_if4','imagen_vista_previa_if5'));
