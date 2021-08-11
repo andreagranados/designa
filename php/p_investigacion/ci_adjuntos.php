@@ -22,7 +22,7 @@ class icono_limpiar implements toba_ef_icono_utileria
 	}
        
 }
-class ci_adjuntos extends toba_ci
+class ci_adjuntos extends designa_ci
 {
     protected $s__user_guardar;
     protected $s__password_guardar;
