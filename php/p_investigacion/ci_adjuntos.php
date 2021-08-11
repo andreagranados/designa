@@ -31,18 +31,30 @@ class ci_adjuntos extends designa_ci
     protected $s__host;
     protected $s__port;
     protected $s__pantalla;
+    protected $s__mostrar;
     
     
-    function ini(){
-        $this->s__user_sl=getenv('DB_USER_SL');
-        $this->s__password_sl=getenv('DB_PASS_SL');
-        $this->s__host=getenv('DB_HOST');
-        $this->s__port=getenv('DB_PORT');
-        $this->s__user_guardar=getenv('DB_USER');
-        $this->s__password_guardar=getenv('DB_PASS');
-        $this->s__pantalla='pant_inicial';        
+        function ini(){
+            $this->s__user_sl=getenv('DB_USER_SL');
+            $this->s__password_sl=getenv('DB_PASS_SL');
+            $this->s__host=getenv('DB_HOST');
+            $this->s__port=getenv('DB_PORT');
+            $this->s__user_guardar=getenv('DB_USER');
+            $this->s__password_guardar=getenv('DB_PASS');
         
 	}
+        
+        //-----------------------------------------------------------------------------------
+	//---- Eventos ----------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+
+	function evt__mostrar()
+	{
+            $this->s__mostrar=1;
+
+	}
+     
+
          function conf__pant_inicial(toba_ei_pantalla $pantalla)
         {
             $this->s__pantalla='pant_inicial';
@@ -191,16 +203,13 @@ class ci_adjuntos extends designa_ci
         
         function conf__form_adj_eval(toba_ei_formulario $form)
 	{
-            if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
-                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
-                    $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
-                    
-                    if($this->s__pantalla=='pant_inicial'){
+            if($this->s__mostrar==1){
+                $this->dep('form_adj_eval')->descolapsar();
+                
+                if($this->s__pantalla=='pant_inicial'){
                         $this->dep('form_adj_eval')->desactivar_efs(array('informe_avance_eval1','informe_avance_eval2','informe_avance_eval3','informe_avance_eval4','informe_avance_eval5','informe_final_eval1','informe_final_eval2','informe_final_eval3','informe_final_eval4','informe_final_eval5'));
                         $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_if1','imagen_vista_previa_if2','imagen_vista_previa_if3','imagen_vista_previa_if4','imagen_vista_previa_if5'));
                         $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_ia1','imagen_vista_previa_ia2','imagen_vista_previa_ia3','imagen_vista_previa_ia4','imagen_vista_previa_ia5'));
-                        
                     }
                     if($this->s__pantalla=='pant_iavance'){
                         $this->dep('form_adj_eval')->desactivar_efs(array('inicial_eval1','inicial_eval2','inicial_eval3','inicial_eval4','inicial_eval5','informe_final_eval1','informe_final_eval2','informe_final_eval3','informe_final_eval4','informe_final_eval5'));
@@ -212,6 +221,10 @@ class ci_adjuntos extends designa_ci
                         $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_ie1','imagen_vista_previa_ie2','imagen_vista_previa_ie3','imagen_vista_previa_ie4','imagen_vista_previa_ie5'));
                         $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_ia1','imagen_vista_previa_ia2','imagen_vista_previa_ia3','imagen_vista_previa_ia4','imagen_vista_previa_ia5'));
                     }
+                if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                  $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                  if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
+                    $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['inicial_eval1'])){
@@ -293,7 +306,11 @@ class ci_adjuntos extends designa_ci
                     }
                     return $datos;
                 }
+              }
+            }else{
+                $this->dep('form_adj_eval')->colapsar();
             }
+            
         }
         function evt__form_adj_eval__guardarc($datos)
         {           
@@ -768,6 +785,9 @@ class ci_adjuntos extends designa_ci
 //            }
 	}
 
+	
+
+	
 	
 
 }
