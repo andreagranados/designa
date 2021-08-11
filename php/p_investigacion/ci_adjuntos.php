@@ -24,6 +24,36 @@ class icono_limpiar implements toba_ef_icono_utileria
 }
 class ci_adjuntos extends toba_ci
 {
+    protected $s__user_guardar;
+    protected $s__password_guardar;
+    protected $s__user_sl;
+    protected $s__password_sl;
+    protected $s__host;
+    protected $s__port;
+    protected $s__pantalla;
+    
+    
+    function ini(){
+        $this->s__user_sl=getenv('DB_USER_SL');
+        $this->s__password_sl=getenv('DB_PASS_SL');
+        $this->s__host=getenv('DB_HOST');
+        $this->s__port=getenv('DB_PORT');
+        $this->s__user_guardar=getenv('DB_USER');
+        $this->s__password_guardar=getenv('DB_PASS');
+        
+	}
+         function conf__pant_inicial(toba_ei_pantalla $pantalla)
+        {
+            $this->s__pantalla='pant_inicial';
+        }
+        function conf__pant_iavance(toba_ei_pantalla $pantalla)
+        {
+            $this->s__pantalla='pant_iavance';
+        }
+        function conf__pant_ifinal(toba_ei_pantalla $pantalla)
+        {
+            $this->s__pantalla='pant_ifinal';
+        }
     //adjuntos
         function conf__form_adj(toba_ei_formulario $form)
 	{
@@ -157,25 +187,316 @@ class ci_adjuntos extends toba_ci
                     }  
               }
             }
+        
+        function conf__form_adj_eval(toba_ei_formulario $form)
+	{
+            if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
+                    $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
+                    if($this->s__pantalla=='pant_inicial'){
+                        $this->dep('form_adj_eval')->desactivar_efs(array('informe_avance_eval1','informe_avance_eval2','informe_avance_eval3','informe_avance_eval4','informe_avance_eval5','informe_final_eval1','informe_final_eval2','informe_final_eval3','informe_final_eval4','informe_final_eval5'));
+                        $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_if1','imagen_vista_previa_if2','imagen_vista_previa_if3','imagen_vista_previa_if4','imagen_vista_previa_if5'));
+                        $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_ia1','imagen_vista_previa_ia2','imagen_vista_previa_ia3','imagen_vista_previa_ia4','imagen_vista_previa_ia5'));
+                        
+                    }
+                    if($this->s__pantalla=='pant_iavance'){
+                        $this->dep('form_adj_eval')->desactivar_efs(array('inicial_eval1','inicial_eval2','inicial_eval3','inicial_eval4','inicial_eval5','informe_final_eval1','informe_final_eval2','informe_final_eval3','informe_final_eval4','informe_final_eval5'));
+                        $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_ie1','imagen_vista_previa_ie2','imagen_vista_previa_ie3','imagen_vista_previa_ie4','imagen_vista_previa_ie5'));
+                        $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_if1','imagen_vista_previa_if2','imagen_vista_previa_if3','imagen_vista_previa_if4','imagen_vista_previa_if5'));
+                    } 
+                    if($this->s__pantalla=='pant_ifinal'){
+                        $this->dep('form_adj_eval')->desactivar_efs(array('inicial_eval1','inicial_eval2','inicial_eval3','inicial_eval4','inicial_eval5','informe_avance_eval1','informe_avance_eval2','informe_avance_eval3','informe_avance_eval4','informe_avance_eval5'));
+                        $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_ie1','imagen_vista_previa_ie2','imagen_vista_previa_ie3','imagen_vista_previa_ie4','imagen_vista_previa_ie5'));
+                        $this->dep('form_adj_eval')->desactivar_efs(array('imagen_vista_previa_ia1','imagen_vista_previa_ia2','imagen_vista_previa_ia3','imagen_vista_previa_ia4','imagen_vista_previa_ia5'));
+                    }
+                    
+                    $datos['id_pinv']=$ins['id_pinv'];
+                    if(isset($ins['inicial_eval1'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval1'];
+                        $datos['inicial_eval1']='';//$ins['inicial_eval1'];
+                        $datos['imagen_vista_previa_ie1'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion1</a>";
+                    }
+                    if(isset($ins['inicial_eval2'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval2'];
+                        $datos['inicial_eval1']='';//$ins['inicial_eval2'];
+                        $datos['imagen_vista_previa_ie2'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion2</a>";
+                    }
+                    if(isset($ins['inicial_eval3'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval3'];
+                        $datos['inicial_eval3']='';//$ins['inicial_eval3'];
+                        $datos['imagen_vista_previa_ie3'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion3</a>";
+                    }
+                    if(isset($ins['inicial_eval4'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval4'];
+                        $datos['inicial_eval4']='';//$ins['inicial_eval4'];
+                        $datos['imagen_vista_previa_ie4'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion4</a>";
+                    }
+                    if(isset($ins['inicial_eval5'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval5'];
+                        $datos['inicial_eval5']='';//$ins['inicial_eval4'];
+                        $datos['imagen_vista_previa_ie5'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion5</a>";
+                    }
+                    //informes de avance evaluaciones
+                    if(isset($ins['informe_avance_eval1'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval1'];
+                        $datos['informe_avance_eval1']='';//$ins['informe_avance_eval1'];
+                        $datos['imagen_vista_previa_ia1'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA1</a>";
+                    }
+                    if(isset($ins['informe_avance_eval2'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval2'];
+                        $datos['informe_avance_eval2']='';//$ins['informe_avance_eval2'];
+                        $datos['imagen_vista_previa_ia2'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA2</a>";
+                    }
+                    if(isset($ins['informe_avance_eval3'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval3'];
+                        $datos['informe_avance_eval3']='';//$ins['informe_avance_eval3'];
+                        $datos['imagen_vista_previa_ia3'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA3</a>";
+                    }
+                    if(isset($ins['informe_avance_eval4'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval4'];
+                        $datos['informe_avance_eval4']='';//$ins['informe_avance_eval4'];
+                        $datos['imagen_vista_previa_ia4'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA4</a>";
+                    }
+                    if(isset($ins['informe_avance_eval5'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval5'];
+                        $datos['informe_avance_eval5']='';//$ins['informe_avance_eval5'];
+                        $datos['imagen_vista_previa_ia5'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA5</a>";
+                    }
+                    //informes finales evaluaciones
+                    if(isset($ins['informe_final_eval1'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval1'];
+                        $datos['informe_final_eval1']='';//$ins['informe_final_eval1'];
+                        $datos['imagen_vista_previa_if1'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF1</a>";
+                    }
+                    if(isset($ins['informe_final_eval2'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval2'];
+                        $datos['informe_final_eval2']='';//$ins['informe_final_eval2'];
+                        $datos['imagen_vista_previa_if2'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF2</a>";
+                    }
+                    if(isset($ins['informe_final_eval3'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval3'];
+                        $datos['informe_final_eval3']='';//$ins['informe_final_eval3'];
+                        $datos['imagen_vista_previa_if3'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF3</a>";
+                        }
+                    if(isset($ins['informe_final_eval4'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval4'];
+                        $datos['informe_final_eval4']='';//$ins['informe_final_eval4'];
+                        $datos['imagen_vista_previa_if4'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF4</a>";
+                    }
+                    if(isset($ins['informe_final_eval5'])){
+                        $nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval5'];
+                        $datos['informe_final_eval5']='';//$ins['informe_final_eval5'];
+                        $datos['imagen_vista_previa_if5'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF5</a>";
+                    }
+                    return $datos;
+                }
+            }
+        }
+        function evt__form_adj_eval__guardarc($datos)
+        {           
+            $ruta="/adjuntos_proyectos_inv/evaluaciones";
+
+            if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+              
+                //realizamos la conexion
+                $conn_id=ftp_connect($this->s__host,$this->s__port);
+                if($conn_id){
+                    $id=substr($pi['codigo'],3,4);
+                    $datos2['id_pinv']=$pi['id_pinv'];
+                     # Realizamos el login con nuestro usuario y contraseña
+                    if(ftp_login($conn_id,$this->s__user_guardar,$this->s__password_guardar)){
+                        ftp_pasv($conn_id, true);//activa modo pasivo. la conexion es iniciada por el cliente
+                        # Cambiamos al directorio especificado
+                        if(ftp_chdir($conn_id,$ruta)){
+                            if(isset($datos['inicial_eval1'])) {
+                                $remote_file = $datos['inicial_eval1']['tmp_name'];
+                                $nombre_ca=$id."_inicial_eval1.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['inicial_eval1']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                           if(isset($datos['inicial_eval2'])) {
+                                $remote_file = $datos['inicial_eval2']['tmp_name'];
+                                $nombre_ca=$id."_inicial_eval2.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['inicial_eval2']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['inicial_eval3'])) {
+                                $remote_file = $datos['inicial_eval3']['tmp_name'];
+                                $nombre_ca=$id."_inicial_eval3.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['inicial_eval3']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['inicial_eval4'])) {
+                                $remote_file = $datos['inicial_eval4']['tmp_name'];
+                                $nombre_ca=$id."_inicial_eval4.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['inicial_eval4']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['inicial_eval5'])) {
+                                $remote_file = $datos['inicial_eval5']['tmp_name'];
+                                $nombre_ca=$id."_inicial_eval5.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['inicial_eval5']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_avance_eval1'])) {
+                                $remote_file = $datos['informe_avance_eval1']['tmp_name'];
+                                $nombre_ca=$id."_informe_avance_eval1.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_avance_eval1']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_avance_eval2'])) {
+                                $remote_file = $datos['informe_avance_eval2']['tmp_name'];
+                                $nombre_ca=$id."_informe_avance_eval2.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_avance_eval2']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_avance_eval3'])) {
+                                $remote_file = $datos['informe_avance_eval3']['tmp_name'];
+                                $nombre_ca=$id."_informe_avance_eval3.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_avance_eval3']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_avance_eval4'])) {
+                                $remote_file = $datos['informe_avance_eval4']['tmp_name'];
+                                $nombre_ca=$id."_informe_avance_eval4.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_avance_eval4']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_avance_eval5'])) {
+                                $remote_file = $datos['informe_avance_eval5']['tmp_name'];
+                                $nombre_ca=$id."_informe_avance_eval5.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_avance_eval5']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_final_eval1'])) {
+                                $remote_file = $datos['informe_final_eval1']['tmp_name'];
+                                $nombre_ca=$id."_informe_final_eval1.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_final_eval1']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_final_eval2'])) {
+                                $remote_file = $datos['informe_final_eval2']['tmp_name'];
+                                $nombre_ca=$id."_informe_final_eval2.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_final_eval2']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_final_eval3'])) {
+                                $remote_file = $datos['informe_final_eval3']['tmp_name'];
+                                $nombre_ca=$id."_informe_final_eval3.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_final_eval3']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_final_eval4'])) {
+                                $remote_file = $datos['informe_final_eval4']['tmp_name'];
+                                $nombre_ca=$id."_informe_final_eval4.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_final_eval4']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            if(isset($datos['informe_final_eval5'])) {
+                                $remote_file = $datos['informe_final_eval5']['tmp_name'];
+                                $nombre_ca=$id."_informe_final_eval5.pdf";//nombre con el que se guarda el archivo
+                                # Subimos el fichero
+                                if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                        $datos2['informe_final_eval5']=strval($nombre_ca);   
+                                        echo "Fichero subido correctamente";
+                                }else
+                                        echo "No ha sido posible subir el fichero";  
+                            }
+                            
+                        }else{
+                            echo "No existe el directorio especificado";
+                        }
+                    } else{
+                        echo "El usuario o la contraseña son incorrectos";
+                    }
+
+                }else{
+                    echo "No ha sido posible conectar con el servidor";
+                }
+
+                $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos2);
+                $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();           
+                //sino esta cargada la carga
+                if(($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada())!=true){
+                    $auxi['id_pinv']=$pi['id_pinv'];
+                    $this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->cargar($auxi); 
+                }    
+                
+              }
+        }
 //   //informe de avance se guarda en el servidor remoto por lo tanto accede al remoto
         function conf__form_adj_ia(toba_ei_formulario $form)
 	{
-            $user=getenv('DB_USER_SL');
-            $password=getenv('DB_PASS_SL');
-            $host=getenv('DB_HOST');
-            $port=getenv('DB_PORT');
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_avance_ft'])){
-                        $nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];
+                        $nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];
                         $datos['informe_avance_ft']=$ins['informe_avance_ft'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['informe_avance_dp'])){
-                        $nomb_dir='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
+                        $nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
                         $datos['informe_avance_dp']=$ins['informe_avance_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }
@@ -184,12 +505,8 @@ class ci_adjuntos extends toba_ci
             }
         }
      
-        function evt__form_adj_ia__guardar($datos)
+       function evt__form_adj_ia__guardar($datos)
         {            // Definimos las variables
-            $user=getenv('DB_USER');
-            $host=getenv('DB_HOST');
-            $port=getenv('DB_PORT');
-            $password=getenv('DB_PASS');
             $ruta="/adjuntos_proyectos_inv";
 
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
@@ -199,12 +516,12 @@ class ci_adjuntos extends toba_ci
                     toba::notificacion()->agregar('Fuera del periodo definido por SCyT para la modificacion de Informe de Avance', 'error');   
                 }else{
                     //realizamos la conexion
-                    $conn_id=ftp_connect($host,$port);
+                    $conn_id=ftp_connect($this->s__host,$this->s__port);
                     if($conn_id){
                         $id=substr($pi['codigo'],3,4);
                         $datos2['id_pinv']=$pi['id_pinv'];
                          # Realizamos el login con nuestro usuario y contraseña
-                        if(ftp_login($conn_id,$user,$password)){
+                        if(ftp_login($conn_id,$this->s__user_guardar,$this->s__password_guardar)){
                             ftp_pasv($conn_id, true);//activa modo pasivo. la conexion es iniciada por el cliente
                             # Cambiamos al directorio especificado
                             if(ftp_chdir($conn_id,$ruta)){
@@ -252,23 +569,18 @@ class ci_adjuntos extends toba_ci
         //informe final
          function conf__form_adj_if(toba_ei_formulario $form)
 	{
-            $user=getenv('DB_USER_SL');
-            $password=getenv('DB_PASS_SL');
-            $host=getenv('DB_HOST');
-            $port=getenv('DB_PORT');
-            
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_final_ft'])){
-                        $nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_ft'];
+                        $nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_ft'];
                         $datos['informe_final_ft']=$ins['informe_final_ft'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['informe_final_dp'])){
-                        $nomb_dir='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_dp'];
+                        $nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_dp'];
                         $datos['informe_final_dp']=$ins['informe_final_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }
@@ -276,12 +588,8 @@ class ci_adjuntos extends toba_ci
                 }
             }
         }
-         function evt__form_adj_if__guardar($datos)
+  function evt__form_adj_if__guardar($datos)
         {            // Definimos las variables
-            $user=getenv('DB_USER');
-            $host=getenv('DB_HOST');
-            $port=getenv('DB_PORT');
-            $password=getenv('DB_PASS');
             $ruta="/adjuntos_proyectos_inv";
 
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
@@ -291,12 +599,12 @@ class ci_adjuntos extends toba_ci
                      toba::notificacion()->agregar('Fuera del periodo definido por SCyT para la modificacion de Informe Final', 'error');   
                 }else{
                     //realizamos la conexion
-                    $conn_id=ftp_connect($host,$port);
+                    $conn_id=ftp_connect($this->s__host,$this->s__port);
                     if($conn_id){
                         $id=substr($pi['codigo'],3,4);
                         $datos2['id_pinv']=$pi['id_pinv'];
                          # Realizamos el login con nuestro usuario y contraseña
-                        if(ftp_login($conn_id,$user,$password)){
+                        if(ftp_login($conn_id,$this->s__user_guardar,$this->s__password_guardar)){
                             ftp_pasv($conn_id, true);//activa modo pasivo. la conexion es iniciada por el cliente
                             # Cambiamos al directorio especificado
                             if(ftp_chdir($conn_id,$ruta)){
@@ -457,6 +765,8 @@ class ci_adjuntos extends toba_ci
 //                echo 'falló, código:' . $res;
 //            }
 	}
+
+	
 
 }
 ?>
