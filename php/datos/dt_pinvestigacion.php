@@ -940,8 +940,10 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $where='';
             }
             $sql="select * from( 
-                    SELECT p.codigo,p.denominacion,p.uni_acad,p.fec_desde,p.fec_hasta,sub1.id_pinv,(case when cant1 is null then 0 else cant1 end)+(case when cant2 is null then 0 else cant2 end)as cant 
-                    FROM(select id_pinv,count(distinct d.id_docente) as cant1
+                    SELECT p.codigo,p.estado,p.denominacion,p.uni_acad,p.fec_desde,p.fec_hasta,sub1.id_pinv,(case when cant1 is null then 0 else cant1 end)+(case when cant2 is null then 0 else cant2 end)as cant 
+                    
+                    FROM
+                     (select id_pinv,count(distinct d.id_docente) as cant1
                         from integrante_interno_pi i, pinvestigacion p, designacion d
                         where i.pinvest=p.id_pinv
                         and i.id_designacion=d.id_designacion
@@ -954,12 +956,31 @@ class dt_pinvestigacion extends toba_datos_tabla
                         where i.pinvest=p.id_pinv
                         and i.hasta=p.fec_hasta
                         and p.tipo<>'PROIN'
-                        group by id_pinv)SUB2 ON (SUB1.ID_PINV=SUB2.ID_PINV)
+                        group by id_pinv)SUB2 ON (SUB1.ID_PINV=SUB2.ID_PINV)       
                         left outer join pinvestigacion p on (sub1.id_pinv=p.id_pinv)
                     )sub3
-                where sub3.cant<5
+                    left outer join (SELECT sub1.id_pinv,(case when cant1 is null then 0 else cant1 end)+(case when cant2 is null then 0 else cant2 end)as canti
+		                     FROM
+                                          (select id_pinv,count(distinct d.id_docente) as cant1
+                                             from integrante_interno_pi i, pinvestigacion p, designacion d
+                                             where i.pinvest=p.id_pinv
+                                             and i.id_designacion=d.id_designacion
+                                             and i.hasta=p.fec_hasta
+                                             and p.tipo<>'PROIN'
+                                             and i.funcion_p='ID'
+                                             group by id_pinv)SUB1
+                                         FULL OUTER JOIN
+                                             (select id_pinv,count(distinct i.nro_docum) as cant2
+                                             from integrante_externo_pi i, pinvestigacion p
+                                             where i.pinvest=p.id_pinv
+                                             and i.hasta=p.fec_hasta
+                                             and p.tipo<>'PROIN'
+                                             and i.funcion_p='ID'
+                                             group by id_pinv)SUB2 ON (SUB1.ID_PINV=SUB2.ID_PINV)
+		                      )sub4 ON (sub3.id_pinv=sub4.id_pinv)
+                where (sub3.cant<5 or sub4.canti<3 )
                 $where
-                order by uni_acad";
+                order by uni_acad,codigo  ";
              return toba::db('designa')->consultar($sql);
         }
         function get_proyectos($estad){
