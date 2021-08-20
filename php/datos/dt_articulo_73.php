@@ -179,7 +179,8 @@ class dt_articulo_73 extends designa_datos_tabla
             $sql=" SELECT distinct a.legajo"
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente"
-                    . " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
+                    //. " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
+                    ." and b.desde <='2021-03-30' and (b.hasta>='2021-02-01' or b.hasta is null)  "
                     . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
                     . " and dedic<>4"
                     ." and legajo<>0"
@@ -187,7 +188,7 @@ class dt_articulo_73 extends designa_datos_tabla
                         and b.uni_acad='".$ua."'"
                     . " and exists (select * from designacion c
                                     where c.id_docente=b.id_docente
-                                    and c.cat_mapuche=b.cat_mapuche
+                                    and c.cat_estat=b.cat_estat
                                     and c.desde<='2018-03-23' and carac='I'
                                      )";
                     
@@ -217,7 +218,8 @@ class dt_articulo_73 extends designa_datos_tabla
                      $sql = " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
                     . " from docente a, designacion b"
                     . " where a.id_docente=b.id_docente"
-                    . " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
+                    //. " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
+                    ." and b.desde <='2021-03-30' and (b.hasta>='2021-02-01' or b.hasta is null)  "
                     . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
                     . " and dedic<>4"
                     . " and legajo<>0"
@@ -225,7 +227,7 @@ class dt_articulo_73 extends designa_datos_tabla
                         ." and b.uni_acad='".$ua."'"
                             . " and exists (select * from designacion c
                                     where c.id_docente=b.id_docente
-                                    and c.cat_mapuche=b.cat_mapuche
+                                    and c.cat_estat=b.cat_estat
                                     and c.desde<='2018-03-23' and carac='I'
                                      ) "
                        .$concatenar
