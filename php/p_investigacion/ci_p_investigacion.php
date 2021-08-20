@@ -50,16 +50,24 @@ class ci_p_investigacion extends toba_ci
                         $c=array('cod_regional');
                         $this->dep('cuadro')->eliminar_columnas($c); 
                      }
-                     if($this->s__columnas['disciplina']==0){
+                    if($this->s__columnas['disciplina']==0){
                         $c=array('disciplina');
                         $this->dep('cuadro')->eliminar_columnas($c); 
                      }
-                     if($this->s__columnas['objetivo']==0){
+                    if($this->s__columnas['objetivo']==0){
                         $c=array('objetivo');
                         $this->dep('cuadro')->eliminar_columnas($c); 
                      }
-                      if($this->s__columnas['tipo_inv']==0){
+                    if($this->s__columnas['tipo_inv']==0){
                         $c=array('tipo_inv');
+                        $this->dep('cuadro')->eliminar_columnas($c); 
+                     }
+                     if($this->s__columnas['cuildirector']==0){
+                        $c=array('cuildirector');
+                        $this->dep('cuadro')->eliminar_columnas($c); 
+                     }
+                     if($this->s__columnas['cuilcod']==0){
+                        $c=array('cuilcod');
                         $this->dep('cuadro')->eliminar_columnas($c); 
                      }
                     $cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_listado_filtro($this->s__datos_filtro));

@@ -23,7 +23,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'MinimoIntegrantes', --nombre
 	NULL, --titulo
 	'0', --colapsable
-	'Listado de los proyectos que tienen menos de 5 integrantes.', --descripcion
+	NULL, --descripcion
 	NULL, --fuente_datos_proyecto
 	NULL, --fuente_datos
 	NULL, --solicitud_registrar
@@ -122,7 +122,9 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_inicial', --identificador
 	'1', --orden
 	'Pantalla Inicial', --etiqueta
-	'Listado de los proyectos con menos de 5 integrantes en total ó menos de 3 integrantes docentes', --descripcion
+	'Listado de los proyectos <br>
+* PIN1 con menos de 5 integrantes en total (excepto los que tienen categoría CO, AS, AT) ó menos de 3 integrantes docentes que figuren con categoría D, DP, DpP, C, ID, IC, BC, BA, BUGI, BUGP<br>
+* PIN2 con menos de 3 ó mas de 6 integrantes en total (excepto los que tienen categoría CO, AS, AT) ó que no tengan dos docentes', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen

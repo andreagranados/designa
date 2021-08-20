@@ -709,9 +709,51 @@ class dt_pinvestigacion extends toba_datos_tabla
                          end
                       else ''
                       end   
-                 end as codirector
-                     
-                       
+                 end as codirector,
+                 --esto es idem el case del director
+                 case when subd.apellido is not null then 
+
+                   case when t_p.estado='A' then 
+                        case when (t_p.fec_hasta=subd.hasta and subd.check_inv=1) then cast(subd.cuil as text) else '' end
+                   else case when t_p.estado='B' then 
+                             case when t_p.fec_baja=subd.hasta then cast(subd.cuil as text) else '' end 
+                        else case when t_p.fec_hasta=subd.hasta then cast(subd.cuil as text)  else '' end 
+                        end
+                   end
+
+                 else 
+                     case when subd2.apellido is not null then
+                        case when t_p.estado='A' then 
+                           case when t_p.fec_hasta=subd2.hasta and subd2.check_inv=1 then cast(subd2.cuil as text) else '' end
+                         else case when t_p.estado='B' then case when t_p.fec_baja=subd2.hasta then cast(subd2.cuil as text) else '' end 
+                              else case when t_p.fec_hasta=subd2.hasta then cast(subd2.cuil as text)  else '' end 
+                              end
+                         end
+                      else ''
+                      end 
+
+                 end
+                 as cuildirector,
+                 
+               case when subc.apellido is not null then 
+
+                   case when t_p.estado='A' then 
+                     case when t_p.fec_hasta=subc.hasta and subc.check_inv=1 then cast(subc.cuil as text) else '' end
+                   else case when t_p.estado='B' then case when t_p.fec_baja=subc.hasta then cast(subc.cuil as text) else '' end 
+                        else case when t_p.fec_hasta=subc.hasta then cast(subc.cuil as text)  else '' end 
+                        end
+                   end
+
+                 else case when subc2.apellido is not null then
+                        case when t_p.estado='A' then 
+                           case when t_p.fec_hasta=subc2.hasta and subc2.check_inv=1 then cast(subc2.cuil as text) else '' end
+                         else case when t_p.estado='B' then case when t_p.fec_baja=subc2.hasta then cast(subc2.cuil as text) else '' end 
+                              else case when t_p.fec_hasta=subc2.hasta then cast(subc2.cuil as text)  else '' end 
+                              end
+                         end
+                      else ''
+                      end   
+                 end as cuilcod
 		FROM
 		pinvestigacion as t_p
                 LEFT OUTER JOIN disciplina t_di ON t_di.id_disc=t_p.id_disciplina
@@ -724,7 +766,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                                         from integrante_interno_pi id2
                                         where  (id2.funcion_p='DP' or id2.funcion_p='DE'  or id2.funcion_p='D' or id2.funcion_p='DpP') 
                                         group by id2.pinvest      ) sub   ON (sub.pinvest=t_p.id_pinv)   
-		LEFT OUTER JOIN (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,ic.hasta,ic.check_inv
+		LEFT OUTER JOIN (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,ic.hasta,ic.check_inv,nro_cuil1||'-'||lpad(cast(nro_cuil as text),8,'0')||'-'||nro_cuil2 as cuil
 					from integrante_interno_pi ic,designacion t_c2 ,docente t_dc2
                                         where (ic.funcion_p='DP' or ic.funcion_p='DE'  or ic.funcion_p='D' or ic.funcion_p='DpP') 
                                         and t_dc2.id_docente=t_c2.id_docente
@@ -735,7 +777,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                                         from integrante_externo_pi id2
                                         where  (id2.funcion_p='DE' or id2.funcion_p='DEpP' )
                                         group by id2.pinvest      ) sub2   ON (sub2.pinvest=t_p.id_pinv) 
-                LEFT OUTER JOIN (select id3.pinvest,t_d3.apellido,t_d3.nombre,id3.hasta,id3.check_inv
+                LEFT OUTER JOIN (select id3.pinvest,t_d3.apellido,t_d3.nombre,id3.hasta,id3.check_inv,calculo_cuil(t_d3.tipo_sexo,t_d3.nro_docum)  as cuil
 					from integrante_externo_pi id3,persona t_d3
                                         where (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) 
                                         and t_d3.tipo_docum=id3.tipo_docum 
@@ -746,7 +788,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                                         from integrante_interno_pi id2
                                         where  id2.funcion_p='C'
                                         group by id2.pinvest      ) sub3   ON (sub3.pinvest=t_p.id_pinv)  
-		LEFT OUTER JOIN (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,ic.hasta,ic.check_inv
+		LEFT OUTER JOIN (select ic.pinvest,t_dc2.apellido,t_dc2.nombre,ic.hasta,ic.check_inv,nro_cuil1||'-'||lpad(cast(nro_cuil as text),8,'0')||'-'||nro_cuil2 as cuil
 					from integrante_interno_pi ic,designacion t_c2 ,docente t_dc2
                                         where ic.funcion_p='C' 
                                         and ic.id_designacion=t_c2.id_designacion
@@ -757,7 +799,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                                         where  id2.funcion_p='CE' 
                                         group by id2.pinvest      ) sub4   ON (sub4.pinvest=t_p.id_pinv)   
                                                 
-		LEFT OUTER JOIN (select id3.pinvest,t_d3.apellido,t_d3.nombre,id3.hasta,id3.check_inv
+		LEFT OUTER JOIN (select id3.pinvest,t_d3.apellido,t_d3.nombre,id3.hasta,id3.check_inv,calculo_cuil(t_d3.tipo_sexo,t_d3.nro_docum)  as cuil
 					from integrante_externo_pi id3,persona t_d3
                                         where (id3.funcion_p='CE' ) 
                                         and t_d3.tipo_docum=id3.tipo_docum 
@@ -940,7 +982,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $where='';
             }
             $sql="select * from( 
-                    SELECT p.codigo,p.estado,p.denominacion,p.uni_acad,p.fec_desde,p.fec_hasta,sub1.id_pinv,(case when cant1 is null then 0 else cant1 end)+(case when cant2 is null then 0 else cant2 end)as cant 
+                    SELECT p.codigo,p.tipo,p.estado,p.denominacion,p.uni_acad,p.fec_desde,p.fec_hasta,sub1.id_pinv,(case when cant1 is null then 0 else cant1 end)+(case when cant2 is null then 0 else cant2 end)as cant 
                     
                     FROM
                      (select id_pinv,count(distinct d.id_docente) as cant1
@@ -948,14 +990,20 @@ class dt_pinvestigacion extends toba_datos_tabla
                         where i.pinvest=p.id_pinv
                         and i.id_designacion=d.id_designacion
                         and i.hasta=p.fec_hasta
-                        and p.tipo<>'PROIN'
+                        and (p.tipo='PIN1' or p.tipo='PIN2')
+ 			and p.estado='A'
+                        and i.check_inv=1
+                        and i.funcion_p<>'CO' and i.funcion_p<>'AS' and i.funcion_p<>'AT'
                         group by id_pinv)SUB1
                     FULL OUTER JOIN
                         (select id_pinv,count(distinct i.nro_docum) as cant2
                         from integrante_externo_pi i, pinvestigacion p
                         where i.pinvest=p.id_pinv
                         and i.hasta=p.fec_hasta
-                        and p.tipo<>'PROIN'
+                        and (p.tipo='PIN1' or p.tipo='PIN2')
+                        and p.estado='A'
+                        and i.check_inv=1
+                        and i.funcion_p<>'CO' and i.funcion_p<>'AS' and i.funcion_p<>'AT'
                         group by id_pinv)SUB2 ON (SUB1.ID_PINV=SUB2.ID_PINV)       
                         left outer join pinvestigacion p on (sub1.id_pinv=p.id_pinv)
                     )sub3
@@ -966,21 +1014,24 @@ class dt_pinvestigacion extends toba_datos_tabla
                                              where i.pinvest=p.id_pinv
                                              and i.id_designacion=d.id_designacion
                                              and i.hasta=p.fec_hasta
-                                             and p.tipo<>'PROIN'
-                                             and i.funcion_p='ID'
+                                             and p.estado='A'
+                                             and i.check_inv=1
+                                             and (i.funcion_p='D' or i.funcion_p='DP' or i.funcion_p='DpP' or i.funcion_p='C' or i.funcion_p='ID' or i.funcion_p='IC' or i.funcion_p='BC' or i.funcion_p='BA' or i.funcion_p='BUGI' or i.funcion_p='BUGP')
                                              group by id_pinv)SUB1
                                          FULL OUTER JOIN
                                              (select id_pinv,count(distinct i.nro_docum) as cant2
                                              from integrante_externo_pi i, pinvestigacion p
                                              where i.pinvest=p.id_pinv
                                              and i.hasta=p.fec_hasta
-                                             and p.tipo<>'PROIN'
+                                             and p.estado='A'
+                                             and i.check_inv=1
+                                             and (i.funcion_p='D' or i.funcion_p='DP' or i.funcion_p='DpP' or i.funcion_p='C' or i.funcion_p='ID' or i.funcion_p='IC' or i.funcion_p='BC' or i.funcion_p='BA' or i.funcion_p='BUGI' or i.funcion_p='BUGP')
                                              and i.funcion_p='ID'
                                              group by id_pinv)SUB2 ON (SUB1.ID_PINV=SUB2.ID_PINV)
 		                      )sub4 ON (sub3.id_pinv=sub4.id_pinv)
-                where (sub3.cant<5 or sub4.canti<3 )
+                where ((sub3.tipo='PIN1' and (sub3.cant<5 or sub4.canti<3 ))or (sub3.tipo='PIN2' and (sub3.cant<3 or sub3.cant>6 or sub4.canti<>2 )))
                 $where
-                order by uni_acad,codigo  ";
+                order by uni_acad,codigo ";
              return toba::db('designa')->consultar($sql);
         }
         function get_proyectos($estad){
