@@ -1044,10 +1044,21 @@ class dt_designacion extends toba_datos_tabla
                         case 'termina_con':$where[] = "cat_mapuche ILIKE ".quote("%{$filtro['cat_mapuche']['valor']}");break;
                         case 'es_igual_a':$where[] = "cat_mapuche = ".quote("{$filtro['cat_mapuche']['valor']}");break;
                         case 'es_distinto_de':$where[] = "cat_mapuche <> ".quote("{$filtro['cat_mapuche']['valor']}");break;
-                    }
-			
+                    }	
 		}
-		
+                if (isset($filtro['dedic'])) {
+                    switch ($filtro['dedic']['condicion']) {
+                        case 'es_igual_a':$where[] = "t_d.dedic = ".$filtro['dedic']['valor'];break;
+                        case 'es_distinto_de':$where[] = "t_d.dedic <> ".$filtro['dedic']['valor'];break;
+                    }	
+		}
+                if (isset($filtro['carac'])) {
+                    switch ($filtro['carac']['condicion']) {
+                        case 'es_igual_a':$where[] = "t_d.carac = '".$filtro['carac']['valor']."'";break;
+                        case 'es_distinto_de':$where[] = "t_d.carac <> '".$filtro['carac']['valor']."'";break;
+                    }	
+		}
+
 		$sql = "SELECT distinct 
 			t_d.id_designacion,
 			t_d1.nombre as id_docente_nombre,

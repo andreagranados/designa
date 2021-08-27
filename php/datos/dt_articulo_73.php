@@ -177,10 +177,16 @@ class dt_articulo_73 extends designa_datos_tabla
             //veo cuales son los docentes son interinos vigentes de esta facultad
             
             $sql=" SELECT distinct a.legajo"
-                    . " from docente a, designacion b"
-                    . " where a.id_docente=b.id_docente"
+                    . " from docente a"
+                    . " inner join designacion b on ( a.id_docente=b.id_docente)"
+                    ."  inner join (select id_designacion,sum(porc) as porc
+                                    from imputacion d, mocovi_programa e
+                                    where e.id_programa=d.id_programa 
+                                        and e.fuente=11
+                                    group by id_designacion) impu on (impu.id_designacion=a.id_designacion and porc=100 ) "
+                    . " where "
                     //. " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
-                    ." and b.desde <='2021-03-30' and (b.hasta>='2021-02-01' or b.hasta is null)  "
+                    ."  b.desde <='2021-03-30' and (b.hasta>='2021-02-01' or b.hasta is null)  "
                     . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
                     . " and dedic<>4"
                     ." and legajo<>0"
@@ -216,10 +222,16 @@ class dt_articulo_73 extends designa_datos_tabla
                     }
                     $sql = "SELECT a.*,0 as antiguedad from (".
                      $sql = " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
-                    . " from docente a, designacion b"
-                    . " where a.id_docente=b.id_docente"
+                    . " from docente a"
+                    . " inner join designacion b on (a.id_designacion=b.id_designacion)"
+                    ."  inner join (select id_designacion,sum(porc) as porc
+                                    from imputacion d, mocovi_programa e
+                                    where e.id_programa=d.id_programa 
+                                        and e.fuente=11
+                                    group by id_designacion) impu on (impu.id_designacion=b.id_designacion and porc=100 ) "        
+                    . " where "
                     //. " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
-                    ." and b.desde <='2021-03-30' and (b.hasta>='2021-02-01' or b.hasta is null)  "
+                    . " b.desde <='2021-03-30' and (b.hasta>='2021-02-01' or b.hasta is null)  "
                     . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
                     . " and dedic<>4"
                     . " and legajo<>0"
