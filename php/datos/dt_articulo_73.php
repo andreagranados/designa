@@ -223,7 +223,7 @@ class dt_articulo_73 extends designa_datos_tabla
                     $sql = "SELECT a.*,0 as antiguedad from (".
                      $sql = " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
                     . " from docente a"
-                    . " inner join designacion b on (a.id_designacion=b.id_designacion)"
+                    . " inner join designacion b on (a.id_docente=b.id_docente)"
                     ."  inner join (select id_designacion,sum(porc) as porc
                                     from imputacion d, mocovi_programa e
                                     where e.id_programa=d.id_programa 
