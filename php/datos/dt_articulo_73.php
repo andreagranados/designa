@@ -183,7 +183,7 @@ class dt_articulo_73 extends designa_datos_tabla
                                     from imputacion d, mocovi_programa e
                                     where e.id_programa=d.id_programa 
                                         and e.fuente=11
-                                    group by id_designacion) impu on (impu.id_designacion=a.id_designacion and porc=100 ) "
+                                    group by id_designacion) impu on (impu.id_designacion=b.id_designacion and porc=100 ) "
                     . " where "
                     //. " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
                     ."  b.desde <='2021-03-30' and (b.hasta>='2021-02-01' or b.hasta is null)  "
