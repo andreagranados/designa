@@ -53,7 +53,12 @@ class ci_impresion_540 extends toba_ci
                 $this->s__seleccionar_todos=0;
                 $this->s__deseleccionar_todos=0;
 	}
-
+        function evt__volver()
+	{
+            $this->set_pantalla('pant_edicion');
+            unset($this->s__datos_filtro);
+            unset($this->s__seleccionadas);
+	}
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)

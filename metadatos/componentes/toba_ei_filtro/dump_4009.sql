@@ -138,7 +138,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'Tipo', --etiqueta
 	'1- No están en ningún Proyecto de Investigación<br>
 2- No están en un Proyecto de Investigación Vigente (el proyecto ya venció)', --descripcion
-	'0', --obligatorio
+	'1', --obligatorio
 	'1', --inicial
 	'3', --orden
 	NULL, --estado_defecto
@@ -194,7 +194,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'opciones', --tipo
 	'anio', --nombre
 	'anio', --expresion
-	'Año', --etiqueta
+	'Período', --etiqueta
 	NULL, --descripcion
 	'1', --obligatorio
 	'1', --inicial

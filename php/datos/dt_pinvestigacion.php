@@ -181,18 +181,21 @@ class dt_pinvestigacion extends toba_datos_tabla
            
         }
         function get_docentes_sininv($filtro=array()){
-            //primer y ultimo dia periodo actual
-                $pdia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(1);
-                $udia = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);
-                $concat="";
-                if(isset($filtro['tipo']['valor'])){
-                    if($filtro['tipo']['valor']==2){
-                        $concat=" and fec_desde <= '".$udia."' and fec_hasta >= '".$pdia."' and"
-                                . " desde <= '".$udia."' and hasta >= '".$pdia."'"
-                                ." and  hasta>=current_date";
-                    }
+            //primer y ultimo dia periodo seleccionado
+                
+                if(isset($filtro['anio']['valor'])){//es obligatorio siempre tiene valor
+                    $where.=" and anio=".$filtro['anio']['valor'];
+                    $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+                    $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
                 }
-               
+                
+                $concat="";
+                
+                if($filtro['tipo']['valor']==2){
+                    $concat=" and fec_desde <= '".$udia."' and fec_hasta >= '".$pdia."' ";
+                            
+                }
+                
                 $where='';
                 $pd = toba::manejador_sesiones()->get_perfil_datos();
                 if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
@@ -202,16 +205,15 @@ class dt_pinvestigacion extends toba_datos_tabla
                     if(isset($resul)){
                         $where=" and uni_acad='".$resul[0]['sigla']."' ";
                     }
-                }else{
-                   
-                    $where=" and uni_acad='".$filtro['uni_acad']['valor']."' ";
+                }else{//si el usuario no esta asociado a un perfil de datos veo si filtro
+                   if(isset($filtro['uni_acad']['valor'])){
+                       $where=" and uni_acad='".$filtro['uni_acad']['valor']."' ";
+                   }   
                 }
                 
-                if(isset($filtro['anio']['valor'])){
-                    $where.=" and anio=".$filtro['anio']['valor'];
-                }
+               
                 //revisa en el periodo seleccionado: designaciones correspondientes al periodo y proyectos vigentes
-                //designaciones exclusivas y parciales
+                //designaciones exclusivas y parciales 
                 $sql = "select distinct a.id_docente,trim(b.apellido)||', '||trim(b.nombre) as agente,a.cat_estat||a.dedic as categ_estat,a.carac,a.desde,a.hasta,a.uni_acad,b.legajo
                         from designacion a, docente b, mocovi_periodo_presupuestario c
                         where 
@@ -227,6 +229,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                                         ".$concat
                                     .")
                         order by agente";
+                
                 return toba::db('designa')->consultar($sql);
             
         }
