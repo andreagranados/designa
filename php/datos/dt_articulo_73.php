@@ -186,7 +186,7 @@ class dt_articulo_73 extends designa_datos_tabla
                                     group by id_designacion) impu on (impu.id_designacion=b.id_designacion and porc=100 ) "
                     . " where "
                     //. " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
-                    ."  b.desde <='2021-03-30' and (b.hasta>='2021-02-01' or b.hasta is null)  "
+                    ."  b.desde <='2022-01-31' and (b.hasta>='2021-02-01' or b.hasta is null)  "
                     . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
                     . " and dedic<>4"
                     ." and legajo<>0"
@@ -231,7 +231,7 @@ class dt_articulo_73 extends designa_datos_tabla
                                     group by id_designacion) impu on (impu.id_designacion=b.id_designacion and porc=100 ) "        
                     . " where "
                     //. " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
-                    . " b.desde <='2021-03-30' and (b.hasta>='2021-02-01' or b.hasta is null)  "
+                    . " b.desde <='2022-01-31' and (b.hasta>='2021-02-01' or b.hasta is null)  "
                     . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
                     . " and dedic<>4"
                     . " and legajo<>0"
