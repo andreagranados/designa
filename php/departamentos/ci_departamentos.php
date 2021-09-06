@@ -173,7 +173,9 @@ class ci_departamentos extends toba_ci
                     break;        
                 case 'pant_orientaciones':
                     $this->dep('datos')->tabla('area')->resetear();
+                    $this->dep('datos')->tabla('orientacion')->resetear();
                     $this->s__alta_area=0;
+                    $this->s__alta_orien=0;
                     $this->set_pantalla('pant_area');
                     break;
                  case 'pant_director':
