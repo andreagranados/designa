@@ -123,6 +123,7 @@ class ci_adjuntos extends designa_ci
                         }
                     }
                     $form->set_datos($datos);//return $datos;
+                    clearstatcache();
                     //la eliminacion del zip se hace en el conf__formulario de datos principales
                 }
             }
