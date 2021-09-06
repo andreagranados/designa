@@ -7,7 +7,7 @@ class dt_area extends toba_datos_tabla
             if(isset($id_nro_dpto)){
                 $where=" where iddepto=$id_nro_dpto";
             }
-            $sql = "SELECT idarea, descripcion FROM area $where ORDER BY descripcion";
+            $sql = "SELECT idarea, descripcion, ordenanza FROM area $where ORDER BY descripcion";
             return toba::db('designa')->consultar($sql);
            
 	}

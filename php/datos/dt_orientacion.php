@@ -7,7 +7,7 @@ class dt_orientacion extends toba_datos_tabla
             if(isset($id_nro_area)){
                 $where=" where idarea=$id_nro_area";
             }
-            $sql = "SELECT distinct idorient, descripcion FROM orientacion $where ORDER BY descripcion";
+            $sql = "SELECT distinct idorient, descripcion, ordenanza FROM orientacion $where ORDER BY descripcion";
             return toba::db('designa')->consultar($sql);
             
 	}

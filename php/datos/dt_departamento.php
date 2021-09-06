@@ -6,6 +6,35 @@ class dt_departamento extends toba_datos_tabla
 		$sql = "SELECT iddepto, descripcion FROM departamento ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
+        function get_descripciones_ordenanza($ord=null)
+	{
+            $where="";
+            if(isset($ord)){
+                $where=" where ordenanza='".$ord."'";
+            }
+            $sql = "SELECT iddepto, descripcion FROM departamento $where ORDER BY descripcion";
+            return toba::db('designa')->consultar($sql);
+	}
+        function get_ordenanza($id_dpto=null){
+            $salida='';
+            $where="";
+            if(isset($id_dpto)){
+                $where=" where iddepto=$id_dpto";
+                $sql = "SELECT ordenanza FROM departamento $where ";
+                $datos=toba::db('designa')->consultar($sql);
+                if(count($datos)>0){
+                    $salida=$datos[0]['ordenanza'];
+                }           
+            }
+            return $salida;
+        }
+        function get_ordenanzas()
+	{   
+            $sql = " SELECT distinct ordenanza FROM departamento where ordenanza is not null"
+                    . " ";
+            $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil para que solo aparezcan los departamentos de su facultad
+            return toba::db('designa')->consultar($sql);
+	}
         //trae todos los departamentos menos los que se cargaron como SIN DEPARTAMENTO
         function get_descrip()
 	{
@@ -30,6 +59,7 @@ class dt_departamento extends toba_datos_tabla
                         . " FROM departamento t_d,"
                         . " unidad_acad t_u "
                         . " WHERE t_u.sigla=t_d.idunidad_academica"
+                    //. " and vigente"
                         . "  $where"
                         . " order by descripcion";
                 //obtengo el perfil de datos del usuario logueado
@@ -91,7 +121,7 @@ class dt_departamento extends toba_datos_tabla
                      LEFT OUTER JOIN docente doc ON (doc.id_docente=dr.id_docente)
                      LEFT OUTER JOIN codirector_dpto cdr ON (cdr.iddepto=sub.iddepto and sub.desdec=cdr.desde )
                      LEFT OUTER JOIN docente cdoc ON (cdoc.id_docente=cdr.id_docente)
-                     group by sub.iddepto,sub.idunidad_academica,descripcion,sub.desde,desdec,doc.apellido,doc.nombre
+                     group by sub.iddepto,sub.idunidad_academica,descripcion,ordenanza,vigente,sub.desde,desdec,doc.apellido,doc.nombre
                     order by sub.descripcion  ";   
             return toba::db('designa')->consultar($sql);
         }

@@ -2,8 +2,7 @@
 class ci_materias extends toba_ci
 {
 	protected $s__datos_filtro;
-        protected $s__mostrar;
-
+      
 
 	//---- Filtro -----------------------------------------------------------------------
 
@@ -17,7 +16,6 @@ class ci_materias extends toba_ci
 	function evt__filtro__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
-                $this->s__mostrar=0;
 	}
 
 	function evt__filtro__cancelar()
@@ -29,53 +27,46 @@ class ci_materias extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado($this->s__datos_filtro));
+            if (isset($this->s__datos_filtro)) {
+		$cuadro->set_datos($this->dep('datos')->tabla('materia')->get_listado($this->s__datos_filtro));
                 } 
 	}
 
 	function evt__cuadro__seleccion($datos)
 	{
-		$this->dep('datos')->cargar($datos);
-                $this->s__mostrar=1;
+            $this->dep('datos')->tabla('materia')->cargar($datos);
+            $this->set_pantalla('pant_edicion2');
 	}
 
 	//---- Formulario -------------------------------------------------------------------
 
 	function conf__formulario(toba_ei_formulario $form)
 	{
-		if ($this->dep('datos')->esta_cargada()) {
-                    $form->set_datos($this->dep('datos')->tabla('materia')->get());
-		}
-                if($this->s__mostrar==1){// si presiono el boton alta entonces muestra el formulario form_seccion para dar de alta una nueva seccion
-                    $this->dep('formulario')->descolapsar();
-                }
-                else{
-                    $this->dep('formulario')->colapsar();
-                }
+            if ($this->dep('datos')->tabla('materia')->esta_cargada()) {
+                $datos=$this->dep('datos')->tabla('materia')->get();
+                $ord=$this->dep('datos')->tabla('departamento')->get_ordenanza($datos['id_departamento']);
+                $datos['ordenanza']=$ord;
+                $form->set_datos($datos);
+            }
 	}
-
-	
 
 	function evt__formulario__modificacion($datos)
 	{
-		$this->dep('datos')->tabla('materia')->set($datos);
-		$this->dep('datos')->sincronizar();
-                $this->dep('datos')->cargar($datos);
+            unset($datos['ordenanza']);
+            $this->dep('datos')->tabla('materia')->set($datos);
+            $this->dep('datos')->tabla('materia')->sincronizar();
+            $this->dep('datos')->tabla('materia')->cargar($datos);
 	   
 	}
-
-	
-
 	function evt__formulario__cancelar()
 	{
-            $this->s__mostrar=0;
             $this->resetear();
+            $this->set_pantalla('pant_edicion');
 	}
 
 	function resetear()
 	{
-		$this->dep('datos')->resetear();
+            $this->dep('datos')->resetear();
 	}
 
 }

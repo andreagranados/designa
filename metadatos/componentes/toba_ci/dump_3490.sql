@@ -132,11 +132,11 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'3490', --objeto_ci
 	'1513', --pantalla
 	'pant_edicion', --identificador
-	'0', --orden
+	'1', --orden
 	'Pantalla', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
-	NULL, --imagen_recurso_origen
+	'apex', --imagen_recurso_origen
 	NULL, --imagen
 	NULL, --objetos
 	NULL, --eventos
@@ -144,7 +144,26 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	NULL, --subclase_archivo
 	NULL, --template
 	NULL, --template_impresion
-	NULL  --punto_montaje
+	'23'  --punto_montaje
+);
+INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, identificador, orden, etiqueta, descripcion, tip, imagen_recurso_origen, imagen, objetos, eventos, subclase, subclase_archivo, template, template_impresion, punto_montaje) VALUES (
+	'designa', --objeto_ci_proyecto
+	'3490', --objeto_ci
+	'1804', --pantalla
+	'pant_edicion2', --identificador
+	'2', --orden
+	'Pantalla1', --etiqueta
+	NULL, --descripcion
+	NULL, --tip
+	'apex', --imagen_recurso_origen
+	NULL, --imagen
+	NULL, --objetos
+	NULL, --eventos
+	NULL, --subclase
+	NULL, --subclase_archivo
+	NULL, --template
+	NULL, --template_impresion
+	'23'  --punto_montaje
 );
 --- FIN Grupo de desarrollo 0
 
@@ -162,13 +181,13 @@ INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id)
 	'designa', --proyecto
 	'1513', --pantalla
 	'3490', --objeto_ci
-	'2', --orden
-	'2300'  --dep_id
+	'0', --orden
+	'2301'  --dep_id
 );
 INSERT INTO apex_objetos_pantalla (proyecto, pantalla, objeto_ci, orden, dep_id) VALUES (
 	'designa', --proyecto
-	'1513', --pantalla
+	'1804', --pantalla
 	'3490', --objeto_ci
 	'0', --orden
-	'2301'  --dep_id
+	'2300'  --dep_id
 );

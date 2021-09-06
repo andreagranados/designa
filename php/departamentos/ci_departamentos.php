@@ -9,13 +9,20 @@ class ci_departamentos extends toba_ci
         protected $s__alta_orien;
         protected $s__alta_direc;
         protected $s__alta_codirec;
+        
+        function get_ordenanza_departamento(){
+            
+            if ($this->dep('datos')->tabla('departamento')->esta_cargada()) {
+		$datos=$this->dep('datos')->tabla('departamento')->get();
+                return $this->dep('datos')->tabla('departamento')->get_ordenanza($datos['iddepto']);
+	    }
+        }
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtros(toba_ei_filtro $filtro)
 	{
 		if (isset($this->s__datos_filtro)) {
-			$filtro->set_datos($this->s__datos_filtro);
-                        
+			$filtro->set_datos($this->s__datos_filtro);       
 		}
 	}
 
@@ -102,12 +109,12 @@ class ci_departamentos extends toba_ci
 
 	
 	function evt__form_dpto__modificacion($datos)
-	{
-		$this->dep('datos')->tabla('departamento')->set($datos);
-		$this->dep('datos')->tabla('departamento')->sincronizar();
-		$this->resetear();
-                $this->s__alta_depto=0;
-                toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+	{   
+            $this->dep('datos')->tabla('departamento')->set($datos);
+            $this->dep('datos')->tabla('departamento')->sincronizar();
+            $this->resetear();
+            $this->s__alta_depto=0;
+            toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
 	}
 
 	function evt__form_dpto__baja()
@@ -233,6 +240,7 @@ class ci_departamentos extends toba_ci
             $this->pantalla()->tab("pant_edicion")->desactivar();	
             $this->pantalla()->tab("pant_orientaciones")->desactivar();	
             $this->pantalla()->tab("pant_director")->desactivar();	
+            $this->pantalla()->tab("pant_codirector")->desactivar();
             $dpto=$this->dep('datos')->tabla('departamento')->get();
             $cuadro->set_datos($this->dep('datos')->tabla('area')->get_descripciones($dpto['iddepto']));
 	 
@@ -309,6 +317,8 @@ class ci_departamentos extends toba_ci
 	{
             $this->pantalla()->tab("pant_edicion")->desactivar();	
             $this->pantalla()->tab("pant_area")->desactivar();	
+            $this->pantalla()->tab("pant_director")->desactivar();	
+            $this->pantalla()->tab("pant_codirector")->desactivar();
             $area=$this->dep('datos')->tabla('area')->get();
             $cuadro->set_datos($this->dep('datos')->tabla('orientacion')->get_descripciones($area['idarea']));
 	}
