@@ -350,7 +350,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1544', --pantalla
 	'pant_edicion', --identificador
 	'1', --orden
-	'Pantalla', --etiqueta
+	'Departamentos', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
@@ -408,7 +408,8 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_final', --identificador
 	'4', --orden
 	'Completo', --etiqueta
-	NULL, --descripcion
+	'Listado completo con todos los departamentos que aparecen en la solapa Departamentos.
+Tenga en cuenta utilizar el filtro "vigente" en si previo a filtrar en la solapa Departamentos para que aparezca la estructura departamental actual en la solapa Completo.', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen

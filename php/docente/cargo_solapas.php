@@ -57,6 +57,8 @@ class cargo_solapas extends toba_ci
             if ($this->controlador()->dep('datos')->tabla('designacion')->esta_cargada()) {
                     $designacion=$this->controlador()->dep('datos')->tabla('designacion')->get();
                     $cat=$this->controlador()->get_descripcion_categoria($designacion['cat_mapuche']);
+                    $vig=$this->controlador()->dep('datos')->tabla('departamento')->esta_vigente($designacion['id_designacion']);
+                    $designacion['vigente']=$vig;
                     $designacion['cate_siu_nombre']=$cat;
                     if ($this->controlador()->dep('datos')->tabla('suplente')->esta_cargada()) {
                         $suple=$this->controlador()->dep('datos')->tabla('suplente')->get($designacion['id_designacion']);

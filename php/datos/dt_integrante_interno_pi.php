@@ -12,7 +12,9 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         if (isset($filtro['fec_desde']['valor'])) {
             $where .= " and  fec_desde= '".$filtro['fec_desde']['valor']."'";   
 	}
-       
+        if (isset($filtro['funcion_p']['valor'])) {
+            $where .= " and  funcion_p= '".$filtro['funcion_p']['valor']."'";   
+	}
         $pd = toba::manejador_sesiones()->get_perfil_datos();
         if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
             $con="select sigla,descripcion from unidad_acad ";
@@ -23,7 +25,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
             }
         }else{//si el usuario no esta asociado a un perfil de datos veo si filtro
            if(isset($filtro['uni_acad']['valor'])){
-               $where.=" and uni_acad='".$filtro['uni_acad']['valor']."' ";
+               $where.=" and p.uni_acad='".$filtro['uni_acad']['valor']."' ";
            }   
         }
         $sql="select subf.agente,subf.legajo,subf.codigo,subf.denominacion,subf.uni_acad,subf.desde,subf.hasta,subf.funcion_p,subf.cat_mapuche,subf.desded,subf.hastad,string_agg(director,'/') as director
@@ -34,21 +36,12 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                         $where
                         and i.id_designacion=d.id_designacion
                         and d.id_docente=doc.id_docente
-                        --and not (d.desde<=i.hasta and ( d.hasta is null or d.hasta>=i.desde) )
+                        --no existe una designacion docente con ese categ dentro del periodo de participacion
                         and not exists (select * from designacion de
                                         where de.id_docente=d.id_docente
                                         and de.cat_mapuche=d.cat_mapuche
                                         and de.desde<=i.hasta and ( de.hasta is null or de.hasta>=i.desde)
-                                        )
-                            --    UNION
-                       -- select p.id_pinv,trim(doc.apellido)||', '||trim(doc.nombre) as agente,doc.legajo,p.codigo,substring(p.denominacion,0,20)||'...' as denominacion,p.uni_acad,i.desde,i.hasta,i.funcion_p,d.cat_mapuche,d.desde as desded,d.hasta as hastad
-                      --  from pinvestigacion p, integrante_interno_pi i, designacion d, docente doc
-                       -- where p.id_pinv=i.pinvest
-                       -- $where
-                       -- and i.id_designacion=d.id_designacion
-                       -- and d.id_docente=doc.id_docente
-                       -- and (d.desde<=i.hasta and ( d.hasta is null or d.hasta>=i.desde)) 
-                       --and d.hasta is not null and d.hasta<current_date and d.hasta<i.hasta
+                                        )     
                 )sub
                 LEFT OUTER JOIN ( select id2.pinvest,max(id2.hasta) as hasta
                                         from integrante_interno_pi id2

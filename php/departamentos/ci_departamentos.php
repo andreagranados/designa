@@ -139,6 +139,7 @@ class ci_departamentos extends toba_ci
         {
             $this->dep('datos')->tabla('departamento')->set($datos);
             $this->dep('datos')->tabla('departamento')->sincronizar();
+            toba::notificacion()->agregar('Se ha guardado correctamente', 'info');
             $this->s__alta_depto=0;
              
         }
@@ -307,6 +308,7 @@ class ci_departamentos extends toba_ci
             $datos['iddepto']=$dep['iddepto'];
             $this->dep('datos')->tabla('area')->set($datos);
             $this->dep('datos')->tabla('area')->sincronizar();
+            toba::notificacion()->agregar('Se ha guardado correctamente', 'info');
             $this->s__alta_area=0;
         }
         
@@ -373,7 +375,9 @@ class ci_departamentos extends toba_ci
             $datos['idarea']=$area['idarea'];
             $this->dep('datos')->tabla('orientacion')->set($datos);
             $this->dep('datos')->tabla('orientacion')->sincronizar();
-            $this->dep('datos')->tabla('orientacion')->resetear();   
+            $this->dep('datos')->tabla('orientacion')->resetear();  
+            toba::notificacion()->agregar('Se ha guardado correctamente', 'info');
+            $this->s__alta_orien=0;
         }
         
         //--encabezados
@@ -412,7 +416,8 @@ class ci_departamentos extends toba_ci
                 $this->pantalla()->tab("pant_final")->activar();	
                 $this->pantalla()->tab("pant_area")->desactivar();	
                 $this->pantalla()->tab("pant_director")->desactivar();	
-                $this->pantalla()->tab("pant_orientaciones")->desactivar();	
+                $this->pantalla()->tab("pant_orientaciones")->desactivar();
+                $this->pantalla()->tab("pant_codirector")->desactivar();
                 $this->s__alta_direc=0;
 		$cuadro->set_datos($this->dep('datos')->tabla('departamento')->get_listado_completo($this->s__where));
 		}

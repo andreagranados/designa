@@ -15,6 +15,15 @@ class dt_departamento extends toba_datos_tabla
             $sql = "SELECT iddepto, descripcion FROM departamento $where ORDER BY descripcion";
             return toba::db('designa')->consultar($sql);
 	}
+        //retorna 1 si la desig esta asociada a un dpto vigente y 0 en caso contrario
+        function esta_vigente($id_desig)
+	{
+           $sql = "SELECT case when e.vigente then 1 else 0 end as vig FROM designacion d, departamento e"
+                    . " where d.id_departamento=e.iddepto"
+                    . " and d.id_designacion=$id_desig";
+            $dato=toba::db('designa')->consultar($sql);
+            return  $dato[0]['vig'] ;
+	}
         function get_ordenanza($id_dpto=null){
             $salida='';
             $where="";
@@ -59,9 +68,43 @@ class dt_departamento extends toba_datos_tabla
                         . " FROM departamento t_d,"
                         . " unidad_acad t_u "
                         . " WHERE t_u.sigla=t_d.idunidad_academica"
-                    //. " and vigente"
                         . "  $where"
                         . " order by descripcion";
+                //obtengo el perfil de datos del usuario logueado
+            $con="select sigla,descripcion from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            
+            $unidades=array('FAIF','FATU','FACE','FAEA','ASMA','FAHU','FATA','FAAS','CUZA','FADE','FACA','FALE','FAME','AUZA','FAIN','ESCM','CRUB');
+            if( in_array (trim($resul[0]['sigla']),$unidades)){
+              if((trim($resul[0]['sigla'])<>'FAHU') && (trim($resul[0]['sigla'])<>'AUZA') && (trim($resul[0]['sigla'])<>'ESCM')&& (trim($resul[0]['sigla'])<>'CRUB') && (trim($resul[0]['sigla'])<>'FACA') && (trim($resul[0]['sigla'])<>'ASMA') && (trim($resul[0]['sigla'])<>'CUZA')&& (trim($resul[0]['sigla'])<>'FAAS')){
+                    $sql = toba::perfil_de_datos()->filtrar($sql);//aplico el perfil para que solo aparezcan los departamentos de su facultad
+                }  
+            }else{//perfil de datos de departamento
+                $sql = toba::perfil_de_datos()->filtrar($sql);
+            }    
+            // print_r($sql);               
+	    $resul = toba::db('designa')->consultar($sql);
+            return $resul;
+        }
+        function get_departamentos_vigentes($vig=null)
+	{//si recibe parametro entonces filtra por la ua que recibe
+            //print_r($vig);
+            $where ="";
+            if(isset($vig)){
+                if($vig==1){
+                    $where=" and vigente ";        
+                }else{
+                    $where=" and not vigente ";        
+                }
+             }
+            $sql = "SELECT distinct t_d.iddepto, t_d.descripcion ||'('||t_u.sigla||')' as descripcion "
+                        . " FROM departamento t_d,"
+                        . " unidad_acad t_u "
+                        . " WHERE t_u.sigla=t_d.idunidad_academica"
+                        . "  $where"
+                    . " order by descripcion";
+            
                 //obtengo el perfil de datos del usuario logueado
             $con="select sigla,descripcion from unidad_acad ";
             $con = toba::perfil_de_datos()->filtrar($con);
