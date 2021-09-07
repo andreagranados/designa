@@ -366,7 +366,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
     }
     function varios_simultaneos($filtro=null){
         
-        $where=' WHERE 1=1 ';
+        $where=' WHERE '.$filtro;
         $pd = toba::manejador_sesiones()->get_perfil_datos();
         if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
             $con="select sigla,descripcion from unidad_acad ";
@@ -375,17 +375,13 @@ class dt_integrante_interno_pi extends toba_datos_tabla
             if(isset($resul)){
                 $where.=" and uni_acad='".$resul[0]['sigla']."' ";
             }
-        }else{//si el usuario no esta asociado a un perfil de datos veo si filtro
-           if(isset($filtro['uni_acad']['valor'])){
-               $where.=" and uni_acad='".$filtro['uni_acad']['valor']."' ";
-           }   
-        }
-
+        }  
+           
             $sql="select distinct * from(
-select trim(sub.apellido)||', '||trim(sub.nombre) as docente,sub.id_pinv,sub.codigo,sub.uni_acad,substr(sub.denominacion,1,50)||'...' as denominacion,
+select trim(sub.apellido)||', '||trim(sub.nombre) as docente,sub.id_pinv,sub.codigo,sub.uni_acad,substr(sub.denominacion,1,50)||'...' as denominacion,sub.fec_desde,
 sub.funcion_p,sub.carga_horaria,sub.desde,sub.hasta,sub2.id_pinv,sub2.uni_acad as uni_acad2,substr(sub2.denominacion,1,50)||'...' as denom2,sub2.codigo as codigo2,sub2.funcion_p as funcion_p2,sub2.carga_horaria as cargah2,sub2.desde as desde2,sub2.hasta as hasta2
  from
-((select doc.tipo_docum,doc.nro_docum,doc.apellido,doc.nombre,doc.legajo,pi.uni_acad,pi.id_pinv,pi.codigo,pi.denominacion,a.desde,a.hasta,funcion_p,carga_horaria
+((select doc.tipo_docum,doc.nro_docum,doc.apellido,doc.nombre,doc.legajo,pi.uni_acad,pi.id_pinv,pi.codigo,pi.denominacion,pi.fec_desde,a.desde,a.hasta,funcion_p,carga_horaria
 from integrante_interno_pi a,pinvestigacion pi, designacion b, docente doc                
 where 
                 a.pinvest =pi.id_pinv
@@ -395,7 +391,7 @@ where
                    and pi.fec_hasta>'2017-10-04'
                 )
  UNION               
- (select p.tipo_docum,p.nro_docum,p.apellido,p.nombre,0,d.uni_acad,d.id_pinv,d.codigo,d.denominacion,c.desde,c.hasta,funcion_p,carga_horaria
+ (select p.tipo_docum,p.nro_docum,p.apellido,p.nombre,0,d.uni_acad,d.id_pinv,d.codigo,d.denominacion,d.fec_desde,c.desde,c.hasta,funcion_p,carga_horaria
 from integrante_externo_pi c,pinvestigacion d, persona p
 where 
                 c.pinvest =d.id_pinv
