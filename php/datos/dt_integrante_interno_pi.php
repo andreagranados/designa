@@ -203,7 +203,25 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 
             }
         }
-        
+        if (isset($filtro['fec_desde']['valor'])) {
+            $where.=" and fec_desde=".quote($filtro['fec_desde']['valor']);
+        }
+        if (isset($filtro['distinto_desde']['valor'])) {
+            if($filtro['distinto_desde']['valor']==1){
+                $where.=" and fec_desde<>desde ";
+            }else{
+                $where.=" and fec_desde=desde ";
+            }
+            
+        }
+        if (isset($filtro['distinto_hasta']['valor'])) {
+            if($filtro['distinto_hasta']['valor']==1){
+                $where.=" and fec_hasta<>hasta ";
+            }else{
+                $where.=" and fec_hasta=hasta ";
+            }
+            
+        }
 //        $sql="select * from ("
 //                . "select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria,d.cat_estat||d.dedic||'-'||d.carac||'('|| extract(year from d.desde)||'-'||case when (extract (year from case when d.hasta is null then '1800-01-11' else d.hasta end) )=1800 then '' else cast (extract (year from d.hasta) as text) end||')'||d.uni_acad as designacion"
 //                . " from integrante_interno_pi i, docente t_do ,pinvestigacion t_i,designacion d, funcion_investigador f "
