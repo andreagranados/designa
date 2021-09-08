@@ -1574,7 +1574,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 		}       
                  //que sea una designacion correspondiente al periodo seleccionado
 		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
-                $where2="";//es para filtrar por estado. Lo hago al final de todo
+                $where2=" WHERE 1=1 ";//es para filtrar por estado. Lo hago al final de todo
 		if (isset($filtro['uni_acad']['valor'])) {
 			$where.= "AND uni_acad = ".quote($filtro['uni_acad']['valor']);
                         $concat=quote($filtro['uni_acad']['valor']);
@@ -1607,7 +1607,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                  }
                
                 if (isset($filtro['estado']['valor'])) {
-                     $where2= " WHERE est like'".$filtro['estado']['valor']."%'";
+                     $where2.= " and est like'".$filtro['estado']['valor']."%'";
                  }
                 if (isset($filtro['programa']['valor'])) {
                     $sql="select * from mocovi_programa where id_programa=".$filtro['programa']['valor'];
@@ -1617,6 +1617,12 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 if (isset($filtro['tipo_desig']['valor'])) {
                     $where.=" AND tipo_desig=".$filtro['tipo_desig']['valor'];
                 }
+                if (isset($filtro['cat_estat']['valor'])) {
+                     $where2.= " and cat_estat=".quote($filtro['cat_estat']['valor']);
+                 }
+                if (isset($filtro['dedic']['valor'])) {
+                     $where2.= " and dedic=".$filtro['dedic']['valor'];
+                 }
                  //me aseguro de colocar en estado B todas las designaciones que tienen baja
                if($concat!=''){   
                 $sql2=" update designacion a set estado ='B' "
