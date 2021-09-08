@@ -38,7 +38,7 @@ class ci_de_licencias_por_maternidad extends toba_ci
             $sql='select * from designacion where id_designacion='.$datos['id_designacion'];
             $des=toba::db('designa')->consultar($sql);
             //ultimo dia periodo actual
-            $udia =$this->dep('datos')->tabla('dt_mocovi_periodo_presupuestario')->ultimo_dia_periodo(1);
+            $udia =$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->ultimo_dia_periodo(1);
             if($datos['desde']<$des[0]['desde']){
                 $f_desde=$des[0]['desde'];
             }else{
