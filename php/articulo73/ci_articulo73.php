@@ -615,15 +615,17 @@ class ci_articulo73 extends toba_ci
             //si resol o acta tenian valor y no se modifica entonces el campo queda con el valor y no se anula
             if (isset($datos['acta'])) {//esta adjuntando el acta
                 $nombre_ca_acta=$art['id_designacion']."_acta.pdf";
-                $datos['acta']= $nombre_ca_acta;
                 $destino_ca=toba::proyecto()->get_path()."/www/articulo_73/".$nombre_ca_acta;
-                move_uploaded_file($datos['acta']['tmp_name'], $destino_ca);//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no                       
+                if(move_uploaded_file($datos['acta']['tmp_name'], $destino_ca)){
+                   $datos['acta']= $nombre_ca_acta;    
+                }
             }
             if (isset($datos['resolucion'])) {//esta adjuntando el acta
                 $nombre_ca_reso=$art['id_designacion']."_reso.pdf";
-                $datos['resolucion']= $nombre_ca_reso;
                 $destino_ca=toba::proyecto()->get_path()."/www/articulo_73/".$nombre_ca_reso;
-                move_uploaded_file($datos['resolucion']['tmp_name'], $destino_ca);//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no                       
+                if(move_uploaded_file($datos['resolucion']['tmp_name'], $destino_ca)){
+                    $datos['resolucion']= $nombre_ca_reso;
+                };//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no                       
             }
             $this->dep('datos')->tabla('articulo_73')->set($datos);
             $this->dep('datos')->tabla('articulo_73')->sincronizar();
