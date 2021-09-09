@@ -1058,7 +1058,9 @@ class dt_designacion extends toba_datos_tabla
                         case 'es_distinto_de':$where[] = "t_d.carac <> '".$filtro['carac']['valor']."'";break;
                     }	
 		}
-
+                if (isset($filtro['cat_estat'])) {
+                    	$where[] = "cat_estat = ".quote("{$filtro['cat_estat']['valor']}");
+		}
 		$sql = "SELECT distinct 
 			t_d.id_designacion,
 			t_d1.nombre as id_docente_nombre,
