@@ -1095,7 +1095,7 @@ class ci_pinv_otros extends designa_ci
                     $pdf->ezText("\n", 7);
                      //--cartel pregunta
                     $datos=array();
-                    $datos[0]=array('dato'=>utf8_decode('<b>¿LA PROPUESTA DE INVESTIGACIÓN CUMPLE EN TODOS SUS TÉRMINOS CON LO DISPUESTO EN LA ORDENANZA N° 0602/16?</b>'));
+                    $datos[0]=array('dato'=>utf8_decode('<b>¿LA PROPUESTA DE INVESTIGACIÓN CUMPLE EN TODOS SUS TÉRMINOS CON LO DISPUESTO EN LA ORDENANZA N° 0880/2021 Y RESOLUCIÓN N° 0412/2021?</b>'));
                     $pdf->ezTable($datos,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>550));
                     $datos1=array();
                     if($pi['estado']=='C'){
