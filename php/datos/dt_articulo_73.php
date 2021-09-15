@@ -197,7 +197,7 @@ class dt_articulo_73 extends designa_datos_tabla
                                     and carac='I'
                                     and ((c.cat_estat=b.cat_estat and c.desde<='2018-03-23') 
                                           or 
-                                          (c.cat_estat='PAD' and c.desde<='2019-09-23' ))
+                                          (c.cat_estat='PAD' and c.desde<='2019-09-23' and concursado=1))
                                      )";
                     
             $legajos=toba::db('designa')->consultar($sql);
@@ -244,7 +244,7 @@ class dt_articulo_73 extends designa_datos_tabla
                                     and carac='I'
                                     and ((c.cat_estat=b.cat_estat and c.desde<='2018-03-23' )
                                          or 
-                                         (c.cat_estat='PAD' and c.desde<='2019-09-23'))
+                                         (c.cat_estat='PAD' and c.desde<='2019-09-23' and concursado=1))
                                      ) "
                        .$concatenar
                       
