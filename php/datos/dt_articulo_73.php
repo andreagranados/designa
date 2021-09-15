@@ -194,8 +194,10 @@ class dt_articulo_73 extends designa_datos_tabla
                         and b.uni_acad='".$ua."'"
                     . " and exists (select * from designacion c
                                     where c.id_docente=b.id_docente
-                                    and c.cat_estat=b.cat_estat
-                                    and c.desde<='2018-03-23' and carac='I'
+                                    and carac='I'
+                                    and ((c.cat_estat=b.cat_estat and c.desde<='2018-03-23') 
+                                          or 
+                                          (c.cat_estat='PAD' and c.desde<='2019-09-23' and concursado))
                                      )";
                     
             $legajos=toba::db('designa')->consultar($sql);
@@ -236,11 +238,13 @@ class dt_articulo_73 extends designa_datos_tabla
                     . " and dedic<>4"
                     . " and legajo<>0"
                     . " and b.carac='I' and (b.cat_estat='AYP' or b.cat_estat='ASD' or b.cat_estat='PAD')"
-                        ." and b.uni_acad='".$ua."'"
-                            . " and exists (select * from designacion c
+                    ." and b.uni_acad='".$ua."'"
+                    . " and exists (select * from designacion c
                                     where c.id_docente=b.id_docente
-                                    and c.cat_estat=b.cat_estat
-                                    and c.desde<='2018-03-23' and carac='I'
+                                    and carac='I'
+                                    and ((c.cat_estat=b.cat_estat and c.desde<='2018-03-23' )
+                                         or 
+                                         (c.cat_estat='PAD' and c.desde<='2019-09-23' and concursado))
                                      ) "
                        .$concatenar
                       
