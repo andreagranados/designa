@@ -3,7 +3,7 @@ class dt_departamento extends toba_datos_tabla
 {
 	function get_descripciones()
 	{
-		$sql = "SELECT iddepto, descripcion||' ('||coalesce(ordenanza,'')||')' FROM departamento ORDER BY descripcion";
+		$sql = "SELECT iddepto, descripcion||' ('||coalesce(ordenanza,'')||')' as descripcion FROM departamento ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
         function get_descripciones_ordenanza($ord=null)
