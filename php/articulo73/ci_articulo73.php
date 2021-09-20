@@ -587,7 +587,7 @@ class ci_articulo73 extends toba_ci
 //         }
 //	}
         function evt__formulario__modificacion($datos)
-	{
+	{            
          $tiene=$this->dep('datos')->tabla('designacion')->tiene_dao($datos['id_designacion']);
          if($tiene==1){
             $auxi=$datos['cat_est_reg'];
@@ -604,20 +604,18 @@ class ci_articulo73 extends toba_ci
                 $datos['id_orientacion']=$dao[0]['id_orientacion'];    
             }
             $art=$this->dep('datos')->tabla('articulo_73')->get();
-            if(isset($art['acta'])){//tiene valor el campo
-                $nombre_ca_acta=$art['acta'];
-                $datos['acta']=strval($art['acta']);//esto xq sino deja en nulo el campo archivo 
-            }
-            if(isset($art['resolucion'])){//tiene valor el campo
-                $nombre_ca_reso=$art['resolucion'];
-                $datos['resolucion']=strval($art['resolucion']);//esto xq sino deja en nulo el campo archivo 
-            }
+          
             //si resol o acta tenian valor y no se modifica entonces el campo queda con el valor y no se anula
             if (isset($datos['acta'])) {//esta adjuntando el acta
                 $nombre_ca_acta=$art['id_designacion']."_acta.pdf";
                 $destino_ca=toba::proyecto()->get_path()."/www/articulo_73/".$nombre_ca_acta;
                 if(move_uploaded_file($datos['acta']['tmp_name'], $destino_ca)){
                    $datos['acta']= $nombre_ca_acta;    
+                }
+            }else{//no modifico archivo mantengo el valor q tenia
+                if(isset($art['acta'])){//tiene valor el campo
+                   $nombre_ca_acta=$art['acta'];
+                   $datos['acta']=strval($art['acta']);//esto xq sino deja en nulo el campo archivo 
                 }
             }
             if (isset($datos['resolucion'])) {//esta adjuntando el acta
@@ -626,6 +624,11 @@ class ci_articulo73 extends toba_ci
                 if(move_uploaded_file($datos['resolucion']['tmp_name'], $destino_ca)){
                     $datos['resolucion']= $nombre_ca_reso;
                 };//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no                       
+            }else{//no modifico archivo
+                if(isset($art['resolucion'])){//tiene valor el campo
+                   $nombre_ca_reso=$art['resolucion'];
+                   $datos['resolucion']=strval($art['resolucion']);//esto xq sino deja en nulo el campo archivo 
+                }
             }
             $this->dep('datos')->tabla('articulo_73')->set($datos);
             $this->dep('datos')->tabla('articulo_73')->sincronizar();

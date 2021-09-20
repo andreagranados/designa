@@ -159,7 +159,8 @@ class dt_articulo_73 extends designa_datos_tabla
 //            }
 //         
 //        }
-        function get_articulo73($i=null)
+
+     function get_articulo73($i=null)
         {
         if($i==1){
             $concatenar= "  and not exists (select art.id_designacion from articulo_73 art
@@ -185,7 +186,6 @@ class dt_articulo_73 extends designa_datos_tabla
                                         and e.fuente=11
                                     group by id_designacion) impu on (impu.id_designacion=b.id_designacion and porc=100 ) "
                     . " where "
-                    //. " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
                     ."  b.desde <='2022-01-31' and (b.hasta>='2021-02-01' or b.hasta is null)  "
                     . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
                     . " and dedic<>4"
@@ -222,7 +222,7 @@ class dt_articulo_73 extends designa_datos_tabla
                         $sql=" insert into auxi values (".$valor['nro_legaj'].",".$valor['antig'].")";
                         toba::db('designa')->consultar($sql);
                     }
-                    $sql = "SELECT a.*,0 as antiguedad from (".
+                    $sql = "SELECT a.*,case when b.antiguedad is not null then b.antiguedad else 0 end as antiguedad  from (".
                      $sql = " SELECT distinct a.legajo,b.id_designacion,a.apellido||', '||a.nombre||'('||b.cat_estat||b.dedic||'-'||b.id_designacion||')' as descripcion "
                     . " from docente a"
                     . " inner join designacion b on (a.id_docente=b.id_docente)"
@@ -232,7 +232,6 @@ class dt_articulo_73 extends designa_datos_tabla
                                         and e.fuente=11
                                     group by id_designacion) impu on (impu.id_designacion=b.id_designacion and porc=100 ) "        
                     . " where "
-                    //. " and b.desde='2021-02-01' and b.hasta='2022-01-31'"//una desig anualizada al 2021
                     . " b.desde <='2022-01-31' and (b.hasta>='2021-02-01' or b.hasta is null)  "
                     . " and not (b.hasta is not null and b.hasta<=b.desde)" //no anulada
                     . " and dedic<>4"
@@ -254,14 +253,11 @@ class dt_articulo_73 extends designa_datos_tabla
                             .                   " ON (a.legajo=b.nro_legaj)"
                             . " order by descripcion";
 
-                    
                     $res=toba::db('designa')->consultar($sql);
-                    return $res;
-                    
+                    return $res;  
                  }
                 }
             }
-         
         }
 }
 
