@@ -47,9 +47,9 @@ class dt_departamento extends toba_datos_tabla
         //trae todos los departamentos menos los que se cargaron como SIN DEPARTAMENTO
         function get_descrip()
 	{
-		$sql = "SELECT iddepto, d.descripcion||' de: '||u.sigla as descripcion FROM departamento d"
+		$sql = "SELECT iddepto, d.descripcion||' ('|| case when d.ordenanza is null then '' else d.ordenanza end||')'|| ' de: '||u.sigla as descripcion FROM departamento d"
                         . " LEFT OUTER JOIN unidad_acad u ON (d.idunidad_academica=u.sigla)"
-                        . " WHERE not (d.descripcion like 'SIN%')"
+                        . " WHERE not (d.descripcion like 'SIN %')"
                         . " ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
@@ -184,7 +184,7 @@ class dt_departamento extends toba_datos_tabla
                 $condicion.=' AND '.$where;
                 }
             
-            $sql="select distinct a.descripcion as departamento,b.descripcion as area,c.descripcion as orientacion"
+            $sql="select distinct a.descripcion as departamento,a.ordenanza as ord_dep,b.descripcion as area,b.ordenanza as ord_area,c.descripcion as orientacion,c.ordenanza as ord_orientacion"
                     . " from (select * from departamento".$condicion.")a "
                     ." LEFT OUTER JOIN area b ON (a.iddepto=b.iddepto)"
                     . "LEFT OUTER JOIN orientacion c ON (b.idarea=c.idarea)"
