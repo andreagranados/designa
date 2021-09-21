@@ -1589,13 +1589,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     $where.=" and a.uni_acad = ".quote($resul[0]['sigla']);
                     $concat=quote($resul[0]['sigla']);//para hacer el update de baja
                 }
-            //
-//                if (isset($filtro['id_departamento']['valor'])) {
-//			$sql="select * from departamento where iddepto=".$filtro['id_departamento']['valor'];
-//                        $resul=toba::db('designa')->consultar($sql);
-//                        $where.= " AND (id_departamento like ".quote($resul[0]['descripcion'].'%')." or ".
-//                        " id_departamento like ".quote('%'.$resul[0]['descripcion']).")";
-//		}
+         
                 if (isset($filtro['iddepto']['valor'])) {
                     $where.= " AND iddepto =" .$filtro['iddepto']['valor'];
 		}
@@ -1620,7 +1614,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     $where.= " AND programa =".quote($resul[0]['nombre']);
                   }
                 if (isset($filtro['tipo_desig']['valor'])) {
-                    $where.=" AND tipo_desig=".$filtro['tipo_desig']['valor'];
+                    $where.=" AND a.tipo_desig=".$filtro['tipo_desig']['valor'];
                 }
                 if (isset($filtro['cat_estat']['valor'])) {
                      $where2.= " and cat_estat=".quote($filtro['cat_estat']['valor']);

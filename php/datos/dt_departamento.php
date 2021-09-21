@@ -179,14 +179,13 @@ class dt_departamento extends toba_datos_tabla
             }
         }
         function get_listado_completo($where=null){
+            $condicion=" WHERE descripcion not like 'SIN DEP%'";
             if(!is_null($where)){
-                $where=' WHERE '.$where;
-                }else{
-                    $where='';
+                $condicion.=' AND '.$where;
                 }
-                
+            
             $sql="select distinct a.descripcion as departamento,b.descripcion as area,c.descripcion as orientacion"
-                    . " from (select * from departamento".$where.")a "
+                    . " from (select * from departamento".$condicion.")a "
                     ." LEFT OUTER JOIN area b ON (a.iddepto=b.iddepto)"
                     . "LEFT OUTER JOIN orientacion c ON (b.idarea=c.idarea)"
                     . " order by a.descripcion,b.descripcion,c.descripcion";
