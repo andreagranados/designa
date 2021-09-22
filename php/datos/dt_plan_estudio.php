@@ -19,12 +19,20 @@ class dt_plan_estudio extends toba_datos_tabla
 	    return toba::db('designa')->consultar($sql);
 	}
         function get_listado($filtro=null){
-            $where=" WHERE ";
-            if(isset($filtro)){
-                $where.=$filtro;
+            $where=" WHERE 1=1 ";
+             //si el usuario esta asociado a un perfil de datos
+            $con="select sigla from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            
+            if(count($resul)<=1){//es usuario de una unidad academica
+                $where.=" and uni_acad = ".quote($resul[0]['sigla']);
             }else{
-                $where='';
+                if(isset($filtro)){
+                    $where.=' and '.$filtro;
+                }
             }
+            
             $sql = "SELECT * "
                     . " FROM plan_estudio $where ORDER BY cod_carrera";
             return toba::db('designa')->consultar($sql);

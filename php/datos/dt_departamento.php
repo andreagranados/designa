@@ -6,15 +6,7 @@ class dt_departamento extends toba_datos_tabla
 		$sql = "SELECT iddepto, descripcion||' ('||coalesce(ordenanza,'')||')' as descripcion FROM departamento ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
-        function get_descripciones_ordenanza($ord=null)
-	{
-            $where="";
-            if(isset($ord)){
-                $where=" where ordenanza='".$ord."'";
-            }
-            $sql = "SELECT iddepto, descripcion FROM departamento $where ORDER BY descripcion";
-            return toba::db('designa')->consultar($sql);
-	}
+       
         //retorna 1 si la desig esta asociada a un dpto vigente y 0 en caso contrario
         function esta_vigente($id_desig)
 	{
@@ -64,7 +56,7 @@ class dt_departamento extends toba_datos_tabla
             if(isset($id_ua)){
               $where=" and idunidad_academica='".$id_ua."'";        
              }
-            $sql = "SELECT distinct t_d.iddepto, t_d.descripcion ||'('||t_u.sigla||')' as descripcion "
+            $sql = "SELECT distinct t_d.iddepto, t_d.descripcion ||'('||case when ordenanza is null then '' else ordenanza end ||')'||' de '||t_u.sigla as descripcion "
                         . " FROM departamento t_d,"
                         . " unidad_acad t_u "
                         . " WHERE t_u.sigla=t_d.idunidad_academica"
