@@ -4,10 +4,10 @@
 ------------------------------------------------------------
 INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_acceso, descripcion, vencimiento, dias, hora_entrada, hora_salida, listar, permite_edicion, menu_usuario) VALUES (
 	'designa', --proyecto
-	'veronica', --usuario_grupo_acc
-	'veronica', --nombre
+	'materias', --usuario_grupo_acc
+	'Materias', --nombre
 	NULL, --nivel_acceso
-	'para Veronica', --descripcion
+	'Edita materias (para Sec Academica)', --descripcion
 	NULL, --vencimiento
 	NULL, --dias
 	NULL, --hora_entrada
@@ -24,25 +24,19 @@ INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_a
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'veronica', --usuario_grupo_acc
+	'materias', --usuario_grupo_acc
 	NULL, --item_id
 	'1'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'veronica', --usuario_grupo_acc
-	NULL, --item_id
-	'2'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'veronica', --usuario_grupo_acc
+	'materias', --usuario_grupo_acc
 	NULL, --item_id
 	'3635'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'veronica', --usuario_grupo_acc
+	'materias', --usuario_grupo_acc
 	NULL, --item_id
 	'3677'  --item
 );

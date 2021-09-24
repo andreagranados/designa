@@ -165,6 +165,13 @@ class ci_asignacion_materias extends toba_ci
                 $datos['nro_tab8']=8;
                 $datos['anio']=$this->s__anio;
                 $datos['id_materia']=$mat['id_materia'];
+                //obtengo la ua de la materia
+                $ua_mat=$this->dep('datos')->tabla('plan_estudio')->get_uni_acad($mat['id_materia']);
+                if($ua_mat<>$uni){
+                    $datos['externa']=1;
+                }else{
+                    $datos['externa']=0;
+                }
                 $this->dep('datos')->tabla('asignacion_materia')->set($datos);
                 $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
                 $this->s__mostrar=0;

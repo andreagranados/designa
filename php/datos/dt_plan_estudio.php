@@ -6,7 +6,14 @@ class dt_plan_estudio extends toba_datos_tabla
             $sql = "SELECT id_plan, cod_carrera FROM plan_estudio ORDER BY cod_carrera";
             return toba::db('designa')->consultar($sql);
 	}
-
+        function get_uni_acad($id_mat)
+	{
+            $sql = "SELECT p.uni_acad FROM plan_estudio p, materia m "
+                    . " WHERE p.id_plan=m.id_plan"
+                    . " and m.id_materia= $id_mat";
+            $resul=toba::db('designa')->consultar($sql);
+            return $resul[0]['uni_acad'];
+	}
         function get_planes($id_ua=null)
 	{
             $where ="";

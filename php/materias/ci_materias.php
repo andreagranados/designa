@@ -44,19 +44,16 @@ class ci_materias extends toba_ci
 	{
             if ($this->dep('datos')->tabla('materia')->esta_cargada()) {
                 $datos=$this->dep('datos')->tabla('materia')->get();
-                $ord=$this->dep('datos')->tabla('departamento')->get_ordenanza($datos['id_departamento']);
-                $datos['ordenanza']=$ord;
                 $form->set_datos($datos);
             }
 	}
 
 	function evt__formulario__modificacion($datos)
 	{
-            unset($datos['ordenanza']);
             $this->dep('datos')->tabla('materia')->set($datos);
             $this->dep('datos')->tabla('materia')->sincronizar();
             $this->dep('datos')->tabla('materia')->cargar($datos);
-	   
+            toba::notificacion()->agregar(utf8_decode('Modificación exitosa!'), 'info');
 	}
 	function evt__formulario__cancelar()
 	{

@@ -487,3 +487,8 @@ INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, r
 	'dependencias', --usuario_grupo_acc
 	'24'  --restriccion_funcional
 );
+INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	'57'  --restriccion_funcional
+);
