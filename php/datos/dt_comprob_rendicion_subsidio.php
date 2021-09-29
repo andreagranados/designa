@@ -17,6 +17,21 @@ class dt_comprob_rendicion_subsidio extends toba_datos_tabla
         $sql="update comprob_rendicion_subsidio set archivo_comprob='".$valor."' where id=".$id;
         toba::db('designa')->consultar($sql);
     }
+  function ya_existe($nro_comp,$pv,$tipo){
+      $salida=array();
+      $sql="select p.codigo,c.nro_comprobante,c.nro_subsidio from comprob_rendicion_subsidio c"
+              . " inner join pinvestigacion p on (p.id_pinv=c.id_proyecto)"
+              . " where c.nro_comprobante=$nro_comp and c.punto_venta=$pv and c.tipo=$tipo ";
+              
+      $resul=toba::db('designa')->consultar($sql);
+      if(count($resul)>0){
+          $salida['existe']=true;
+          $salida['en']='Proyecto: '.$resul[0]['codigo'].' Nro Sub:'.$resul[0]['nro_subsidio'];
+      }else{
+          $salida['existe']=false;
+      }
+      return $salida;
+  }  
   function x(){
       
   }  

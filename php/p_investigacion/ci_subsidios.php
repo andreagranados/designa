@@ -284,7 +284,10 @@ class ci_subsidios extends designa_ci
                         $datos['archivo_comprob']='';
                         $adj=true;
                     }
-                    
+                   $mensaje=$this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->ya_existe($datos['nro_comprobante'],$datos['punto_venta'],$datos['tipo']); 
+                   if($mensaje['existe']){
+                       toba::notificacion()->agregar('Ya existe el comprobante en: '.$mensaje['en'], 'info');  
+                   }
                    $this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->set($datos);
                    $this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->sincronizar();
                    if($adj){
@@ -337,43 +340,13 @@ class ci_subsidios extends designa_ci
                          if($band){
                              $datos['archivo_comprob']=strval($nombre_ca);
                          }
-//                             // Definimos las variables
-//                        $user=getenv('DB_USER');
-//                        $host=getenv('DB_HOST');
-//                        $port=getenv('DB_PORT');
-//                        $password=getenv('DB_PASS');
-//                        $ruta="/adjuntos_proyectos_inv/subsidios";
-//                       
-//                        $nombre_ca=$s['id_proyecto'].'_'.$s['numero'].'_'.$c['id']."_comprob_subsidio".".pdf";//nombre con el que se guarda el archivo
-//                        $conn_id=ftp_connect($host,$port);
-//                        if($conn_id){
-//                             # Realizamos el login con nuestro usuario y contraseña
-//                            if(ftp_login($conn_id,$user,$password)){
-//                                ftp_pasv($conn_id, true);//activa modo pasivo. la conexion es iniciada por el cliente
-//                                # Cambiamos al directorio especificado
-//                                if(ftp_chdir($conn_id,$ruta)){
-//                                        $remote_file = $datos['archivo_comprob']['tmp_name'];
-//                                        //$nombre_ca=$s['id_proyecto'].'_'.$s['numero'].'_'.$c['id']."_comprob_subsidio".".pdf";//nombre con el que se guarda el archivo
-//                                        # Subimos el fichero
-//                                        if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
-//                                                $datos['archivo_comprob']=strval($nombre_ca);
-//                                                echo "Fichero subido correctamente";
-//                                        }else
-//                                                echo "No ha sido posible subir el fichero";  
-//                                }else{
-//                                    echo "No existe el directorio especificado";
-//                                }
-//                            } else{
-//                                echo "El usuario o la contraseña son incorrectos";
-//                            }
-//
-//                        }else{
-//                            echo "No ha sido posible conectar con el servidor";
-//                        }                    
                     }else{//no esta modificando comprobante entonces le dejo lo que tenia en el campo
                         $datos['archivo_comprob']=strval($c['archivo_comprob']);//esto xq sino deja en nulo el campo archivo transferencia
                     }
-                    
+                    $mensaje=$this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->ya_existe($datos['nro_comprobante'],$datos['punto_venta'],$datos['tipo']); 
+                    if($mensaje['existe']){
+                       toba::notificacion()->agregar('Ya existe el comprobante en: '.$mensaje['en'], 'info');  
+                    }
                     $this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->set($datos);
                     $this->controlador()->controlador()->dep('datos')->tabla('comprob_rendicion_subsidio')->sincronizar();
                     toba::notificacion()->agregar('El comprobante se ha modificado correctamente', 'info');  
