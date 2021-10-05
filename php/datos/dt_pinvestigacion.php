@@ -799,12 +799,12 @@ class dt_pinvestigacion extends toba_datos_tabla
                                         )  subc  ON (subc.pinvest=t_p.id_pinv and subc.hasta=sub3.hasta)                                                   
            	LEFT OUTER JOIN ( select id2.pinvest,max(id2.hasta) as hasta
                                         from integrante_externo_pi id2
-                                        where  id2.funcion_p='CE' 
+                                        where  id2.funcion_p='C' 
                                         group by id2.pinvest      ) sub4   ON (sub4.pinvest=t_p.id_pinv)   
                                                 
 		LEFT OUTER JOIN (select id3.pinvest,t_d3.apellido,t_d3.nombre,id3.hasta,id3.check_inv,calculo_cuil(t_d3.tipo_sexo,t_d3.nro_docum)  as cuil
 					from integrante_externo_pi id3,persona t_d3
-                                        where (id3.funcion_p='CE' ) 
+                                        where (id3.funcion_p='C' ) 
                                         and t_d3.tipo_docum=id3.tipo_docum 
                                         and t_d3.nro_docum=id3.nro_docum
                                         )  subc2  ON (subc2.pinvest=t_p.id_pinv and subc2.hasta=sub4.hasta)
