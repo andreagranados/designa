@@ -19,10 +19,15 @@ class dt_comprob_rendicion_subsidio extends toba_datos_tabla
     }
   function ya_existe($nro_comp,$pv,$tipo){
       $salida=array();
-      $sql="select p.codigo,c.nro_comprobante,c.nro_subsidio from comprob_rendicion_subsidio c"
+      if(isset($pv)){//tiene valor el punto de venta
+        $sql="select p.codigo,c.nro_comprobante,c.nro_subsidio from comprob_rendicion_subsidio c"
               . " inner join pinvestigacion p on (p.id_pinv=c.id_proyecto)"
-              . " where c.nro_comprobante=$nro_comp and c.punto_venta=$pv and c.tipo=$tipo ";
-              
+              . " where c.nro_comprobante=$nro_comp and c.punto_venta=$pv and c.tipo=$tipo ";  
+      }else{//no hay punto de venta porque es recibo, factura exterior, pasaje
+          $sql="select p.codigo,c.nro_comprobante,c.nro_subsidio from comprob_rendicion_subsidio c"
+              . " inner join pinvestigacion p on (p.id_pinv=c.id_proyecto)"
+              . " where c.nro_comprobante=$nro_comp and c.tipo=$tipo ";  
+      }    
       $resul=toba::db('designa')->consultar($sql);
       if(count($resul)>0){
           $salida['existe']=true;
