@@ -1602,7 +1602,7 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                         default:
                             break;
                     }
-                    $where.= " AND carac=".$c;
+                    $where.= " AND a.carac=".$c;
                  }
                
                 if (isset($filtro['estado']['valor'])) {
