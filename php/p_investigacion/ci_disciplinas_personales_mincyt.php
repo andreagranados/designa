@@ -36,7 +36,7 @@ class ci_disciplinas_personales_mincyt extends designa_ci
     
         }
         function evt__cuadro__seleccion($datos)
-        {print_r($datos);
+        {
             $this->set_pantalla('pant_edicion');
             switch ($datos['tipo']) {
                 case 1:
