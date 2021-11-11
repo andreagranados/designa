@@ -3,6 +3,67 @@ require_once 'dt_mocovi_periodo_presupuestario.php';
 require_once 'consultas_mapuche.php';
 class dt_integrante_interno_pi extends toba_datos_tabla
 {
+    function get_disciplinas_personales_min($filtro=null){
+        
+        $where=' WHERE 1=1 ';
+        if(!isset($filtro)){//si el filtro viene vacio, entonces por defecto muestra las personas que no tienen disciplina
+            $where.=' and disc_personal_mincyt is not null';    
+        }
+        else{
+            if (isset($filtro['estado']['valor'])) {
+			$where .= " and p.estado= ".quote($filtro['estado']['valor']);   
+		}
+            if (isset($filtro['id_convocatoria']['valor'])) {
+                            $where .= " and p.id_convocatoria= ".$filtro['id_convocatoria']['valor'];   
+                    }    
+            if (isset($filtro['sin_disciplina']['valor'])) {
+                if($filtro['sin_disciplina']['valor']==1){
+                    $where.=' and disc_personal_mincyt is null';
+                }else{
+                    $where.=' and disc_personal_mincyt is not null';
+                }
+            }
+        }   
+        
+            
+        
+        $sql="select * from (
+                select distinct 1 as tipo,tipo_sexo,sub.id_docente as id,sub.nombre,sub.cuil,discpersonal,grupo,string_agg(tpg.desc_titul,'/') as titulog,string_agg(tp.desc_titul,'/') as titulop
+                 from 
+                (select distinct p.estado,p.id_convocatoria,de.id_docente,d.tipo_sexo,upper(trim(d.apellido)||', '||trim(d.nombre)) as nombre,cast(d.nro_cuil1 as text)||'-'||LPAD(nro_cuil::text, 8, '0')||'-'||cast(nro_cuil2 as text) as cuil,dic.descripcion as discpersonal,grupo
+                from integrante_interno_pi a
+                inner join pinvestigacion p on (a.pinvest=p.id_pinv)
+                inner join designacion de on (de.id_designacion=a.id_designacion)
+                inner join docente d on (de.id_docente=d.id_docente)
+                left outer join disciplina_mincyt dic on (dic.codigo=d.disc_personal_mincyt)   
+                            $where
+                )sub
+                LEFT OUTER JOIN (select id_docente, desc_titul
+                                  from titulos_docente t_t , titulo t_u 
+                                  where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD'
+                                    )  tpg
+                                   ON (tpg.id_docente=sub.id_docente) 
+                LEFT OUTER JOIN (select id_docente, desc_titul
+                                  from titulos_docente t_t , titulo t_u 
+                                  where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='POST'
+                                    )  tp
+                                   ON (tp.id_docente=sub.id_docente) 
+                group by sub.id_docente,sub.tipo_sexo,sub.nombre,sub.cuil, sub.discpersonal,sub.grupo
+                UNION
+                select distinct  2 as tipo,pe.tipo_sexo,pe.nro_docum as id,upper(trim(pe.apellido)||', '||trim(pe.nombre)) as nombre,
+                case when pe.tipo_docum='EXTR' then docum_extran else calculo_cuil(pe.tipo_sexo,pe.nro_docum) end as cuil,dic.descripcion as discpersonal,grupo,tg.desc_titul as titulog,tp.desc_titul as titulop
+                from integrante_externo_pi a
+                inner join pinvestigacion p on (a.pinvest=p.id_pinv)
+                inner join persona pe on (pe.nro_docum=a.nro_docum and pe.tipo_docum=a.tipo_docum)
+                left outer join titulo tp on (tp.codc_titul=pe.titulop)
+                left outer join titulo tg on (tg.codc_titul=pe.titulog)
+                left outer join disciplina_mincyt dic on (dic.codigo=pe.disc_personal_mincyt)
+                $where
+             )res
+             order by nombre
+         ";
+        return toba::db('designa')->consultar($sql); 
+    }
     function get_designaciones_vencidas($filtro=null){
         //listado de todas los docentes asociados a proyectos con una designación que ya vencio (no fue renovada)
         $where = '';

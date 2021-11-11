@@ -476,7 +476,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
 //            );";
         //toba::db('designa')->consultar($sql);
         //$sql="insert into plantilla ("
-          $sql=      " select distinct p.id_pinv,p.codigo,upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,case when t_d2.cat_estat is not null then t_d.cat_estat||'-'||t_d.dedic else '' end as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||cast(nro_cuil as text)||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde,d.desc_titul as tit_preg,b.desc_titul as tit_grad"
+          $sql=      " select distinct p.id_pinv,p.codigo,upper(trim(t_do.apellido)||', '||trim(t_do.nombre)) as nombre,t_do.fec_nacim,t_do.tipo_docum,t_do.nro_docum,t_do.tipo_sexo,case when t_d2.cat_estat is not null then t_d.cat_estat||'-'||t_d.dedic else '' end as categoria,t_i.ua,t_i.carga_horaria,t_i.funcion_p,t_c.descripcion as cat_invest,cast(t_do.nro_cuil1 as text)||'-'||LPAD(nro_cuil::text, 8, '0')||'-'||cast(nro_cuil2 as text) as cuil,identificador_personal,case when b.desc_titul is not null then b.desc_titul else d.desc_titul end as titulo,c.desc_titul as titulop,t_i.cat_invest_conicet,t_f.orden,t_i.desde,d.desc_titul as tit_preg,b.desc_titul as tit_grad"
                 . " from  integrante_interno_pi t_i"
                 . " LEFT OUTER JOIN categoria_invest t_c ON (t_c.cod_cati=t_i.cat_investigador)"
                 . " LEFT OUTER JOIN designacion t_d ON (t_i.id_designacion=t_d.id_designacion)"
