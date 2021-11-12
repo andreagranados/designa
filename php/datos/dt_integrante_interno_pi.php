@@ -30,7 +30,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         $sql="select * from (
                 select distinct 1 as tipo,tipo_sexo,sub.id_docente as id,sub.nombre,sub.cuil,discpersonal,grupo,string_agg(tpg.desc_titul,'/') as titulog,string_agg(tp.desc_titul,'/') as titulop
                  from 
-                (select distinct p.estado,p.id_convocatoria,de.id_docente,d.tipo_sexo,upper(trim(d.apellido)||', '||trim(d.nombre)) as nombre,cast(d.nro_cuil1 as text)||'-'||LPAD(nro_cuil::text, 8, '0')||'-'||cast(nro_cuil2 as text) as cuil,dic.descripcion as discpersonal,grupo
+                (select distinct de.id_docente,d.tipo_sexo,upper(trim(d.apellido)||', '||trim(d.nombre)) as nombre,cast(d.nro_cuil1 as text)||'-'||LPAD(nro_cuil::text, 8, '0')||'-'||cast(nro_cuil2 as text) as cuil,dic.descripcion as discpersonal,grupo
                 from integrante_interno_pi a
                 inner join pinvestigacion p on (a.pinvest=p.id_pinv)
                 inner join designacion de on (de.id_designacion=a.id_designacion)
