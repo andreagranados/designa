@@ -432,10 +432,10 @@ class ci_subsidios extends designa_ci
                    $pdf->ezTable($tabla_dp,array('col1'=>'<b>SALDO</b>','col2'=>'$'.number_format($saldo,2,',','.')),'',array('fontSize' => 12,'shaded'=>0,'showLines'=>2,'width'=>800,'cols'=>array('col1'=>array('justification'=>'right','width'=>710),'col2'=>array('justification'=>'right','width'=>90)) ));
 
                     $tabla_dj=array();
-                    $rend=utf8_decode('Rendición');
+                    $rend=utf8_decode('rendición');
                     $carac=utf8_decode('carácter');
                     $dec=utf8_decode('declaración');
-                    $pdf->ezTable($tabla_dj,array('col1'=>'Se deja constancia que la presente '.$rend.' tiene '.$carac.' de '.$dec.' jurada'),'',array('shaded'=>0,'showLines'=>0,'width'=>800,'cols'=>array('col1'=>array('justification'=>'center','width'=>800)) ));
+                    $pdf->ezTable($tabla_dj,array('col1'=>'He recibido los fondos del subsidio correspondiente al PI y han sido ejecutados conforme se detalla en la planilla de '.$rend.', la misma tiene '.$carac.' de '.$dec.' jurada'),'',array('shaded'=>0,'showLines'=>0,'width'=>800,'cols'=>array('col1'=>array('justification'=>'center','width'=>800)) ));
                     $pdf->ezText("\n\n", 10);
 
                     $pdf->addText(100,80,8,'--------------------------------------------------------------------'); 
