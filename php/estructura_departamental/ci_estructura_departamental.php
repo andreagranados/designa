@@ -26,6 +26,7 @@ class ci_estructura_departamental extends toba_ci
 		if (isset($this->s__datos_filtro)) {
 			$filtro->set_datos($this->s__datos_filtro);
 		}
+                $filtro->columna('idunidad_academica')->set_condicion_fija('es_igual_a',true)  ;
 	}
 
 	function evt__filtros__filtrar($datos)
@@ -57,12 +58,7 @@ class ci_estructura_departamental extends toba_ci
                         $c=array('ord_orientacion');
                         $this->dep('cuadro')->eliminar_columnas($c); 
                     }
-                    if($this->s__datos_filtro['idunidad_academica']['condicion']=='es_distinto_de'){
-                        toba::notificacion()->agregar(utf8_decode('Seleccione la condición: es igual a'), 'info');
-                        
-                    }else{
-                        $cuadro->set_datos($this->dep('datos')->tabla('departamento')->get_listado_completo($this->s__where));
-                    }
+                    $cuadro->set_datos($this->dep('datos')->tabla('departamento')->get_listado_completo($this->s__where));
 		} 
 	}
 

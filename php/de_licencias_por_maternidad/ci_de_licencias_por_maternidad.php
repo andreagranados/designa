@@ -27,10 +27,15 @@ class ci_de_licencias_por_maternidad extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
+            if (isset($this->s__datos_filtro)) {
+                $dia_actual=date(j);//dia del mes sin ceros iniciales
+                if($dia_actual>20){
+                    toba::notificacion()->agregar('Mapuche esta proceso de liquidacion, realice esta operacion del 1 al 20 de cada mes.', 'info');
+                }else{
                     $this->s__anio=$this->s__datos_filtro['anio'];
                     $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_lic_maternidad($this->s__datos_filtro));
-		}
+                }
+            }
 	}
 
 	function evt__cuadro__seleccion($datos)

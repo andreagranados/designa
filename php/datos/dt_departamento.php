@@ -181,51 +181,58 @@ class dt_departamento extends toba_datos_tabla
                     ." LEFT OUTER JOIN area b ON (a.iddepto=b.iddepto)"
                     . "LEFT OUTER JOIN orientacion c ON (b.idarea=c.idarea)"
                     . " order by a.descripcion,b.descripcion,c.descripcion";
-            
-            $sql2=" CREATE LOCAL TEMP TABLE auxi(
-                        departamento character(100),
-                        area character(100),
-                        orientacion character(100)
-                    );";
-            toba::db('designa')->consultar($sql2);
-            $res=toba::db('designa')->consultar($sql);
            
-            $i=1;
-            $dep=$res[0]['departamento'];
-            $area=$res[0]['area'];
-            $orien=$res[0]['orientacion'];
-            $sql3=" insert into auxi values ('".$dep."','".$area."','".$orien."')";
-            toba::db('designa')->consultar($sql3);
+            $res=toba::db('designa')->consultar($sql);
             
-            while ($i<count($res)) {
-                if($res[$i]['departamento']==$dep){
-                    $depi="";
-                }else{
-                    $dep=$res[$i]['departamento'];
-                    $depi=$res[$i]['departamento'];
-                }
-                if($res[$i]['area']==$area){
-                    $areai="";
-                }else{
-                    $area=$res[$i]['area'];
-                    $areai=$res[$i]['area'];
-                }
-//                if($res[$i]['orientacion']==$orien){
-//                    $orieni="";
-//                }else{//LA ORIENTACION SIEMPRE CAMBIA RESPECTO A LA ANTERIOR
-                    $orien=$res[$i]['orientacion'];
-                    $orieni=$res[$i]['orientacion'];
-               // }
-                
-                $sql3=" insert into auxi values ('".$depi."','".$areai."','".$orieni."')";
+            if(count($res)>0){
+                $sql2=" CREATE LOCAL TEMP TABLE auxi(
+                        departamento character(100),
+                        ord_dep character(9),
+                        area character(100),
+                        ord_area character(9),
+                        orientacion character(100),
+                        ord_orientacion character(9)
+                    );";
+                toba::db('designa')->consultar($sql2);
+                $i=1;
+                $dep=$res[0]['departamento'];
+                $odep=$res[0]['ord_dep'];
+                $area=$res[0]['area'];
+                $oarea=$res[0]['ord_area'];
+                $orien=$res[0]['orientacion'];
+                $oorien=$res[0]['ord_orientacion'];
+                $sql3=" insert into auxi values ('".$dep."','".$odep."','".$area."','".$oarea."','".$orien."','".$oorien."')";
                 toba::db('designa')->consultar($sql3);
-                $i=$i+1;
+
+                while ($i<count($res)) {
+                    if($res[$i]['departamento']==$dep){
+                        $depi="";
+                        $odepi="";
+                    }else{
+                        $dep=$res[$i]['departamento'];
+                        $depi=$res[$i]['departamento'];
+                        $odepi=$res[$i]['ord_dep'];
+                    }
+                    if($res[$i]['area']==$area){
+                        $areai="";
+                        $oareai="";
+                    }else{
+                        $area=$res[$i]['area'];
+                        $areai=$res[$i]['area'];
+                        $oareai=$res[$i]['ord_area'];
+                    }
+            //LA ORIENTACION SIEMPRE CAMBIA RESPECTO A LA ANTERIOR
+                    $orien=$res[$i]['orientacion'];
+                    $oorien=$res[$i]['ord_orientacion'];
+
+                    $sql3=" insert into auxi values ('".$depi."','".$odepi."','".$areai."','".$oareai."','".$orien."','".$oorien."')";
+                    toba::db('designa')->consultar($sql3);
+                    $i=$i+1;
+                }
+                $sql4="select * from auxi";
+                $res=toba::db('designa')->consultar($sql4);
             }
-            $sql4="select * from auxi";
-            $res=toba::db('designa')->consultar($sql4);
-            
-            return $res;
-            
+           return $res;
         }
 
 }
