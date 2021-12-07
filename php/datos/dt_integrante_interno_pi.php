@@ -291,7 +291,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
 //                    and t_i.id_pinv=i.pinvest 
 //                    and i.funcion_p=f.id_funcion
 //                    order by apellido,nombre,t_i.codigo) b $where";
-        $sql="select * from (select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo as text,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria,d.cat_estat||d.dedic||'-'||d.carac||'('|| extract(year from d.desde)||'-'||case when (extract (year from case when d.hasta is null then '1800-01-11' else d.hasta end) )=1800 then '' else cast (extract (year from d.hasta) as text) end||')'||d.uni_acad as designacion,t_c.descripcion as cat_investigador,t_c.cod_cati
+        $sql="select * from (select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria,d.cat_estat||d.dedic||'-'||d.carac||'('|| extract(year from d.desde)||'-'||case when (extract (year from case when d.hasta is null then '1800-01-11' else d.hasta end) )=1800 then '' else cast (extract (year from d.hasta) as text) end||')'||d.uni_acad as designacion,t_c.descripcion as cat_investigador,t_c.cod_cati
                  from integrante_interno_pi i 
                  INNER JOIN designacion d ON (i.id_designacion=d.id_designacion)
                  INNER JOIN docente t_do ON (d.id_docente=t_do.id_docente)
