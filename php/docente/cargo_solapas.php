@@ -507,6 +507,7 @@ class cargo_solapas extends toba_ci
             }else{//lo inserta solo si no supera el 100
                 $sql="insert into imputacion (id_designacion, id_programa, porc) values (".$designacion['id_designacion'].",'".$datos['id_programa']."',".$datos['porc'].")";
                 toba::db('designa')->consultar($sql);
+                $this->s__alta_impu=0;
             }
           }else{
                toba::notificacion()->agregar('NO SE PUEDE MODIFICAR UNA DESIGNACION QUE AFECTA EL CREDITO DE UNA RESERVA', 'error');

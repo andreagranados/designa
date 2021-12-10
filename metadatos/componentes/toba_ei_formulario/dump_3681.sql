@@ -179,7 +179,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'Formato:  NNNNN/EEE-AAAA<br>
 NNNNN: número<br>
 EEE: extensión <br>
-AAAA: año', --descripcion
+AAAA: año <br>
+Si es expediente SUDOCU SNNNN/EEE-AAAA', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
