@@ -41,7 +41,7 @@ class ci_de_datos_personales_mapuche extends toba_ci
             if (isset($this->s__datos_filtro)) {
                 $dia_actual=date(j);//dia del mes sin ceros iniciales
                 if($dia_actual>20){
-                    toba::notificacion()->agregar('Mapuche esta proceso de liquidacion, realice esta operacion del 1 al 20 de cada mes.', 'info');
+                    toba::notificacion()->agregar(utf8_decode('Mapuche esta en proceso de liquidación. Realice esta operación del 1 al 20 de cada mes.'), 'info');
                 }else{
                     if ($this->s__datos_filtro['legajo']) {//con legajo 
                         $this->s__datos=$this->dep('datos')->tabla('docente')->get_listado_con_legajo($this->s__datos_filtro,$this->s__masfiltros);    
