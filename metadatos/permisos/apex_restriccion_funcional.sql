@@ -184,4 +184,10 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'no_edita_materias', --descripcion
 	'0'  --permite_edicion
 );
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'58', --restriccion_funcional
+	'solo_consulta_pinvestigacion', --descripcion
+	'0'  --permite_edicion
+);
 --- FIN Grupo de desarrollo 0
