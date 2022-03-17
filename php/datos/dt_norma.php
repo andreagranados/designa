@@ -33,10 +33,11 @@ class dt_norma extends toba_datos_tabla
         
       
        function get_detalle_norma($id_norma){
-           $sql="select t_n.id_norma,t_n.nro_norma, t_n.tipo_norma, t_n.emite_norma, t_n.fecha,t_e.quien_emite_norma,c.nombre_tipo from norma t_n"
+           $sql="SELECT t_n.id_norma,t_n.pdf,t_n.nro_norma, t_n.tipo_norma, t_n.emite_norma, t_n.fecha,t_e.quien_emite_norma,c.nombre_tipo"
+                   . " FROM norma t_n"
                    . " LEFT OUTER JOIN tipo_emite t_e ON (t_n.emite_norma=t_e.cod_emite)
-                        LEFT OUTER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo)
-                        where id_norma=$id_norma";
+                       LEFT OUTER JOIN tipo_norma_exp c ON (t_n.tipo_norma=c.cod_tipo)
+                       WHERE id_norma=$id_norma";
            return toba::db('designa')->consultar($sql);
        } 
        //si existe alguna designacion asociada a esa norma devuelve true sino false

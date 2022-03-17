@@ -144,7 +144,7 @@ INSERT INTO apex_objeto_db_registros_col (objeto_proyecto, objeto, col_id, colum
 	'3231', --objeto
 	'1196', --col_id
 	'pdf', --columna
-	'B', --tipo
+	'X', --tipo
 	'0', --pk
 	'', --secuencia
 	NULL, --largo

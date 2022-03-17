@@ -737,16 +737,11 @@ class cargo_solapas extends toba_ci
                 $d=$this->controlador()->dep('datos')->tabla('norma')->get_detalle_norma($datos['id_norma']);
                 $datos['tipo_norma']=$d[0]['nombre_tipo'];
                 $datos['emite_norma']=$d[0]['quien_emite_norma'];
-                //Retorna un 'file pointer' apuntando al campo binario o blob de la tabla.
-                $pdf = $this->controlador()->dep('datos')->tabla('norma')->get_blob('pdf');
-                if (isset($pdf)) {
-                    $temp_nombre = md5(uniqid(time())).'.pdf';
-                    $s__temp_archivo = toba::proyecto()->get_www_temp($temp_nombre);
-                    $temp_imagen = fopen($s__temp_archivo['path'], 'w');
-                    stream_copy_to_stream($pdf, $temp_imagen);//copia $pdf a $temp_imagen
-                    fclose($temp_imagen);
-                    $datos['imagen_vista_previa'] = "<a target='_blank' href='{$s__temp_archivo['url']}' >norma</a>";
-                }
+
+                if(isset($d[0]['pdf'])){
+                    $nomb_ft="/designa/1.0/normas/".$d[0]['pdf'];
+                    $datos['imagen_vista_previa'] = "<a target='_blank' href='{$nomb_ft}' >norma</a>";
+                }  
                 return $datos;
             }
             $parametros = array('parametro_nuevo' => 79);
