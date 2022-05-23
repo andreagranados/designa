@@ -218,7 +218,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                       switch ($filtro['clas']['valor']) {
                             case 'I':$where.=" and (funcion_p='D' or funcion_p='DpP' or funcion_p='C' or funcion_p='ID')";break;
                             case 'B':$where.=" and (funcion_p='BA' or funcion_p='BUGI' or funcion_p='BUGP' or funcion_p='BCNA' or funcion_p='BF')";break;
-                            case 'T':$where.=" and (funcion_p='IA' or funcion_p='AT' or funcion_p='IND' or funcion_p='EU'  or funcion_p='BCIN' or  or funcion_p='BUIA' or  or funcion_p='IAp')";break;
+                            case 'T':$where.=" and (funcion_p='IA' or funcion_p='AT' or funcion_p='IND' or funcion_p='EU'  or funcion_p='BCIN' or funcion_p='BUIA' or funcion_p='IAp')";break;
                       }
         }
          if (isset($filtro['jornada']['valor'])) {
@@ -230,8 +230,8 @@ class dt_integrante_externo_pi extends toba_datos_tabla
         }
          if (isset($filtro['tipo_sexo']['valor'])) {
                       switch ($filtro['tipo_sexo']['condicion']) {
-                           case 'es_distinto_de':$where.=" and tipo_sexo<>".$filtro['tipo_sexo']['valor'];break;
-                           case 'es_igual_a':$where.=" and tipo_sexo= ".$filtro['tipo_sexo']['valor'];break;
+                           case 'es_distinto_de':$where.=" and tipo_sexo<>'".$filtro['tipo_sexo']['valor']."'";break;
+                           case 'es_igual_a':$where.=" and tipo_sexo= '".$filtro['tipo_sexo']['valor']."'";break;
                       }
         }
         if (isset($filtro['edad']['valor'])) {
