@@ -1,8 +1,6 @@
 <?php
 class ci_pinv_otros extends designa_ci
 {
-
-//        protected $s__mostrar;
         protected $s__mostrar_s;
         protected $s__mostrar_v;
         protected $s__mostrar_p;
@@ -20,25 +18,55 @@ class ci_pinv_otros extends designa_ci
             $this->s__mostrar_form_tiene=0;//muestra formulario de estimulo
             $this->s__mostrar_s=0;//muestra formulario de subsidio
             $this->s__mostrar_v=0;//muestra formulario de viatico
-//            $this->s__mostrar=0;//subsidio
 	}
- 
-        function get_cant_dias($fs, $fr){
-            $fsa=substr($fs, 0, 10);//fecha de salida
+        
+        function extender_objeto_js()
+	{
+		$this->js_caso_datos();
+	}
+
+        function js_caso_datos()
+	{
+		$id_js = toba::escaper()->escapeJs($this->objeto_js);
+		echo "		
+			/**
+			 * Acci�n del bot�n CALCULAR
+			 */
+			{$id_js}.evt__form_viatico__calcular = function() {
+				//--- Construyo los parametros para el calculo, en este caso son los valores del form
+				var parametros = this.dep('form_viatico').get_datos();
+				
+				//--- Hago la peticion de datos al server, la respuesta vendra en el m�todo this.actualizar_datos
+				this.ajax('calcular', parametros, this, this.actualizar_datos);
+				
+				//--- Evito que el mecanismo 'normal' de comunicacion cliente-servidor se ejecute
+				return false;
+			}
+			
+			/**
+			 * Acci�n cuando vuelve la respuesta desde PHP
+			 */
+			{$id_js}.actualizar_datos = function(datos)
+			{ /*alert(datos);*/
+				this.dep('form_viatico').ef('cant_dias').set_estado(datos);
+			}			
+		";
+	}
+          function get_cant_dias2($fs, $fr){
+           // print_r($fs);// 2022-02-01 12:05           
+            $fsa=substr($fs, 0, 10);//fecha de salida    //recupera en este formato 01/02/2022       
             $fre=substr($fr, 0, 10);//fecha de regreso
-//            $dias=date("d",$fsa); // día del mes en número
-//            $mess=date("m",$fsa); // número del mes de 01 a 12
-//            $anos=date("Y",$fsa);
             
+                 
             $hfs = intval(substr($fs, 11, 2)) ;//hora de fecha de salida
             $hfr = intval(substr($fr, 11, 2)) ;//hora de fecha de regreso
             $mfs = intval(substr($fs, 14, 2)) ;//minutos de fecha de salida
             $mfr = intval(substr($fr, 14, 2)) ;//minutos de fecha de regreso
-            $a= date_create($fsa);
-            $b= date_create($fre);
+            $a= date_create($fsa);//$a= date_format(date_create($fsa),"Y/m/d");//
+            $b= date_create($fre);//$b= date_format(date_create($fre),"Y/m/d");//
+            
             $intervalo = date_diff($a, $b);
-            $dif=$intervalo->days;
-            //print_r($dif);exit;//diferencia de dias
+          
             if($hfs<12 and ($hfr>12 or ($hfr==12 and $mfr>0))){
                 $dif=($intervalo->days)+1;
             }else{
@@ -51,6 +79,50 @@ class ci_pinv_otros extends designa_ci
              
             return $dif;
         }
+        function get_cant_dias($fs, $fr){
+            //print_r($fs);//01/02/2022,12:00 en el alta
+                         // 2022-02-01 12:05 en la modificacion
+            $fsa=substr($fs, 0, 10);//fecha de salida    //recupera en este formato 01/02/2022       
+            $fre=substr($fr, 0, 10);//fecha de regreso
+            
+            if(substr($fsa, 2, 1)=='/'){//01/02/2022
+                $fsa=substr($fsa, 6, 4).'-'.substr($fsa, 3, 2).'-'.substr($fsa, 0, 2);
+                $fre=substr($fre, 6, 4).'-'.substr($fre, 3, 2).'-'.substr($fre, 0, 2);
+            }        
+            $hfs = intval(substr($fs, 11, 2)) ;//hora de fecha de salida
+            $hfr = intval(substr($fr, 11, 2)) ;//hora de fecha de regreso
+            $mfs = intval(substr($fs, 14, 2)) ;//minutos de fecha de salida
+            $mfr = intval(substr($fr, 14, 2)) ;//minutos de fecha de regreso
+            
+            $a=new DateTime($fsa);
+            $b=new DateTime($fre);
+            
+            $intervalo=$a->diff($b);//funciona con dateTime
+            //$intervalo = date_diff($a, $b);
+            $dif= $intervalo->days;
+            
+            if($hfs<12 and ($hfr>12 or ($hfr==12 and $mfr>0))){
+                $dif=($intervalo->days)+1;
+            }else{
+               if(($hfs<12 and $hfr<12) or (($hfr>12 or ($hfr==12 and $mfr>0)) and ($hfs>12 or ($hfs==12 and $mfs>0)))){
+                    $dif=($intervalo->days)+0.5;
+                }else{
+                    $dif=$intervalo->days;
+                }
+            } 
+            return $dif;
+        }
+        
+          /**
+	 * Metodo invocado desde JS para 'calcular' la cantidad de dias del viatico
+	 */
+	function ajax__calcular($parametros, toba_ajax_respuesta $respuesta)
+	{
+           $cant=$this->get_cant_dias($parametros['fecha_salida'],$parametros['fecha_regreso']);
+           $respuesta->set($cant);
+         
+	}//esta funcion es llamada desde javascript
+         
      
         function get_responsable_fondo(){
             $salida=array();
@@ -162,7 +234,6 @@ class ci_pinv_otros extends designa_ci
                             $this->controlador()->dep('datos')->tabla('unidades_proyecto')->sincronizar();  
                         }else{
                              throw new toba_error('El proyecto debe estar en estado E(Enviado) para poder modificar');
-                            //toba::notificacion()->agregar('El proyecto debe estar en estado E(Enviado) para poder modificar', 'error');  
                         }
                         }
                     }
@@ -441,7 +512,7 @@ class ci_pinv_otros extends designa_ci
                 }else{
                     $f=array();
                 }
-                //agrego una linea con cant dias
+                //agrego una linea con cant dias. para que muestre el total de dias sin considerar los rechazados del anio de la fecha de salida
                 $datos=$this->controlador()->dep('datos')->tabla('viatico')->get_listado($pi['id_pinv'],$f);
                 if(count($datos)>0){
                      $elem['tipo']='TOTAL DIAS:';
@@ -543,7 +614,8 @@ class ci_pinv_otros extends designa_ci
                         $mensaje="Internacional hasta 7 dias";
                      }
                 }
-                $calculo=$this->get_cant_dias($datos['fecha_salida'],$datos['fecha_regreso']);
+                $calculo=$this->get_cant_dias2($datos['fecha_salida'],$datos['fecha_regreso']);
+               // print_r($calculo);exit();//que autocomplete
                 if($datos['cant_dias']<=$calculo){
                    if($mensaje==""){//debe considerar la fecha de salida y no la fecha de solicitud
                     $fecha = strtotime($datos['fecha_salida']);
@@ -609,20 +681,27 @@ class ci_pinv_otros extends designa_ci
                             $mensaje="Internacional hasta 7 dias";
                         }
                     }
-                    if($mensaje==""){
-                        $fecha = strtotime($datos['fecha_salida']);//debo considerar la fecha de salida y no la fecha de solicitud
-                        $anio=date("Y",$fecha);
-                        $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_modif($pi['id_pinv'],$anio,$datos['cant_dias'],$via['id_viatico']);
-                        if($band){//verifica que no supere los 14 dias anuales
-                            $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
-                            $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
-                            
+                  
+                    $calculo=$this->get_cant_dias2($datos['fecha_salida'],$datos['fecha_regreso']);
+                    if($datos['cant_dias']<=$calculo){
+                        if($mensaje==""){
+                            $fecha = strtotime($datos['fecha_salida']);//debo considerar la fecha de salida y no la fecha de solicitud
+                            $anio=date("Y",$fecha);
+                            $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_modif($pi['id_pinv'],$anio,$datos['cant_dias'],$via['id_viatico']);
+                            if($band){//verifica que no supere los 14 dias anuales
+                                $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
+                                $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
+
+                            }else{
+                                throw new toba_error('Supera los 14 días anuales');
+                            }
                         }else{
-                            toba::notificacion()->agregar(utf8_decode('Supera los 14 días anuales'), 'error');  
+                            throw new toba_error($mensaje);
                         }
                     }else{
-                        toba::notificacion()->agregar($mensaje, 'error');  
+                        throw new toba_error('La cantidad de dias debe ser menor o igual a: '.$calculo.'. Por favor, corrija e intente guardar nuevamente.');
                     }
+                    
                 }else{
                     $mensaje=$this->controlador()->dep('datos')->tabla('estado_vi')->get_descripcion($via['estado']);
                     toba::notificacion()->agregar(utf8_decode('El viático no puede ser modificado porque SCyT lo ha pasado a estado: '.$mensaje), 'error');  

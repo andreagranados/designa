@@ -11,11 +11,23 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         }
         else{
             if (isset($filtro['estado']['valor'])) {
-			$where .= " and p.estado= ".quote($filtro['estado']['valor']);   
-		}
+                 switch ($filtro['id_convocatoria']['condicion']) {
+                   case 'es_distinto_de':$where.=" and p.estado<>".quote($filtro['estado']['valor']);break;
+                   case 'es_igual_a':$where.=" and p.estado = ".quote($filtro['estado']['valor']);break;
+               }
+            }
             if (isset($filtro['id_convocatoria']['valor'])) {
-                            $where .= " and p.id_convocatoria= ".$filtro['id_convocatoria']['valor'];   
-                    }    
+               switch ($filtro['id_convocatoria']['condicion']) {
+                   case 'es_distinto_de':$where.=" and id_convocatoria<>".$filtro['id_convocatoria']['valor'];break;
+                   case 'es_igual_a':$where.=" and id_convocatoria = ".$filtro['id_convocatoria']['valor'];break;
+               }
+            }    
+            if (isset($filtro['disc_personal_mincyt']['valor'])) {
+               switch ($filtro['disc_personal_mincyt']['condicion']) {
+                   case 'es_distinto_de':$where.=" and disc_personal_mincyt<>".$filtro['disc_personal_mincyt']['valor'];break;
+                   case 'es_igual_a':$where.=" and disc_personal_mincyt = ".$filtro['disc_personal_mincyt']['valor'];break;
+               }
+            }    
             if (isset($filtro['sin_disciplina']['valor'])) {
                 if($filtro['sin_disciplina']['valor']==1){
                     $where.=' and disc_personal_mincyt is null';

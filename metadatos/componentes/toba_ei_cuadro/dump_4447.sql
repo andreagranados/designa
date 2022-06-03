@@ -231,7 +231,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4727', --objeto_cuadro_col
 	'monto', --clave
 	'7', --orden
-	'Monto', --titulo
+	'Monto Total', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'col-num-p1', --estilo
 	NULL, --ancho

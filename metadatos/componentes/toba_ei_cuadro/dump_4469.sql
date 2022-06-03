@@ -23,7 +23,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'Disciplinas Personales Mincyt - cuadro', --nombre
 	NULL, --titulo
 	'0', --colapsable
-	NULL, --descripcion
+	'Listado de participantes de los proyectos de investigación', --descripcion
 	NULL, --fuente_datos_proyecto
 	NULL, --fuente_datos
 	NULL, --solicitud_registrar

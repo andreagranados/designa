@@ -553,11 +553,24 @@ class dt_pinvestigacion extends toba_datos_tabla
                     }
 		}
                 if (isset($filtro['fec_desde']['valor'])) {
-			$where .= " and t_p.fec_desde= ".quote($filtro['fec_desde']['valor']);   
-		}
-                if (isset($filtro['fec_hasta']['valor'])) {
-			$where .= " and t_p.fec_hasta= ".quote($filtro['fec_hasta']['valor']);   
-		}
+                       switch ($filtro['fec_desde']['condicion']) {
+                                case 'es_distinto_de':$where.=" and t_p.fec_desde<>".quote($filtro['fec_desde']['valor']);break;
+                                case 'es_igual_a':$where.=" and t_p.fec_desde = ".quote($filtro['fec_desde']['valor']);break;
+                                case 'desde':$where.=" and t_p.fec_desde >=".quote($filtro['fec_desde']['valor']);break;
+                                case 'hasta':$where.=" and t_p.fec_desde <=".quote($filtro['fec_desde']['valor']);break;
+                                case 'entre':$where.=" and t_p.fec_desde>=".quote($filtro['fec_desde']['valor']['desde'])." and t_p.fec_desde<=".quote($filtro['fec_desde']['valor']['hasta']);break;
+                            }
+                  }
+               if (isset($filtro['fec_hasta']['valor'])) {
+                       switch ($filtro['fec_hasta']['condicion']) {
+                                case 'es_distinto_de':$where.=" and t_p.fec_hasta<>".quote($filtro['fec_hasta']['valor']);break;
+                                case 'es_igual_a':$where.=" and t_p.fec_hasta = ".quote($filtro['fec_hasta']['valor']);break;
+                                case 'desde':$where.=" and t_p.fec_hasta >=".quote($filtro['fec_hasta']['valor']);break;
+                                case 'hasta':$where.=" and t_p.fec_hasta <=".quote($filtro['fec_hasta']['valor']);break;
+                                case 'entre':$where.=" and t_p.fec_hasta>=".quote($filtro['fec_hasta']['valor']['desde'])." and t_p.fec_hasta<=".quote($filtro['fec_hasta']['valor']['hasta']);break;
+                            }
+                  }
+               
                 if(isset($filtro['respon'])){
                     if($filtro['respon']['valor']==1){
                         $where.=' and id_respon_sub is not null ';
@@ -627,7 +640,10 @@ class dt_pinvestigacion extends toba_datos_tabla
                       }
                   }
                   if (isset($filtro['id_convocatoria']['valor'])) {
-			$where .= " and t_p.id_convocatoria = ".$filtro['id_convocatoria']['valor'];   
+                      switch ($filtro['id_convocatoria']['condicion']) {
+                            case 'es_distinto_de':$where.=" and t_p.id_convocatoria <> ".$filtro['id_convocatoria']['valor'];break;
+                            case 'es_igual_a':$where.=" and and t_p.id_convocatoria = ".$filtro['id_convocatoria']['valor'];break;
+                      }
                     }
                   $where2='';
                   if (isset($filtro['desc_tipo']['valor'])) {

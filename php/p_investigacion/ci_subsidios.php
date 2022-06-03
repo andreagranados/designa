@@ -4,6 +4,7 @@ class ci_subsidios extends designa_ci
         protected $s__mostrar;
         protected $s__mostrar_c;
         protected $s__listado;
+        protected $s__datos;
       
                 
         function ini()
@@ -101,11 +102,27 @@ class ci_subsidios extends designa_ci
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-                $cuadro->set_datos($this->controlador()->controlador()->dep('datos')->tabla('subsidio')->get_subsidios_de($pi['id_pinv']));
+                $this->s__datos=$this->controlador()->controlador()->dep('datos')->tabla('subsidio')->get_subsidios_de($pi['id_pinv']);
+                $cuadro->set_datos($this->s__datos);
                 $this->pantalla()->tab("pant_rendicion")->desactivar(); 
             }
 	}
-        
+        function conf__cuadro_porc(toba_ei_cuadro $cuadro)
+	{
+            $suma_total = 0;
+            $suma_gasto_rrhh = 0;
+            foreach ($this->s__datos as $key => $value) {
+                $suma_total=$suma_total+$value['monto'];
+                $suma_gasto_rrhh=$suma_gasto_rrhh+$value['gasto_rrhh'];
+            }
+            $x= [
+                'total' => $suma_total,
+                'gasto_rrhh'=> $suma_gasto_rrhh,
+                'porc' => $suma_gasto_rrhh/$suma_total*100     
+                    ];
+            $y = [$x];
+            $cuadro->set_datos($y);
+	}
         function evt__cuadro_subsidio__seleccion($datos)
         {
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();

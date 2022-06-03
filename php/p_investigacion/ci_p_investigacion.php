@@ -14,6 +14,7 @@ class ci_p_investigacion extends toba_ci
             if (isset($this->s__datos_filtro)) {
                 $filtro->set_datos($this->s__datos_filtro);
 		}
+            $filtro->columna('uni_acad')->set_condicion_fija('es_igual_a',true)  ;
 	}
 
 	function evt__filtros__filtrar($datos)

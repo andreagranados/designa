@@ -169,7 +169,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3452', --objeto_cuadro_col
 	'nombre', --clave
 	'1', --orden
-	'Integrante', --titulo
+	'Participante', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'0', --estilo
 	NULL, --ancho

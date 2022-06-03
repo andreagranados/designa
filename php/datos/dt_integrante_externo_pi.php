@@ -215,23 +215,52 @@ class dt_integrante_externo_pi extends toba_datos_tabla
     function get_todas_plantillas($filtro=null){
         $where=" where 1=1";
         if (isset($filtro['clas']['valor'])) {
-                      switch ($filtro['clas']['valor']) {
-                            case 'I':$where.=" and (funcion_p='D' or funcion_p='DpP' or funcion_p='C' or funcion_p='ID')";break;
-                            case 'B':$where.=" and (funcion_p='BA' or funcion_p='BUGI' or funcion_p='BUGP' or funcion_p='BCNA' or funcion_p='BF')";break;
-                            case 'T':$where.=" and (funcion_p='IA' or funcion_p='AT' or funcion_p='IND' or funcion_p='EU'  or funcion_p='BCIN' or funcion_p='BUIA' or funcion_p='IAp')";break;
+                      switch ($filtro['clas']['condicion']) {
+                           case 'es_distinto_de':$where.=" and cat_mincyt<>'".$filtro['clas']['valor']."'";break;
+                           case 'es_igual_a':$where.=" and cat_mincyt= '".$filtro['clas']['valor']."'";break;
                       }
         }
-         if (isset($filtro['jornada']['valor'])) {
+        if (isset($filtro['estado']['valor'])) {
+                      switch ($filtro['estado']['condicion']) {
+                           case 'es_distinto_de':$where.=" and estado<>'".$filtro['estado']['valor']."'";break;
+                           case 'es_igual_a':$where.=" and estado= '".$filtro['estado']['valor']."'";break;
+                      }
+        }
+        if (isset($filtro['tipo']['valor'])) {
+                      switch ($filtro['tipo']['condicion']) {
+                           case 'es_distinto_de':$where.=" and tipo<>'".$filtro['tipo']['valor']."'";break;
+                           case 'es_igual_a':$where.=" and tipo= '".$filtro['tipo']['valor']."'";break;
+                      }
+        }
+        if (isset($filtro['fec_desde']['valor'])) {
+               switch ($filtro['fec_desde']['condicion']) {
+                        case 'es_distinto_de':$where.=" and fec_desde<>".quote($filtro['fec_desde']['valor']);break;
+                        case 'es_igual_a':$where.=" and fec_desde = ".quote($filtro['fec_desde']['valor']);break;
+                        case 'desde':$where.=" and fec_desde>=".quote($filtro['fec_desde']['valor']);break;
+                        case 'hasta':$where.=" and fec_desde <=".quote($filtro['fec_desde']['valor']);break;
+                        case 'entre':$where.=" and fec_desde>=".quote($filtro['fec_desde']['valor']['desde'])." and fec_desde<=".quote($filtro['fec_desde']['valor']['hasta']);break;
+                    }
+          }
+        if (isset($filtro['fec_hasta']['valor'])) {
+               switch ($filtro['fec_hasta']['condicion']) {
+                        case 'es_distinto_de':$where.=" and fec_hasta<>".quote($filtro['fec_hasta']['valor']);break;
+                        case 'es_igual_a':$where.=" and fec_hasta = ".quote($filtro['fec_hasta']['valor']);break;
+                        case 'desde':$where.=" and fec_hasta >=".quote($filtro['fec_hasta']['valor']);break;
+                        case 'hasta':$where.=" and fec_hasta <=".quote($filtro['fec_hasta']['valor']);break;
+                        case 'entre':$where.=" and fec_hasta>=".quote($filtro['fec_hasta']['valor']['desde'])." and fec_hasta<=".quote($filtro['fec_hasta']['valor']['hasta']);break;
+                    }
+          }
+        if (isset($filtro['jornada']['valor'])) {
                       switch ($filtro['jornada']['valor']) {
                             case 'C':$where.=" and carga_horaria>=30 ";break;
                             case 'P':$where.=" and carga_horaria>=4 and carga_horaria<30 ";break;
                             case 'S':$where.=" and carga_horaria<4 ";break;
                       }
         }
-         if (isset($filtro['tipo_sexo']['valor'])) {
+        if (isset($filtro['tipo_sexo']['valor'])) {
                       switch ($filtro['tipo_sexo']['condicion']) {
-                           case 'es_distinto_de':$where.=" and tipo_sexo<>'".$filtro['tipo_sexo']['valor']."'";break;
-                           case 'es_igual_a':$where.=" and tipo_sexo= '".$filtro['tipo_sexo']['valor']."'";break;
+                           case 'es_distinto_de':$where.=" and tipo_sexo<>".quote($filtro['tipo_sexo']['valor']);break;
+                           case 'es_igual_a':$where.=" and tipo_sexo= ".quote($filtro['tipo_sexo']['valor']);break;
                       }
         }
         if (isset($filtro['edad']['valor'])) {
@@ -267,27 +296,38 @@ class dt_integrante_externo_pi extends toba_datos_tabla
           }
            if (isset($filtro['cod_regional']['valor'])) {
                switch ($filtro['cod_regional']['condicion']) {
-                   case 'es_distinto_de':$where.=" and cod_regional<>'".$filtro['cod_regional']['valor']."'";break;
-                   case 'es_igual_a':$where.=" and cod_regional = '".$filtro['cod_regional']['valor']."'";break;
+                   case 'es_distinto_de':$where.=" and cod_regional<>".quote($filtro['cod_regional']['valor']);break;
+                   case 'es_igual_a':$where.=" and cod_regional = ".quote($filtro['cod_regional']['valor']);break;
                }
           }
+           if (isset($filtro['discpersonal']['valor'])) {
+               switch ($filtro['discpersonal']['condicion']) {
+                   case 'es_distinto_de':$where.=" and discpersonal<>".quote($filtro['discpersonal']['valor']);break;
+                   case 'es_igual_a':$where.=" and discpersonal = ".quote($filtro['discpersonal']['valor']);break;
+               }
+          }
+          
         $sql=$this->get_plantilla(0);
         
-        $sql="select * from (select distinct sub.id_pinv,sub.codigo,nombre,fec_nacim,tipo_docum,nro_docum,tipo_sexo,categoria,ua,carga_horaria,funcion_p, cat_invest, cuil,titulo, titulop,cat_invest_conicet,orden,desde,tit_preg,tit_grad ,edad(fec_nacim) as edad,t_p.id_disciplina, t_d.descripcion as discip,t_o.id_obj,t_o.descripcion as obj_se,cod_regional, discpersonal, grupo  "
+        $sql="select * from (select distinct sub.id_pinv,sub.codigo,t_p.fec_desde,t_p.fec_hasta,t_p.tipo,t_p.estado,nombre,fec_nacim,tipo_docum,nro_docum,tipo_sexo,categoria,ua,carga_horaria,funcion_p,t_f.cat_mincyt, cat_invest, cuil,titulo, titulop,cat_invest_conicet,sub.orden,desde,tit_preg,tit_grad ,edad(fec_nacim) as edad,t_p.id_disciplina, t_d.descripcion as discip,t_o.id_obj,t_o.descripcion as obj_se,cod_regional, discpersonal, grupo "
+                . ", case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'PROYECTO DE PROGRAMA' else 'PROYECTO' end end as desc_tipo "
                           . " from (".$sql.") sub
                             INNER JOIN pinvestigacion t_p ON (t_p.id_pinv=sub.id_pinv)
+                            LEFT OUTER JOIN subproyecto as b ON (t_p.id_pinv=b.id_proyecto)
                             LEFT OUTER JOIN unidad_acad t_u ON (t_u.sigla=t_p.uni_acad)
                             LEFT OUTER JOIN disciplina t_d ON (t_d.id_disc=t_p.id_disciplina)
                             LEFT OUTER JOIN objetivo_se t_o ON (t_o.id_obj=t_p.id_obj)
+                            LEFT OUTER JOIN funcion_investigador t_f ON (sub.funcion_p=t_f.id_funcion) 
                             )sub2". $where;
+              
         return toba::db('designa')->consultar($sql);
     }
 
         function get_plantilla($id_p){
             $concat='';
             if($id_p==0){//todas las plantillas
-                $where=" where p.estado='A' and p.tipo<>'RECO' and check_inv=1";
-                $where2=" where p.estado='A' and p.tipo<>'RECO' and check_inv=1";
+                $where=" where check_inv=1";//" where p.estado='A' and p.tipo<>'RECO' and check_inv=1";
+                $where2=" where check_inv=1";//" where p.estado='A' and p.tipo<>'RECO' and check_inv=1"
                 $orden=' order by codigo,orden,nombre';
             }else{//la plantilla de un proyecto en particular   
                 $orden=" order by orden,nombre ";

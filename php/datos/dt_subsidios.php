@@ -41,15 +41,28 @@ class dt_subsidios extends designa_datos_tabla
             
         }
         function get_subsidios_de($id_proy){
-            $sql="select t_s.*,trim(t_d.apellido)||','||trim(t_d.nombre) as responsable, case when t_s.fecha_pago is null or extract(year from t_s.fecha_pago)<2021 then 0 else case when sub.nro_subsidio is null then t_s.monto else t_s.monto-sub.total end end as saldo"
+            $sql="select t_s.*,trim(t_d.apellido)||','||trim(t_d.nombre) as responsable, "
+                    . " case when t_s.fecha_pago is null or extract(year from t_s.fecha_pago)<2021 then 0 else t_s.monto - (case when sub.gasto_otro is null then 0 else sub.gasto_otro end +case when sub2.gasto_rrhh is null then 0 else sub2.gasto_rrhh end) end as saldo "
+                    . ",sub.gasto_otro,sub2.gasto_rrhh,sub2.gasto_rrhh/sub3.total*100 as porc"
                     . " from subsidio t_s "
                     . " LEFT OUTER JOIN docente t_d ON (t_s.id_respon_sub=t_d.id_docente)"
-                    . " LEFT OUTER JOIN (select nro_subsidio,id_proyecto,sum(importe)as total "
+                    . " LEFT OUTER JOIN (select nro_subsidio,id_proyecto,sum(importe)as gasto_otro "//total
                     . "                  from comprob_rendicion_subsidio"
-                    . "                  group by nro_subsidio,id_proyecto )sub ON sub.nro_subsidio=t_s.numero"
-                    . "                                                          and sub.id_proyecto=t_s.id_proyecto"
+                    . "                  where id_rubro<>3"
+                    . "                  group by nro_subsidio,id_proyecto )sub ON (sub.nro_subsidio=t_s.numero"
+                    . "                                                          and sub.id_proyecto=t_s.id_proyecto)"
+                    . " LEFT OUTER JOIN (select nro_subsidio,id_proyecto,sum(importe)as gasto_rrhh "
+                    . "                  from comprob_rendicion_subsidio"
+                    . "                  where id_rubro=3"
+                    . "                  group by nro_subsidio,id_proyecto )sub2 ON (sub2.nro_subsidio=t_s.numero"
+                    . "                                                          and sub2.id_proyecto=t_s.id_proyecto)"
+                    . " LEFT OUTER JOIN (select id_proyecto,sum(monto)as total "//total de todos los subsidios del proyecto
+                    . "                  from subsidio "
+                    . "                  group by id_proyecto )sub3 ON (sub3.id_proyecto=t_s.id_proyecto)"
+                    
                     . " where t_s.id_proyecto=".$id_proy
                     ." order by t_s.numero";
+            
             return toba::db('designa')->consultar($sql);
         }
     

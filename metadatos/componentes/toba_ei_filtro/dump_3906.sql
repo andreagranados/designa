@@ -135,7 +135,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'opciones', --tipo
 	'anio', --nombre
 	'anio', --expresion
-	'Período', --etiqueta
+	'Año Fecha Salida', --etiqueta
 	'Año de fecha de salida', --descripcion
 	'0', --obligatorio
 	'1', --inicial
