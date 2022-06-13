@@ -266,7 +266,8 @@ class ci_subsidios extends designa_ci
                         $user=getenv('DB_USER_SL');
                         $password=getenv('DB_PASS_SL');
                         
-                        $nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/subsidios/'.$datos['archivo_comprob'];
+                        //$nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/subsidios/'.$datos['archivo_comprob'];
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$datos['archivo_comprob']."?ssid=64efc1086e32464ba39452cda68c7f73&fid=64efc1086e32464ba39452cda68c7f73&path=%2F&filename=".$datos['archivo_comprob']."&openfolder=normal&ep=";
                         $datos['archivo_comprob']='';
                         $datos['imagen_vista_previa_t'] = "<a target='_blank' href='{$nomb_ft}' >comprobante</a>";
                     }
