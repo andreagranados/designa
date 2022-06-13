@@ -210,7 +210,8 @@ class ci_subsidios extends designa_ci
                     if($this->s__datos[$key]['archivo_comprob']<>null and $this->s__datos[$key]['archivo_comprob']<>''){//tiene valor
                         $user=getenv('DB_USER_SL');
                         $password=getenv('DB_PASS_SL');
-                        $nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/subsidios/'.$this->s__datos[$key]['archivo_comprob'];
+                        //$nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/subsidios/'.$this->s__datos[$key]['archivo_comprob'];
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$this->s__datos[$key]['archivo_comprob']."?ssid=64efc1086e32464ba39452cda68c7f73&fid=64efc1086e32464ba39452cda68c7f73&path=%2F&filename=".$this->s__datos[$key]['archivo_comprob']."&openfolder=normal&ep=";
                         $this->s__datos[$key]['archivo']="<a href='{$nomb_ft}' target='_blank'>archivo</a>";
                     }
                 }
