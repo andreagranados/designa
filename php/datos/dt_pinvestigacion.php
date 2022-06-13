@@ -648,7 +648,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                   if (isset($filtro['id_convocatoria']['valor'])) {
                       switch ($filtro['id_convocatoria']['condicion']) {
                             case 'es_distinto_de':$where.=" and t_p.id_convocatoria <> ".$filtro['id_convocatoria']['valor'];break;
-                            case 'es_igual_a':$where.=" and and t_p.id_convocatoria = ".$filtro['id_convocatoria']['valor'];break;
+                            case 'es_igual_a':$where.=" and t_p.id_convocatoria = ".$filtro['id_convocatoria']['valor'];break;
                       }
                     }
                   $where2='';
