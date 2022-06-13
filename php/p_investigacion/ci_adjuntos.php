@@ -525,12 +525,14 @@ class ci_adjuntos extends designa_ci
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_avance_ft'])){
-                        $nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];
+                        //$nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_ft']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_ft']."&openfolder=normal&ep=";
                         $datos['informe_avance_ft']=$ins['informe_avance_ft'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['informe_avance_dp'])){
-                        $nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
+                        //$nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
+                        $nomb_dir="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_dp']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_dp']."&openfolder=normal&ep=";
                         $datos['informe_avance_dp']=$ins['informe_avance_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }
@@ -541,8 +543,8 @@ class ci_adjuntos extends designa_ci
      
        function evt__form_adj_ia__guardar($datos)
         {            // Definimos las variables
-            $ruta="/adjuntos_proyectos_inv";
-
+            $ruta="/adjuntos_proyectos_inv/informes";
+            
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $band=$this->dep('datos')->tabla('presentacion_informes')->puedo_modificar_informe('IA',$pi['fec_desde']);
@@ -609,12 +611,14 @@ class ci_adjuntos extends designa_ci
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_final_ft'])){
-                        $nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_ft'];
+                        //$nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_ft'];
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_ft']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_ft']."&openfolder=normal&ep=";
                         $datos['informe_final_ft']=$ins['informe_final_ft'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['informe_final_dp'])){
-                        $nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_dp'];
+                        //$nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_dp'];
+                        $nomb_dir="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_dp']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_dp']."&openfolder=normal&ep=";
                         $datos['informe_final_dp']=$ins['informe_final_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }
@@ -624,7 +628,7 @@ class ci_adjuntos extends designa_ci
         }
   function evt__form_adj_if__guardar($datos)
         {            // Definimos las variables
-            $ruta="/adjuntos_proyectos_inv";
+            $ruta="/adjuntos_proyectos_inv/informes";
 
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
