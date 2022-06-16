@@ -276,10 +276,11 @@ class dt_integrante_externo_pi extends toba_datos_tabla
           }
           if (isset($filtro['grado_acad']['valor'])) {
                switch ($filtro['grado_acad']['valor']) {
-                   case 'POS1':$where.=" and titulop like 'DOC%'";break;
-                   case 'POS2':$where.=" and titulop like 'MA%'";break;
-                   case 'TERC':$where.=" and tit_preg is not null and tit_preg<>''";break;
-                   case 'GRAD':$where.=" and tit_grad is not null and tit_grad<>'' ";break;
+                   case 'POS1':$where.=" and (titulop like 'DOC%' or titulop like 'DOCTEU%' or titulop like 'PH.%')";break;
+                   case 'POS2':$where.=" and (titulop like 'MA%' or titulop like 'MSc%')";break;
+                   case 'POS3':$where.=" and (titulop like 'ESPE%' or titulop like '%ESPECIALISTA%')";break;
+                   case 'GRAD':$where.=" and tit_grad is not null and tit_grad<>'' and titulop is null";break;
+                   case 'TERC':$where.=" and tit_preg is not null and tit_preg<>'' and titulop is null and tit_grad is null";break;
                }
           }
            if (isset($filtro['id_disciplina']['valor'])) {
@@ -397,16 +398,19 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " LEFT OUTER JOIN designacion t_d2 ON (t_d2.id_docente=t_d.id_docente
                                     and t_d2.cat_mapuche=t_d.cat_mapuche and t_d2.cat_estat<>'AYS' and
                                     t_d2.desde < t_i.hasta and ( t_d2.hasta is null or t_d2.hasta>t_i.desde)) "//solo si tiene esa categ vigente dentro de la participacion la muestra
-                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+                //. " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+                . " LEFT OUTER JOIN (select id_docente, STRING_AGG (desc_titul,' - ') as desc_titul    
                                     from titulos_docente t_t , titulo t_u 
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='PREG'
                                     group by id_docente)  d
                     ON (d.id_docente=t_do.id_docente)              "
-                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+                //. " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+                 . " LEFT OUTER JOIN (select id_docente, STRING_AGG (desc_titul,' - ') as desc_titul    
                                     from titulos_docente t_t , titulo t_u 
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD'
                                     group by id_docente)  b
                     ON (b.id_docente=t_do.id_docente)              "
+                  //en los de postgrado aparece el de mayor orden
                . " LEFT OUTER JOIN (select sub1.id_docente,max(desc_titul) as desc_titul from 
                                     (select * from titulos_docente t_t, titulo t_u 
                                                      where t_t.codc_titul=t_u.codc_titul and codc_nivel='POST' )sub1
@@ -447,20 +451,27 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " LEFT OUTER JOIN disciplina_mincyt dic on (dic.codigo=t_do.disc_personal_mincyt) "  
                 . " LEFT OUTER JOIN funcion_investigador t_f ON (t_i.funcion_p=t_f.id_funcion) "
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
-                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+                //. " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+                  . " LEFT OUTER JOIN (select id_docente, STRING_AGG (desc_titul,' - ') as desc_titul
                                     from titulos_docente t_t , titulo t_u 
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='PREG'
                                     group by id_docente)  d
                     ON (d.id_docente=t_do.id_docente)              "
-                . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+               // . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
+                   . " LEFT OUTER JOIN (select id_docente, STRING_AGG (desc_titul,' - ') as desc_titul
                                     from titulos_docente t_t , titulo t_u 
                                     where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='GRAD'
                                     group by id_docente)  b
                     ON (b.id_docente=t_do.id_docente)              "
-               . " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
-                                    from titulos_docente t_t , titulo t_u 
-                                    where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='POST'
-                                    group by id_docente)  c
+                  //en los de postgrado aparece el de mayor orden
+               . " LEFT OUTER JOIN (select sub1.id_docente,max(desc_titul) as desc_titul from 
+                                    (select * from titulos_docente t_t, titulo t_u 
+                                                     where t_t.codc_titul=t_u.codc_titul and codc_nivel='POST' )sub1
+                                    inner join (select id_docente, max(orden) as orden
+                                                                        from titulos_docente t_t , titulo t_u 
+                                                                        where t_t.codc_titul=t_u.codc_titul and t_u.codc_nivel='POST'
+                                                                        group by id_docente)sub2 on (sub1.orden=sub2.orden and sub1.id_docente=sub2.id_docente)
+                                    group by sub1.id_docente)  c
                     ON (c.id_docente=t_do.id_docente)              "
                .$where
                              ." and t_i.funcion_p in ('BCIN','BUGI','BUIA','BUGP') and t_i.hasta>=current_date  $concat) "

@@ -372,6 +372,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'Grado Académico', --etiqueta
 	'POS1 (Doctorados) <br>
 POS2 (Maestrias) <br>
+POS3 (Especialidades) <br>
 GRAD <br>
 TERC <br>', --descripcion
 	'0', --obligatorio
@@ -387,7 +388,7 @@ TERC <br>', --descripcion
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
 	'designa', --carga_fuente
-	'POS1,POS2,GRAD,TERC', --carga_lista
+	'POS1,POS2,POS3,GRAD,TERC', --carga_lista
 	NULL, --carga_col_clave
 	NULL, --carga_col_desc
 	'1', --carga_permite_no_seteado
