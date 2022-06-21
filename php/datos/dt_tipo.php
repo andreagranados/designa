@@ -16,8 +16,12 @@ class dt_tipo extends toba_datos_tabla
 	function get_descripciones()
 	{
 		$sql = "SELECT desc_abrev, desc_item FROM tipo ORDER BY desc_item";
-		return toba::db('designa')->consultar($sql);
-                
+		return toba::db('designa')->consultar($sql);      
+	}
+        function get_descripciones_cod_regional()
+	{
+		$sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=6 ORDER BY desc_item";
+		return toba::db('designa')->consultar($sql);      
 	}
         function get_descripciones_tipodoc()
 	{
