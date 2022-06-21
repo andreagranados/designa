@@ -53,7 +53,25 @@ class ci_adjuntos extends designa_ci
 
 	}
      
+        //-----------------------------------------------------------------------------------
+	//---- Configuraciones --------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
 
+	function conf()
+        {
+           if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $pertenece=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->pertenece_programa($pi['id_pinv']);
+                if($pi['es_programa']==0){//no es programa
+                    if($pertenece!=0){// pertenece a un programa, es un subproyecto  
+                        //si pertenece a un programa entonces el subsidio lo recibe el programa
+                       $this->pantalla()->tab("pant_iavance")->desactivar();
+                       $this->pantalla()->tab("pant_ifinal")->desactivar();	 	 
+                     }
+                }
+                
+           }
+        }
          function conf__pant_inicial(toba_ei_pantalla $pantalla)
         {
             $this->s__pantalla='pant_inicial';

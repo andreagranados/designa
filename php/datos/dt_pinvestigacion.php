@@ -621,6 +621,12 @@ class dt_pinvestigacion extends toba_datos_tabla
                             case 'es_igual_a':$where.=" and tipo = '".$filtro['tipo']['valor']."'";break;
                       }
                   }
+                   if (isset($filtro['tipo2']['valor'])) {
+                      switch ($filtro['tipo2']['condicion']) {
+                            case 'es_distinto_de':$where.=" and tipo  !='".$filtro['tipo2']['valor']."'";break;
+                            case 'es_igual_a':$where.=" and tipo = '".$filtro['tipo2']['valor']."'";break;
+                      }
+                  }
                   if (isset($filtro['id_disciplina']['valor'])) {
                       switch ($filtro['id_disciplina']['condicion']) {
                             case 'es_distinto_de':$where.=" and t_p.id_disciplina  !=".$filtro['id_disciplina']['valor'];break;

@@ -232,6 +232,12 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                            case 'es_igual_a':$where.=" and tipo= '".$filtro['tipo']['valor']."'";break;
                       }
         }
+         if (isset($filtro['tipo2']['valor'])) {
+                      switch ($filtro['tipo2']['condicion']) {
+                           case 'es_distinto_de':$where.=" and tipo<>'".$filtro['tipo2']['valor']."'";break;
+                           case 'es_igual_a':$where.=" and tipo= '".$filtro['tipo2']['valor']."'";break;
+                      }
+        }
         if (isset($filtro['fec_desde']['valor'])) {
                switch ($filtro['fec_desde']['condicion']) {
                         case 'es_distinto_de':$where.=" and fec_desde<>".quote($filtro['fec_desde']['valor']);break;
