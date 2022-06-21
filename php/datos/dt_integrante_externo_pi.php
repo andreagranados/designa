@@ -251,12 +251,21 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                     }
           }
         if (isset($filtro['jornada']['valor'])) {
-                      switch ($filtro['jornada']['valor']) {
-                            case 'C':$where.=" and carga_horaria>=30 ";break;
-                            case 'P':$where.=" and carga_horaria>=4 and carga_horaria<30 ";break;
-                            case 'S':$where.=" and carga_horaria<4 ";break;
-                      }
+            switch ($filtro['jornada']['condicion']) {
+                 case 'es_igual_a': switch ($filtro['jornada']['valor']) {
+                                    case 'C':$where.=" and carga_horaria>=30 ";break;
+                                    case 'P':$where.=" and carga_horaria>=4 and carga_horaria<30 ";break;
+                                    case 'S':$where.=" and carga_horaria<4 ";break;
+                                    }break;
+                 case 'es_distinto_de':switch ($filtro['jornada']['valor']) {
+                                    case 'C':$where.=" and carga_horaria<30 ";break;
+                                    case 'P':$where.=" and (carga_horaria>=30 or carga_horaria<4 )";break;
+                                    case 'S':$where.=" and carga_horaria>=4 ";break;
+                                    }break;
+            }
+                      
         }
+        
         if (isset($filtro['tipo_sexo']['valor'])) {
                       switch ($filtro['tipo_sexo']['condicion']) {
                            case 'es_distinto_de':$where.=" and tipo_sexo<>".quote($filtro['tipo_sexo']['valor']);break;
