@@ -809,7 +809,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'3488', --objeto_ei_formulario
 	'designa', --objeto_ei_formulario_proyecto
 	'cod_siu', --identificador
-	'ef_editable_numero', --elemento_formulario
+	'ef_editable', --elemento_formulario
 	'cod_siu', --columnas
 	'0', --obligatorio
 	'0', --oculto_relaja_obligatorio
