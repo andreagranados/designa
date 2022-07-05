@@ -150,7 +150,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'3678', --evento_id
 	'3620', --objeto
 	'suscodirec', --identificador
-	'Codirector', --etiqueta
+	'Vicedirector', --etiqueta
 	'1', --maneja_datos
 	'1', --sobre_fila
 	NULL, --confirmacion

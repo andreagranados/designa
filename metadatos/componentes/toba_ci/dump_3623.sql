@@ -446,7 +446,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1800', --pantalla
 	'pant_codirector', --identificador
 	'6', --orden
-	'Codirectores', --etiqueta
+	'Vicedirectores', --etiqueta
 	NULL, --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen

@@ -25,7 +25,7 @@ class dt_codirector_dpto extends toba_datos_tabla
         }
     }
     function control_superposicion_modif($id_doc,$dpto,$desde,$d,$h){//todos menos el que selecciono
-        $sql="select * from director_dpto a 
+        $sql="select * from codirector_dpto a 
             left join (select * from director_dpto
             where iddepto=".$dpto
             ." and id_docente=".$id_doc

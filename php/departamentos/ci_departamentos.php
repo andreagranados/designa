@@ -477,7 +477,7 @@ class ci_departamentos extends toba_ci
 		$form->set_datos($this->dep('datos')->tabla('codirector_dpto')->get());
 	    }
 	}
-        //puede haber varios codirectores en el mismo periodo
+        //puede haber varios vicedirectores/codirectores en el mismo periodo
         function evt__form_codir__guardar($datos)
 	{
             if($datos['hasta']>$datos['desde']){
@@ -498,22 +498,16 @@ class ci_departamentos extends toba_ci
             $this->dep('datos')->tabla('codirector_dpto')->resetear();
             $this->s__alta_codirec=0;
 	}
-
+//puede haber varios vicedirectores/codirectores en el mismo periodo por eso no controlo la superposicion de fechas
 	function evt__form_codir__modificacion($datos)
 	{
            if($datos['hasta']>$datos['desde']){
                $dep=$this->dep('datos')->tabla('codirector_dpto')->get();//id_docente, iddepto, desde
-               $band=$this->dep('datos')->tabla('codirector_dpto')->control_superposicion_modif($dep['id_docente'],$dep['iddepto'],$dep['desde'],$datos['desde'],$datos['hasta']);
-               if($band){
-                    $this->dep('datos')->tabla('codirector_dpto')->set($datos);
-                    $this->dep('datos')->tabla('codirector_dpto')->sincronizar();
-                    $this->dep('datos')->tabla('codirector_dpto')->resetear();   
-                    toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
-                    $this->s__alta_codirec=0;
-               }else{
-                    toba::notificacion()->agregar('Hay superposicion de fechas', 'info');
-               }
-              
+                $this->dep('datos')->tabla('codirector_dpto')->set($datos);
+                $this->dep('datos')->tabla('codirector_dpto')->sincronizar();
+                $this->dep('datos')->tabla('codirector_dpto')->resetear();   
+                toba::notificacion()->agregar('Los datos se guardaron correctamente', 'info');
+                $this->s__alta_codirec=0;
            }else{
                toba::notificacion()->agregar('La fecha hasta debe ser mayor a la fecha desde', 'info');
            }
