@@ -49,17 +49,17 @@ class form_obligatorio extends toba_ei_formulario
 						break;					
 				}
 			}
-                        {$this->objeto_js}.obligatorio = function(visible)
+                         {$this->objeto_js}.obligatorio = function(visible)
 			{
 				this.ef('nro_resol_baja').mostrar(visible);
                                 this.ef('fec_baja').mostrar(visible);
-
 			}
-			 {$this->objeto_js}.resobligatorio = function(visible)
+			{$this->objeto_js}.resobligatorio = function(visible)
 			{
 				this.ef('nro_resol').mostrar(visible);
                                 this.ef('fec_resol').mostrar(visible);
-
+                                this.ef('resol').mostrar(visible);                                
+                                this.ef('imagen_vista_previa_resol').mostrar(visible);                                
 			}
                         ";
     }

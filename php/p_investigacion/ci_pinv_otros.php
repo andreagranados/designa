@@ -249,6 +249,14 @@ class ci_pinv_otros extends designa_ci
         {
             if ($this->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if ($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
+                    $adj=$this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
+                    if(isset($adj['resolucion'])){
+                        $nomb_ft='/designa/1.0/adjuntos_proyectos_inv/resoluciones/'.$adj['resolucion'];//en windows
+                        $pi['resol']='resolucion';//para que no aparezca el nombre con el que se guarda el archivo
+                        $pi['imagen_vista_previa_resol']="<a target='_blank' href='{$nomb_ft}' >resol</a>";;
+                    }
+                }
                // if($pi['estado']=='R'){ $componente->ef('observacion')->set_obligatorio(1); }
                 $componente->set_datos($pi);
             }
@@ -301,26 +309,42 @@ class ci_pinv_otros extends designa_ci
                             }else{//no cambio el estado
                                 $datos2['estado']=$pi['estado'];
                             }
-                            $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
-                            if ( isset($datos['nro_resol']) and !preg_match($regenorma, $datos['nro_resol'], $matchFecha) ) {
-                            //toba::notificacion()->agregar('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY','error');
-                                throw new toba_error('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY');
-                            }else{
-                                //si modifica la resolucion entonces modifica la de los integrantes.
-                                if(trim($datos['nro_resol'])!=trim($pi['nro_resol'])){
-                                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
-                                      $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
-                                      $mensaje.=" Se ha modificado nro de resol de los integrantes";
-                                }
-                                $datos2['nro_resol']=$datos['nro_resol'];
-                                $datos2['fec_resol']=$datos['fec_resol'];
-                                $datos2['observacion']=$datos['observacion'];
-                                $datos2['disp_asent']=$datos['disp_asent'];
-                                $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
-                                $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();                               
-                                if($pi['es_programa']==1){
-                                   $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
-                                }
+                            if($verifica){
+                                $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+                                if ( isset($datos['nro_resol']) and !preg_match($regenorma, $datos['nro_resol'], $matchFecha) ) {
+                                //toba::notificacion()->agregar('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY','error');
+                                    throw new toba_error('Nro Resolucion CD invalida. Debe ingresar en formato XXXX/YYYY');
+                                }else{
+                                    //si modifica la resolucion entonces modifica la de los integrantes.
+                                    if(trim($datos['nro_resol'])!=trim($pi['nro_resol'])){
+                                          $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                                          $this->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_rescd($pi['id_pinv'],$datos['nro_resol']);
+                                          $mensaje.=" Se ha modificado nro de resol de los integrantes";
+                                    }
+                                    $datos2['nro_resol']=$datos['nro_resol'];
+                                    $datos2['fec_resol']=$datos['fec_resol'];
+                                    $datos2['observacion']=$datos['observacion'];
+                                    $datos2['disp_asent']=$datos['disp_asent'];
+
+                                    $this->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos2);
+                                    $this->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar(); 
+                                     //nuevo si adjunto resol
+                                    if ($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
+                                        if (isset($datos['resol'])) {
+                                            $nombre_ca="resolucion_".$pi['id_pinv'].".pdf";
+                                            $destino_ca=toba::proyecto()->get_path()."/www/adjuntos_proyectos_inv/resoluciones/".$nombre_ca;
+                                            if(move_uploaded_file($datos['resol']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                                               $datos3['resolucion']=strval($nombre_ca);
+                                               $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos3); 
+                                               $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();  
+                                               }
+                                        }
+                                     }
+                                    //
+                                    if($pi['es_programa']==1){
+                                       $this->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
+                                    }
+                                }   
                             }
                             toba::notificacion()->agregar($mensaje, 'info');   
                        }else{

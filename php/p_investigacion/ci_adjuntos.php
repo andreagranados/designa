@@ -554,6 +554,12 @@ class ci_adjuntos extends designa_ci
                         $datos['informe_avance_dp']=$ins['informe_avance_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }
+                    if(isset($ins['informe_avance_caratula'])){
+                        //$nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
+                        $nomb_dir="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_caratula']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_caratula']."&openfolder=normal&ep=";
+                        $datos['informe_avance_caratula']=$ins['informe_avance_caratula'];
+                        $datos['imagen_vista_previa_car'] = "<a target='_blank' href='{$nomb_dir}' >caratula</a>";
+                    }
                     return $datos;
                 }
             }
@@ -579,6 +585,16 @@ class ci_adjuntos extends designa_ci
                             ftp_pasv($conn_id, true);//activa modo pasivo. la conexion es iniciada por el cliente
                             # Cambiamos al directorio especificado
                             if(ftp_chdir($conn_id,$ruta)){
+                                if(isset($datos['informe_avance_caractula'])) {
+                                    $remote_file = $datos['informe_avance_caractula']['tmp_name'];
+                                    $nombre_ca=$id."_informe_avance_caractula.pdf";//nombre con el que se guarda el archivo
+                                    # Subimos el fichero
+                                    if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                            $datos2['informe_avance_caractula']=strval($nombre_ca);   
+                                            echo "Fichero subido correctamente";
+                                    }else
+                                            echo "No ha sido posible subir el fichero";  
+                                }
                                 if(isset($datos['informe_avance_ft'])) {
                                     $remote_file = $datos['informe_avance_ft']['tmp_name'];
                                     $nombre_ca=$id."_informe_avance_ft.pdf";//nombre con el que se guarda el archivo
@@ -621,13 +637,18 @@ class ci_adjuntos extends designa_ci
               }
         }
         //informe final
-         function conf__form_adj_if(toba_ei_formulario $form)
+        function conf__form_adj_if(toba_ei_formulario $form)
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 if ($this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     $datos['id_pinv']=$ins['id_pinv'];
+                    if(isset($ins['informe_final_caratula'])){
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_caratula']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_caratula']."&openfolder=normal&ep=";
+                        $datos['informe_final_caratula']=$ins['informe_final_caratula'];
+                        $datos['imagen_vista_previa_car'] = "<a target='_blank' href='{$nomb_ft}' >caratula</a>";
+                    }
                     if(isset($ins['informe_final_ft'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_ft'];
                         $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_ft']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_ft']."&openfolder=normal&ep=";
@@ -644,7 +665,7 @@ class ci_adjuntos extends designa_ci
                 }
             }
         }
-  function evt__form_adj_if__guardar($datos)
+    function evt__form_adj_if__guardar($datos)
         {            // Definimos las variables
             $ruta="/adjuntos_proyectos_inv/informes";
 
@@ -664,6 +685,16 @@ class ci_adjuntos extends designa_ci
                             ftp_pasv($conn_id, true);//activa modo pasivo. la conexion es iniciada por el cliente
                             # Cambiamos al directorio especificado
                             if(ftp_chdir($conn_id,$ruta)){
+                                if(isset($datos['informe_final_caratula'])) {
+                                    $remote_file = $datos['informe_final_caratula']['tmp_name'];
+                                    $nombre_ca=$id."_informe_final_caratula.pdf";//nombre con el que se guarda el archivo
+                                    # Subimos el fichero
+                                    if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
+                                            $datos2['informe_final_caratula']=strval($nombre_ca);   
+                                            echo "Fichero subido correctamente";
+                                    }else
+                                            echo "No ha sido posible subir el fichero";  
+                                }
                                 if(isset($datos['informe_final_ft'])) {
                                     $remote_file = $datos['informe_final_ft']['tmp_name'];
                                     $nombre_ca=$id."_informe_final_ft.pdf";//nombre con el que se guarda el archivo
