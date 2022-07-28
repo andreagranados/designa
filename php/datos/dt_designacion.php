@@ -1500,16 +1500,34 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                 }
                 
             }
+            //anio es filtro obligatorio
             if (isset($filtro['anio']['valor'])) {
               $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
               $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
               $where.=" and t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)";
-              $where2= " LEFT OUTER JOIN novedad b ON (a.id_designacion=b.id_designacion"
+              $where2= " LEFT OUTER JOIN (select * from novedad order by desde,hasta) b ON (a.id_designacion=b.id_designacion"
                     . " and b.tipo_nov in (2,5) "
                     . " and b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null))";
-              $seleccion=" case when b.id_novedad is null then 'A' else 'L' end as estado, ";
+              //$seleccion=" case when b.id_novedad is null then 'A' else 'L' end as estado, ";
+              $seleccion=" case when lic is not null then 'L' else case when estado='B' then 'B' else 'A' end end as estadon, ";
             }
-            $sql="select a.*,".$seleccion."t_de.descripcion as departamento,t_a.descripcion as area,t_o.descripcion as orientacion,t_n.tipo_norma||t_n.nro_norma||'/'||extract(year from t_n.fecha) as norma  from"
+//            $sql="select a.*,".$seleccion."t_de.descripcion as departamento,t_a.descripcion as area,t_o.descripcion as orientacion,t_n.tipo_norma||t_n.nro_norma||'/'||extract(year from t_n.fecha) as norma  from"
+//                    . "(select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_d.id_designacion, t_d.estado,t_d.cat_estat||t_d.dedic as cat_est,t_d.cat_mapuche as cat_map,t_d.carac,t_d.desde,t_d.hasta,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_d.id_norma"
+//                    . " from designacion t_d, docente t_do"
+//                    . " WHERE t_d.id_docente=t_do.id_docente"
+//                    . $where
+//                    ." order by desde"
+//                    . ")a"
+//                    .$where2
+//                    . " LEFT OUTER JOIN norma t_n ON (a.id_norma=t_n.id_norma)"
+//                    . " LEFT OUTER JOIN departamento t_de ON (a.id_departamento=t_de.iddepto)"
+//                    . " LEFT OUTER JOIN area t_a ON (a.id_area=t_a.idarea)"
+//                    . " LEFT OUTER JOIN orientacion t_o ON (a.id_orientacion=t_o.idorient and t_o.idarea=t_a.idarea)"
+//                    . "order by desde,hasta";
+            $sql="select $seleccion "." sub.* from"
+                    . "(select a.agente, a.legajo, a.id_designacion,a.estado,a.cat_est, a.cat_map, a.carac, a.desde, a.hasta, a.uni_acad, t_de.descripcion as departamento,t_a.descripcion as area,t_o.descripcion as orientacion,t_n.tipo_norma||t_n.nro_norma||'/'||extract(year from t_n.fecha) as norma"
+                    . ", STRING_AGG(to_char(b.desde,'DD/MM/YYYY')||'-'||to_char(b.hasta,'DD/MM/YYYY'),' Y ') as lic "
+                    . "from"
                     . "(select trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.legajo,t_d.id_designacion, t_d.estado,t_d.cat_estat||t_d.dedic as cat_est,t_d.cat_mapuche as cat_map,t_d.carac,t_d.desde,t_d.hasta,t_d.uni_acad,t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_d.id_norma"
                     . " from designacion t_d, docente t_do"
                     . " WHERE t_d.id_docente=t_do.id_docente"
@@ -1521,8 +1539,9 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
                     . " LEFT OUTER JOIN departamento t_de ON (a.id_departamento=t_de.iddepto)"
                     . " LEFT OUTER JOIN area t_a ON (a.id_area=t_a.idarea)"
                     . " LEFT OUTER JOIN orientacion t_o ON (a.id_orientacion=t_o.idorient and t_o.idarea=t_a.idarea)"
-                    . "order by desde,hasta";
-            
+                    . " group by a.agente, a.legajo, a.id_designacion, a.estado,a.cat_est, a.cat_map, a.carac, a.desde, a.hasta, a.uni_acad, t_n.tipo_norma, t_n.nro_norma,t_n.fecha,t_de.descripcion, t_a.descripcion,t_o.descripcion "
+                    . "order by uni_acad,desde,hasta"
+                    . ") sub";
             return toba::db('designa')->consultar($sql);       
         }
         function get_costo_liberado($filtro=array())
