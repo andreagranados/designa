@@ -257,7 +257,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'Incluir Anuladas?', --etiqueta
 	NULL, --etiqueta_estilo
 	'Seleccione "si" se desea incluir reservas que han sido anuladas y "no" si desea excluirlas.<br>
-No utilice selección ninguna opción cuando desee listar TODAS las reservas (anuladas y no anuladas)', --descripcion
+No utilice ninguna opción cuando desee listar TODAS las reservas (anuladas y no anuladas)', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
