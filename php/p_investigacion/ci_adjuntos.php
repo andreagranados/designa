@@ -568,7 +568,6 @@ class ci_adjuntos extends designa_ci
        function evt__form_adj_ia__guardar($datos)
         {            // Definimos las variables
             $ruta="/adjuntos_proyectos_inv/informes";
-            
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
                 $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                 $band=$this->dep('datos')->tabla('presentacion_informes')->puedo_modificar_informe('IA',$pi['fec_desde']);
@@ -585,12 +584,12 @@ class ci_adjuntos extends designa_ci
                             ftp_pasv($conn_id, true);//activa modo pasivo. la conexion es iniciada por el cliente
                             # Cambiamos al directorio especificado
                             if(ftp_chdir($conn_id,$ruta)){
-                                if(isset($datos['informe_avance_caractula'])) {
-                                    $remote_file = $datos['informe_avance_caractula']['tmp_name'];
-                                    $nombre_ca=$id."_informe_avance_caractula.pdf";//nombre con el que se guarda el archivo
+                                if(isset($datos['informe_avance_caratula'])) {
+                                    $remote_file = $datos['informe_avance_caratula']['tmp_name'];
+                                    $nombre_ca=$id."_informe_avance_caratula.pdf";//nombre con el que se guarda el archivo
                                     # Subimos el fichero
                                     if(ftp_put($conn_id,$nombre_ca,$remote_file, FTP_BINARY)){
-                                            $datos2['informe_avance_caractula']=strval($nombre_ca);   
+                                            $datos2['informe_avance_caratula']=strval($nombre_ca);   
                                             echo "Fichero subido correctamente";
                                     }else
                                             echo "No ha sido posible subir el fichero";  
