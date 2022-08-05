@@ -1,5 +1,6 @@
 <?php
 require_once 'dt_mocovi_periodo_presupuestario.php';
+require_once 'dt_convocatoria_proyectos.php';
 class dt_pinvestigacion extends toba_datos_tabla
 {
         function chequeo_previo_envio($id_pinv){
@@ -355,12 +356,18 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $con="select sigla,descripcion from unidad_acad ";
                 $con = toba::perfil_de_datos()->filtrar($con);
                 $resul=toba::db('designa')->consultar($con);
+               
                 if(count($resul)>1){//usuario de central
                     $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 ";
                 }else{//usuario de una UA
-                //le agrego al desplegable la opcion 0 sin programa
-                    //$sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 and uni_acad='".trim($resul[0]['sigla'])."'";
-                    $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 and usuario='".trim($usuario)."'";
+                //opcion 0(sin programa) mas los programas de la UA y de la convocatoria
+                    //$sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion from pinvestigacion where es_programa=1 and usuario='".trim($usuario)."'";
+                    $id_conv=dt_convocatoria_proyectos::get_convocatoria_actual_otro();
+                    $auxi="select id_pinv,substr(denominacion, 0, 50)||'...' as denominacion "
+                            . " from pinvestigacion p, unidad_acad u 
+                                where p.uni_acad=u.sigla and es_programa=1 and id_convocatoria=$id_conv";
+                    $auxi= toba::perfil_de_datos()->filtrar($auxi);//le aplico el perfil de datos
+                    $sql="select 0 as id_pinv,'SIN/PROGRAMA' as denominacion UNION ".$auxi;
                 }
                 $res=toba::db('designa')->consultar($sql);
                 return $res;
@@ -531,10 +538,12 @@ class dt_pinvestigacion extends toba_datos_tabla
                 $pd = toba::manejador_sesiones()->get_perfil_datos();
                 //print_r($pf);
                 $where = " WHERE 1=1 ";
-                //los directores solo pueden ver sus proyectos
+                $where1 = " WHERE 1=1 ";
+                //los directores solo pueden ver sus proyectos 
                 if(isset($pf)){//si tiene perfil funcional investigador_director 
                     if($pf[0]=='investigacion_director'){
-                        $where.=" and usuario='".$usuario."'";
+                        //$where.=" and usuario='".$usuario."'";
+                        $where1.=" and usuario='".$usuario."'";
                     }    
                 }
                 if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
@@ -786,7 +795,14 @@ class dt_pinvestigacion extends toba_datos_tabla
                       end   
                  end as cuilcod
 		FROM
-		pinvestigacion as t_p
+                  (select * from pinvestigacion
+                    $where1
+                    UNION
+                    select p.* from subproyecto s, pinvestigacion p
+                    where s.id_proyecto=p.id_pinv
+                    and s.id_programa in (select id_pinv from pinvestigacion
+                      $where1 and es_programa=1 ) 
+                          ) t_p   
                 LEFT OUTER JOIN disciplina t_di ON t_di.id_disc=t_p.id_disciplina
                 LEFT OUTER JOIN objetivo_se t_os ON t_os.id_obj=t_p.id_obj
                 LEFT OUTER JOIN tipo_de_inv t_in ON t_in.id=t_p.tdi

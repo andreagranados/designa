@@ -1,6 +1,20 @@
 <?php
 class dt_convocatoria_proyectos extends toba_datos_tabla
 {
+    //retorna  la convocatoria vigente para el tipo otro
+     function get_convocatoria_actual_otro(){
+            $actual=date('Y-m-d');
+            $anio_actual= date("Y", strtotime($actual));
+             
+            $sql="select id_conv from convocatoria_proyectos "
+                     ." where fec_inicio<='".$actual."' and fec_fin >='".$actual."'"
+                    . " and id_tipo=2";
+            $resul=toba::db('designa')->consultar($sql);
+            if(count($resul)>0){
+                return $resul[0]['id_conv'];
+            }else 
+                return null;
+        }
     //retorna  la convocatoria vigente para el tipo ingresado como argumento
         function get_convocatoria_actual($tipo){
             $actual=date('Y-m-d');
