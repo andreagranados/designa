@@ -654,19 +654,24 @@ class cargo_solapas extends toba_ci
                       
             $datos['nro_tab8']=8;      
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
-            $band=$this->controlador()->dep('datos')->tabla('conjunto')->control($datos['id_materia'],$datos['anio'],$datos['id_periodo'],$uni,$desig['id_designacion']);
+            $band=$this->controlador()->dep('datos')->tabla('conjunto')->control($datos['id_materia'],$datos['anio'],$datos['id_periodo'],$desig['id_designacion'],$datos['modulo']);
             if($band){
                  if ($datos['carga_horaria']>20){
                      throw new toba_error("La carga horaria semanal no puede ser mayor a 20");
                  }else{
-                    $datos['id_designacion']=$desig['id_designacion'];
-                    $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
-                    $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
-                    $this->s__alta_mate=0;//descolapsa el formulario de alta
+                    $band=$this->controlador()->dep('datos')->tabla('asignacion_materia')->no_repite($desig['id_designacion'],$datos['id_materia'],$datos['modulo'],$datos['anio']);
+                    if($band){
+                        $datos['id_designacion']=$desig['id_designacion'];
+                        $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
+                        $this->s__alta_mate=0;//descolapsa el formulario de alta 
+                    }else{
+                        throw new toba_error(utf8_decode('Ya existe el mismo módulo para la misma materia y año, seleccione otro módulo'));
+                    }
                  }
             }   else{
-                 toba::notificacion()->agregar('Ya tiene asociada una materia del conjunto', 'info');
-            }  
+                    throw new toba_error(utf8_decode('Ya tiene asociada una materia del conjunto (mismo año, período y módulo)'));
+                }  
 	}
         function evt__form_materias__baja($datos)
         {
@@ -680,11 +685,18 @@ class cargo_solapas extends toba_ci
             if ($datos['carga_horaria']>20){
                 toba::notificacion()->agregar('La carga horaria semanal no puede ser mayor a 20', 'info');
             }else{
-             $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
-             $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
-             toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
-             $this->s__alta_mate=0;//descolapsa el formulario de alta
-             $this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();
+                 $asigna=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get();
+                 $band=$this->controlador()->dep('datos')->tabla('conjunto')->control_modif($asigna['id_materia'],$asigna['modulo'],$asigna['anio'],$datos['id_materia'],$datos['anio'],$datos['id_periodo'],$asigna['id_designacion'],$datos['modulo']);
+                 if($band){
+                     $this->controlador()->dep('datos')->tabla('asignacion_materia')->set($datos);
+                     $this->controlador()->dep('datos')->tabla('asignacion_materia')->sincronizar();
+                     toba::notificacion()->agregar('Los datos se guardaron correctamente','info');
+                     $this->s__alta_mate=0;//descolapsa el formulario de alta
+                     $this->controlador()->dep('datos')->tabla('asignacion_materia')->resetear();
+                 }else{
+                   throw new toba_error(utf8_decode('Ya existe el mismo módulo para la misma materia y año, seleccione otro módulo'));  
+                 }
+                 
             }
         }
         function evt__form_materias__cancelar($datos)

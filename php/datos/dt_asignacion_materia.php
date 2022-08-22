@@ -1,6 +1,19 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
+    function no_repite($desig,$id_mat,$modulo,$anio){
+        $sql="select * from asignacion_materia "
+                . " where id_designacion=".$desig
+                . " and id_materia=".$id_mat
+                . " and modulo= ".$modulo
+                . " and anio=".$anio;
+        $res=toba::db('designa')->consultar($sql);
+        if(count($res)>0){
+            return false;
+        }else{
+            return true;
+        }
+    }
     function informe_actividad($filtro=array()){
         $where=' WHERE 1=1 ';
         if (isset($filtro['nro_540']['valor'])) {
@@ -825,21 +838,53 @@ group by sub2.desc_materia,sub2.cod_carrera,sub2.rol,sub2.periodo,sub2.moddes,su
         
      }
      function get_asignacion_materia($id_mat,$anio){
-//         $sql="select trim(t_doc.apellido)||', '||trim(t_doc.nombre) as agente,t_s.cat_estat||t_s.dedic||'-'||t_s.carac||' desde:'||t_s.desde||'('||t_s.id_designacion||')' as designacion,t_m.id_designacion,t_m.modulo,t_m.id_materia,t_m.anio,t_m.carga_horaria,t_p.descripcion as periodo,t_o.descripcion as desmodulo from asignacion_materia t_m "
-//                 . " left outer join designacion t_s on (t_m.id_designacion=t_s.id_designacion)"
-//                 . " left outer join docente t_doc on (t_s.id_docente=t_doc.id_docente)"
-//                 . " left outer join periodo t_p on (t_m.id_periodo=t_p.id_periodo)"
-//                 . " left outer join modulo t_o on (t_m.modulo=t_o.id_modulo)"
-//                 . " where t_m.anio=".$anio
-//                 . " and t_m.id_materia =".$id_mat
-//                ;
+//
+//         $sql="select distinct sub2.id_designacion,sub2.id_materia,sub2.id_periodo,p.descripcion as periodo,sub2.agente,sub2.designacion,sub2.carga_horaria,t.desc_item as rol,sub2.id_designacion,sub2.modulo,mo.descripcion as desmodulo,sub2.anio from 
+//(select distinct m.id_materia, sub.id_periodo, sub.designacion, sub.agente, sub.carga_horaria,sub.modulo,sub.rol,sub.id_designacion,sub.anio
+//                from materia m
+//                left outer join en_conjunto e on (m.id_materia=e.id_materia)
+//                left outer join conjunto c on (c.id_conjunto=e.id_conjunto )
+//                left outer join mocovi_periodo_presupuestario v on (c.id_periodo_pres=v.id_periodo and v.anio=$anio )
+//                left outer join (select t_m.anio,t_c.id_conjunto,t_d.id_designacion,t_do.apellido||', '||t_do.nombre as agente,t_d.cat_estat||t_d.dedic||'-'||t_d.carac||' desde:'||to_char(t_d.desde,'DD/MM/YYYY')||'('||t_d.id_designacion||')' as designacion,t_a.id_periodo,t_a.carga_horaria,t_a.modulo,t_a.rol
+//                                from conjunto t_c
+//                                left outer join mocovi_periodo_presupuestario t_m on (t_c.id_periodo_pres=t_m.id_periodo)
+//                                left outer join en_conjunto t_e on (t_c.id_conjunto=t_e.id_conjunto)
+//                                left outer join asignacion_materia t_a on (t_a.id_materia=t_e.id_materia and t_a.id_periodo=t_c.id_periodo and t_a.anio=t_m.anio )
+//                                left outer join designacion t_d on (t_d.id_designacion=t_a.id_designacion )
+//                                left outer join docente t_do on (t_do.id_docente=t_d.id_docente )
+//                                where t_a.id_materia is not null
+//                                and t_m.anio=$anio
+//                                )sub on (sub.id_conjunto=c.id_conjunto)
+//                
+//                where m.id_materia=$id_mat
+//                and sub.id_conjunto is not null
+//                UNION"
+//               ." select t_m.id_materia,t_m.id_periodo,d.cat_estat||d.dedic||'-'||d.carac||' desde:'||to_char(d.desde,'DD/MM/YYYY')||'('||d.id_designacion||')' as designacion,o.apellido||', '||o.nombre as agente,t_m.carga_horaria,t_m.modulo,t_m.rol,t_m.id_designacion,t_m.anio
+//                from asignacion_materia t_m
+//                left outer join designacion d on (t_m.id_designacion=d.id_designacion)
+//                left outer join docente o on (o.id_docente=d.id_docente)		
+//                where t_m.id_materia=".$id_mat
+//               ." and t_m.anio=$anio
+//                and not exists (select *
+//                                from conjunto t_c, mocovi_periodo_presupuestario t_p,en_conjunto t_e 
+//                                where t_p.anio=$anio 
+//                                and t_c.id_periodo_pres=t_p.id_periodo
+//                                and t_c.id_conjunto=t_e.id_conjunto
+//                                and t_c.id_periodo=t_m.id_periodo
+//                                and t_m.id_materia=t_e.id_materia)
+//                                )sub2
+//                                left outer join periodo p on (p.id_periodo=sub2.id_periodo)
+//                                left outer join modulo mo on (mo.id_modulo=sub2.modulo)
+//                                left outer join tipo t on (t.nro_tabla=8 and t.desc_abrev=sub2.rol)
+//                                order by sub2.id_periodo,sub2.modulo "  ;
+
          $sql="select distinct sub2.id_designacion,sub2.id_materia,sub2.id_periodo,p.descripcion as periodo,sub2.agente,sub2.designacion,sub2.carga_horaria,t.desc_item as rol,sub2.id_designacion,sub2.modulo,mo.descripcion as desmodulo,sub2.anio from 
-(select distinct m.id_materia, sub.id_periodo, sub.designacion, sub.agente, sub.carga_horaria,sub.modulo,sub.rol,sub.id_designacion,sub.anio
+(select distinct sub.id_materia, sub.id_periodo, sub.designacion, sub.agente, sub.carga_horaria,sub.modulo,sub.rol,sub.id_designacion,sub.anio
                 from materia m
                 left outer join en_conjunto e on (m.id_materia=e.id_materia)
                 left outer join conjunto c on (c.id_conjunto=e.id_conjunto )
                 left outer join mocovi_periodo_presupuestario v on (c.id_periodo_pres=v.id_periodo and v.anio=$anio )
-                left outer join (select t_m.anio,t_c.id_conjunto,t_d.id_designacion,t_do.apellido||', '||t_do.nombre as agente,t_d.cat_estat||t_d.dedic||'-'||t_d.carac||' desde:'||to_char(t_d.desde,'DD/MM/YYYY')||'('||t_d.id_designacion||')' as designacion,t_a.id_periodo,t_a.carga_horaria,t_a.modulo,t_a.rol
+                left outer join (select t_m.anio,t_c.id_conjunto,t_d.id_designacion,t_do.apellido||', '||t_do.nombre as agente,t_d.cat_estat||t_d.dedic||'-'||t_d.carac||' desde:'||to_char(t_d.desde,'DD/MM/YYYY')||'('||t_d.id_designacion||')' as designacion,t_a.id_periodo,t_a.carga_horaria,t_a.modulo,t_a.rol,t_a.id_materia
                                 from conjunto t_c
                                 left outer join mocovi_periodo_presupuestario t_m on (t_c.id_periodo_pres=t_m.id_periodo)
                                 left outer join en_conjunto t_e on (t_c.id_conjunto=t_e.id_conjunto)
@@ -871,7 +916,7 @@ group by sub2.desc_materia,sub2.cod_carrera,sub2.rol,sub2.periodo,sub2.moddes,su
                                 left outer join modulo mo on (mo.id_modulo=sub2.modulo)
                                 left outer join tipo t on (t.nro_tabla=8 and t.desc_abrev=sub2.rol)
                                 order by sub2.id_periodo,sub2.modulo "  ;
-     //print_r($sql);
+     
          return toba::db('designa')->consultar($sql);
      }
 }

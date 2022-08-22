@@ -33,7 +33,7 @@ class dt_en_conjunto extends toba_datos_tabla
             return toba::db('designa')->consultar($sql);
         }
         function get_materias ($conj){
-            $sql="select t_m.desc_materia,t_p.cod_carrera,t_p.desc_carrera,t_p.ordenanza,t_p.uni_acad from en_conjunto t_c, materia t_m, plan_estudio t_p"
+            $sql="select t_m.id_materia,t_m.desc_materia,t_p.cod_carrera,t_p.desc_carrera,t_p.ordenanza,t_p.uni_acad from en_conjunto t_c, materia t_m, plan_estudio t_p"
                     . "  where t_c.id_conjunto=".$conj
                     ." and t_c.id_materia=t_m.id_materia"
                     . " and t_m.id_plan=t_p.id_plan";
@@ -43,6 +43,23 @@ class dt_en_conjunto extends toba_datos_tabla
         function borrar_materias ($conj){
             $sql="delete from en_conjunto where id_conjunto=".$conj;
             return toba::db('designa')->consultar($sql);
+        }
+        //controla que la materia no se encuentre en otro conjunto para ese mismo anio y periodo
+        function se_repite($id_mat,$ua,$periodo_pres,$periodo){
+            $sql="select *
+                    from conjunto t_c
+                    INNER JOIN en_conjunto t_e ON (t_c.id_conjunto=t_e.id_conjunto)
+                    where t_c.ua='".$ua."'".
+                    " and t_c.id_periodo_pres=$periodo_pres
+                    and t_c.id_periodo=$periodo
+                    and t_e.id_materia=$id_mat"; 
+            $resul=toba::db('designa')->consultar($sql);
+            if(count($resul)>0){
+                $salida= array('valor'=>true,'datos'=>$resul) ;
+            }else{
+                $salida= array('valor'=>false,'datos'=>array()) ;
+            }
+            return $salida;
         }
 
 }

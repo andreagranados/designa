@@ -146,19 +146,19 @@ class ci_asignacion_materias extends toba_ci
             }else{
                 $this->dep('formulario')->colapsar();
             }
-  
+                
             if ($this->dep('datos')->tabla('asignacion_materia')->esta_cargada()) {
                 $datos=$this->dep('datos')->tabla('asignacion_materia')->get();
                 $form->set_datos($datos);
-	    }
+            }
 	}
 
 
 	function evt__formulario__alta($datos)
 	{
             $mat=$this->dep('datos')->tabla('materia')->get();
-            $uni=$this->dep('datos')->tabla('designacion')->get_uni_acad($datos['id_designacion']);
-            $band=$this->dep('datos')->tabla('conjunto')->control($mat['id_materia'],$this->s__anio,$datos['id_periodo'],$uni,$datos['id_designacion']);
+           // $uni=$this->dep('datos')->tabla('designacion')->get_uni_acad($datos['id_designacion']);
+            $band=$this->dep('datos')->tabla('conjunto')->control($mat['id_materia'],$this->s__anio,$datos['id_periodo'],$datos['id_designacion'],$datos['modulo']);
             if($band){
               $band2=$this->dep('datos')->tabla('designacion')->get_control_desig_periodo($this->s__anio,$datos['id_designacion'],$datos['id_periodo']);
               if($band2==0){
@@ -188,7 +188,8 @@ class ci_asignacion_materias extends toba_ci
               }
             }
             else{
-                 toba::notificacion()->agregar('Ya tiene asociada una materia del conjunto', 'info');
+                throw new toba_error(utf8_decode('Ya tiene asociada una materia del conjunto (mismo año, período y módulo)'));
+                // toba::notificacion()->agregar('Ya tiene asociada una materia del conjunto', 'info');
             }  
 	}
 
@@ -203,8 +204,8 @@ class ci_asignacion_materias extends toba_ci
 	function evt__formulario__modificacion($datos)
 	{
             $mat=$this->dep('datos')->tabla('materia')->get();
-            $uni=$this->dep('datos')->tabla('designacion')->get_uni_acad($datos['id_designacion']);
-            $band=$this->dep('datos')->tabla('conjunto')->control($mat['id_materia'],$this->s__anio,$datos['id_periodo'],$uni,$datos['id_designacion']);
+            $asigna=$this->dep('datos')->tabla('asignacion_materia')->get();
+            $band=$this->dep('datos')->tabla('conjunto')->control_modif($asigna['id_materia'],$asigna['modulo'],$asigna['anio'],$asigna['id_materia'],$asigna['anio'],$datos['id_periodo'],$asigna['id_designacion'],$datos['modulo']);
             if($band){
               $band2=$this->dep('datos')->tabla('designacion')->get_control_desig_periodo($this->s__anio,$datos['id_designacion'],$datos['id_periodo']);
               if($band2==0){
@@ -224,7 +225,7 @@ class ci_asignacion_materias extends toba_ci
               }
             }
             else{
-                 toba::notificacion()->agregar('Ya tiene asociada una materia del conjunto', 'info');
+                 throw new toba_error(utf8_decode('Ya tiene asociada una materia del conjunto (mismo año, período y módulo)'));
             }  
 	}
 

@@ -84,15 +84,19 @@ class ci_conjuntos extends toba_ci
             $this->dep('datos')->tabla('en_conjunto')->borrar_materias($conj['id_conjunto']);
             $x=$datos['id_materia'];
             foreach ($x as $key=>$value) {//para cada materia
-                $asig['id_conjunto']=$conj['id_conjunto'];
-                $asig['id_materia']=$value;
-                 //Sincroniza los cambios del datos_rela cion con la base
-                $this->dep('datos')->tabla('en_conjunto')->set($asig);
-                $this->dep('datos')->tabla('en_conjunto')->sincronizar();
-                $this->dep('datos')->tabla('en_conjunto')->resetear();//Descarta los cambios en el datos_relacion
-                
+                //si la materia no se encuentra en otro conjunto para el mismo ua, anio y periodo
+                $bandera=$this->dep('datos')->tabla('en_conjunto')->se_repite($value,$datos['ua'],$datos['id_periodo_pres'],$datos['id_periodo']);
+                if($bandera['valor']){
+                    toba::notificacion()->agregar('Materia id:'.$bandera['datos'][0]['id_materia'].' ya esta en el conjunto id: '.$bandera['datos'][0]['id_conjunto'], 'info');
+                }else{
+                    $asig['id_conjunto']=$conj['id_conjunto'];
+                    $asig['id_materia']=$value;
+                    //Sincroniza los cambios del datos_rela cion con la base
+                    $this->dep('datos')->tabla('en_conjunto')->set($asig);
+                    $this->dep('datos')->tabla('en_conjunto')->sincronizar();
+                    $this->dep('datos')->tabla('en_conjunto')->resetear();//Descarta los cambios en el datos_relacion 
+                }   
             }
-           
         }
 	
 

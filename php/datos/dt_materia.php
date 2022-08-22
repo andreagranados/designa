@@ -220,7 +220,6 @@ class dt_materia extends toba_datos_tabla
             } else{
                 $condicion="";
             }
-            
             $sql = "select * from(SELECT
 			t_m.id_materia,
 			t_pe.cod_carrera as id_plan,
