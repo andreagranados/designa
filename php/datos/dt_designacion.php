@@ -1087,18 +1087,18 @@ class dt_designacion extends toba_datos_tabla
 			t_d.ord_gestion,
 			t_te.quien_emite_norma as emite_cargo_gestion_nombre,
 			t_d.nro_gestion,
-case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when (t_no.desde <= '".$udia."' and (t_no.hasta >= '".$pdia."' or t_no.hasta is null)) then 'SI' else 'NO' end
-                                                                 else case when (t_no.desde <= '".$udia."' and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end 
-                                                                 end
-			    else case when t_d.desde<'".$pdia."' then case when (t_no.desde <= t_d.hasta and (t_no.hasta >= '".$pdia."' or t_no.hasta is null)) then 'SI' else 'NO' end
-			                                         else case when (t_no.desde <= t_d.hasta and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end
-			                                         end
-                        end as lic,
-			t_d.observaciones,t_v.vinc
+--case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when (t_no.desde <= '".$udia."' and (t_no.hasta >= '".$pdia."' or t_no.hasta is null)) then 'SI' else 'NO' end
+  --                                                               else case when (t_no.desde <= '".$udia."' and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end 
+    --                                                             end
+	--		    else case when t_d.desde<'".$pdia."' then case when (t_no.desde <= t_d.hasta and (t_no.hasta >= '".$pdia."' or t_no.hasta is null)) then 'SI' else 'NO' end
+	--		                                         else case when (t_no.desde <= t_d.hasta and (t_no.hasta >= t_d.desde or t_no.hasta is null)) then 'SI' else 'NO' end
+	--		                                         end
+          --              end as lic,
+			t_d.observaciones,t_v.vinc,STRING_AGG(to_char(t_no.desde,'DD/MM/YYYY')||'-'||to_char(t_no.hasta,'DD/MM/YYYY'),' Y ') as lic
 		FROM
 			designacion as t_d 
                         LEFT OUTER JOIN categ_siu as t_cs ON (t_d.cat_mapuche = t_cs.codigo_siu)
-			LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<='".$udia."' and (t_no.hasta>'".$pdia."' or t_no.hasta is null))
+			LEFT OUTER JOIN (select * from novedad order by desde,hasta) t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<='".$udia."' and (t_no.hasta>'".$pdia."' or t_no.hasta is null))
                         LEFT OUTER JOIN categ_estatuto as t_ce ON (t_d.cat_estat = t_ce.codigo_est)
 			LEFT OUTER JOIN norma as t_n ON (t_d.id_norma = t_n.id_norma)
 			LEFT OUTER JOIN expediente as t_e ON (t_d.id_expediente = t_e.id_exp)
@@ -1120,8 +1120,24 @@ case when t_d.hasta is null then case when t_d.desde<'".$pdia."' then case when 
 			AND  t_d.dedic = t_d2.id_ded
 			AND  t_d.carac = t_c.id_car
 			AND  t_d.uni_acad = t_ua.sigla".
-                  " AND t_d.id_docente=".$agente.      
-		" ORDER BY desde desc";
+                  " AND t_d.id_docente=".$agente.  
+                  " GROUP BY t_d.id_designacion,t_d1.nombre,	t_d.nro_cargo,t_d.anio_acad,t_d.desde,t_d.hasta,t_d.cat_mapuche,t_d.cat_estat,t_cs.descripcion,t_ce.descripcion,
+			t_d2.descripcion,
+			t_c.descripcion,
+			t_ua.descripcion,
+			t_d3.descripcion,
+			t_a.descripcion,
+                        t_d.uni_acad,
+			t_o.descripcion,
+			t_n.nro_norma,t_n.fecha,
+			t_e.nro_exp,
+			t_i.descripcion,
+			t_di.descripcion,
+			t_cc.descripcion,
+			t_d.ord_gestion,
+			t_te.quien_emite_norma,
+			t_d.nro_gestion,t_d.observaciones,t_v.vinc " .     
+		 " ORDER BY desde desc";
                 
                 $sql = toba::perfil_de_datos()->filtrar($sql);
                 
