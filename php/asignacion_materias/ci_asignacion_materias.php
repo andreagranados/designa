@@ -70,9 +70,12 @@ class ci_asignacion_materias extends toba_ci
             
             $this->dep('datos')->tabla('asignacion_materia')->resetear();
             $this->dep('datos')->tabla('materia')->resetear();
-            unset($this->s__anio);
+            //unset($this->s__anio);
+            unset($this->s__datos_fil);
+            $this->s__anio=null;
             $this->s__mostrar=0;
             $this->set_pantalla('pant_edicion');
+            
 	}
 
 
