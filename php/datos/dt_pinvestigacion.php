@@ -731,26 +731,20 @@ class dt_pinvestigacion extends toba_datos_tabla
 
                  end
                  as director,
-                  case when subc.apellido is not null then 
-
-                   case when t_p.estado='A' then 
-                     case when t_p.fec_hasta=subc.hasta and subc.check_inv=1 then trim(subc.apellido)||', '||trim(subc.nombre) else '' end
-                   else case when t_p.estado='B' then case when t_p.fec_baja=subc.hasta then trim(subc.apellido)||', '||trim(subc.nombre) else '' end 
-                        else case when t_p.fec_hasta=subc.hasta then trim(subc.apellido)||', '||trim(subc.nombre)  else '' end 
-                        end
-                   end
-
-                 else case when subc2.apellido is not null then
-                        case when t_p.estado='A' then 
-                           case when t_p.fec_hasta=subc2.hasta and subc2.check_inv=1 then trim(subc2.apellido)||', '||trim(subc2.nombre) else '' end
-                         else case when t_p.estado='B' then case when t_p.fec_baja=subc2.hasta then trim(subc2.apellido)||', '||trim(subc2.nombre) else '' end 
-                              else case when t_p.fec_hasta=subc2.hasta then trim(subc2.apellido)||', '||trim(subc2.nombre)  else '' end 
-                              end
-                         end
-                      else ''
-                      end   
-                 end as codirector,
-                 --esto es idem el case del director
+                  case when t_p.estado='A' then 
+                  case when subc.apellido is not null  and t_p.fec_hasta=subc.hasta and subc.check_inv=1 then trim(subc.apellido)||', '||trim(subc.nombre) 
+                  else case when subc2.apellido is not null and t_p.fec_hasta=subc2.hasta and subc2.check_inv=1 then trim(subc2.apellido)||', '||trim(subc2.nombre) else '' end 
+                  end
+              else case when t_p.estado='B' then 
+                             case when t_p.fec_baja=subc.hasta  then trim(subc.apellido)||', '||trim(subc.nombre) else case when t_p.fec_baja=subc2.hasta then trim(subc2.apellido)||', '||trim(subc2.nombre) else '' end end
+                   else --no es Activo ni Baja
+                       case when t_p.fec_hasta=subc.hasta then trim(subc.apellido)||', '||trim(subc.nombre)  
+                       else 
+        		  case when t_p.fec_hasta=subc2.hasta then trim(subc2.apellido)||', '||trim(subc2.nombre)  else '' end  
+		       end
+                   end 
+             end as codirector,
+                 
                  case when subd.apellido is not null then 
 
                    case when t_p.estado='A' then 
@@ -775,25 +769,19 @@ class dt_pinvestigacion extends toba_datos_tabla
                  end
                  as cuildirector,
                  
-               case when subc.apellido is not null then 
-
-                   case when t_p.estado='A' then 
-                     case when t_p.fec_hasta=subc.hasta and subc.check_inv=1 then cast(subc.cuil as text) else '' end
-                   else case when t_p.estado='B' then case when t_p.fec_baja=subc.hasta then cast(subc.cuil as text) else '' end 
-                        else case when t_p.fec_hasta=subc.hasta then cast(subc.cuil as text)  else '' end 
-                        end
-                   end
-
-                 else case when subc2.apellido is not null then
-                        case when t_p.estado='A' then 
-                           case when t_p.fec_hasta=subc2.hasta and subc2.check_inv=1 then cast(subc2.cuil as text) else '' end
-                         else case when t_p.estado='B' then case when t_p.fec_baja=subc2.hasta then cast(subc2.cuil as text) else '' end 
-                              else case when t_p.fec_hasta=subc2.hasta then cast(subc2.cuil as text)  else '' end 
-                              end
-                         end
-                      else ''
-                      end   
-                 end as cuilcod
+              case when t_p.estado='A' then 
+                  case when subc.apellido is not null  and t_p.fec_hasta=subc.hasta and subc.check_inv=1 then cast(subc.cuil as text) 
+                  else case when subc2.apellido is not null and t_p.fec_hasta=subc2.hasta and subc2.check_inv=1 then cast(subc2.cuil as text) else '' end 
+                  end
+              else case when t_p.estado='B' then 
+                             case when t_p.fec_baja=subc.hasta  then cast(subc.cuil as text)  else case when t_p.fec_baja=subc2.hasta then cast(subc2.cuil as text) else '' end end
+                   else --no es Activo ni Baja
+                       case when t_p.fec_hasta=subc.hasta then cast(subc.cuil as text)  
+                       else 
+        		  case when t_p.fec_hasta=subc2.hasta then cast(subc2.cuil as text)  else '' end  
+		       end
+                   end 
+             end as cuilcod
 		FROM
                   (select * from pinvestigacion
                     $where1
