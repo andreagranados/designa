@@ -552,11 +552,12 @@ class dt_pinvestigacion extends toba_datos_tabla
                         $where1.=" and usuario='".$usuario."'";
                     }    
                 }
+                
                 if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
-                    if(trim($resul[0]['sigla'])=='ASMA'){
-                        $where .= " and t_p.codigo like '04/S%'";
-                    }else{
-                        $where.=" and t_p.uni_acad = ".quote($resul[0]['sigla']);
+                    switch (trim($resul[0]['sigla'])) {
+                        case 'FAIN': $where.=" and (t_p.uni_acad = ".quote($resul[0]['sigla'])." or t_p.uni_acad ='AUZA'".")";break;
+                        case 'ASMA': $where.= " and t_p.codigo like '04/S%'";break;//san martin solo ve los S
+                        default:$where .= " and t_p.uni_acad = ".quote($filtro['uni_acad']['valor']);      
                     }
                 }//sino es usuario de la central no filtro a menos que haya elegido
                 
