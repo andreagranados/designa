@@ -69,7 +69,8 @@ class ci_informe_estado_actual extends toba_ci
             $tipo=$this->dep('datos')->tabla('designacion')->tipo($datos['id_designacion']);
             $parametros['tipo']=$tipo;
             $parametros['id_designacion']=$datos['id_designacion'];   
-            $parametros['anio']=$this->s__datos_filtro['anio']['valor'];   
+            $parametros['anio']=$this->s__datos_filtro['anio']['valor'];
+            $parametros['uni_acad']=$this->s__datos_filtro['uni_acad']['valor'];//guardo los filtros nuevo!
             toba::vinculador()->navegar_a('designa',3636,$parametros);
             
 	}
@@ -96,7 +97,24 @@ class ci_informe_estado_actual extends toba_ci
 	{
 		$this->dep('datos')->resetear();
 	}
+        //nuevo para no perder los filtros cuando vuelve
+function conf()
+        {
+            $dato_anio = toba::memoria()->get_parametro('filtro_anio');
+            $dato_ua = toba::memoria()->get_parametro('filtro_ua');
+            if(isset($dato_anio)){//el anio es filtro obligatorio asi que siempre vuelve con este dato
+                $auxiliar['valor']=$dato_anio;
+                $auxiliar['condicion']='es_igual_a';
+                $auxiliar2['anio']=$auxiliar;
 
+                if(isset($dato_ua)){//viene desde informe de estado actual
+                    $auxiliar['valor']=$dato_ua;
+                    $auxiliar['condicion']='es_igual_a';
+                    $auxiliar2['uni_acad']=$auxiliar;
+                }
+            $this->s__datos_filtro=$auxiliar2;
+            }
+        }
 	
 }
 ?>

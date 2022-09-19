@@ -7,6 +7,8 @@ class ci_reserva extends designa_ci
     protected $s__where;
     protected $s__datos_filtro;
     protected $s__fecha_nueva;
+    protected $s__filtro_anio_volver;//nuevo
+    protected $s__filtro_ua_volver;//nuevo
     
     //---- Filtro -----------------------------------------------------------------------
 
@@ -180,16 +182,20 @@ class ci_reserva extends designa_ci
         function evt__atras()
 	{
             if($this->s__volver==1){//viene desde informe actual
-                toba::vinculador()->navegar_a('designa',3658);
+                $parametros['filtro_anio']=$this->s__filtro_anio_volver;//nuevo
+                $parametros['filtro_ua']=$this->s__filtro_ua_volver;//nuevo
+                //toba::vinculador()->navegar_a('designa',3658);
+                toba::vinculador()->navegar_a('designa',3658,$parametros);
             }else{
                 $this->set_pantalla('pant_reservas');
             }
         }
         
-        
         function conf()
         {
             $id = toba::memoria()->get_parametro('id_designacion');
+            $this->s__filtro_anio_volver=toba::memoria()->get_parametro('anio');//nuevo
+            $this->s__filtro_ua_volver=toba::memoria()->get_parametro('uni_acad');//nuevo
             if(isset($id)){//viene desde informe de estado actual
                 $this->set_pantalla('pant_edicion');
                 $this->s__volver=1;

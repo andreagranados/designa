@@ -12,12 +12,17 @@ class cargo_solapas extends toba_ci
     protected $s__volver;
    // protected $s__datos;
     protected $s__datos_filtro;
+    protected $s__filtro_anio_volver;//nuevo
+    protected $s__filtro_ua_volver;//nuevo
     protected $s__where;
             
     
         function conf()
         {
-            $id = toba::memoria()->get_parametro('id_designacion');
+            $id = toba::memoria()->get_parametro('id_designacion');          
+            $this->s__filtro_anio_volver=toba::memoria()->get_parametro('anio');//nuevo
+            $this->s__filtro_ua_volver=toba::memoria()->get_parametro('uni_acad');//nuevo
+                           
             if(isset($id)){
                 $this->s__volver=1;
             }else{
@@ -933,7 +938,10 @@ class cargo_solapas extends toba_ci
             //no hago el resetear porque pierdo los datos del docente cuando comienza a volver para atras
             //$this->controlador()->dep('datos')->resetear();
             if($this->s__volver==1){//si viene desde el informe de estado actual
-                toba::vinculador()->navegar_a('designa',3658);
+                $parametros['filtro_anio']=$this->s__filtro_anio_volver;//nuevo
+                $parametros['filtro_ua']=$this->s__filtro_ua_volver;//nuevo
+                //toba::vinculador()->navegar_a('designa',3658);
+                toba::vinculador()->navegar_a('designa',3658,$parametros);//nuevo
             }else{
                 $this->controlador()->set_pantalla('pant_cargo_seleccion');
                 $this->controlador()->dep('datos')->tabla('norma')->resetear();
