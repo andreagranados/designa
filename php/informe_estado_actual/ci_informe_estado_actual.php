@@ -98,7 +98,7 @@ class ci_informe_estado_actual extends toba_ci
 		$this->dep('datos')->resetear();
 	}
         //nuevo para no perder los filtros cuando vuelve
-function conf()
+        function conf()
         {
             $dato_anio = toba::memoria()->get_parametro('filtro_anio');
             $dato_ua = toba::memoria()->get_parametro('filtro_ua');
