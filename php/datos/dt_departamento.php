@@ -75,7 +75,7 @@ class dt_departamento extends toba_datos_tabla
             }else{//perfil de datos de departamento
                 $sql = toba::perfil_de_datos()->filtrar($sql);
             }    
-            // print_r($sql);               
+             //print_r($sql);               
 	    $resul = toba::db('designa')->consultar($sql);
             return $resul;
         }

@@ -1,6 +1,27 @@
 <?php
 class dt_asignacion_materia extends toba_datos_tabla
 {
+    function desempeno_en($id_desig,$anio){
+        $sql="SELECT id_designacion, string_agg(salida,' - ') as salida"
+                . " FROM (SELECT distinct a.id_designacion, concat ('DEPARTAMENTO: ',t_dep.descripcion,'/',t_ar.descripcion,'/',t_o.descripcion) as salida"
+                . " from asignacion_materia a"
+                . " INNER JOIN materia t_m ON (t_m.id_materia=a.id_materia)"
+                . " LEFT OUTER JOIN departamento t_dep ON (t_m.id_departamento=t_dep.iddepto)"
+                . " LEFT OUTER JOIN area t_ar ON (t_m.id_area=t_ar.idarea)"
+                . " LEFT OUTER JOIN orientacion t_o ON (t_m.id_orientacion=t_o.idorient and t_o.idarea=t_ar.idarea)"
+                . "  WHERE id_designacion=".$id_desig
+                . " and anio=".$anio
+                . " ORDER BY salida"
+                .")sub
+                 group by id_designacion";  
+        $res=toba::db('designa')->consultar($sql);
+        
+        if(count($res)>0){
+            return $res[0]['salida'];
+        }else{
+            return '';
+        }
+    }
     function no_repite($desig,$id_mat,$modulo,$anio){
         $sql="select * from asignacion_materia "
                 . " where id_designacion=".$desig
