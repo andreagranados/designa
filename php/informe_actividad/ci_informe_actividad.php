@@ -138,8 +138,9 @@ class ci_informe_actividad extends toba_ci
                             $pdf->ezText('    '.'<u>'.$leyenda.'</u>',8,array('justification'=>'justification'));
                      }
                      
-                     $pdf->ezText(utf8_decode(' <b> DESEMPEÑO EN:</b> ').$departamentos,10);
+                     
                      if(isset($des['mat0'])){
+                         $pdf->ezText(utf8_decode(' <b> DESEMPEÑO EN:</b> ').$departamentos,10);
                          $materias=$des['mat0'];
                          if(isset($des['mat1'])){
                              $materias.='<b>, </b>'.$des['mat1'];
