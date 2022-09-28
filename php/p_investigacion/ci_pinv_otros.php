@@ -349,11 +349,24 @@ class ci_pinv_otros extends designa_ci
                             toba::notificacion()->agregar($mensaje, 'info');   
                        }else{
                            switch ($pi['estado']) {
-                                case 'C':throw new toba_error('El proyecto ya ha sido "aCeptado". Ya no puede cambiar el estado.');
+                                case 'C':if ($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
+                                          if (isset($datos['resol'])) {
+                                            $nombre_ca="resolucion_".$pi['id_pinv'].".pdf";
+                                            $destino_ca=toba::proyecto()->get_path()."/www/adjuntos_proyectos_inv/resoluciones/".$nombre_ca;
+                                            if(move_uploaded_file($datos['resol']['tmp_name'], $destino_ca)){//mueve un archivo a una nueva direccion, retorna true cuando lo hace y falso en caso de que no
+                                               $datos3['resolucion']=strval($nombre_ca);
+                                               $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->set($datos3); 
+                                               $this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->sincronizar();  
+                                               }
+                                            }
+                                          }
+                                    toba::notificacion()->agregar('El proyecto ya ha sido "aCeptado". Ya no puede cambiar el estado.', 'info'); 
                                    break;
-                                case 'R':throw new toba_error('El proyecto ya ha sido "Rechazado". Ya no puede cambiar el estado.');
+                                case 'R'://throw new toba_error('El proyecto ya ha sido "Rechazado". Ya no puede cambiar el estado.');
+                                    toba::notificacion()->agregar('El proyecto ya ha sido "Rechazado". Ya no puede cambiar el estado.', 'info'); 
                                    break;
-                               default:throw new toba_error('Para modificar el proyecto el mismo debe estar en estado "Enviado".');
+                               default://throw new toba_error('Para modificar el proyecto el mismo debe estar en estado "Enviado".');
+                                       toba::notificacion()->agregar('Para modificar el proyecto el mismo debe estar en estado "Enviado".', 'info'); 
                                    break;
                            }
                            
