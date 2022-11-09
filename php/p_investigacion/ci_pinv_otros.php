@@ -931,7 +931,7 @@ class ci_pinv_otros extends designa_ci
                             }else{toba::notificacion()->agregar('No puede agregar viaticos', 'error');}
                                         break;
                     case "pant_presupuesto":
-                        if($pf[0]=='investigacion_director'){//solo el director agrega
+                        if(in_array('investigacion_director', $pf)){//solo el director agrega
                             $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
                             if($pi['es_programa']==1){//en los programa no se carga presupuesto
                                 toba::notificacion()->agregar('El presupuesto de un programa se ingresa desde los proyectos de programa', 'error');

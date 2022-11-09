@@ -307,7 +307,7 @@ class ci_datos_principales extends toba_ci
                         $perfil = toba::usuario()->get_perfil_datos();
                         if (isset($perfil)) {  //es director o UA
                             $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
-                            if($pf[0]=='investigacion_director'){//es director
+                            if(in_array('investigacion_director', $pf)){//es director
                                 if($pi['estado']=='I'){//solo si esta en I puede modificar
                                     foreach ($datos as $clave => $elem){
                                          $datos[$clave]['id_proyecto']=$pi['id_pinv'];    

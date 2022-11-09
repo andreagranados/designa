@@ -55,7 +55,7 @@ class ci_integrantes_pi extends designa_ci
             }else{
                 return '0000/0000';
             }
-            
+
         }
        
         //-----------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ class ci_integrantes_pi extends designa_ci
                 }else{//el proyecto esta en A o I
                     $seguir=true;
                     $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
-                    if($pf[0]=='investigacion_director'){
+                    if(in_array('investigacion_director', $pf)){
                         if($pi['estado']<>'I'){
                             toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Inicial', 'error');  
                             $seguir=false;
@@ -576,7 +576,7 @@ class ci_integrantes_pi extends designa_ci
                 }else{
                     $seguir=true;
                     $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
-                    if($pf[0]=='investigacion_director'){
+                    if(in_array('investigacion_director', $pf)){
                         if($pi['estado']<>'I'){
                             toba::notificacion()->agregar('Los datos no pueden ser modificados. El proyecto debe estar en estado Inicial', 'error');  
                             $seguir=false;
@@ -622,13 +622,13 @@ class ci_integrantes_pi extends designa_ci
                 $seguir=false;
             }else{
                 $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
-                if($pf[0]=='investigacion_director'){
+                if(in_array('investigacion_director', $pf)){
                     if($pi['estado']<>'I'){
                         $mensaje='No es posible agregar participantes. El proyecto debe estar en estado Inicial';  
                         $seguir=false;
                     }    
                 }else{
-                   if($pf[0]=='investigacion' or $pf[0]=='investigacion_extension'){//es usuario de la UA
+                    if(in_array('investigacion', $pf) or in_array('investigacion_extension', $pf)){//es usuario de la UA
                      if($pi['estado']<>'A'){
                            $mensaje='No es posible agregar participantes. El proyecto debe estar en estado Activo';  
                            $seguir=false;

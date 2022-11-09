@@ -1612,11 +1612,14 @@ class dt_designacion extends toba_datos_tabla
                  //que sea una designacion correspondiente al periodo seleccionado
 		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
                 $where2=" WHERE 1=1 ";//es para filtrar por estado. Lo hago al final de todo
-		if (isset($filtro['uni_acad']['valor'])) {
-			$where.= "AND a.uni_acad = ".quote($filtro['uni_acad']['valor']);
-                        $concat=quote($filtro['uni_acad']['valor']);
-		}
-                //si el usuario esta asociado a un perfil de datos
+                if (isset($filtro['uni_acad'])) {
+                    $concat=quote($filtro['uni_acad']['valor']);
+                    switch ($filtro['uni_acad']['condicion']) {
+                        case 'es_igual_a': $where.= "AND a.uni_acad = ".quote($filtro['uni_acad']['valor']);break;
+                        case 'es_distinto_de': $where.= "AND a.uni_acad <> ".quote($filtro['uni_acad']['valor']);break;
+                    }
+                 }
+                //si el usuario esta asociado a un perfil de datos le aplica igual a su UA
                 $con="select sigla from unidad_acad ";
                 $con = toba::perfil_de_datos()->filtrar($con);
                 $resul=toba::db('designa')->consultar($con);
@@ -1624,13 +1627,18 @@ class dt_designacion extends toba_datos_tabla
                     $where.=" and a.uni_acad = ".quote($resul[0]['sigla']);
                     $concat=quote($resul[0]['sigla']);//para hacer el update de baja
                 }
-         
-                if (isset($filtro['iddepto']['valor'])) {
-                    $where.= " AND iddepto =" .$filtro['iddepto']['valor'];
-		}
-                if (isset($filtro['por_permuta']['valor'])) {
-                    $where.= " AND a.por_permuta =" .$filtro['por_permuta']['valor'];
-		}
+                if (isset($filtro['iddepto'])) {
+                    switch ($filtro['iddepto']['condicion']) {
+                        case 'es_igual_a': $where.= " AND iddepto =" .$filtro['iddepto']['valor'];break;
+                        case 'es_distinto_de': $where.= " AND iddepto <>" .$filtro['iddepto']['valor'];break;
+                    }
+                 }
+                if (isset($filtro['por_permuta'])) {
+                    switch ($filtro['por_permuta']['condicion']) {
+                        case 'es_igual_a': $where.= " AND a.por_permuta =" .$filtro['por_permuta']['valor'];break;
+                        case 'es_distinto_de': $where.= " AND a.por_permuta <>" .$filtro['por_permuta']['valor'];break;
+                    }
+                 }
                 if (isset($filtro['carac']['valor'])) {
                     switch ($filtro['carac']['valor']) {
                         case 'R':$c="'Regular'";break;
@@ -1640,26 +1648,43 @@ class dt_designacion extends toba_datos_tabla
                         default:
                             break;
                     }
-                    $where.= " AND a.carac=".$c;
+                    switch ($filtro['carac']['condicion']) {
+                        case 'es_igual_a': $where.= " AND a.carac=".$c;break;
+                        case 'es_distinto_de': $where.= " AND a.carac<>".$c;break;
+                    }	
                  }
-               
-                if (isset($filtro['estado']['valor'])) {
-                     $where2.= " and est like'".$filtro['estado']['valor']."%'";
+                if (isset($filtro['estado'])) {
+                    switch ($filtro['estado']['condicion']) {
+                        case 'es_igual_a': $where2.= " and est like '".$filtro['estado']['valor']."%'";break;
+                        case 'es_distinto_de': $where2.= " and est not like '".$filtro['estado']['valor']."%'";break;
+                    }
                  }
-                if (isset($filtro['programa']['valor'])) {
+                if (isset($filtro['programa'])) {
                     $sql="select * from mocovi_programa where id_programa=".$filtro['programa']['valor'];
                     $resul=toba::db('designa')->consultar($sql);
-                    $where.= " AND programa =".quote($resul[0]['nombre']);
-                  }
-                if (isset($filtro['tipo_desig']['valor'])) {
-                    $where.=" AND a.tipo_desig=".$filtro['tipo_desig']['valor'];
-                }
-                if (isset($filtro['cat_estat']['valor'])) {
-                     $where2.= " and cat_estat=".quote($filtro['cat_estat']['valor']);
+                    switch ($filtro['programa']['condicion']) {
+                        case 'es_igual_a': $where.= " AND programa =".quote($resul[0]['nombre']);break;
+                        case 'es_distinto_de': $where.= " AND programa <>".quote($resul[0]['nombre']);break;
+                    }
+                 } 
+                if (isset($filtro['tipo_desig'])) {
+                    switch ($filtro['tipo_desig']['condicion']) {
+                        case 'es_igual_a': $where.=" AND a.tipo_desig=".$filtro['tipo_desig']['valor'];break;
+                        case 'es_distinto_de': $where.=" AND a.tipo_desig <>".$filtro['tipo_desig']['valor'];break;
+                    }
                  }
-                if (isset($filtro['dedic']['valor'])) {
-                     $where2.= " and dedic=".$filtro['dedic']['valor'];
+                if (isset($filtro['cat_estat'])) {
+                    switch ($filtro['cat_estat']['condicion']) {
+                        case 'es_igual_a': $where2.= " and cat_estat=".quote($filtro['cat_estat']['valor']);break;
+                        case 'es_distinto_de': $where2.= " and cat_estat <>".quote($filtro['cat_estat']['valor']);break;
+                    }
                  }
+                if (isset($filtro['dedic'])) {
+                    switch ($filtro['dedic']['condicion']) {
+                        case 'es_igual_a': $where2.= " and dedic=".$filtro['dedic']['valor'];break;
+                        case 'es_distinto_de': $where2.= " and dedic<>".$filtro['dedic']['valor'];break;
+                    }
+                 }   
                  //me aseguro de colocar en estado B todas las designaciones que tienen baja
                if($concat!=''){   
                 $sql2=" update designacion a set estado ='B' "
