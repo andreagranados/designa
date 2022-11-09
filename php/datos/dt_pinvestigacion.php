@@ -922,7 +922,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 left outer join designacion t_d2 on (t_d2.id_designacion=id2.id_designacion)    
                 left outer join docente t_do2 on (t_do2.id_docente=t_d2.id_docente)  
                         
-                left outer join integrante_externo_pi id3 on (id3.pinvest=t_p.id_pinv and (id3.funcion_p='DE' or id3.funcion_p='DEpP' ) and t_p.fec_hasta=id3.hasta)
+                left outer join integrante_externo_pi id3 on (id3.pinvest=t_p.id_pinv and (id3.funcion_p='DE' or id3.funcion_p='DEpP' or id3.funcion_p='DP' or id3.funcion_p='D' or id3.funcion_p='DpP') and t_p.fec_hasta=id3.hasta)
                 left outer join persona t_d3 on (t_d3.tipo_docum=id3.tipo_docum and t_d3.nro_docum=id3.nro_docum) 
                 where t_p.id_pinv=".$id_proyecto;
             $res= toba::db('designa')->consultar($sql);
