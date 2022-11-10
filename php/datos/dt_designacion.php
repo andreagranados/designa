@@ -1603,7 +1603,7 @@ class dt_designacion extends toba_datos_tabla
         //trae las designaciones del periodo vigente, de la UA correspondiente
         //junto a todas las designaciones que son reserva
         function get_listado_estactual($filtro=array())
-	{
+	{ 
                 $concat='';
                 if (isset($filtro['anio']['valor'])) {
                 	$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
@@ -1615,8 +1615,8 @@ class dt_designacion extends toba_datos_tabla
                 if (isset($filtro['uni_acad'])) {
                     $concat=quote($filtro['uni_acad']['valor']);
                     switch ($filtro['uni_acad']['condicion']) {
-                        case 'es_igual_a': $where.= "AND a.uni_acad = ".quote($filtro['uni_acad']['valor']);break;
-                        case 'es_distinto_de': $where.= "AND a.uni_acad <> ".quote($filtro['uni_acad']['valor']);break;
+                        case 'es_igual_a': $where.= " AND a.uni_acad = ".quote($filtro['uni_acad']['valor']);break;
+                        case 'es_distinto_de': $where.= " AND a.uni_acad <> ".quote($filtro['uni_acad']['valor']);break;
                     }
                  }
                 //si el usuario esta asociado a un perfil de datos le aplica igual a su UA
@@ -1659,6 +1659,27 @@ class dt_designacion extends toba_datos_tabla
                         case 'es_distinto_de': $where2.= " and est not like '".$filtro['estado']['valor']."%'";break;
                     }
                  }
+                if (isset($filtro['legajo'])) {
+                    switch ($filtro['legajo']['condicion']) {
+                        case 'es_igual_a': $where.= " and legajo = ".$filtro['legajo']['valor'];break;
+                        case 'es_mayor_que': $where.= " and legajo > ".$filtro['legajo']['valor'];break;
+                        case 'es_mayor_igual_que': $where.= " and legajo >= ".$filtro['legajo']['valor'];break;
+                        case 'es_menor_que': $where.= " and legajo < ".$filtro['legajo']['valor'];break;
+                        case 'es_menor_igual_que': $where.= " and legajo <= ".$filtro['legajo']['valor'];break;
+                        case 'es_distinto_de': $where.= " and legajo <> ".$filtro['legajo']['valor'];break;
+                        case 'entre': $where.= " and legajo >= ".$filtro['legajo']['valor']['desde']." and legajo <=".$filtro['legajo']['valor']['hasta'];break;
+                    }
+                 }  
+                if (isset($filtro['docente_nombre'])) {
+                    switch ($filtro['docente_nombre']['condicion']) {
+                        case 'contiene': $where.= " and LOWER(translate(docente_nombre,'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU')) like LOWER('%".$filtro['docente_nombre']['valor']."%')";break;
+                        case 'no_contiene': $where.= " and LOWER(translate(docente_nombre,'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU')) not like LOWER('".$filtro['docente_nombre']['valor']."')";break;
+                        case 'comienza_con': $where.= " and LOWER(translate(docente_nombre,'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU')) like LOWER('".$filtro['docente_nombre']['valor']."%')";break;
+                        case 'termina_con': $where.= " and LOWER(translate(docente_nombre,'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU')) like LOWER('%".$filtro['docente_nombre']['valor']."')";break;
+                        case 'es_igual': $where.= " and LOWER(translate(docente_nombre,'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU')) == LOWER('".$filtro['docente_nombre']['valor']."')";break;
+                        case 'es_distinto': $where.= " and LOWER(translate(docente_nombre,'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU')) <> LOWER('".$filtro['docente_nombre']['valor']."')";break;
+                    }
+                 }   
                 if (isset($filtro['programa'])) {
                     $sql="select * from mocovi_programa where id_programa=".$filtro['programa']['valor'];
                     $resul=toba::db('designa')->consultar($sql);
@@ -1693,6 +1714,7 @@ class dt_designacion extends toba_datos_tabla
                         where a.id_designacion=b.id_designacion 
                         and (b.tipo_nov=1 or b.tipo_nov=4))";
                }
+              
                //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
                 $sql=$this->armar_consulta($pdia,$udia,$filtro['anio']['valor']);
 		//si el estado de la designacion es  B entonces le pone estado B, si es <>B se fija si tiene licencia sin goce o cese
