@@ -54,8 +54,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                 left outer join area ar on (a.id_area=ar.idarea)
                 left outer join orientacion o on (a.id_orientacion=o.idorient and o.idarea =ar.idarea)
                 $where
-                order by agente"
-                ;
+                order by agente ";
         return toba::db('designa')->consultar($sql);
     }
     function anexo1($filtro=array()){
