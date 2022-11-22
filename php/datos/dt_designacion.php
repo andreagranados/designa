@@ -1121,7 +1121,7 @@ class dt_designacion extends toba_datos_tabla
 			AND  t_d.carac = t_c.id_car
 			AND  t_d.uni_acad = t_ua.sigla".
                   " AND t_d.id_docente=".$agente.  
-                  " GROUP BY t_d.id_designacion,t_d1.nombre,	t_d.nro_cargo,t_d.anio_acad,t_d.desde,t_d.hasta,t_d.cat_mapuche,t_d.cat_estat,t_cs.descripcion,t_ce.descripcion,
+                  " GROUP BY t_d.id_designacion,t_d1.nombre,t_d.nro_cargo,t_d.anio_acad,t_d.desde,t_d.hasta,t_d.cat_mapuche,t_d.cat_estat,t_cs.descripcion,t_ce.descripcion,
 			t_d2.descripcion,
 			t_c.descripcion,
 			t_ua.descripcion,
@@ -2383,7 +2383,7 @@ class dt_designacion extends toba_datos_tabla
 //                    . " order by desc_materia,periodo,modulo "
 //                     ; 
                 //reemplazo por esta para traer todas la materias en conjunto si las hay
-                $sql="select sub4.uni_acad,d.apellido||', '||d.nombre as docente_nombre,d.nro_docum,d.legajo,d.fec_nacim,coalesce(d.correo_institucional,'')||' '|| coalesce(d.correo_personal,'') as correo,sub4.id_designacion,sub4.cat_est,sub4.carac,sub4.desde,sub4.hasta,t_mo.descripcion as modulo,carga_horaria,observacion,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo, dep.descripcion as dep,ar.descripcion as area,t_o.descripcion as ori,case when materia_conj is not null then materia_conj else m.desc_materia||'('||pl.cod_carrera||' de '||pl.uni_acad|| ')' end as desc_materia
+                $sql="select sub4.uni_acad,trim(d.apellido)||', '||trim(d.nombre) as docente_nombre,d.nro_docum,d.legajo,d.fec_nacim,coalesce(d.correo_institucional,'')||' '|| coalesce(d.correo_personal,'') as correo,sub4.id_designacion,sub4.cat_est,sub4.carac,sub4.desde,sub4.hasta,t_mo.descripcion as modulo,carga_horaria,observacion,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo, dep.descripcion as dep,ar.descripcion as area,t_o.descripcion as ori,case when materia_conj is not null then materia_conj else m.desc_materia||'('||pl.cod_carrera||' de '||pl.uni_acad|| ')' end as desc_materia
                       from(select sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion,string_agg(sub4.materia,'/') as materia_conj 
                            from (select distinct * from (
                                    select distinct a.anio,b.id_designacion,b.id_docente,d.legajo,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,b.desde,b.hasta,b.id_departamento,b.id_area,b.id_orientacion,case when lic.id_novedad is null then 0 else 1 end as licencia

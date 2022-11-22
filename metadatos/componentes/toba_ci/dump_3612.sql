@@ -122,8 +122,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_edicion', --identificador
 	'1', --orden
 	'Pantalla', --etiqueta
-	'Para cada docente, cuenta la cantidad total de días por categoría dentro del mes y año seleccionado. Por ejemplo, si el docente tiene dos cargos AY11 en el mes, la suma total de días será 60.<br>
-Compara por número de documento del docente.<br>
+	'Compara por número de legajo.<br>
 Tipo 1: Estan en Mapuche y no estan en Mocovi, ó tienen más dias en Mapuche que en Mocovi<br>
 Tipo 2: Estan en Mocovi y no estan en Mapuche, ó tienen más días en Mocovi<br>
 Tipo 3: Estan en Mocovi y en Mapuche con la misma cantidad de días<br>', --descripcion

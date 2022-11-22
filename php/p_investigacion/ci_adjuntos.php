@@ -1,4 +1,5 @@
 <?php
+
 class icono_limpiar implements toba_ef_icono_utileria
 {
     

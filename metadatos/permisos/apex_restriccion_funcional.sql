@@ -190,4 +190,10 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'solo_consulta_pinvestigacion', --descripcion
 	'0'  --permite_edicion
 );
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'65', --restriccion_funcional
+	'no_actualiza_nro_cargo', --descripcion
+	'0'  --permite_edicion
+);
 --- FIN Grupo de desarrollo 0

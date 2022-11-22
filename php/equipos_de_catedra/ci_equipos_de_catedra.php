@@ -53,6 +53,10 @@ class ci_equipos_de_catedra extends toba_ci
                     $c=array('nro_docum');
                     $this->dep('cuadro')->eliminar_columnas($c); 
                 }
+                if($this->s__columnas['fec_nacim']==0){
+                    $c=array('fec_nacim');
+                    $this->dep('cuadro')->eliminar_columnas($c); 
+                }
                 $datos=$this->dep('datos')->tabla('designacion')->get_equipos_cat($this->s__where);             
                 $cuadro->set_datos($datos);
             }
