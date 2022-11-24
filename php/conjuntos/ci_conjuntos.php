@@ -9,7 +9,8 @@ class ci_conjuntos extends toba_ci
             //ojo aqui que no sea null la descripcion
             $sql="select id_materia,cod_carrera||'('||ordenanza||')'||desc_materia||'('||cod_siu||')' as descripcion from materia t_m, plan_estudio t_p, unidad_acad t_u"
                     . " where t_m.id_plan=t_p.id_plan "
-                    . " and t_p.uni_acad=t_u.sigla";
+                    . " and t_p.uni_acad=t_u.sigla"
+                    . " and t_p.activo ";
             $sql = toba::perfil_de_datos()->filtrar($sql);
             $sql=$sql." order by descripcion";
             return toba::db('designa')->consultar($sql);
