@@ -430,6 +430,17 @@ class dt_docente extends toba_datos_tabla
         //docentes que tienen designacion en la facultad correspondiente al usuario logueado
         function get_docentes_propios($where=null)
         {
+            $band=true;
+            $con="select sigla,descripcion from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            if(isset($resul)){
+                if(trim($resul[0]['sigla'])=='FACA'){
+                 $where2=" and c.sigla IN ('FACA', 'ASMA') ";   
+                 $band=false;
+                }
+            }
+            //fin nuevo        
             if(!is_null($where)){
                     $where=' WHERE '.$where;
             }else{
@@ -459,9 +470,13 @@ class dt_docente extends toba_datos_tabla
 			docente as t_d	
 		$where )a, designacion b, unidad_acad c"
                     . " where a.id_docente=b.id_docente"
-                    . " and b.uni_acad=c.sigla"
-                    . " order by descripcion";
-            $sql = toba::perfil_de_datos()->filtrar($sql);
+                    . " and b.uni_acad=c.sigla";
+            if($band){//sino es FACA entonces le aplico el perfil de datos
+                $sql = toba::perfil_de_datos()->filtrar($sql);
+            }else{//es FACA entonces agrego docentes de FACA y de AUMA, dpto FORESTAL de FACA tiene director de ASMA
+                $sql.=$where2;
+            }
+            $sql.=" order by descripcion ";
             return toba::db('designa')->consultar($sql);
         }
         //si el docente tiene designaciones en su UA entonces puede modificar, sino no

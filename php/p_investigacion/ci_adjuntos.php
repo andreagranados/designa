@@ -546,8 +546,10 @@ class ci_adjuntos extends designa_ci
                     if(isset($ins['informe_avance_ft'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];
                         $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_ft']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_ft']."&openfolder=normal&ep=";
+                        //$nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/prueba.pdf?ssid=014eb7a5937840e8814c67bcd75b1acf&fid=014eb7a5937840e8814c67bcd75b1acf&path=%2F&filename=prueba.pdf&openfolder=normal&ep=";
                         $datos['informe_avance_ft']=$ins['informe_avance_ft'];
-                        $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
+                        $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}'>ficha tecnica</a>";
+                      
                     }
                     if(isset($ins['informe_avance_dp'])){
                         //$nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
