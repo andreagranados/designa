@@ -253,7 +253,8 @@ class dt_pinvestigacion extends toba_datos_tabla
 //                    ;
              //retorna todos los integrantes del proyecto, sean docentes o no
             $fecha_ac=date('Y-m-d');
-            $sql="select nro_docum as doc_destinatario,trim(c.apellido)||', '||trim(c.nombre) as agente "
+            $sql="select distinct * from "
+                    . " (select nro_docum as doc_destinatario,trim(c.apellido)||', '||trim(c.nombre) as agente "
                     . " from integrante_interno_pi a"
                     . " LEFT OUTER JOIN pinvestigacion p ON (p.id_pinv=a.pinvest)"
                     . " LEFT OUTER JOIN designacion b ON (a.id_designacion=b.id_designacion)"
@@ -263,13 +264,24 @@ class dt_pinvestigacion extends toba_datos_tabla
                     . " and a.check_inv=1 "
                     ." UNION "
                     . " select e.nro_docum as id_destinatario,trim(e.apellido)||', '||trim(e.nombre) as agente  
-		from integrante_externo_pi a           
-		LEFT OUTER JOIN pinvestigacion p ON (p.id_pinv=a.pinvest)
-		LEFT OUTER JOIN persona e ON (e.nro_docum=a.nro_docum and e.tipo_docum=a.tipo_docum)
-		 where a.pinvest=". $id_proy
-		."  and  a.hasta>='".$fecha_ac."'"." and a.hasta<=p.fec_hasta "
-		."  and e.nro_docum>0"
-                    . " and a.check_inv=1 "
+                        from integrante_externo_pi a           
+                        LEFT OUTER JOIN pinvestigacion p ON (p.id_pinv=a.pinvest)
+                        LEFT OUTER JOIN persona e ON (e.nro_docum=a.nro_docum and e.tipo_docum=a.tipo_docum)
+                        where a.pinvest=". $id_proy
+                    ."  and  a.hasta>='".$fecha_ac."'"." and a.hasta<=p.fec_hasta "
+                    ."  and e.nro_docum>0"
+                    ." and a.check_inv=1 "
+                    ." UNION "//esto para incluir al director de programa (sino estuviera en ningun proyecto de programa)
+                    ." select nro_docum as doc_destinatario,trim(c.apellido)||', '||trim(c.nombre) as agente 
+                    from integrante_interno_pi a
+                    LEFT OUTER JOIN pinvestigacion p ON (p.id_pinv=a.pinvest)
+                    LEFT OUTER JOIN designacion b ON (a.id_designacion=b.id_designacion)
+                    LEFT OUTER JOIN docente c ON (c.id_docente=b.id_docente)
+                    where pinvest in (select id_programa from subproyecto 
+                                      where id_proyecto=". $id_proy.")"
+                    ." and  a.hasta>='".$fecha_ac."'"." and a.hasta<=p.fec_hasta "
+                    . " and a.check_inv=1"
+                    . ")sub"
                     ." order by agente"
                     ;
             return toba::db('designa')->consultar($sql);

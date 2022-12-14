@@ -328,7 +328,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4766', --objeto_cuadro_col
 	'codirector', --clave
 	'5', --orden
-	'Codirector', --titulo
+	'Vicedirector', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

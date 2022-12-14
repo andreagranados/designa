@@ -1,5 +1,4 @@
 <?php
-
 class icono_limpiar implements toba_ef_icono_utileria
 {
     
@@ -34,7 +33,17 @@ class ci_adjuntos extends designa_ci
     protected $s__pantalla;
     protected $s__mostrar;
     
-    
+        function script($nombre){
+            $fechaHora = idate("Y").idate("m").idate("d").idate("H").idate("i").idate("s");
+            $version = "?v=".$fechaHora;
+            $link = $nombre.$version;
+            echo "<script>
+				function cargarDocumento(){
+					window.open('".$link."');
+					window.location.reload(true);
+				}
+			 </script>";
+        }
         function ini(){
             $this->s__user_sl=getenv('DB_USER_SL');
             $this->s__password_sl=getenv('DB_PASS_SL');
@@ -248,95 +257,106 @@ class ci_adjuntos extends designa_ci
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['inicial_eval1'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval1'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval1']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval1']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval1']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval1']."&openfolder=normal&ep";
                         $datos['inicial_eval1']='';//$ins['inicial_eval1'];
-                        $datos['imagen_vista_previa_ie1'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion1</a>";
+                        $datos['imagen_vista_previa_ie1'] = "<a href target='_blank' onclick='cargarDocumento()' >Evaluacion1</a>";
+                        $this->script($nomb_ft);
                     }
                     if(isset($ins['inicial_eval2'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval2'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval2']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval2']."&openfolder=normal&ep=";
-                        $datos['inicial_eval1']='';//$ins['inicial_eval2'];
-                        $datos['imagen_vista_previa_ie2'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion2</a>";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval2']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval2']."&openfolder=normal&ep";
+                        $datos['inicial_eval2']='';//$ins['inicial_eval2'];
+                        $datos['imagen_vista_previa_ie2'] = "<a href target='_blank' onclick='cargarDocumento()' >Evaluacion2</a>";
+                        $this->script($nomb_ft);
                     }
                     if(isset($ins['inicial_eval3'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval3'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval3']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval3']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval3']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval3']."&openfolder=normal&ep";
                         $datos['inicial_eval3']='';//$ins['inicial_eval3'];
-                        $datos['imagen_vista_previa_ie3'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion3</a>";
+                        $datos['imagen_vista_previa_ie3'] = "<a href target='_blank' onclick='cargarDocumento()' >Evaluacion3</a>";
+                        $this->script($nomb_ft);
                     }
                     if(isset($ins['inicial_eval4'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval4'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval4']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval4']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval4']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval4']."&openfolder=normal&ep";
                         $datos['inicial_eval4']='';//$ins['inicial_eval4'];
-                        $datos['imagen_vista_previa_ie4'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion4</a>";
+                        $datos['imagen_vista_previa_ie4'] = "<a href target='_blank' onclick='cargarDocumento()' >Evaluacion4</a>";
+                        $this->script($nomb_ft);
                     }
                     if(isset($ins['inicial_eval5'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['inicial_eval5'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval5']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval5']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['inicial_eval5']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['inicial_eval5']."&openfolder=normal&ep";
                         $datos['inicial_eval5']='';//$ins['inicial_eval4'];
-                        $datos['imagen_vista_previa_ie5'] = "<a target='_blank' href='{$nomb_ft}' >Evaluacion5</a>";
+                        $datos['imagen_vista_previa_ie5'] = "<a href target='_blank' onclick='cargarDocumento()' >Evaluacion5</a>";
+                        $this->script($nomb_ft);
                     }
                     //informes de avance evaluaciones
                     if(isset($ins['informe_avance_eval1'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval1'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval1']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval1']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval1']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval1']."&openfolder=normal&ep";
                         $datos['informe_avance_eval1']='';//$ins['informe_avance_eval1'];
-                        $datos['imagen_vista_previa_ia1'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA1</a>";
+                        $datos['imagen_vista_previa_ia1'] = "<a href target='_blank' onclick='cargarDocumento()' >EvaluacionIA1</a>";
+                        $this->script($nomb_ft);
                     }
                     if(isset($ins['informe_avance_eval2'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval2'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval2']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval2']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval2']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval2']."&openfolder=normal&ep";
                         $datos['informe_avance_eval2']='';//$ins['informe_avance_eval2'];
-                        $datos['imagen_vista_previa_ia2'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA2</a>";
+                        $datos['imagen_vista_previa_ia2'] = "<a href target='_blank' onclick='cargarDocumento()' >EvaluacionIA2</a>";
+                        $this->script($nomb_ft);
                     }
                     if(isset($ins['informe_avance_eval3'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval3'];
                         $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval3']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval3']."&openfolder=normal&ep=";
                         $datos['informe_avance_eval3']='';//$ins['informe_avance_eval3'];
-                        $datos['imagen_vista_previa_ia3'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA3</a>";
+                        $datos['imagen_vista_previa_ia3'] = "<a href target='_blank' onclick='cargarDocumento()' >EvaluacionIA3</a>";
                     }
                     if(isset($ins['informe_avance_eval4'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval4'];
                         $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval4']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval4']."&openfolder=normal&ep=";
                         $datos['informe_avance_eval4']='';//$ins['informe_avance_eval4'];
-                        $datos['imagen_vista_previa_ia4'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA4</a>";
+                        $datos['imagen_vista_previa_ia4'] = "<a href target='_blank' onclick='cargarDocumento()'>EvaluacionIA4</a>";
                     }
                     if(isset($ins['informe_avance_eval5'])){
                        //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval5'];
                         $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval5']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval5']."&openfolder=normal&ep=";
                         $datos['informe_avance_eval5']='';//$ins['informe_avance_eval5'];
-                        $datos['imagen_vista_previa_ia5'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA5</a>";
+                        $datos['imagen_vista_previa_ia5'] = "<a href target='_blank' onclick='cargarDocumento()' >EvaluacionIA5</a>";
                     }
                     //informes finales evaluaciones
                     if(isset($ins['informe_final_eval1'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval1'];
                         $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval1']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval1']."&openfolder=normal&ep=";
                         $datos['informe_final_eval1']='';//$ins['informe_final_eval1'];
-                        $datos['imagen_vista_previa_if1'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF1</a>";
+                        $datos['imagen_vista_previa_if1'] = "<a href target='_blank' onclick='cargarDocumento()' >EvaluacionIF1</a>";
                     }
                     if(isset($ins['informe_final_eval2'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval2'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval2']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval2']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval2']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval2']."&openfolder=normal&ep";
                         $datos['informe_final_eval2']='';//$ins['informe_final_eval2'];
-                        $datos['imagen_vista_previa_if2'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF2</a>";
+                        $datos['imagen_vista_previa_if2'] = "<a href target='_blank' onclick='cargarDocumento()' >EvaluacionIF2</a>";
+                        $this->script($nomb_ft);
                     }
                     if(isset($ins['informe_final_eval3'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval3'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval3']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval3']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval3']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval3']."&openfolder=normal&ep";
                         $datos['informe_final_eval3']='';//$ins['informe_final_eval3'];
-                        $datos['imagen_vista_previa_if3'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF3</a>";
+                        $datos['imagen_vista_previa_if3'] = "<a href target='_blank' onclick='cargarDocumento()' >EvaluacionIF3</a>";
+                        $this->script($nomb_ft);
                         }
                     if(isset($ins['informe_final_eval4'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval4'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval4']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval4']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval4']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval4']."&openfolder=normal&ep";
                         $datos['informe_final_eval4']='';//$ins['informe_final_eval4'];
-                        $datos['imagen_vista_previa_if4'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF4</a>";
+                        $datos['imagen_vista_previa_if4'] = "<a href target='_blank' onclick='cargarDocumento()'>EvaluacionIF4</a>";
+                        $this->script($nomb_ft);
                     }
                     if(isset($ins['informe_final_eval5'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval5'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval5']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval5']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval5']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval5']."&openfolder=normal&ep";
                         $datos['informe_final_eval5']='';//$ins['informe_final_eval5'];
-                        $datos['imagen_vista_previa_if5'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF5</a>";
+                        $datos['imagen_vista_previa_if5'] = "<a href target='_blank' onclick='cargarDocumento()' >EvaluacionIF5</a>";
+                        $this->script($nomb_ft);
                     }
                     return $datos;
                 }
@@ -535,7 +555,8 @@ class ci_adjuntos extends designa_ci
                 
               }
         }
-//   //informe de avance se guarda en el servidor remoto por lo tanto accede al remoto
+        
+  //informe de avance se guarda en el servidor remoto por lo tanto accede al remoto
         function conf__form_adj_ia(toba_ei_formulario $form)
 	{
             if ($this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->esta_cargada()) {
@@ -545,23 +566,22 @@ class ci_adjuntos extends designa_ci
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_avance_ft'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_ft'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_ft']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_ft']."&openfolder=normal&ep=";
-                        //$nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/prueba.pdf?ssid=014eb7a5937840e8814c67bcd75b1acf&fid=014eb7a5937840e8814c67bcd75b1acf&path=%2F&filename=prueba.pdf&openfolder=normal&ep=";
+                        //le saco el = del final
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_ft']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_ft']."&openfolder=normal&ep";
                         $datos['informe_avance_ft']=$ins['informe_avance_ft'];
-                        $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}'>ficha tecnica</a>";
-                      
+			$datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}'>ficha tecnica</a>";
                     }
                     if(isset($ins['informe_avance_dp'])){
                         //$nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
-                        $nomb_dir="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_dp']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_dp']."&openfolder=normal&ep=";
+                        $nomb_dir="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_dp']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_dp']."&openfolder=normal&ep";
                         $datos['informe_avance_dp']=$ins['informe_avance_dp'];
-                        $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
+                        $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}'>doc prob</a>";
                     }
                     if(isset($ins['informe_avance_caratula'])){
                         //$nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_avance_dp'];
-                        $nomb_dir="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_caratula']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_caratula']."&openfolder=normal&ep=";
+                        $nomb_dir="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_caratula']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_avance_caratula']."&openfolder=normal&ep";
                         $datos['informe_avance_caratula']=$ins['informe_avance_caratula'];
-                        $datos['imagen_vista_previa_car'] = "<a target='_blank' href='{$nomb_dir}' >caratula</a>";
+                        $datos['imagen_vista_previa_car'] = "<a target='_blank' href='{$nomb_dir}'>caratula</a>";
                     }
                     return $datos;
                 }
@@ -647,19 +667,19 @@ class ci_adjuntos extends designa_ci
                     $ins=$this->controlador()->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     $datos['id_pinv']=$ins['id_pinv'];
                     if(isset($ins['informe_final_caratula'])){
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_caratula']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_caratula']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_caratula']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_caratula']."&openfolder=normal&ep";
                         $datos['informe_final_caratula']=$ins['informe_final_caratula'];
-                        $datos['imagen_vista_previa_car'] = "<a target='_blank' href='{$nomb_ft}' >caratula</a>";
+                        $datos['imagen_vista_previa_car'] = "<a target='_blank' href='{$nomb_ft}'>caratula</a>";
                     }
                     if(isset($ins['informe_final_ft'])){
                         //$nomb_ft='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_ft'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_ft']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_ft']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_ft']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_ft']."&openfolder=normal&ep";
                         $datos['informe_final_ft']=$ins['informe_final_ft'];
                         $datos['imagen_vista_previa_ft'] = "<a target='_blank' href='{$nomb_ft}' >ficha tecnica</a>";
                     }
                     if(isset($ins['informe_final_dp'])){
                         //$nomb_dir='http://'.$this->s__user_sl.':'.$this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/'.$ins['informe_final_dp'];
-                        $nomb_dir="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_dp']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_dp']."&openfolder=normal&ep=";
+                        $nomb_dir="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_dp']."?ssid=91109af4adf84782810f4f490f634ffd&fid=91109af4adf84782810f4f490f634ffd&path=%2F&filename=".$ins['informe_final_dp']."&openfolder=normal&ep";
                         $datos['informe_final_dp']=$ins['informe_final_dp'];
                         $datos['imagen_vista_previa_dp'] = "<a target='_blank' href='{$nomb_dir}' >doc prob</a>";
                     }

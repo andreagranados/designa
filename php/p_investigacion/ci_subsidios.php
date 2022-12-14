@@ -5,12 +5,22 @@ class ci_subsidios extends designa_ci
         protected $s__mostrar_c;
         protected $s__listado;
         protected $s__datos;
-      
-                
+             
         function ini()
         {
             $this->s__mostrar=0;//subsidio
             $this->s__mostrar_c=0;
+        }
+        function script($nombre){
+            $fechaHora = idate("Y").idate("m").idate("d").idate("H").idate("i").idate("s");
+            $version = "?v=".$fechaHora;
+            $link = $nombre.$version;
+            echo "<script>
+				function cargarDocumento(){
+					window.open('".$link."');
+					window.location.reload(true);
+				}
+			 </script>";
         }
         function mostrar_form_subsidio(){
               $this->s__mostrar=1;//subsidio
@@ -268,9 +278,10 @@ class ci_subsidios extends designa_ci
                         $password=getenv('DB_PASS_SL');
                         
                         //$nomb_ft='http://'.$user.':'.$password.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/subsidios/'.$datos['archivo_comprob'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$datos['archivo_comprob']."?ssid=64efc1086e32464ba39452cda68c7f73&fid=64efc1086e32464ba39452cda68c7f73&path=%2F&filename=".$datos['archivo_comprob']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$datos['archivo_comprob']."?ssid=64efc1086e32464ba39452cda68c7f73&fid=64efc1086e32464ba39452cda68c7f73&path=%2F&filename=".$datos['archivo_comprob']."&openfolder=normal&ep";
                         $datos['archivo_comprob']='';
-                        $datos['imagen_vista_previa_t'] = "<a target='_blank' href='{$nomb_ft}' >comprobante</a>";
+                        $datos['imagen_vista_previa_t'] = "<a href target='_blank' onclick='cargarDocumento()' >comprobante</a>";
+                        $this->script($nomb_ft);
                     }
                     $form->set_datos($datos);
                 }
