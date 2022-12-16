@@ -22,6 +22,7 @@ class ci_subsidios extends designa_ci
 				}
 			 </script>";
         }
+        
         function mostrar_form_subsidio(){
               $this->s__mostrar=1;//subsidio
         }
