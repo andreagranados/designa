@@ -19,17 +19,7 @@ class ci_pinv_otros extends designa_ci
             $this->s__mostrar_s=0;//muestra formulario de subsidio
             $this->s__mostrar_v=0;//muestra formulario de viatico
 	}
-        function script($nombre){
-            $fechaHora = idate("Y").idate("m").idate("d").idate("H").idate("i").idate("s");
-            $version = "?v=".$fechaHora;
-            $link = $nombre.$version;
-            echo "<script>
-				function cargarDocumento(){
-					window.open('".$link."');
-					window.location.reload(true);
-				}
-			 </script>";
-        }
+      
         function extender_objeto_js()
 	{
 		$this->js_caso_datos();
@@ -262,10 +252,11 @@ class ci_pinv_otros extends designa_ci
                 if ($this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->esta_cargada()) {
                     $adj=$this->controlador()->dep('datos')->tabla('proyecto_adjuntos')->get();
                     if(isset($adj['resolucion'])){
+                        $fechaHora = idate("Y").idate("m").idate("d").idate("H").idate("i").idate("s");
                         $nomb_ft='/designa/1.0/adjuntos_proyectos_inv/resoluciones/'.$adj['resolucion'];//en windows
+                        $nomb_ft.="?v=".$fechaHora;
                         $pi['resol']='resolucion';//para que no aparezca el nombre con el que se guarda el archivo
-                        $pi['imagen_vista_previa_resol']="<a href target='_blank' onclick='cargarDocumento()' >resol</a>";
-                        $this->script($nomb_ft);
+                        $pi['imagen_vista_previa_resol']="<a target='_blank' href='{$nomb_ft}' >resol</a>";
                     }
                 }
                // if($pi['estado']=='R'){ $componente->ef('observacion')->set_obligatorio(1); }
