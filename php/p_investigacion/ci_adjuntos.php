@@ -311,7 +311,7 @@ class ci_adjuntos extends designa_ci
                     if(isset($ins['informe_avance_eval3'])){
                         $fechaHora = idate("Y").idate("m").idate("d").idate("H").idate("i").idate("s");
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval3'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval3']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval3']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval3']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval3']."&openfolder=normal&ep";
                         $nomb_ft.="?v=".$fechaHora;
                         $datos['informe_avance_eval3']='';//$ins['informe_avance_eval3'];
                         $datos['imagen_vista_previa_ia3'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA3</a>";
@@ -319,7 +319,7 @@ class ci_adjuntos extends designa_ci
                     if(isset($ins['informe_avance_eval4'])){
                         $fechaHora = idate("Y").idate("m").idate("d").idate("H").idate("i").idate("s");
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval4'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval4']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval4']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval4']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval4']."&openfolder=normal&ep";
                         $nomb_ft.="?v=".$fechaHora;
                         $datos['informe_avance_eval4']='';//$ins['informe_avance_eval4'];
                         $datos['imagen_vista_previa_ia4'] = "<a target='_blank' href='{$nomb_ft}'>EvaluacionIA4</a>";
@@ -327,7 +327,7 @@ class ci_adjuntos extends designa_ci
                     if(isset($ins['informe_avance_eval5'])){
                         $fechaHora = idate("Y").idate("m").idate("d").idate("H").idate("i").idate("s");
                        //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_avance_eval5'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval5']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval5']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_avance_eval5']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_avance_eval5']."&openfolder=normal&ep";
                         $nomb_ft.="?v=".$fechaHora;
                         $datos['informe_avance_eval5']='';//$ins['informe_avance_eval5'];
                         $datos['imagen_vista_previa_ia5'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIA5</a>";
@@ -336,7 +336,7 @@ class ci_adjuntos extends designa_ci
                     if(isset($ins['informe_final_eval1'])){
                         $fechaHora = idate("Y").idate("m").idate("d").idate("H").idate("i").idate("s");
                         //$nomb_ft='http://'.$this->s__user_sl.':'. $this->s__password_sl.'@copia.uncoma.edu.ar/adjuntos_proyectos_inv/evaluaciones/'.$ins['informe_final_eval1'];
-                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval1']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval1']."&openfolder=normal&ep=";
+                        $nomb_ft="http://copia.uncoma.edu.ar:8080/share.cgi/".$ins['informe_final_eval1']."pdf?ssid=425a43fc3981454ebcaccd3fcf5174a1&fid=425a43fc3981454ebcaccd3fcf5174a1&path=%2F&filename=".$ins['informe_final_eval1']."&openfolder=normal&ep";
                         $nomb_ft.="?v=".$fechaHora;
                         $datos['informe_final_eval1']='';//$ins['informe_final_eval1'];
                         $datos['imagen_vista_previa_if1'] = "<a target='_blank' href='{$nomb_ft}' >EvaluacionIF1</a>";
