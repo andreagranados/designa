@@ -182,6 +182,17 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                 return false;
             }
         }
+         //es el anio presupuestando?
+        function es_periodo_presupuestando($anio){
+            $sql="select * from mocovi_periodo_presupuestario "
+                    . " where presupuestando and anio=$anio";
+            $res=toba::db('designa')->consultar($sql);
+            if(count($res)>0){
+                return true;
+            }else{
+                return false;
+            }
+        }
         //calcula la cantidad de dias transcurridos entre 2 fechas
         function dias_transcurridos($fecha_i,$fecha_f){//strtotime convierte una cadena en formato de fecha
             //el strtotime no funciona con dd/mm/YYYY

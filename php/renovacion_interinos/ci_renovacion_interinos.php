@@ -30,15 +30,15 @@ class ci_renovacion_interinos extends toba_ci
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
-		if (isset($this->s__datos_filtro)) {
-			$cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_renovacion($this->s__datos_filtro));
-		} 
+            if (isset($this->s__datos_filtro)) {
+                    $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_renovacion($this->s__datos_filtro));
+            } 
 	}
 
 	
 	function resetear()
 	{
-		$this->dep('datos')->resetear();
+            $this->dep('datos')->resetear();
 	}
 
 	        
@@ -68,7 +68,7 @@ class ci_renovacion_interinos extends toba_ci
 	function conf__form_docente(toba_ei_formulario $form)
 	{
             $doc=$this->dep('datos')->tabla('docente')->get();
-            $form->set_titulo($doc['apellido'].', '.$doc['nombre'].' - '.$doc['legajo']);
+            $form->set_titulo($doc['apellido'].', '.$doc['nombre'].' - Legajo: '.$doc['legajo']);
 	}
 
 	//-----------------------------------------------------------------------------------
@@ -124,19 +124,19 @@ class ci_renovacion_interinos extends toba_ci
                     $y=date("d/m/Y",strtotime($anoh.'/'.$mesh.'/'.$diah));
                     $datosn['hasta']=$y;
                 }
-                
                 $form->set_datos($datosn);
-
 		}
 	}
 //boton renovar
 	function evt__form_desig_nueva__modificacion($datos)
 	{
-            
             $desig_origen=$this->dep('datos')->tabla('designacion')->get();
             //renueva para el periodo presupuestando, ejemplo 2017 es el periodo actual y 2018 el periodo presupuestando
             $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->alcanza_credito($datos['desde'],$datos['hasta'],$datos['cat_mapuche'],2);
             if ($band){//si alcanza el credito
+                            $cartel='';
+                            $con_materias=false;
+                            $con_oa=false;
                             //agrega la nueva designacion
                             $datos['uni_acad']= $desig_origen['uni_acad'];
                             $datos['id_docente']=$desig_origen['id_docente'];
@@ -179,19 +179,47 @@ class ci_renovacion_interinos extends toba_ci
                             $dat_vin['vinc']=$desig_origen['id_designacion'];
                             $this->dep('datos')->tabla('vinculo')->set($dat_vin);
                             $this->dep('datos')->tabla('vinculo')->sincronizar();
-                            toba::notificacion()->agregar(utf8_decode('La renovación se realizó con éxito'), "info");
+                            if($datos['pasaje_mat']==1){//tildado pasaje de materias
+                                $res=$this->dep('datos')->tabla('asignacion_materia')->get_materias($this->s__datos_filtro['anio_acad'],$desig_origen['id_designacion']);
+                                foreach ($res as $key => $value) {
+                                    $con_materias=true;
+                                    $datosm=$value;
+                                    $datosm['id_designacion']= $des_nueva['id_designacion'] ;
+                                    $datosm['anio']=$this->s__datos_filtro['anio_presup']  ;
+                                    $this->dep('datos')->tabla('asignacion_materia')->set($datosm);
+                                    $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
+                                }
+                            }
+                            if($datos['pasaje_otra_activ']==1){//tildado pasaje de otras activ
+                                $res=$this->dep('datos')->tabla('asignacion_tutoria')->get_otras_activ($this->s__datos_filtro['anio_acad'],$desig_origen['id_designacion']);
+                                foreach ($res as $key => $value) {
+                                    $con_oa=true;
+                                    $datosm=$value;
+                                    $datosm['id_designacion']= $des_nueva['id_designacion'] ;
+                                    $datosm['anio']=$this->s__datos_filtro['anio_presup']  ;
+                                    $this->dep('datos')->tabla('asignacion_tutoria')->set($datosm);
+                                    $this->dep('datos')->tabla('asignacion_tutoria')->sincronizar();
+                                }
+                            }
+                            if($con_materias){
+                                $cartel=". Con materias.";
+                            }
+                            if($con_oa){
+                                $cartel=". Con otras actividades.";
+                            }
+                            toba::notificacion()->agregar(utf8_decode('La renovación se realizó con éxito'.$cartel), "info");
                             $this->resetear();
                             $this->set_pantalla('pant_edicion');
                         }else{
                             $mensaje='NO SE DISPONE DE CRÉDITO PARA RENOVAR LA DESIGNACIÓN';
                             toba::notificacion()->agregar(utf8_decode($mensaje), "error");
                         }
-           
-                
-           
+
 	}
-
-	
-
+        function evt__form_desig_nueva__cancelar()
+        {
+            $this->resetear();
+            $this->set_pantalla('pant_edicion');
+        }
 }
 ?>

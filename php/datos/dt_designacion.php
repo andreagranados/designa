@@ -54,11 +54,14 @@ class dt_designacion extends toba_datos_tabla
             ";
             $resul=toba::db('designa')->consultar($sql);
             if(isset($resul)){
-                $band=$resul[0]['control'];
+                //$band=$resul[0]['control'];
+                $salida['band']=$resul[0]['control'];
+                $salida['id']=$des;
             }
             $i++;
         }
-        return $band;
+        return $salida;
+        //return $band;
    } 
    function get_uni_acad($id_desig){
        $sql="select uni_acad from designacion where id_designacion=".$id_desig;
@@ -1207,17 +1210,23 @@ class dt_designacion extends toba_datos_tabla
                 //en el filtro viene el periodo actual o el periodo presupuestando
                 $udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
                 $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
-		
+		$es_presupuestando=dt_mocovi_periodo_presupuestario::es_periodo_presupuestando($filtro['anio']);
+                
                 //que sea una designacion vigente, dentro del periodo actual o anulada cuando le setean el hasta con el dia anterior al desde
-		$where=" WHERE ((desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)) or (desde>hasta and ".$filtro['anio']."=extract(year from hasta)))";
-                //cuando selecciona caracter:R tipo: normal y tilde todos entonces trae todos los regulares a pesar de tener tkd
+		$where=" WHERE ((desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)) or (hasta is not null and desde>hasta and ".$filtro['anio']."=extract(year from hasta)))";
+                //cuando selecciona caracter:R tipo: normal, anuladas:no y tilde todos,periodo presupuestando entonces trae todos los regulares a pesar de tener tkd
+                if (!(isset($filtro['especial']) and $filtro['especial']==1 and isset($filtro['uni_acad']) and $filtro['caracter']=='R' and isset($filtro['tipo_desig']) and $filtro['tipo_desig']==1  and
+                 !isset($filtro['estado']) and $filtro['anulada']=='no' and $es_presupuestando)){
+                   $where.=" AND  nro_540 is null";//solo lo aplica cuando no se cumple la condicion tilde todos, caracter: R tipo:normal, anuladas:no, periodo presupuestando
+                }
                 
-                 //if (!(isset($filtro['especial']) and $filtro['especial']==1 and isset($filtro['uni_acad']) and $filtro['caracter']=='R' and isset($filtro['tipo_desig']) and $filtro['tipo_desig']==1 and !isset($filtro['id_programa'])  and
-                 //!isset($filtro['estado']) )){
-                   $where.=" AND  nro_540 is null";
-                 //}
-                
-                $where2="";          
+                $where2="";  
+                if (isset($filtro['anulada'])) {
+                    switch ($filtro['anulada']) {
+                        case 'no':$where.= " AND not (hasta is not null and hasta<desde) ";break;
+                        case 'si':$where.= " AND (hasta is not null and hasta<desde) ";break; 
+                    }
+		}
                 
 		if (isset($filtro['uni_acad'])) {
 			$where.= " AND uni_acad = ".quote($filtro['uni_acad']);
@@ -1253,18 +1262,6 @@ class dt_designacion extends toba_datos_tabla
                 //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
                 $sql=$this->armar_consulta($pdia, $udia, $filtro['anio']);
                 
-//                $sql=  "select * from ("
-//                        ."select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,nro_540,b.observaciones,id_programa,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
-//                            . ",case when b.estado<>'B' then case when t_no.id_novedad is null then b.estado else 'L' end else 'B' end as estado  "//si tiene una baja o renuncia coloca B. Si tiene una licencia sin goce o cese coloca L
-//                            . " from ("
-//                            ."select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,sum(a.dias_lic) as dias_lic".
-//                            " from (".$sql.") a"
-//                            .$where
-//                            ." GROUP BY a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,estado,id_programa,programa,porc,a.costo_diario,check_presup,licencia,dias_des"
-//                            .") b "
-//                            . " LEFT JOIN novedad t_no ON (b.id_designacion=t_no.id_designacion and (t_no.tipo_nov=2 or t_no.tipo_nov=5) and (t_no.desde<='".$udia."' and (t_no.hasta>='".$pdia."' or t_no.hasta is null)))"
-//                            .")c $where2"
-//                            . " order by programa,docente_nombre";//este ultimo join es para indicar si esta de licencia en este periodo
                 $sql=  "select * from ("
                         ."select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, nro_norma,b.tipo_norma,b.nro_540,b.observaciones,id_programa,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then case when tipo_desig=2 then costo_reserva(b.id_designacion,(dias_des*costo_diario*porc/100),".$filtro['anio'].") else ((dias_des-dias_lic)*costo_diario*porc/100) end else 0 end as costo"
                             . ",case when b.estado<>'B' then case when t_no.id_novedad is null then b.estado else 'L' end else 'B' end as estado  "//si tiene una baja o renuncia coloca B. Si tiene una licencia sin goce o cese coloca L
@@ -1609,8 +1606,8 @@ class dt_designacion extends toba_datos_tabla
                 	$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
                         $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
 		}       
-                 //que sea una designacion correspondiente al periodo seleccionado
-		$where=" WHERE a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)";
+                 //que sea una designacion correspondiente al periodo seleccionado o anulada dentro del periodo 
+                $where=" WHERE ((a.desde <= '".$udia."' and (a.hasta >= '".$pdia."' or a.hasta is null)) or (a.desde='".$pdia."' and a.hasta is not null and a.hasta<a.desde))";
                 $where2=" WHERE 1=1 ";//es para filtrar por estado. Lo hago al final de todo
                 if (isset($filtro['uni_acad'])) {
                     $concat=quote($filtro['uni_acad']['valor']);
@@ -1694,6 +1691,12 @@ class dt_designacion extends toba_datos_tabla
                         case 'es_distinto_de': $where.=" AND a.tipo_desig <>".$filtro['tipo_desig']['valor'];break;
                     }
                  }
+                 if (isset($filtro['anulada'])) {
+                    switch ($filtro['anulada']['valor']) {
+                        case '0': $where.=" AND not (a.hasta is not null and a.hasta<a.desde)";break;
+                        case '1': $where.=" AND a.hasta is not null and a.hasta<a.desde ";break;
+                    }
+                 } 
                 if (isset($filtro['cat_estat'])) {
                     switch ($filtro['cat_estat']['condicion']) {
                         case 'es_igual_a': $where2.= " and cat_estat=".quote($filtro['cat_estat']['valor']);break;
@@ -1740,8 +1743,8 @@ class dt_designacion extends toba_datos_tabla
 //                       . ")sub3"
 //                       .$where2
 //                            . " order by docente_nombre,desde"; 
-                 $sql= "select id_designacion,docente_nombre,legajo,nro_cargo,anio_acad,desde,hasta,cat_mapuche,cat_mapuche_nombre,cat_estat,dedic,carac,check_presup,id_departamento,id_area,id_orientacion,uni_acad,emite_norma,nro_norma,tipo_norma,nro_540,observaciones,estado,porc,dias_lic,programa,costo_vale as costo,est,expediente,nro from("
-                       . "select sub2.*,case when t_no.tipo_nov in (1,4) then 'B('||coalesce(t_no.tipo_norma,'')||':'||coalesce(t_no.norma_legal,'')||')' else case when t_no.tipo_nov in (2,5) then 'L('||t_no.tipo_norma||':'||t_no.norma_legal||')'  else sub2.estado end end as est,t_i.expediente,case when d.tipo_desig=2 then costo_reserva(d.id_designacion,costo,".$filtro['anio']['valor'].") else costo end as costo_vale "
+                 $sql= "select id_designacion,docente_nombre,legajo,nro_cargo,anio_acad,desde,hasta,cat_mapuche,cat_mapuche_nombre,cat_estat,dedic,carac,check_presup,id_departamento,id_area,id_orientacion,uni_acad,emite_norma,nro_norma,tipo_norma,nro_540,tkd,observaciones,estado,porc,dias_lic,programa,costo_vale as costo,est,expediente,nro from("
+                       . "select sub2.*,sub2.nro_540||'/'||t_i.anio as tkd,case when t_no.tipo_nov in (1,4) then 'B('||coalesce(t_no.tipo_norma,'')||':'||coalesce(t_no.norma_legal,'')||')' else case when t_no.tipo_nov in (2,5) then 'L('||t_no.tipo_norma||':'||t_no.norma_legal||')'  else sub2.estado end end as est,t_i.expediente,case when d.tipo_desig=2 then costo_reserva(d.id_designacion,costo,".$filtro['anio']['valor'].") else costo end as costo_vale "
                        . " ,case when t_nor.id_norma is null then '' else case when t_nor.link is not null or t_nor.link <>'' then '<a href='||chr(39)||t_nor.link||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||t_nor.nro_norma||'</a>' else cast(t_nor.nro_norma as text) end end as nro "
                        . "from ("
                        ."select sub.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, sub.desde, sub.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,sub.emite_norma, sub.nro_norma,sub.tipo_norma,nro_540,sub.observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,costo,max(t_no.id_novedad) as id_novedad from ("
@@ -1914,8 +1917,9 @@ class dt_designacion extends toba_datos_tabla
 		$where = "";
                 //trae todos los cargos interinos de esa UA
                 //que no tengan 
-                 //que sea una designacion vigente, dentro del periodo actual
+                 //que sea una designacion vigente, dentro del periodo actual y que no haya sido anulada
 		$where=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)"
+                        . " AND not (hasta is not null and hasta<=desde)"
                         . " AND carac='I'";
                 
 		if (isset($filtro['uni_acad'])) {
@@ -1924,8 +1928,6 @@ class dt_designacion extends toba_datos_tabla
                 if (isset($filtro['id_departamento'])) {
 			$where.= " AND id_departamento = ".quote($filtro['id_departamento']);
 		}
-                print_r($filtro['id_departamento']);
-               
               //designaciones sin licencia UNION designaciones c licencia 
 		$sql = "select * from (
                     SELECT distinct t_d.id_designacion, t_d1.apellido||', '||t_d1.nombre as docente_nombre, t_d1.legajo, t_d.nro_cargo, t_d.anio_acad, t_d.desde, t_d.hasta, t_d.cat_mapuche, t_cs.descripcion as cat_mapuche_nombre, t_d.cat_estat, t_d.dedic, t_d.carac,t_c.descripcion as car, t_d.id_departamento,t_d.id_area,t_d.id_orientacion,t_d3.descripcion as departamento, t_a.descripcion as area, t_o.descripcion as orientacion, t_d.uni_acad, t_m.quien_emite_norma as emite_norma, t_n.nro_norma, t_x.nombre_tipo as tipo_norma, t_d.nro_540, t_d.observaciones, m_p.nombre as programa, t_t.porc, case when t_d.check_presup=0 then 'NO' else 'SI' end as check_presup,'NO' as licencia
@@ -1956,7 +1958,6 @@ class dt_designacion extends toba_datos_tabla
                                             $where"
                         . " order by docente_nombre"
                    ;
-		//print_r($where);             	
                 return toba::db('designa')->consultar($sql);
     
 	}

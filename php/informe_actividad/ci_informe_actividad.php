@@ -31,6 +31,7 @@ class ci_informe_actividad extends toba_ci
             $filtro->columna('nro_540')->set_condicion_fija('es_igual_a',true)  ;
             $filtro->columna('iddepto')->set_condicion_fija('es_igual_a',true)  ;
             $filtro->columna('legajo')->set_condicion_fija('es_igual_a',true)  ;
+            $filtro->columna('id_designacion')->set_condicion_fija('es_igual_a',true)  ;
 	}
 
 	function evt__filtros__filtrar($datos)
@@ -73,7 +74,13 @@ class ci_informe_actividad extends toba_ci
         
 
         function conf__pant_inicial(toba_ei_pantalla $pantalla){
-             if(isset($this->s__datos_filtro['nro_540']) or isset($this->s__datos_filtro['legajo'])){
+            //el boton imprimir solo aparece cuando filtro por legajo o por tkd o por id_designa (solo uno)
+            if(isset($this->s__datos_filtro['nro_540']) and !isset($this->s__datos_filtro['legajo'])and !isset($this->s__datos_filtro['id_designacion'])
+                    or
+               !isset($this->s__datos_filtro['nro_540']) and isset($this->s__datos_filtro['legajo'])and !isset($this->s__datos_filtro['id_designacion'])
+                       or 
+               !isset($this->s__datos_filtro['nro_540']) and !isset($this->s__datos_filtro['legajo'])and isset($this->s__datos_filtro['id_designacion'])
+                    ){
                   if (isset($this->s__listado)){
                       $this->evento('imprimir')->mostrar();
                   }else{
@@ -82,23 +89,29 @@ class ci_informe_actividad extends toba_ci
              }else{
                  $this->evento('imprimir')->ocultar();
              }
-             
          }
         function vista_pdf(toba_vista_pdf $salida)
         {
           $bandera=false;
-          if(isset($this->s__datos_filtro['legajo'])){ //si filtra por legajo sale anexo 1
+          if(isset($this->s__datos_filtro['legajo']) and !isset($this->s__datos_filtro['nro_540']) and !isset($this->s__datos_filtro['id_designacion'])){ //si filtra por legajo sale anexo 1
                 $formato = utf8_decode('Informe de Actividad - Período '.$this->s__datos_filtro['anio']['valor'].' Legajo '.$this->s__datos_filtro['legajo']['valor'].' Página {PAGENUM} de {TOTALPAGENUM}   '); 
                 $texto=utf8_decode("<b>Informe de Actividad - Período: ".$this->s__datos_filtro['anio']['valor']." Legajo ".$this->s__datos_filtro['legajo']['valor'].'</b>');
                 $anexo='<b>ANEXO I</b>';
                 $bandera=true;
-          }else{//sino filtro por legajo pregunta si filtro por tkd
-              if(isset($this->s__datos_filtro['nro_540'])){
+          }else{//sino pregunta si filtro solo por tkd
+              if(!isset($this->s__datos_filtro['legajo']) and isset($this->s__datos_filtro['nro_540']) and !isset($this->s__datos_filtro['id_designacion'])){
                 $formato = utf8_decode('Informe de Actividad TKD # '.$this->s__datos_filtro['nro_540']['valor']."/".$this->s__datos_filtro['anio']['valor'].' Página {PAGENUM} de {TOTALPAGENUM}   ');
                 $texto="<b>Informe de Actividad TKD #".$this->s__datos_filtro['nro_540']['valor']."/".$this->s__datos_filtro['anio']['valor'].'</b>';
                 $anexo='<b>ANEXO II</b>';
                 $bandera=true;
-            }
+              }else{//si filtro solo por id_designacion
+                  if(!isset($this->s__datos_filtro['legajo']) and !isset($this->s__datos_filtro['nro_540']) and isset($this->s__datos_filtro['id_designacion'])){
+                        $formato = utf8_decode('Informe de Actividad - Período '.$this->s__datos_filtro['anio']['valor'].' ID-Designación: '.$this->s__datos_filtro['id_designacion']['valor'].' Página {PAGENUM} de {TOTALPAGENUM}   '); 
+                        $texto=utf8_decode("<b>Informe de Actividad - Período: ".$this->s__datos_filtro['anio']['valor']." ID-Designación: ".$this->s__datos_filtro['id_designacion']['valor'].'</b>');
+                        $anexo='<b>ANEXO I</b>';
+                        $bandera=true;
+                  }
+              }
           }   
          if($bandera){
             if (isset($this->s__listado)){

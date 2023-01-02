@@ -45,7 +45,10 @@ class dt_asignacion_materia extends toba_datos_tabla
 		}        
         if (isset($filtro['legajo']['valor'])) {
 		$where.= " and legajo= ".$filtro['legajo']['valor'];
-		}                        
+		}   
+        if (isset($filtro['id_designacion']['valor'])) {
+		$where.= " and id_designacion= ".$filtro['id_designacion']['valor'];
+		}           
         $sql="select informe_actividad(".$filtro['anio']['valor'].",'".$filtro['uni_acad']['valor']."');";
         toba::db('designa')->consultar($sql);
         $sql=" select a.*,a.id_designacion||'('||a.cat_estat||'-'||a.carac||')' as desig,d.descripcion as departamento,ar.descripcion as area,o.descripcion as orientacion
@@ -104,7 +107,7 @@ class dt_asignacion_materia extends toba_datos_tabla
             order by agente";
         return toba::db('designa')->consultar($sql);
     }
-    function get_responsables_programas($where=null){
+    function get_responsables_programas($where=null,$filtro){
     
       if(!is_null($where)){
            $where=' WHERE '.$where." ";
@@ -124,11 +127,13 @@ class dt_asignacion_materia extends toba_datos_tabla
             LEFT OUTER JOIN modulo t_mo ON (t_mo.id_modulo=t_m.modulo)
             LEFT OUTER JOIN tipo t_r ON (t_m.nro_tab8=t_r.nro_tabla and t_m.rol=t_r.desc_abrev)
             LEFT OUTER JOIN programa t_pr ON (t_m.id_materia=t_pr.id_materia and t_m.id_designacion=t_pr.id_designacion and t_m.anio=t_pr.anio and t_m.modulo=t_pr.modulo)
-            where rol='EC')sub
+            where rol='EC'
+            and not (t_d.hasta is not null and t_d.hasta<=t_d.desde)--no anulada
+            )sub
             $where "
             ."order by docente_nombre";
-        
-         return toba::db('designa')->consultar($sql);  
+      //filtra por las materias de planes de estudio de la UA que filtra, por eso incluye tanto designaciones propias como servicios de otras UA
+       return toba::db('designa')->consultar($sql);  
     }
     function get_equipos_catedra($filtro=array()){
         
@@ -939,5 +944,11 @@ group by sub2.desc_materia,sub2.cod_carrera,sub2.rol,sub2.periodo,sub2.moddes,su
      
          return toba::db('designa')->consultar($sql);
      }
+     //retorna las materias de esa designacion en ese anio
+     function get_materias($anio,$id_desig){
+         $sql="select * from asignacion_materia "
+                 . " where id_designacion=".$id_desig." and anio=".$anio;
+         return toba::db('designa')->consultar($sql);
+      }
 }
 ?>

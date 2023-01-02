@@ -75,7 +75,7 @@ class ci_impresion_540 extends toba_ci
                         toba::notificacion()->agregar(utf8_decode("Existen designaciones dentro del período que no alcanzan el 100% de imputación o con imputación al 0%"), "error");
                    }else{
                         if($this->s__especial['todos_regulares']==1){//tildo para traer todos los regulares
-                           //solo aplica cuando eligio solo Caracter R
+                           //solo aplica cuando eligio Caracter R, tipo=normal, anuladas=no, periodo=presupuestando
                             $this->s__datos_filtro['especial']=1;
                            }
                         $this->s__listado=$this->dep('datos')->tabla('designacion')->get_listado_540($this->s__datos_filtro); 
@@ -517,8 +517,8 @@ class ci_impresion_540 extends toba_ci
 	{
             if (isset($this->s__seleccionadas)){
                 //print_r($this->s__seleccionadas);exit;//Array ( [0] => Array ( [id_designacion] => 3 ) [1] => Array ( [id_designacion] => 83 ) 
-                $band=$this->dep('datos')->tabla('designacion')->control_actividad($this->s__seleccionadas, $this->s__anio);
-                if($band){
+                $bandera=$this->dep('datos')->tabla('designacion')->control_actividad($this->s__seleccionadas, $this->s__anio);
+                if($bandera['band']){
                    //le saco la notificacion 16 nov 2018 // toba::notificacion()->agregar(utf8_decode('A partir de Octubre 2018 no podrá imprimir TKD si el mismo incluye designaciones sin actividad.'),'info');
                     $band=$this->dep('datos')->tabla('designacion')->control_regulares_con_tkd($this->s__seleccionadas);
                     if($band){
@@ -526,7 +526,7 @@ class ci_impresion_540 extends toba_ci
                     }
                     $this->set_pantalla('pant_impresion');
                 }else{
-                    toba::notificacion()->agregar('Hay designaciones seleccionadas que no tienen actividad.','info');
+                    toba::notificacion()->agregar('Hay designaciones seleccionadas que no tienen actividad. Revise id: '.$bandera['id'],'info');
                 }
             }else{
                 $mensaje=utf8_decode('No hay designaciones seleccionadas para emitir número de ticket');

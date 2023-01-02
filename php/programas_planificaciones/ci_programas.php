@@ -13,12 +13,14 @@ class ci_programas extends toba_ci
 		if (isset($this->s__datos_filtro)) {
 			$filtro->set_datos($this->s__datos_filtro);
 		}
+                $filtro->columna('uni_acad')->set_condicion_fija('es_igual_a',true)  ;
+                $filtro->columna('anio')->set_condicion_fija('es_igual_a',true)  ;
 	}
 
 	function evt__filtros__filtrar($datos)
 	{
 		$this->s__datos_filtro = $datos;
-				$this->s__where = $this->dep('filtros')->get_sql_where();    
+	        $this->s__where = $this->dep('filtros')->get_sql_where();    
 	}
 
 	function evt__filtros__cancelar()
@@ -32,7 +34,7 @@ class ci_programas extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__where)) {
-		   $datos=$this->dep('datos')->tabla('asignacion_materia')->get_responsables_programas($this->s__where);             
+		   $datos=$this->dep('datos')->tabla('asignacion_materia')->get_responsables_programas($this->s__where,$this->s__datos_filtro);             
                    //print_r($datos);
                    foreach ($datos as $key => $value) {
                       if(isset($value['link'])){

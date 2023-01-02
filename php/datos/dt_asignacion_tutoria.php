@@ -50,7 +50,12 @@ class dt_asignacion_tutoria extends toba_datos_tabla
                 . " where t_a.id_designacion=".$des; 
 	return toba::db('designa')->consultar($sql);
        }
-     
+     //retorna las otras actividades de esa designacion en ese anio
+     function get_otras_activ($anio,$id_desig){
+         $sql="select * from asignacion_tutoria "
+                 . " where id_designacion=".$id_desig." and anio=".$anio;
+         return toba::db('designa')->consultar($sql);
+      }
  
 }
 
