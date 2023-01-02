@@ -57,7 +57,7 @@ class ci_certificacion_periodo extends toba_ci
 //            $pdf->addText(750,90,10,"------------------"); 
 //            $pdf->addText(750,80,10,"Firma y Sello"); 
                 //Configuración de Título.
-            
+           
            $salida->titulo(utf8_d_seguro(utf8_decode("Planilla de Designación del Docente - Período ".$this->s__datos_filtro['anio'])));
  
            $opciones = array(
@@ -143,7 +143,7 @@ class ci_certificacion_periodo extends toba_ci
             $pdf->ezText("\n\n\n", 10);
             foreach ($pdf->ezPages as $pageNum=>$id){ 
                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
-                   $pdf->addText(200,15,8,utf8_decode("Sistema MOCOVI-Módulo Designaciones Docentes").date('d/m/Y h:i:s a'));
+                   $pdf->addText(200,15,8,utf8_decode("Sistema MOCOVI-Módulo Designaciones Docentes ").date('d/m/Y h:i:s a'));
                    $pdf->closeObject(); 
                 }  
         }

@@ -198,7 +198,8 @@ class ci_informe_actividad extends toba_ci
                  foreach ($pdf->ezPages as $pageNum=>$id){ 
                     $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 
                     //agregamos al documento la imagen y definimos su posición a través de las coordenadas (x,y) y el ancho y el alto.
-                    $imagen = toba::proyecto()->get_path().'/www/img/logo_sti.jpg';
+                    //$imagen = toba::proyecto()->get_path().'/www/img/logo_sti.jpg';
+                    $imagen = toba::proyecto()->get_path().'/www/img/DTI_LOGO.jpg';
                     $imagen2 = toba::proyecto()->get_path().'/www/img/logo_designa.jpg';
                     $pdf->addJpegFromFile($imagen, 12, 510, 70, 66); 
                     $pdf->addJpegFromFile($imagen2, 680, 535, 130, 40);
