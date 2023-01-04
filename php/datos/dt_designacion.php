@@ -2342,53 +2342,19 @@ class dt_designacion extends toba_datos_tabla
         //solo trae las designaciones que tienen materias asociadas
         //designaciones de la Unidad Academica y del periodo x
         function get_equipos_cat($where=null){
-
+           
             if(!is_null($where)){
                     $where='WHERE '.$where;
                 }else{
                     $where='';
                 }
-            //NECESITO SEPARAR DEL WHERE EL FILTRO POR DESC_MATERIA, PORQUE SINO FILTRARIA SOLO A LOS DOCENTES QUE ESTAN DIRECTAENTE ASOCIADOS A ESA MATERIA, Y NO A TODO EL CONJUNTO COMO NECESITO
-          //Ojo: revisar que en el filtro la materia este al final siempre!!
-            $p=strpos(trim($where),'desc_materia');
-            $where3="";
-            
-            if($p!==false){//tiene en la condicion "materia" le saco esa parte del where
-                     $z=strlen($where)-16;     
-                     $where2=substr($where , 0,$p-4);// 4 por el AND
-                     $where3=" WHERE ".substr($where , $p,$z);
-                     
-            }else{
-                     $where2=$where;
-                }
-          
-//            $sql="select * from (".
-//            "select distinct b.*,d.descripcion as dep,a.descripcion as area,o.descripcion as ori 
-//                  from (select * from (
-//                          select distinct a.anio,b.id_designacion,trim(c.apellido)||', '||trim(c.nombre) as docente_nombre,c.legajo,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,desde,hasta,carga_horaria,b.id_departamento,b.id_area,b.id_orientacion,a.id_materia,d.descripcion as modulo,a.modulo as id_modulo,f.desc_item as rol,a.id_periodo,g.descripcion as periodo,h.desc_materia||'('||h.cod_siu||')'||'#'||i.cod_carrera||'#'||i.uni_acad as desc_materia,i.cod_carrera,i.ordenanza,a.observacion
-//                          from asignacion_materia a, designacion b, docente c, modulo d, tipo f, periodo g, materia h, plan_estudio i
-//                          where a.id_designacion=b.id_designacion
-//                                and c.id_docente=b.id_docente
-//                                and a.modulo=d.id_modulo
-//                                and f.nro_tabla=a.nro_tab8
-//                                and f.desc_abrev=a.rol
-//                                and a.id_periodo=g.id_periodo
-//                                and a.id_materia=h.id_materia
-//                                and h.id_plan=i.id_plan
-//                          order by docente_nombre
-//                          ) a ".$where2.")b "
-//                    . " LEFT OUTER JOIN departamento d ON (b.id_departamento=d.iddepto)"
-//                    . " LEFT OUTER JOIN area a ON (a.idarea=b.id_area) "
-//                    . " LEFT OUTER JOIN orientacion o ON (o.idorient=b.id_orientacion and o.idarea=b.id_area)"
-//                    . ")c $where3"
-//                    . " order by desc_materia,periodo,modulo "
-//                     ; 
-                //reemplazo por esta para traer todas la materias en conjunto si las hay
-                $sql="select sub4.uni_acad,trim(d.apellido)||', '||trim(d.nombre) as docente_nombre,d.nro_docum,d.legajo,d.fec_nacim,coalesce(d.correo_institucional,'')||' '|| coalesce(d.correo_personal,'') as correo,sub4.id_designacion,sub4.cat_est,sub4.carac,sub4.desde,sub4.hasta,t_mo.descripcion as modulo,carga_horaria,observacion,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo, dep.descripcion as dep,ar.descripcion as area,t_o.descripcion as ori,case when materia_conj is not null then materia_conj else m.desc_materia||'('||pl.cod_carrera||' de '||pl.uni_acad|| ')' end as desc_materia
+
+            $sql="select sub4.uni_acad,trim(d.apellido)||', '||trim(d.nombre) as docente_nombre,d.nro_docum,d.legajo,d.fec_nacim,coalesce(d.correo_institucional,'')||' '|| coalesce(d.correo_personal,'') as correo,sub4.id_designacion,sub4.cat_est,sub4.carac,sub4.desde,sub4.hasta,t_mo.descripcion as modulo,carga_horaria,observacion,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo, dep.descripcion as dep,ar.descripcion as area,t_o.descripcion as ori,case when materia_conj is not null then materia_conj else m.desc_materia||'('||pl.cod_carrera||' de '||pl.uni_acad|| ')' end as desc_materia
                       from(select sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion,string_agg(sub4.materia,'/') as materia_conj 
                            from (select distinct * from (
-                                   select distinct a.anio,b.id_designacion,b.id_docente,d.legajo,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,b.desde,b.hasta,b.id_departamento,b.id_area,b.id_orientacion,case when lic.id_novedad is null then 0 else 1 end as licencia
+                                   select distinct m.desc_materia,a.anio,b.id_designacion,b.id_docente,d.legajo,a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat||dedic as cat_est,dedic,carac,b.desde,b.hasta,b.id_departamento,b.id_area,b.id_orientacion,case when lic.id_novedad is null then 0 else 1 end as licencia
                                    from asignacion_materia a
+                                   INNER JOIN materia m ON (m.id_materia=a.id_materia)
                                    INNER JOIN designacion b ON (a.id_designacion=b.id_designacion)
                                    INNER JOIN docente d ON (b.id_docente=d.id_docente)
                                    --esto para saber si esta de licencia dentro del periodo y anio en el que esta designado. Entonces con el filtro puedo descartar a los que no estan ejerciendo
@@ -2414,7 +2380,7 @@ class dt_designacion extends toba_datos_tabla
                                                              )
                                     where not (b.hasta is not null and b.hasta<=b.desde)
                                  )sub1
-                                 ".$where2." )  sub2                   
+                                 ".$where." )  sub2                   
                         LEFT OUTER JOIN                       
                             ( select t_c.id_conjunto,t_p.anio,t_c.id_periodo,t_c.ua,t_e.id_materia
                               from en_conjunto t_e,conjunto  t_c, mocovi_periodo_presupuestario t_p
@@ -2433,7 +2399,7 @@ class dt_designacion extends toba_datos_tabla
                         LEFT OUTER JOIN orientacion t_o ON (sub4.id_orientacion=t_o.idorient and ar.idarea=t_o.idarea)
                         LEFT OUTER JOIN materia m ON m.id_materia=sub4.id_materia
                         LEFT OUTER JOIN plan_estudio pl ON pl.id_plan=m.id_plan
-                       $where3
+                       
                        order by desc_materia,periodo,modulo,rol";
             return toba::db('designa')->consultar($sql);
         }

@@ -113,16 +113,14 @@ class dt_materia extends toba_datos_tabla
 		if (count($where)>0) {
 			$sql = sql_concatenar_where($sql, $where);
 		}
-                    
                 $sql=$sql." order by t_m.id_plan,anio_segunplan,periodo_dictado";
                 
 		return toba::db('designa')->consultar($sql);
 	}
 
-        //metodo que se ejecuta cuando aparece el formulario para mostrar lo que aparece en el popup (o para editar )
+        //metodo que se ejecuta cuando aparece el formulario/filtro para mostrar lo que aparece en el popup (o para editar )
         function get_materia($id)
         {
-            
             if(($id>='0') &&($id<='100000')){
                 //OJO la consulta debe ser igual a la de get_listado
                 $sql= "SELECT
@@ -152,6 +150,7 @@ class dt_materia extends toba_datos_tabla
 				t_m.id_plan = t_pe.id_plan
                  ORDER BY id_plan,anio_segunplan";
                 $resul=toba::db('designa')->consultar($sql);
+               // print_r($resul);
                 return $resul[$id]['id_materia'];
                 
             }else{//es un string

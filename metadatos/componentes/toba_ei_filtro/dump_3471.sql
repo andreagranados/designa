@@ -306,7 +306,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'98', --objeto_ei_filtro_col
 	'3471', --objeto_ei_filtro
 	'designa', --objeto_ei_filtro_proyecto
-	'cadena', --tipo
+	'opciones', --tipo
 	'desc_materia', --nombre
 	'desc_materia', --expresion
 	'Nombre Materia', --etiqueta
@@ -316,22 +316,22 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'5', --orden
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
-	NULL, --opciones_ef
-	NULL, --carga_metodo
-	NULL, --carga_clase
-	NULL, --carga_include
+	'ef_combo_editable', --opciones_ef
+	'get_materias', --carga_metodo
+	'consultas', --carga_clase
+	'datos/consultas.php', --carga_include
 	NULL, --carga_dt
 	NULL, --carga_consulta_php
 	NULL, --carga_sql
-	NULL, --carga_fuente
+	'designa', --carga_fuente
 	NULL, --carga_lista
-	NULL, --carga_col_clave
-	NULL, --carga_col_desc
+	'desc_materia', --carga_col_clave
+	'desc_materia', --carga_col_desc
 	'0', --carga_permite_no_seteado
 	NULL, --carga_no_seteado
-	NULL, --carga_no_seteado_ocultar
+	'0', --carga_no_seteado_ocultar
 	NULL, --carga_maestros
-	NULL, --edit_tamano
+	'500', --edit_tamano
 	NULL, --edit_maximo
 	NULL, --edit_mascara
 	NULL, --edit_unidad
@@ -342,11 +342,11 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	NULL, --popup_proyecto
 	NULL, --popup_editable
 	NULL, --popup_ventana
-	NULL, --popup_carga_desc_metodo
-	NULL, --popup_carga_desc_clase
-	NULL, --popup_carga_desc_include
+	'get_materia', --popup_carga_desc_metodo
+	'consultas', --popup_carga_desc_clase
+	'datos/consultas.php', --popup_carga_desc_include
 	NULL, --popup_puede_borrar_estado
-	NULL, --punto_montaje
+	'23', --punto_montaje
 	NULL, --check_valor_si
 	NULL, --check_valor_no
 	NULL, --check_desc_si
