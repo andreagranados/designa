@@ -92,7 +92,7 @@ class consultas
 			$where = " AND uni_acad=$locale";
 		}
 		$filtro = quote("{$filtro}%");
-                $sql = "SELECT distinct desc_materia "
+                $sql = "SELECT distinct upper(trim(desc_materia)) as desc_materia "
                         . " FROM materia m, plan_estudio p"
                         . " WHERE m.id_plan=p.id_plan and desc_materia ILIKE $filtro"
                         . " $where"

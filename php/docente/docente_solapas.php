@@ -1,4 +1,16 @@
 <?php
+class icono_informacion implements toba_ef_icono_utileria
+{
+	function get_html(toba_ef $ef)
+	{
+		$objeto_js = $ef->objeto_js();
+		$javascript = "alert('Estado actual: ' + $objeto_js.get_estado());";
+		$salida = "<a class='icono-utileria' href='#' onclick=\"$javascript\">";
+		$salida .= toba_recurso::imagen_toba('info_chico.gif', true, null, null, "Ver estado actual del campo");
+		$salida .= "</a>";
+		return $salida;
+	}
+}
 class docente_solapas extends toba_ci
 {
     protected $s__agente;
@@ -271,6 +283,9 @@ class docente_solapas extends toba_ci
 	 */
 	function conf__form_docente(toba_ei_formulario $form)
 	{
+            //-- Se agrega un icono de informaci�n al lado de cada ef
+	    $icono_informacion = new icono_informacion();
+            $form->ef('correo_institucional')->agregar_icono_utileria($icono_informacion);
             $form->ef('legajo')->set_obligatorio('true');
             $form->ef('apellido')->set_obligatorio('true');
             $form->ef('nombre')->set_obligatorio('true');
