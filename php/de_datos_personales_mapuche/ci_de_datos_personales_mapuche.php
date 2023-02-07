@@ -68,6 +68,7 @@ class ci_de_datos_personales_mapuche extends toba_ci
                 $valores['nro_cuil2']=$datos['nro_cuil5'];
                 $valores['fec_nacim']=$datos['nacim'];
                 $valores['tipo_docum']=$datos['tipo_doc'];
+                $valores['nro_docum']=$datos['nro_cuil4'];
                 $valores['tipo_sexo']=$datos['sexo'];
                 $valores['fec_ingreso']=$datos['fec_ingreso'];
                 $valores['telefono']=$datos['telefono'];
