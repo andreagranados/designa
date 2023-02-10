@@ -123,9 +123,9 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'1', --orden
 	'Pantalla', --etiqueta
 	'Compara por número de legajo.<br>
-Tipo 1: Estan en Mapuche y no estan en Mocovi, ó tienen más dias en Mapuche que en Mocovi<br>
-Tipo 2: Estan en Mocovi y no estan en Mapuche, ó tienen más días en Mocovi<br>
-Tipo 3: Estan en Mocovi y en Mapuche con la misma cantidad de días<br>', --descripcion
+Tipo 1: Cargos que están en SIU-Mapuche pero no han sido informados en Mocovi.<br>
+Tipo 2: Designaciones que están informadas en Mocovi pero no se encuentran en SIU-Mapuche<br>
+Tipo 3: Están en Mocovi y en SIU-Mapuche. En estos casos pueden diferir o no los siguientes datos: carácter, fechas desde y hasta<br>', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen
