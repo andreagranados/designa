@@ -716,7 +716,8 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'fec_hasta', --nombre
 	'fec_hasta', --expresion
 	'Fecha Hasta Proyecto', --etiqueta
-	NULL, --descripcion
+	'desde >= <br>
+hasta <=', --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'4', --orden
