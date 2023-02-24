@@ -116,7 +116,7 @@ class dt_asignacion_materia extends toba_datos_tabla
       }
       // reemplace t_a.des_materia por materias_conjunto(t_m.anio,t_m.id_periodo,t_d.uni_acad,t_m.id_materia)
       $sql="select distinct * from (
-          select t_do.apellido||', '||t_do.nombre as docente_nombre, t_m.id_designacion,t_de.iddepto,t_de.descripcion as departamento,t_m.id_materia,t_m.modulo as id_modulo,t_do.legajo,t_m.anio,t_d.cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,materias_conjunto(t_m.anio,t_m.id_periodo,t_d.uni_acad,t_m.id_materia) as desc_materia,t_mo.descripcion as modulo,t_pe.descripcion as periodo,t_r.desc_item as rol,t_p.uni_acad,t_p.cod_carrera,t_p.ordenanza,t_pr.id_estado,t_pr.link,t_pr.observacion
+          select t_do.apellido||', '||t_do.nombre as docente_nombre, t_m.id_designacion,t_de.iddepto,t_de.descripcion as departamento,t_m.id_materia,t_m.modulo as id_modulo,t_do.legajo,t_m.anio,t_d.cat_mapuche,t_d.carac,t_d.desde,t_d.hasta,materias_conjunto(t_m.anio,t_m.id_periodo,t_d.uni_acad,t_m.id_materia) as desc_materia,t_mo.descripcion as modulo,t_pe.descripcion as periodo,t_r.desc_item as rol,t_p.uni_acad,t_p.cod_carrera,t_p.ordenanza,t_pr.id_estado,t_pr.link,t_pr.observacion,t_dm.descripcion as departamentom,t_am.descripcion as aream,t_om.descripcion as orientm
             from asignacion_materia t_m
             LEFT OUTER JOIN designacion t_d ON (t_d.id_designacion=t_m.id_designacion)
             LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
@@ -127,6 +127,9 @@ class dt_asignacion_materia extends toba_datos_tabla
             LEFT OUTER JOIN modulo t_mo ON (t_mo.id_modulo=t_m.modulo)
             LEFT OUTER JOIN tipo t_r ON (t_m.nro_tab8=t_r.nro_tabla and t_m.rol=t_r.desc_abrev)
             LEFT OUTER JOIN programa t_pr ON (t_m.id_materia=t_pr.id_materia and t_m.id_designacion=t_pr.id_designacion and t_m.anio=t_pr.anio and t_m.modulo=t_pr.modulo)
+            LEFT OUTER JOIN departamento t_dm ON (t_a.id_departamento=t_dm.iddepto)
+            LEFT OUTER JOIN area t_am ON (t_a.id_area=t_am.idarea)
+            LEFT OUTER JOIN orientacion t_om ON (t_a.id_orientacion=t_om.idorient and t_om.idarea=t_a.id_area) 
             where rol='EC'
             and not (t_d.hasta is not null and t_d.hasta<=t_d.desde)--no anulada
             )sub
