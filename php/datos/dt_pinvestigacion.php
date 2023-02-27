@@ -183,7 +183,7 @@ class dt_pinvestigacion extends toba_datos_tabla
         }
         function get_docentes_sininv($filtro=array()){
             //primer y ultimo dia periodo seleccionado
-                
+                $where='';
                 if(isset($filtro['anio']['valor'])){//es obligatorio siempre tiene valor
                     $where.=" and anio=".$filtro['anio']['valor'];
                     $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
@@ -196,8 +196,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                     $concat=" and fec_desde <= '".$udia."' and fec_hasta >= '".$pdia."' ";
                             
                 }
-                
-                $where='';
+                                
                 $pd = toba::manejador_sesiones()->get_perfil_datos();
                 if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
                     $con="select sigla,descripcion from unidad_acad ";

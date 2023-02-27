@@ -122,8 +122,8 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_inicial', --identificador
 	'1', --orden
 	'Pantalla Inicial', --etiqueta
-	'Tipo 1: Listado de docentes con dedicación parcial o exclusiva en el periodo seleccionado, que no están en ningún Proyecto de Investigación <br>
-Tipo 2: Listado de docentes con dedicación parcial o exclusiva en el periodo seleccionado, que no están en ningún Proyecto de Investigación correspondiente al período seleccionado.', --descripcion
+	'Tipo 1: Listado de docentes con dedicación parcial o exclusiva en el periodo/UA seleccionado, que no están en ningún Proyecto de Investigación <br>
+Tipo 2: Listado de docentes con dedicación parcial o exclusiva en el periodo/UA seleccionado, que no están en ningún Proyecto de Investigación correspondiente al período seleccionado.', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen
