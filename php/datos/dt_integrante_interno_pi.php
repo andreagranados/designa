@@ -270,13 +270,8 @@ class dt_integrante_interno_pi extends toba_datos_tabla
         }
          if (isset($filtro['cod_cati']['valor'])) {
             switch ($filtro['cod_cati']['condicion']) {
-                case 'contiene':  $where.=" and cod_cati ILIKE ".quote("%{$filtro['cod_cati']['valor']}%");  break;
-                case 'no_contiene':   $where.=" and cod_cati NOT ILIKE ".quote("%{$filtro['cod_cati']['valor']}%"); break;
-                case 'comienza_con': $where.=" and cod_cati ILIKE ".quote("{$filtro['cod_cati']['valor']}%");   break;
-                case 'termina_con':  $where.=" and cod_cati ILIKE ".quote("%{$filtro['cod_cati']['valor']}");  break;
                 case 'es_igual_a': $where.=" and cod_cati = ".quote("{$filtro['cod_cati']['valor']}");   break;
                 case 'es_distinto_de':  $where.=" and cod_cati <> ".quote("{$filtro['cod_cati']['valor']}");  break;
-                
             }
         }
         
@@ -328,7 +323,13 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 $where.=" and interno=0 ";
             }   
         }
-        $sql="select * from (select 1 as interno,trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.id_docente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria,d.cat_estat||d.dedic||'-'||d.carac||'('|| extract(year from d.desde)||'-'||case when (extract (year from case when d.hasta is null then '1800-01-11' else d.hasta end) )=1800 then '' else cast (extract (year from d.hasta) as text) end||')'||d.uni_acad as designacion,t_c.descripcion as cat_investigador,t_c.cod_cati
+         if (isset($filtro['estado']['valor'])) {
+            switch ($filtro['estado']['condicion']) {
+                case 'es_igual_a': $where.=" and estado = ".quote("{$filtro['estado']['valor']}");   break;
+                case 'es_distinto_de':  $where.=" and estado <> ".quote("{$filtro['estado']['valor']}");  break;
+            }
+        }
+        $sql="select * from (select 1 as interno,trim(t_do.apellido)||', '||trim(t_do.nombre) as agente,t_do.id_docente,t_do.legajo,t_i.uni_acad,d.uni_acad as ua,t_i.codigo,t_i.denominacion,t_i.fec_desde,t_i.fec_hasta, i.desde ,i.hasta,i.funcion_p,f.descripcion,i.carga_horaria,d.cat_estat||d.dedic||'-'||d.carac||'('|| extract(year from d.desde)||'-'||case when (extract (year from case when d.hasta is null then '1800-01-11' else d.hasta end) )=1800 then '' else cast (extract (year from d.hasta) as text) end||')'||d.uni_acad as designacion,t_c.descripcion as cat_investigador,t_c.cod_cati,t_i.estado
                  from integrante_interno_pi i 
                  INNER JOIN designacion d ON (i.id_designacion=d.id_designacion)
                  INNER JOIN docente t_do ON (d.id_docente=t_do.id_docente)
@@ -339,7 +340,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 . " UNION "
                 
                 . "select 0 as interno, trim(t_pe.apellido)||', '||trim(t_pe.nombre) as agente,-1 as id_docente,0 as legajo,t_p.uni_acad,'',t_p.codigo,t_p.denominacion,t_p.fec_desde,t_p.fec_hasta,t_e.desde,t_e.hasta,
-                  t_e.funcion_p,f.descripcion,t_e.carga_horaria,'' as designacion,t_c.descripcion as cat_investigador,t_c.cod_cati
+                  t_e.funcion_p,f.descripcion,t_e.carga_horaria,'' as designacion,t_c.descripcion as cat_investigador,t_c.cod_cati,t_p.estado
                 from integrante_externo_pi t_e
                 INNER JOIN pinvestigacion t_p ON (t_e.pinvest=t_p.id_pinv)
                 INNER JOIN persona t_pe ON (t_pe.tipo_docum=t_e.tipo_docum and t_pe.nro_docum=t_e.nro_docum)

@@ -411,8 +411,11 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                 . " LEFT OUTER JOIN funcion_investigador t_f ON (t_i.funcion_p=t_f.id_funcion) "
                 . " LEFT OUTER JOIN pinvestigacion p ON (t_i.pinvest=p.id_pinv) "
                 . " LEFT OUTER JOIN designacion t_d2 ON (t_d2.id_docente=t_d.id_docente
-                                    and t_d2.cat_mapuche=t_d.cat_mapuche and t_d2.cat_estat<>'AYS' and
-                                    t_d2.desde < t_i.hasta and ( t_d2.hasta is null or t_d2.hasta>t_i.desde)) "//solo si tiene esa categ vigente dentro de la participacion la muestra
+                                    and t_d2.cat_mapuche=t_d.cat_mapuche and t_d2.cat_estat<>'AYS' 
+                                    and not (t_d2.hasta is not null and t_d2.hasta<=t_d2.desde) "//desig no anulada
+                                    ." and t_d2.desde < t_i.hasta and ( t_d2.hasta is null or (t_d2.hasta>t_i.desde and t_i.hasta>=CURRENT_DATE and t_d2.hasta>=CURRENT_DATE) or (t_d2.hasta>t_i.desde and t_i.hasta<CURRENT_DATE and t_d2.hasta>=t_i.hasta))) "
+                  //solo muestra categ, si tiene esa categ vigente dentro de la participacion
+        //si el proyecto esta vigente entonces  hasta>=actual. Si el proy no esta vigente entonces hasta>= finproyecto                                   
                 //. " LEFT OUTER JOIN (select id_docente, max(desc_titul) as desc_titul
                 . " LEFT OUTER JOIN (select id_docente, STRING_AGG (desc_titul,' - ') as desc_titul    
                                     from titulos_docente t_t , titulo t_u 
