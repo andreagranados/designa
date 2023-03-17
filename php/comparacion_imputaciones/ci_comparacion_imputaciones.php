@@ -37,9 +37,9 @@ class ci_comparacion_imputaciones extends toba_ci
                 }
                  $dia_actual=date(j);//dia del mes sin ceros iniciales
                 if($entrar or $dia_actual<=20){
-                    toba::notificacion()->agregar(utf8_decode('Mapuche esta en proceso de liquidación. Realice esta operación del 1 al 20 de cada mes.'), 'info');
-                }else{
                     $cuadro->set_datos($this->dep('datos')->tabla('designacion')->get_comparacion_imput($this->s__datos_filtro));
+                }else{//$dias > 20 y no es presupuesto
+                    toba::notificacion()->agregar(utf8_decode('Mapuche esta en proceso de liquidación. Realice esta operación del 1 al 20 de cada mes.'), 'info');
                 }
 	    } 
 	}
