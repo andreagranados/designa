@@ -497,6 +497,79 @@ class dt_designacion extends toba_datos_tabla
         
             
     }
+//    function get_diferencias($filtro){
+//            if($filtro['mes']['valor']==2){
+//                $udia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'28';
+//            }else{
+//                if($filtro['mes']['valor']==1 or $filtro['mes']['valor']==3 or $filtro['mes']['valor']==5 or $filtro['mes']['valor']==7 or $filtro['mes']['valor']==8 or $filtro['mes']['valor']==10 or $filtro['mes']['valor']==12){
+//                    $udia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'31';
+//                }else{
+//                    $udia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'30';
+//                }  
+//            }        
+//            //$udia='2020-04-30';
+//            $pdia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'01';//$pdia='2020-04-01';
+//            $where=' where 1=1';
+//            $ua=trim($filtro['uni_acad']['valor']);
+//            $uni=$ua;
+//            if($uni=="ESCM"){
+//                $uni='IBMP';
+//            };
+//            if(isset($filtro['tipo'])){
+//               $where.=" and tipo=".$filtro['tipo']['valor'];
+//            }
+//            if(isset($filtro['legajo'])){
+//               $where.=" and (legajo=".$filtro['legajo']['valor']." or nro_legaj=".$filtro['legajo']['valor'].")";
+//            }
+//         //recupero los cargos de mapuche de ese periodo y esa ua
+//            $datos_mapuche = consultas_mapuche::get_docentes_categ_dias($uni,$udia,$pdia);
+////print_r($datos_mapuche);exit;
+//            $sql=" CREATE LOCAL TEMP TABLE mapu
+//            ( 
+//                ape             character varying(100),
+//                nom             character varying(100),
+//                nro_legaj       integer,
+//                nro_docum       integer,
+//                categ           character varying(4),
+//                uni_acad        character varying(5),
+//                dias            integer
+//            );";
+//            toba::db('designa')->consultar($sql);
+//            foreach ($datos_mapuche as $valor) {
+//                $sql=" insert into mapu values ("."'".str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_legaj'].",".$valor['nro_docum'].",'".$valor['codc_categ']."','".$valor['codc_uacad']."',".$valor['dias'].")";
+//                toba::db('designa')->consultar($sql);
+//            }
+////            $sql="select * from mapu;";
+////            $resul=toba::db('designa')->consultar($sql);
+////            print_r($resul);
+//            $sql=" SELECT * from (SELECT case when m_u.uni_acad is not null then m_u.uni_acad else m_o.uni_acad end as uni_acad,m_o.apellido||', '||m_o.nombre as agente_moco,m_o.nro_docum,m_o.legajo,m_o.cat_mapuche,m_o.dias,m_u.ape||', '||m_u.nom as agente_mapu,m_u.nro_docum as docmapu,m_u.nro_legaj,m_u.categ as categ_mapu,m_u.dias as diasmapu,
+//                   case when m_o.nro_docum is not null and m_u.nro_docum is not null then case when m_o.dias=m_u.dias then 3 else case when m_o.dias>m_u.dias then 2 else 1 end end 
+//                     else case when m_o.nro_docum is not null and m_u.nro_docum is null then 2 else 1 end end as tipo
+//                   FROM
+//                   (SELECT apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic) else 0 end ) as dias 
+//                    from (
+//                        SELECT distinct t_doc.apellido,t_doc.nombre,t_doc.legajo,t_doc.nro_docum,t_d.uni_acad,t_d.cat_mapuche,t_d.id_designacion,t_d.desde, t_d.hasta, 
+//                         sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
+//                        case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
+//                            FROM designacion as t_d 
+//                            INNER JOIN docente as t_doc ON (t_d.id_docente=t_doc.id_docente)
+//                            LEFT OUTER JOIN novedad t_no ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.tipo_norma is not null 
+//                           					and t_no.tipo_emite is not null 
+//                           					and t_no.norma_legal is not null 
+//                           					and t_no.desde<='".$udia."' and t_no.hasta>='".$pdia."')
+//                        WHERE  t_d.tipo_desig=1 
+//                         and t_d.uni_acad='".$ua."'
+//                         and t_d.desde<='".$udia."' and  (t_d.hasta>='".$pdia."' or t_d.hasta is null )
+//                        GROUP BY t_doc.apellido,t_doc.nombre,t_doc.legajo,t_doc.nro_docum,t_d.uni_acad,t_d.cat_mapuche,t_d.id_designacion,t_d.desde, t_d.hasta
+//                        )sub
+//                    group by apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche
+//                    )m_o
+//                    full outer join mapu m_u 
+//                    on (m_o.nro_docum=m_u.nro_docum and m_o.uni_acad=m_u.uni_acad and m_o.cat_mapuche=m_u.categ)
+//                    order by m_o.apellido,m_o.nombre)sub
+//                    $where";
+//            return toba::db('designa')->consultar($sql);
+//     }
     function get_diferencias($filtro){
             if($filtro['mes']['valor']==2){
                 $udia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'28';
@@ -510,30 +583,37 @@ class dt_designacion extends toba_datos_tabla
             //$udia='2020-04-30';
             $pdia=$filtro['anio']['valor'].'-'.$filtro['mes']['valor'].'-'.'01';//$pdia='2020-04-01';
             $where=' where 1=1';
-            $ua=trim($filtro['uni_acad']['valor']);
-            $uni=$ua;
-            if($uni=="ESCM"){
-                $uni='IBMP';
-            };
+            $where1='';
+            //filtro de acuerdo al perfil de datos
+            $con="select sigla from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            $pd = toba::manejador_sesiones()->get_perfil_datos();
+            if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
+                  $where.=" and (m_o.uni_acad = ".quote(trim($resul[0]['sigla']));                  
+                  $where1=" and t_d.uni_acad=".quote(trim($resul[0]['sigla']));
+            }//sino es usuario de la central no filtro a menos que haya elegido
+            if (isset($filtro['uni_acad']['valor'])) {//no es obligatorio este filtro
+                $where .= " and m_o.uni_acad = ".quote(trim($filtro['uni_acad']['valor']));      
+                $where1=" and t_d.uni_acad=".quote(trim($filtro['uni_acad']['valor']));
+            }            
+            //
             if(isset($filtro['tipo'])){
                $where.=" and tipo=".$filtro['tipo']['valor'];
             }
             if(isset($filtro['legajo'])){
                $where.=" and (legajo=".$filtro['legajo']['valor']." or nro_legaj=".$filtro['legajo']['valor'].")";
             }
-         //recupero los cargos de mapuche de ese periodo y esa ua
-            $datos_mapuche = consultas_mapuche::get_docentes_categ_dias($uni,$udia,$pdia);
-//print_r($datos_mapuche);exit;
-            $sql=" CREATE LOCAL TEMP TABLE mapu
-            ( 
+         //recupero los cargos de mapuche de ese periodo 
+            $datos_mapuche = consultas_mapuche::get_docentes_categ_dias_todasua($udia,$pdia);
+            $sql=" CREATE LOCAL TEMP TABLE mapu(
                 ape             character varying(100),
                 nom             character varying(100),
                 nro_legaj       integer,
                 nro_docum       integer,
                 categ           character varying(4),
                 uni_acad        character varying(5),
-                dias            integer
-            );";
+                dias            integer);";
             toba::db('designa')->consultar($sql);
             foreach ($datos_mapuche as $valor) {
                 $sql=" insert into mapu values ("."'".str_replace('\'','',$valor['desc_appat'])."','". $valor['desc_nombr']."',".$valor['nro_legaj'].",".$valor['nro_docum'].",'".$valor['codc_categ']."','".$valor['codc_uacad']."',".$valor['dias'].")";
@@ -558,7 +638,7 @@ class dt_designacion extends toba_datos_tabla
                            					and t_no.norma_legal is not null 
                            					and t_no.desde<='".$udia."' and t_no.hasta>='".$pdia."')
                         WHERE  t_d.tipo_desig=1 
-                         and t_d.uni_acad='".$ua."'
+                         $where1
                          and t_d.desde<='".$udia."' and  (t_d.hasta>='".$pdia."' or t_d.hasta is null )
                         GROUP BY t_doc.apellido,t_doc.nombre,t_doc.legajo,t_doc.nro_docum,t_d.uni_acad,t_d.cat_mapuche,t_d.id_designacion,t_d.desde, t_d.hasta
                         )sub
