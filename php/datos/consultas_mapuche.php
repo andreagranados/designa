@@ -31,7 +31,7 @@ class consultas_mapuche
      return toba::db('mapuche')->consultar($sql);
   }
   function get_docentes_categ_dias_todasua($udia,$pdia){
-     $sql="select  desc_appat,desc_nombr,nro_legaj,nro_docum,case when codc_uacad='IBMP' then 'ESCM' else codc_uacad end as codc_uacad ,codc_categ,sum(case when chkstopliq=1 then 0 else case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic) else 0 end end )as dias
+     $sql="select  trim(desc_appat) as desc_appat,trim(desc_nombr) as desc_nombr,nro_legaj,nro_docum,case when codc_uacad='IBMP' then 'ESCM' else codc_uacad end as codc_uacad ,codc_categ,sum(case when chkstopliq=1 then 0 else case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic) else 0 end end )as dias
             from
             (select distinct b.desc_appat,b.desc_nombr,b.nro_legaj,b.nro_docum,case when a.codc_uacad='SESO' then 'FADE' else a.codc_uacad end as codc_uacad,a.nro_cargo,a.codc_categ,a.fec_alta,a.fec_baja,a.chkstopliq,
              sum(case when l.nro_licencia is null or (l.nro_licencia is not null and m.es_remunerada) then 0 else (case when (l.fec_desde>'".$udia."' or (l.fec_hasta is not null and l.fec_hasta<'".$pdia."')) then 0 else (case when l.fec_desde<='".$pdia."' then ( case when (l.fec_hasta is null or l.fec_hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((l.fec_hasta-'".$pdia."')+1) end ) else (case when (l.fec_hasta is null or l.fec_hasta>='".$udia."' ) then ((('".$udia."')-l.fec_desde+1)) else ((l.fec_hasta-l.fec_desde+1)) end ) end )end)end) as dias_lic,
