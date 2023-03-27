@@ -626,9 +626,9 @@ class dt_designacion extends toba_datos_tabla
                    case when m_o.nro_docum is not null and m_u.nro_docum is not null then case when m_o.dias=m_u.dias then 3 else case when m_o.dias>m_u.dias then 2 else 1 end end 
                      else case when m_o.nro_docum is not null and m_u.nro_docum is null then 2 else 1 end end as tipo
                    FROM
-                   (SELECT apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic) else 0 end ) as dias 
+                   (SELECT apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche,cat_est,sum(case when (dias_des-dias_lic)>=0 then (dias_des-dias_lic) else 0 end ) as dias 
                     from (
-                        SELECT distinct t_doc.apellido,t_doc.nombre,t_doc.legajo,t_doc.nro_docum,t_d.uni_acad,t_d.cat_mapuche,t_d.id_designacion,t_d.desde, t_d.hasta, 
+                        SELECT distinct t_doc.apellido,t_doc.nombre,t_doc.legajo,t_doc.nro_docum,t_d.uni_acad,t_d.cat_mapuche,trim(t_d.cat_estat)||t_d.dedic as cat_est,t_d.id_designacion,t_d.desde, t_d.hasta, 
                          sum(case when t_no.id_novedad is null then 0 else (case when (t_no.desde>'".$udia."' or (t_no.hasta is not null and t_no.hasta<'".$pdia."')) then 0 else (case when t_no.desde<='".$pdia."' then ( case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_no.hasta-'".$pdia."')+1) end ) else (case when (t_no.hasta is null or t_no.hasta>='".$udia."' ) then ((('".$udia."')-t_no.desde+1)) else ((t_no.hasta-t_no.desde+1)) end ) end )end)*t_no.porcen end) as dias_lic,
                         case when t_d.desde<='".$pdia."' then ( case when (t_d.hasta>='".$udia."' or t_d.hasta is null ) then (((cast('".$udia."' as date)-cast('".$pdia."' as date))+1)) else ((t_d.hasta-'".$pdia."')+1) end ) else (case when (t_d.hasta>='".$udia."' or t_d.hasta is null) then ((('".$udia."')-t_d.desde+1)) else ((t_d.hasta-t_d.desde+1)) end ) end as dias_des 
                             FROM designacion as t_d 
@@ -640,9 +640,9 @@ class dt_designacion extends toba_datos_tabla
                         WHERE  t_d.tipo_desig=1 
                          $where1
                          and t_d.desde<='".$udia."' and  (t_d.hasta>='".$pdia."' or t_d.hasta is null )
-                        GROUP BY t_doc.apellido,t_doc.nombre,t_doc.legajo,t_doc.nro_docum,t_d.uni_acad,t_d.cat_mapuche,t_d.id_designacion,t_d.desde, t_d.hasta
+                        GROUP BY t_doc.apellido,t_doc.nombre,t_doc.legajo,t_doc.nro_docum,t_d.uni_acad,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.id_designacion,t_d.desde, t_d.hasta
                         )sub
-                    group by apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche
+                    group by apellido,nombre,legajo,nro_docum,uni_acad,cat_mapuche,cat_est
                     )m_o
                     full outer join mapu m_u 
                     on (m_o.nro_docum=m_u.nro_docum and m_o.uni_acad=m_u.uni_acad and m_o.cat_mapuche=m_u.categ)
