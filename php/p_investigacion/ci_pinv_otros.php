@@ -615,10 +615,8 @@ class ci_pinv_otros extends designa_ci
                  unset($datos2['fecha_regreso']);
                  $datos2['fecha_regreso'][0]=substr($datos['fecha_regreso'],0,10);//'2017-01-01';
                  $datos2['fecha_regreso'][2]=trim(substr($datos['fecha_regreso'],10,6));//'12:00'; 
-                 $form->set_datos($datos2);
-                 
+                 $form->set_datos($datos2);   
             } 
-            
 	}
 
         function evt__form_viatico__alta($datos)//alta de un viatico
@@ -627,7 +625,8 @@ class ci_pinv_otros extends designa_ci
          if($pi['estado']<>'A'){
                throw new toba_error("El proyecto debe estar ACTIVO para ingresar viaticos");
           }else{
-              if($datos['fecha_regreso'][0]>=$datos['fecha_salida'][0]){
+            if($datos['fecha_regreso'][0]>=$datos['fecha_salida'][0]){
+              if(substr($datos['fecha_salida'][0], 0, 4)==substr($datos['fecha_regreso'][0], 0, 4)){
                 $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];
                 $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
                 $datos['fecha_salida']=$fec;
@@ -644,15 +643,7 @@ class ci_pinv_otros extends designa_ci
                 unset($datos['fecha_pago']);
                 unset($datos['observaciones']);
                 $mensaje="";
-                if($datos['es_nacional']==1){//si es nacional
-                    if($datos['cant_dias']>5){
-                        $mensaje="Nacional hasta 5 dias";
-                    }
-                }else{
-                     if($datos['cant_dias']>7){
-                        $mensaje="Internacional hasta 7 dias";
-                     }
-                }
+
                 $calculo=$this->get_cant_dias2($datos['fecha_salida'],$datos['fecha_regreso']);
                // print_r($calculo);exit();//que autocomplete
                 if($datos['cant_dias']<=$calculo){
@@ -662,10 +653,16 @@ class ci_pinv_otros extends designa_ci
                     //controla que no supere los 14 dias anuales
                     $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias($pi['id_pinv'],$anio,$datos['cant_dias']);
                     if($band){//verifica que no supere los 14 dias anuales
-                        $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
-                        $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
-                        $this->controlador()->dep('datos')->tabla('viatico')->resetear();
-                        $this->s__mostrar_v=0;
+                        //pregunto sino supera el tope de dias del tipo de viatico
+                        $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_tope_xtipo($pi['id_pinv'],$datos['tipo'],$anio,$datos['cant_dias']);
+                        if($band[0]['ok']){
+                            $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
+                            $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
+                            $this->controlador()->dep('datos')->tabla('viatico')->resetear();
+                            $this->s__mostrar_v=0;
+                        }else{
+                            throw new toba_error(utf8_decode('Supera la cantidad máxima de días para ese tipo de viático. '.$band[0]['mensaje']));
+                        }
                     }else{
                         throw new toba_error('Supera los 14 dias anuales');
                     }
@@ -675,6 +672,7 @@ class ci_pinv_otros extends designa_ci
                 }else{//podria colocar un valor menor a $calculo
                    throw new toba_error('La cantidad de dias debe ser menor o igual a: '.$calculo.'. Por favor, corrija e intente guardar nuevamente.');
                 }
+              } else{throw new toba_error(utf8_decode('Fecha de salida y regreso deben corresponder al mismo año'));} 
           }else{ throw new toba_error('La fecha de regreso debe ser mayor a la fecha de salida ');}
           }
 	}
@@ -693,54 +691,55 @@ class ci_pinv_otros extends designa_ci
             toba::notificacion()->agregar('Modificacion exitosa. SCyT solo modifica estado, expediente de pago, fecha de pago, fecha de presentac certif., memos y observaciones', 'info');         
         }
         //boton modificacion para la ua
-        function evt__form_viatico__modificacion_ua($datos)
-	{
+        function evt__form_viatico__modificacion_ua($datos){
           $pi=$this->controlador()->dep('datos')->tabla('pinvestigacion')->get();
           if($pi['estado']<>'A'){
                toba::notificacion()->agregar(utf8_decode('El proyecto debe estar ACTIVO para modificar viáticos '), 'error');  
           }else{
-                $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];  //Array ( [0] => 2017-01-01 [1] => 10:10 ) ) 
-                $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
-                $datos['fecha_salida']=$fec;
-                $datos['fecha_regreso']=$fecr;
                 $via=$this->controlador()->dep('datos')->tabla('viatico')->get();
                 if($via['estado']=='S' or $via['estado']=='R'){  //si ha sido rechazado se puede modificar   
-                    $mensaje="";
-                    unset($datos['estado']);//la ua no puede modificar el estado de un viatico
-                    unset($datos['fecha_present_certif']);
-                    unset($datos['expediente_pago']);
-                    unset($datos['fecha_pago']);
-                    unset($datos['observaciones']);
-                    if($datos['es_nacional']==1){//si es nacional
-                        if($datos['cant_dias']>5){
-                            $mensaje="Nacional hasta 5 dias";
-                        }
-                    }else{
-                        if($datos['cant_dias']>7){
-                            $mensaje="Internacional hasta 7 dias";
-                        }
-                    }
-                  
-                    $calculo=$this->get_cant_dias2($datos['fecha_salida'],$datos['fecha_regreso']);
-                    if($datos['cant_dias']<=$calculo){
-                        if($mensaje==""){
-                            $fecha = strtotime($datos['fecha_salida']);//debo considerar la fecha de salida y no la fecha de solicitud
-                            $anio=date("Y",$fecha);
-                            $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_modif($pi['id_pinv'],$anio,$datos['cant_dias'],$via['id_viatico']);
-                            if($band){//verifica que no supere los 14 dias anuales
-                                $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
-                                $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
-
+                  if($datos['fecha_regreso'][0]>=$datos['fecha_salida'][0]){
+                      if(substr($datos['fecha_salida'][0],0,4)==substr($datos['fecha_regreso'][0], 0, 4)){
+                            $fec=(string)$datos['fecha_salida'][0].' '.(string)$datos['fecha_salida'][1];  //Array ( [0] => 2017-01-01 [1] => 10:10 ) ) 
+                            $fecr=(string)$datos['fecha_regreso'][0].' '.(string)$datos['fecha_regreso'][1];
+                            $datos['fecha_salida']=$fec;
+                            $datos['fecha_regreso']=$fecr;
+                            $mensaje="";
+                            unset($datos['estado']);//la ua no puede modificar el estado de un viatico
+                            unset($datos['fecha_present_certif']);
+                            unset($datos['expediente_pago']);
+                            unset($datos['fecha_pago']);
+                            unset($datos['observaciones']);
+                            $calculo=$this->get_cant_dias2($datos['fecha_salida'],$datos['fecha_regreso']);
+                            if($datos['cant_dias']<=$calculo){
+                                if($mensaje==""){
+                                    $fecha = strtotime($datos['fecha_salida']);//debo considerar la fecha de salida y no la fecha de solicitud
+                                    $anio=date("Y",$fecha);
+                                    $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_modif($pi['id_pinv'],$anio,$datos['cant_dias'],$via['id_viatico']);
+                                    if($band){//verifica que no supere los 14 dias anuales
+                                        //pregunto sino supera el tope de dias del tipo de viatico
+                                        $band=$this->controlador()->dep('datos')->tabla('viatico')->control_dias_tope_xtipo_modif($pi['id_pinv'],$datos['tipo'],$anio,$datos['cant_dias'],$via['id_viatico']);
+                                        if($band[0]['ok']){
+                                            $this->controlador()->dep('datos')->tabla('viatico')->set($datos);
+                                            $this->controlador()->dep('datos')->tabla('viatico')->sincronizar();
+                                        }else{
+                                            throw new toba_error(utf8_decode('Supera la cantidad máxima de días para ese tipo de viático. '.$band[0]['mensaje']));
+                                        }
+                                    }else{
+                                        throw new toba_error('Supera los 14 días anuales');
+                                    }
+                                }else{
+                                    throw new toba_error($mensaje);
+                                }
                             }else{
-                                throw new toba_error('Supera los 14 días anuales');
+                                throw new toba_error(utf8_decode('La cantidad de días debe ser menor o igual a: ').$calculo.'. Por favor, corrija e intente guardar nuevamente.');
                             }
-                        }else{
-                            throw new toba_error($mensaje);
-                        }
-                    }else{
-                        throw new toba_error('La cantidad de dias debe ser menor o igual a: '.$calculo.'. Por favor, corrija e intente guardar nuevamente.');
-                    }
-                    
+                      }else{
+                          throw new toba_error(utf8_decode('Fecha de salida y regreso deben corresponder al mismo año'));
+                      }   
+                  }else{
+                      throw new toba_error('La fecha de regreso debe ser mayor a la fecha de salida ');
+                  }
                 }else{
                     $mensaje=$this->controlador()->dep('datos')->tabla('estado_vi')->get_descripcion($via['estado']);
                     toba::notificacion()->agregar(utf8_decode('El viático no puede ser modificado porque SCyT lo ha pasado a estado: '.$mensaje), 'error');  

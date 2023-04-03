@@ -180,6 +180,7 @@ class ci_p_investigacion extends toba_ci
                         $pdf->ezText('<b>NOMBRE DE LA ACTIVIDAD: </b>'.$vi['nombre_actividad'], 10);
                         $pdf->ezText('<b>DESTINATARIO: </b>'.$desti, 10);
                         $pdf->ezText('<b>CUIL: </b>'.$cuil, 10);
+                        $pdf->ezText('<b>CBU: </b>'.$vi['cbu'], 10);
                         $pdf->ezText('<b>'.utf8_d_seguro('CATEGORÍA: ') .'</b>'.$fn, 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('<b>DESTINO: </b>'.$vi['destino'], 10);
@@ -190,8 +191,8 @@ class ci_p_investigacion extends toba_ci
                         $pdf->ezText(utf8_d_seguro('------------------------------------------------------ LIQUIDACIÓN DE GASTOS ------------------------------------------------------'), 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('<b>'.utf8_d_seguro('DÍAS A LIQUIDAR: ').'</b>'.$vi['cant_dias'], 10);
-                        $pdf->ezText('<b>'.utf8_d_seguro('VIÁTICOS DIARIOS: ').'</b> '.$montov, 10);
-                        $pdf->ezText('<b>SON $: </b> '.$vi['cant_dias']*$montov, 10);
+                        $pdf->ezText('<b>'.utf8_d_seguro('VIÁTICOS DIARIOS $: ').'</b> '.number_format($montov,2,',','.'), 10);
+                        $pdf->ezText('<b>SON $: </b> '.number_format(($vi['cant_dias']*$montov),2,',','.'), 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);
                         $pdf->ezText('  ', 10);

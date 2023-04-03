@@ -26,7 +26,17 @@ class dt_viatico extends toba_datos_tabla
      function get_listado($id_p,$filtro=null){
         $where="";
         if (isset($filtro['anio']['valor'])) {//considero la fecha de salida y no la de la solicitud
-            $where = " and extract(year from fecha_salida)=".$filtro['anio']['valor'];
+            $where .= " and extract(year from fecha_salida)=".$filtro['anio']['valor'];
+        }
+        if (isset($filtro['tipo'])) {
+            switch ($filtro['tipo']['condicion']) {
+                case 'es_igual_a':$where .= " and tipo='".$filtro['tipo']['valor']."'";
+                    break;
+
+                default: $where .= " and tipo<>'".$filtro['tipo']['valor']."'";
+                    break;
+            }
+            
         }
         $sql="select sub.*,sub2.total from (select id_viatico,id_proyecto, nro_tab, tipo, fecha_solicitud, fecha_pago, 
                 expediente_pago, case when c.nro_docum is not null then trim(c.apellido)||', '||trim(c.nombre) else trim(p.apellido)||', '||trim(p.nombre) end as destinatario, memo_solicitud, memo_certificados, 
@@ -71,6 +81,7 @@ class dt_viatico extends toba_datos_tabla
                 . " and id_viatico<>".$id_via;
        
         $resul=toba::db('designa')->consultar($sql);
+     
         if(count($resul)>0){
             if($resul[0]['cantidad']+$dias<=14){
                 return true;
@@ -80,6 +91,70 @@ class dt_viatico extends toba_datos_tabla
         }else{
             return true;
         }
+    }
+     function control_dias_tope_xtipo($id_proy,$tipo,$anio,$dias){
+        //debe considerar la fecha de salida y no la fecha de solicitud 
+        //controla que la cantidad de 
+        $sql=" select case when cantidad+$dias>t.cant_dias then 0 else 1 end as ok,t.tipo,t.cant_dias
+               from 
+                (select id_proyecto,nro_tab,tipo,sum(cant_dias) as cantidad 
+                from viatico v
+                where id_proyecto= ".$id_proy .
+               " and estado<>'R'
+                 and tipo='".$tipo."'".
+                 " and  extract(year from fecha_salida)=$anio
+                group by id_proyecto,nro_tab,tipo)sub,tope_tipo_viatico t      
+                where sub.nro_tab=t.nro_tabla    
+                and sub.tipo=t.tipo";
+       
+        $resul=toba::db('designa')->consultar($sql);
+        
+        if(count($resul)>0){
+            if($resul[0]['ok']==1){
+                $salida[0]=array('ok'=>true,'mensaje'=>'');
+            }else{
+                $salida[0]=array('ok'=>false,'mensaje'=>$resul[0]['tipo'].' max '.$resul[0]['cant_dias'].' días al año');
+            }
+        }else{
+            $salida[0]=array('ok'=>true,'mensaje'=>'');
+        }    
+        return $salida;
+    }
+    //devuelve false si supera el tope y true sino supera
+    function control_dias_tope_xtipo_modif($id_proy,$tipo,$anio,$dias,$id_via){
+        //debe considerar la fecha de salida y no la fecha de solicitud 
+        $sql=" select case when cantidad+$dias>t.cant_dias then 0 else 1 end as ok,t.tipo,t.cant_dias
+               from 
+                ( select id_proyecto,nro_tab,tipo,sum(cant_dias) as cantidad 
+                  from viatico v
+                  where id_proyecto= ".$id_proy .
+                       " and estado<>'R'
+                         and tipo='".$tipo."'".
+                       " and  extract(year from fecha_salida)=$anio
+                         and id_viatico<>$id_via
+                   group by id_proyecto,nro_tab,tipo)sub,tope_tipo_viatico t      
+                   where sub.nro_tab=t.nro_tabla    
+                   and sub.tipo=t.tipo";
+      
+        $resul=toba::db('designa')->consultar($sql);
+        if(count($resul)>0){
+            if($resul[0]['ok']==1){
+                $salida[0]=array('ok'=>true,'mensaje'=>'');
+            }else{
+                $salida[0]=array('ok'=>false,'mensaje'=>$resul[0]['tipo'].' max '.$resul[0]['cant_dias'].' días al año');
+            }
+        }else{//sino hay resultado es porque esta modificando el unico registro de viatico
+            $sql2=" SELECT cant_dias "
+                    . " FROM tope_tipo_viatico"
+                    . "  WHERE tipo='".$tipo."'";
+            $resul2=toba::db('designa')->consultar($sql2);
+            if($dias>$resul2[0]['cant_dias']){
+                $salida[0]=array('ok'=>false,'mensaje'=>$resul[0]['tipo'].' max '.$resul2[0]['cant_dias'].' días al año');
+            }else{
+                $salida[0]=array('ok'=>true,'mensaje'=>'');
+            }
+        }  
+        return $salida;        
     }
     function get_tipo_actividad($id_v){
         $sql='select * from viatico v, tipo t '

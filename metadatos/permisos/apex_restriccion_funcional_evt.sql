@@ -2118,6 +2118,13 @@ INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, ite
 );
 INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, item, evento_id, no_visible) VALUES (
 	'designa', --proyecto
+	'46', --restriccion_funcional
+	'3732', --item
+	'3718', --evento_id
+	'1'  --no_visible
+);
+INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, item, evento_id, no_visible) VALUES (
+	'designa', --proyecto
 	'48', --restriccion_funcional
 	'3732', --item
 	'2920', --evento_id
@@ -2282,6 +2289,13 @@ INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, ite
 	'48', --restriccion_funcional
 	'3732', --item
 	'3669', --evento_id
+	'1'  --no_visible
+);
+INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, item, evento_id, no_visible) VALUES (
+	'designa', --proyecto
+	'48', --restriccion_funcional
+	'3732', --item
+	'3718', --evento_id
 	'1'  --no_visible
 );
 INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, item, evento_id, no_visible) VALUES (
@@ -2618,6 +2632,13 @@ INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, ite
 	'55', --restriccion_funcional
 	'3732', --item
 	'3691', --evento_id
+	'1'  --no_visible
+);
+INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, item, evento_id, no_visible) VALUES (
+	'designa', --proyecto
+	'55', --restriccion_funcional
+	'3732', --item
+	'3718', --evento_id
 	'1'  --no_visible
 );
 INSERT INTO apex_restriccion_funcional_evt (proyecto, restriccion_funcional, item, evento_id, no_visible) VALUES (
