@@ -91,10 +91,19 @@ class dt_designacion extends toba_datos_tabla
    } 
     //-------------------------------------------------------------
     //solo trae las designaciones con licencia o cese de la unidad academica correspondiente
-   // que tenga  licencia dentro de los periodos en vigencia
-    function get_suplente(){
-        $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);//primer dia del anio actual
-        $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//ultimo dia del anio presupuestando
+   // que tenga  licencia dentro del periodo presupuestario correspondiente a la fecha desde de la designacion suplente
+   function get_suplente($fec_desde = null){
+       
+       if(!is_null($fec_desde)){ 
+            $fecha=strtotime($fec_desde);
+            $anio=date('Y',$fecha);
+            $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);//primer dia 
+            $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);//ultimo dia 
+        }else{
+            $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);//primer dia del anio actual
+            $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//ultimo dia del anio presupuestando
+            }
+        
         $sql="select a.id_designacion,a.descripcion from (select distinct t_d.id_designacion,t_d.uni_acad,t_do.apellido||', '||t_do.nombre||'('||t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'-'||t_d.id_designacion||')' as descripcion"
                 . " from designacion t_d "
                 . " INNER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
