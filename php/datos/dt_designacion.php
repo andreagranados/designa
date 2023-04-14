@@ -92,13 +92,21 @@ class dt_designacion extends toba_datos_tabla
     //-------------------------------------------------------------
     //solo trae las designaciones con licencia o cese de la unidad academica correspondiente
    // que tenga  licencia dentro del periodo presupuestario correspondiente a la fecha desde de la designacion suplente
-   function get_suplente($fec_desde = null){
+   function get_suplente($fec_desde = null,$fec_hasta = null){
        
        if(!is_null($fec_desde)){ 
             $fecha=strtotime($fec_desde);
             $anio=date('Y',$fecha);
-            $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);//primer dia 
-            $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);//ultimo dia 
+            if($anio<2015){
+                $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio(2015);//primer dia 
+            }else{
+                $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);//primer dia 
+            }
+            if(!is_null($fec_hasta)){
+                $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);//ultimo dia 
+            }else{//una designacion regular no tiene fecha hasta
+                $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//ultimo dia del anio presupuestando
+            }
         }else{
             $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);//primer dia del anio actual
             $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//ultimo dia del anio presupuestando
