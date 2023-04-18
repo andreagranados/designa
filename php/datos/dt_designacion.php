@@ -92,26 +92,41 @@ class dt_designacion extends toba_datos_tabla
     //-------------------------------------------------------------
     //solo trae las designaciones con licencia o cese de la unidad academica correspondiente
    // que tenga  licencia dentro del periodo presupuestario correspondiente a la fecha desde de la designacion suplente
-   function get_suplente($fec_desde = null,$fec_hasta = null){
-       
-       if(!is_null($fec_desde)){ 
-            $fecha=strtotime($fec_desde);
-            $anio=date('Y',$fecha);
-            if($anio<2015){
-                $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio(2015);//primer dia 
-            }else{
-                $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);//primer dia 
-            }
-            if(!is_null($fec_hasta)){
-                $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);//ultimo dia 
-            }else{//una designacion regular no tiene fecha hasta
-                $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//ultimo dia del anio presupuestando
-            }
-        }else{
-            $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);//primer dia del anio actual
-            $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//ultimo dia del anio presupuestando
-            }
-        
+//   function get_suplente($fec_desde = null,$fec_hasta = null){
+//       
+//       if(!is_null($fec_desde)){ 
+//            $fecha=strtotime($fec_desde);
+//            $anio=date('Y',$fecha);
+//            if($anio<2015){
+//                $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio(2015);//primer dia 
+//            }else{
+//                $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);//primer dia 
+//            }
+//            if(!is_null($fec_hasta)){
+//                $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);//ultimo dia 
+//            }else{//una designacion regular no tiene fecha hasta
+//                $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//ultimo dia del anio presupuestando
+//            }
+//        }else{
+//            $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);//primer dia del anio actual
+//            $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//ultimo dia del anio presupuestando
+//            }
+//        
+//        $sql="select a.id_designacion,a.descripcion from (select distinct t_d.id_designacion,t_d.uni_acad,t_do.apellido||', '||t_do.nombre||'('||t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'-'||t_d.id_designacion||')' as descripcion"
+//                . " from designacion t_d "
+//                . " INNER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
+//                . " INNER JOIN novedad t_n ON (t_d.id_designacion=t_n.id_designacion and t_n.tipo_nov in (2,3,5) and t_n.desde<='".$hasta."' and t_n.hasta>='".$desde."') "//licencia sin goce ,con goce o cese
+//                . " where t_d.tipo_desig=1)a, unidad_acad b "
+//                . " where a.uni_acad=b.sigla "
+//                . " order by descripcion ";
+//
+//        $sql = toba::perfil_de_datos()->filtrar($sql);
+//
+//        return toba::db('designa')->consultar($sql);
+//    }
+    function get_suplente(){
+        $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo(1);//primer dia del anio actual
+        $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo(2);//ultimo dia del anio presupuestando
         $sql="select a.id_designacion,a.descripcion from (select distinct t_d.id_designacion,t_d.uni_acad,t_do.apellido||', '||t_do.nombre||'('||t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'-'||t_d.id_designacion||')' as descripcion"
                 . " from designacion t_d "
                 . " INNER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
@@ -124,7 +139,6 @@ class dt_designacion extends toba_datos_tabla
 
         return toba::db('designa')->consultar($sql);
     }
-       
    //retorna true si la designacion a la que suple tiene una licencia dentro del periodo de la designacion suplente 
     //el periodo de la designacion suplente debe estar dentro del periodo de la licencia al que suple
     function control_suplente($desde,$hasta,$id_desig_suplente){
