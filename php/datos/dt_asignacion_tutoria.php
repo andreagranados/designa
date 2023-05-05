@@ -56,7 +56,17 @@ class dt_asignacion_tutoria extends toba_datos_tabla
                  . " where id_designacion=".$id_desig." and anio=".$anio;
          return toba::db('designa')->consultar($sql);
       }
- 
+     function get_otras_activ_legajo($id_docente,$anio){
+         $sql="select t.descripcion,carga_horaria,p.descripcion as periodo,a.rol "
+                 . " from asignacion_tutoria a, tutoria t, designacion d, docente doc, periodo p"
+                 . " where a.id_tutoria=t.id_tutoria"
+                 . " and a.id_designacion=d.id_designacion"
+                 . " and d.id_docente=doc.id_docente"
+                 . " and doc.id_docente=".$id_docente
+                 . " and a.anio=".$anio
+                 . " and a.periodo=p.id_periodo";
+         return toba::db('designa')->consultar($sql);
+      }
 }
 
 ?>

@@ -472,6 +472,12 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	NULL, --item_id
 	'3841'  --item
 );
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	NULL, --item_id
+	'3855'  --item
+);
 --- FIN Grupo de desarrollo 0
 
 ------------------------------------------------------------
@@ -491,4 +497,9 @@ INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, r
 	'designa', --proyecto
 	'dependencias', --usuario_grupo_acc
 	'57'  --restriccion_funcional
+);
+INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
+	'designa', --proyecto
+	'dependencias', --usuario_grupo_acc
+	'69'  --restriccion_funcional
 );

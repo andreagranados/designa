@@ -139,7 +139,26 @@ class ci_certificacion_periodo extends toba_ci
             $titulo[0]=array('dato'=>utf8_decode('<b>INVESTIGACION</b>'));
             $pdf->ezTable($titulo,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
             $pdf->ezTable($datosi,array('col1'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
-             
+            $pdf->ezText("\n", 7);
+            //busco otras actividades
+            $otras=$this->dep('datos')->tabla('asignacion_tutoria')->get_otras_activ_legajo($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
+            $i=0;
+            $datoso=array();
+            foreach ($otras as $in) {
+                $datoso[$i]=array('col1'=>'<b>Actividad: </b>'.$in['descripcion']);
+                $i++;
+                $datoso[$i]=array('col1'=>'<b>Tipo: </b>'.$in['rol']);
+                $i++;
+                $datoso[$i]=array('col1'=>'<b>'.utf8_decode('Período: ').'</b>'.$in['periodo']);
+                $i++;
+                $datoso[$i]=array('col1'=>'<b>Hs Semanales: </b>'.$in['carga_horaria']);
+                $i++;
+              }
+            $titulo=array();
+            $titulo[0]=array('dato'=>utf8_decode('<b>OTRAS ACTIVIDADES</b>'));
+            $pdf->ezTable($titulo,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+            $pdf->ezTable($datoso,array('col1'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+            
             $pdf->ezText("\n\n\n", 10);
             foreach ($pdf->ezPages as $pageNum=>$id){ 
                    $pdf->reopenObject($id); //definimos el path a la imagen de logo de la organizacion 

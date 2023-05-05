@@ -196,4 +196,22 @@ INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descrip
 	'no_actualiza_nro_cargo', --descripcion
 	'0'  --permite_edicion
 );
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'69', --restriccion_funcional
+	'restricciones_presupuestar_ua', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'70', --restriccion_funcional
+	'restricciones_presupuestar_seac', --descripcion
+	'0'  --permite_edicion
+);
+INSERT INTO apex_restriccion_funcional (proyecto, restriccion_funcional, descripcion, permite_edicion) VALUES (
+	'designa', --proyecto
+	'71', --restriccion_funcional
+	'restricciones_presupuestar_seha', --descripcion
+	'0'  --permite_edicion
+);
 --- FIN Grupo de desarrollo 0

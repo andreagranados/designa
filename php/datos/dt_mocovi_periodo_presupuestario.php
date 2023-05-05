@@ -3,6 +3,16 @@ require_once 'dt_designacion.php';
 
 class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
 {
+        function esta_dentro_periodo($id_periodo,$desde,$hasta){
+            $sql="select * from mocovi_periodo_presupuestario "
+                    . " where id_periodo=$id_periodo";
+            $resul=toba::db('designa')->consultar($sql);
+            if($desde>=$resul[0]['fecha_inicio'] and $desde<=$resul[0]['fecha_fin'] and $hasta>=$resul[0]['fecha_inicio'] and $hasta<=$resul[0]['fecha_fin']){
+                return true;
+            }else{
+                return false;
+            }
+        }
           //calculo el credito asignado a la facultad y el anio que ingresan como argumento
         function credito_ua ($ua,$anio){
              $sql="select sum(b.credito) as cred "
@@ -38,13 +48,18 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
         }
 	function get_descripciones()
 	{
-            $sql = "SELECT id_periodo, id_periodo FROM mocovi_periodo_presupuestario ORDER BY id_periodo";
+            $sql = "SELECT * FROM mocovi_periodo_presupuestario ORDER BY id_periodo";
             return toba::db('designa')->consultar($sql);
 	}
         function get_periodo($anio){
             $sql = "SELECT id_periodo FROM mocovi_periodo_presupuestario WHERE anio=".$anio;
             $res= toba::db('designa')->consultar($sql);
             return $res[0]['id_periodo'];
+        }
+        function get_anio($id_periodo){
+            $sql = "SELECT anio FROM mocovi_periodo_presupuestario WHERE id_periodo=".$id_periodo;
+            $res= toba::db('designa')->consultar($sql);
+            return $res[0]['anio'];
         }
         function get_anios()
 	{
