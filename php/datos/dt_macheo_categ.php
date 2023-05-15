@@ -29,19 +29,21 @@ class dt_macheo_categ extends toba_datos_tabla
             $pos=strpos($cat_mapu,'/') ;//devuelve false sino encuentra
             
             if(!$pos){//es falso
-                 print_r($cat_mapu);exit;
                 $sql="select trim(catest)||id_ded as cate"
-                    . " from macheo_categ where catsiu='".$cat_mapu."'";
+                    . " from macheo_categ where catsiu='".$cat_mapu."'"
+                        . " and catest not like 'ASDEn%'";
                 $resul=toba::db('designa')->consultar($sql);
                 $salida==$resul[0]['cate'];
             }else{
                 $cat1=substr($cat_mapu,0,4);
                 $cat2=substr($cat_mapu,$pos+1,4);
                 $sql="select trim(catest)||id_ded as cate"
-                    . " from macheo_categ where catsiu='".$cat1."'";
+                    . " from macheo_categ where catsiu='".$cat1."'"
+                        . " and catest not like 'ASDEn%'";
                 $res1=toba::db('designa')->consultar($sql);
                 $sql="select trim(catest)||id_ded as cate"
-                    . " from macheo_categ where catsiu='".$cat2."'";
+                    . " from macheo_categ where catsiu='".$cat2."'"
+                        . " and catest not like 'ASDEn%'";
                 $res2=toba::db('designa')->consultar($sql);
                 $salida=$res1[0]['cate'].'/'.$res2[0]['cate'];
                 

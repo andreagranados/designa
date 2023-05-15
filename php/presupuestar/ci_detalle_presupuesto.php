@@ -7,10 +7,15 @@ class ci_detalle_presupuesto extends toba_ci
     {
        if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
            $datos = $this->controlador()->dep('datos')->tabla('presupuesto')->get();
+           if($datos['id_estado']=='I'){
+               $this->dep('formulario')->desactivar_efs(['observacion_seha','observacion_seac']);
+           }
            $form->set_datos($datos);
            //para que cuando vuelve a la pantalla de datos principales del formulario no muestre mas el formulario del item
            $this->dep('datos')->tabla('item_presupuesto')->resetear();
            $this->s__mostrar_m=0;
+        }else{
+            $this->dep('formulario')->desactivar_efs(['observacion_seha','observacion_seac']);
         }
     }
     function evt__formulario__alta($datos)
@@ -216,6 +221,12 @@ class ci_detalle_presupuesto extends toba_ci
         if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
             $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
             $salida=$this->dep('datos')->tabla('item_presupuesto')->get_listado($pres['nro_presupuesto']);
+            if($pres['id_estado']=='I'){
+                $c=array('check_seact','cat_seac','desde_seac','hasta_seac','dias_seac','cant_dias','cant_seac','costo_dia_seac','total_seac');
+                $h=array('check_sehat','cat_seha','desde_seha','hasta_seha','dias_seha','dias_seac','cant_seha','costo_dia_seha','total_seha');
+                $this->dep('cuadro')->eliminar_columnas($c);                 
+                $this->dep('cuadro')->eliminar_columnas($h);                 
+            }
             $cuadro->set_datos($salida);
             
             $perfil = toba::manejador_sesiones()->get_perfiles_funcionales();
@@ -234,6 +245,8 @@ class ci_detalle_presupuesto extends toba_ci
                     $cuadro->eliminar_evento('imprimir');
                 }
             }
+           
+            
         }
     }
 
@@ -520,7 +533,17 @@ class ci_detalle_presupuesto extends toba_ci
         }
     }
     
-    //
+    //-----------------------------------------------------------------------------------
+	//---- form_encabezado -----------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+        function conf__form_encabezado(toba_ei_formulario $form)
+        {
+            if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
+                $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
+                $texto=$dep.'<br>'.'Presupuesto Nro: '.$pres['nro_presupuesto'].'<br>'.' EXPEDIENTE: '.$pres['nro_expediente'];
+                $form->set_titulo($texto);   
+            }
+        }
    
 }
 ?>

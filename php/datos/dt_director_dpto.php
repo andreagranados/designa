@@ -41,5 +41,16 @@ class dt_director_dpto extends toba_datos_tabla
             return true;
         }
     }
+    function get_direcciones($id_doc,$anio){//todos menos el que selecciono
+        $sql="select d.descripcion,i.resol "
+                . " from director_dpto i"
+                . " inner join  departamento d ON (d.iddepto=i.iddepto)"
+                . " left outer join mocovi_periodo_presupuestario m ON (m.anio=$anio and i.hasta>=m.fecha_inicio and i.desde<=m.fecha_inicio )"
+                . " where "
+                . " i.id_docente=$id_doc"
+                . " and i.hasta>=CURRENT_DATE";
+        
+        return toba::db('designa')->consultar($sql);        
+    }
 }
 ?>

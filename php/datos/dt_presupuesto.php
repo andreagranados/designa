@@ -4,7 +4,7 @@ class dt_presupuesto extends toba_datos_tabla
      function get_listado_filtro($filtro=null)	{
             $where=' WHERE 1=1 ';
             if(!is_null($filtro)){
-                $where=" and $filtro";
+                $where.=" and $filtro";
             }
             $pd = toba::manejador_sesiones()->get_perfil_datos(); 
             $con="select sigla from unidad_acad ";

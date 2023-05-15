@@ -142,6 +142,9 @@ class ci_certificacion_periodo extends toba_ci
             $pdf->ezText("\n", 7);
             //busco otras actividades
             $otras=$this->dep('datos')->tabla('asignacion_tutoria')->get_otras_activ_legajo($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
+            $dptos=$this->dep('datos')->tabla('director_dpto')->get_direcciones($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
+            $codptos=$this->dep('datos')->tabla('codirector_dpto')->get_codirecciones($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
+            //print_r($codptos);exit;
             $i=0;
             $datoso=array();
             foreach ($otras as $in) {
@@ -154,10 +157,25 @@ class ci_certificacion_periodo extends toba_ci
                 $datoso[$i]=array('col1'=>'<b>Hs Semanales: </b>'.$in['carga_horaria']);
                 $i++;
               }
-            $titulo=array();
-            $titulo[0]=array('dato'=>utf8_decode('<b>OTRAS ACTIVIDADES</b>'));
-            $pdf->ezTable($titulo,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
-            $pdf->ezTable($datoso,array('col1'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+            foreach ($dptos as $in) {
+                $datoso[$i]=array('col1'=>'<b>Director Departamento: </b>'.$in['descripcion']);
+                $i++;
+                $datoso[$i]=array('col1'=>'<b>Resol: </b>'.$in['resol']);
+                $i++;
+              } 
+            foreach ($codptos as $in) {
+                $datoso[$i]=array('col1'=>'<b>Vicedirector Departamento: </b>'.$in['descripcion']);
+                $i++;
+                $datoso[$i]=array('col1'=>'<b>Resol: </b>'.$in['resol']);
+                $i++;
+              }  
+            if(count($datoso)>0){
+                    $titulo=array();
+                    $titulo[0]=array('dato'=>utf8_decode('<b>OTRAS ACTIVIDADES</b>'));
+                    $pdf->ezTable($titulo,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+                    $pdf->ezTable($datoso,array('col1'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));                
+            }  
+            
             
             $pdf->ezText("\n\n\n", 10);
             foreach ($pdf->ezPages as $pageNum=>$id){ 
