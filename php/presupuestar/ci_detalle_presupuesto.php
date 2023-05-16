@@ -49,11 +49,12 @@ class ci_detalle_presupuesto extends toba_ci
                     unset($datos['nro_expediente']);
                     unset($datos['id_periodo']);
                     unset($datos['tipo']);
+                    unset($datos['descripcion']);
                     unset($datos['observacion_seha']);
                     $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                     $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                 }else{
-                    throw new toba_error('Solo en estado A (Academica) puede modificar el presupuesto.');
+                    toba::notificacion()->agregar('Solo en estado A (Academica) puede modificar el presupuesto.','error');
                 }
             }
             if(in_array('presupuestar_seha',$perfil)){//es la SEHA solo modifica observacion seha
@@ -61,27 +62,28 @@ class ci_detalle_presupuesto extends toba_ci
                     unset($datos['nro_expediente']);
                     unset($datos['id_periodo']);
                     unset($datos['tipo']);
+                    unset($datos['descripcion']);
                     unset($datos['observacio_seac']);
                     $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                     $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                 }else{
-                    throw new toba_error('Solo en estado H (Hacienda) puede modificar el presupuesto');
+                    toba::notificacion()->agregar('Solo en estado H (Hacienda) puede modificar el presupuesto','error');
                 }
             }
-           if(in_array('dependencias',$perfil)){
+            if(in_array('dependencias',$perfil)){
              if($pres['id_estado']=='I'){
-                //ojo pendiente!!!si tiene items que no le deje modificar el periodo  a menos que todos los items esten dentro del periodo
+                //Si tiene items que no modifique
                 if($datos['id_periodo']<>$pres['id_periodo']){//esta modificando el periodo
-                    $band=$this->controlador()->dep('datos')->tabla('presupuesto')->puede_modificar();
+                    $band=$this->controlador()->dep('datos')->tabla('presupuesto')->puede_modif($pres['nro_presupuesto']);
                 }
                 if($band){
                     $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                     $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                 }else{
-                    throw new toba_error('No puede modificar el periodo presupuestario porque tiene items correspondientes a otro periodo.');
+                    toba::notificacion()->agregar('No puede modificar el periodo presupuestario porque el presupuesto tiene items. Elimine los items e intente nuevamente.', 'error');   
                 }
             }else{
-              throw new toba_error('Solo en estado Inicial puede modificar el presupuesto.');
+              toba::notificacion()->agregar('Solo en estado Inicial puede modificar el presupuesto.','error');
             }  
            }
         }
@@ -125,7 +127,7 @@ class ci_detalle_presupuesto extends toba_ci
                         toba::notificacion()->agregar('El presupuesto esta en Hacienda, en este estado Sec Academica no puede rechazarlo','error');
                  }
                 }else{
-                    toba::notificacion()->agregar('No es posible rechazar el presupuesto. Verifique el estado','error');
+                    toba::notificacion()->agregar('No es posible rechazar el presupuesto. Verifique el estado del presupuesto','error');
                 }                
             }
        }    
@@ -196,8 +198,22 @@ class ci_detalle_presupuesto extends toba_ci
             }  
         }
     }
-     function evt__formulario__enviar_seac($datos)
+    //boton para la Sec Hacienda
+    function evt__formulario__enviar_seac($datos)
     {
+        if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
+            $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
+            if($pres['id_estado']=='H'){
+                $datos['id_estado']='A';
+                $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
+                $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
+                toba::notificacion()->agregar('El presupuesto ha sido enviado a Sec Academica','info');
+                $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
+                $this->controlador()->set_pantalla('pant_inicial'); 
+            }else{
+                toba::notificacion()->agregar('No es posible pasar el presupuesto a Sec Acad. porque el presupuesto se encuentra en estado '.$pres['id_estado'],'error');
+            }  
+        }
         
     }
 ////---------------------------------------------------------------------
@@ -238,7 +254,7 @@ class ci_detalle_presupuesto extends toba_ci
             if(in_array('presupuestar_seac',$perfil)){//la SEAC solo ve el boton cuando lo envia, es decir en estado H
                 if($pres['id_estado']<>'H' ){
                     $cuadro->eliminar_evento('imprimir');
-                }else{print_r('hola');}
+                }
             }
             if(in_array('presupuestar_seha',$perfil)){//la SEAC solo ve el boton cuando lo envia, es decir en estado H
                 if($pres['id_estado']<>'P' ){
@@ -284,6 +300,19 @@ class ci_detalle_presupuesto extends toba_ci
     function conf__form_detalle(toba_ei_formulario $form)
     {
          if($this->s__mostrar_m==1){
+              $perfil = toba::manejador_sesiones()->get_perfiles_funcionales();
+              $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();   
+              if(in_array('dependencias',$perfil)){//es la UA
+                   if($pres['id_estado']=='I'){
+                      $this->dep('form_detalle')->desactivar_efs(['cant_seac','cat_map1_seac','cat_map2_seac','desde_seac','hasta_seac','check_seac']);
+                      $this->dep('form_detalle')->desactivar_efs(['cant_seha','cat_map1_seha','cat_map2_seha','desde_seha','hasta_seha','check_seha']);
+                  }
+               }
+               if(in_array('presupuestar_seac',$perfil)){//es la SEAC
+                   if($pres['id_estado']=='A'){
+                      $this->dep('form_detalle')->desactivar_efs(['cant_seha','cat_map1_seha','cat_map2_seha','desde_seha','hasta_seha','check_seha']);
+                  }
+               }
                $this->dep('form_detalle')->descolapsar();
                if($this->dep('datos')->tabla('item_presupuesto')->esta_cargada()){
                 $datos=$this->dep('datos')->tabla('item_presupuesto')->get();

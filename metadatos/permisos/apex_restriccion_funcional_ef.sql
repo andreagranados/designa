@@ -1122,6 +1122,15 @@ INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item
 	'designa', --proyecto
 	'70', --restriccion_funcional
 	'3854', --item
+	'9841', --objeto_ei_formulario_fila
+	'4517', --objeto_ei_formulario
+	'0', --no_visible
+	'1'  --no_editable
+);
+INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item, objeto_ei_formulario_fila, objeto_ei_formulario, no_visible, no_editable) VALUES (
+	'designa', --proyecto
+	'70', --restriccion_funcional
+	'3854', --item
 	'9870', --objeto_ei_formulario_fila
 	'4518', --objeto_ei_formulario
 	'0', --no_visible
@@ -1194,7 +1203,43 @@ INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item
 	'designa', --proyecto
 	'70', --restriccion_funcional
 	'3854', --item
+	'9891', --objeto_ei_formulario_fila
+	'4517', --objeto_ei_formulario
+	'0', --no_visible
+	'1'  --no_editable
+);
+INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item, objeto_ei_formulario_fila, objeto_ei_formulario, no_visible, no_editable) VALUES (
+	'designa', --proyecto
+	'70', --restriccion_funcional
+	'3854', --item
+	'9892', --objeto_ei_formulario_fila
+	'4517', --objeto_ei_formulario
+	'0', --no_visible
+	'1'  --no_editable
+);
+INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item, objeto_ei_formulario_fila, objeto_ei_formulario, no_visible, no_editable) VALUES (
+	'designa', --proyecto
+	'70', --restriccion_funcional
+	'3854', --item
 	'9894', --objeto_ei_formulario_fila
+	'4517', --objeto_ei_formulario
+	'0', --no_visible
+	'1'  --no_editable
+);
+INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item, objeto_ei_formulario_fila, objeto_ei_formulario, no_visible, no_editable) VALUES (
+	'designa', --proyecto
+	'70', --restriccion_funcional
+	'3854', --item
+	'9898', --objeto_ei_formulario_fila
+	'4517', --objeto_ei_formulario
+	'0', --no_visible
+	'1'  --no_editable
+);
+INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item, objeto_ei_formulario_fila, objeto_ei_formulario, no_visible, no_editable) VALUES (
+	'designa', --proyecto
+	'71', --restriccion_funcional
+	'3854', --item
+	'9841', --objeto_ei_formulario_fila
 	'4517', --objeto_ei_formulario
 	'0', --no_visible
 	'1'  --no_editable
@@ -1266,6 +1311,24 @@ INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item
 	'designa', --proyecto
 	'71', --restriccion_funcional
 	'3854', --item
+	'9891', --objeto_ei_formulario_fila
+	'4517', --objeto_ei_formulario
+	'0', --no_visible
+	'1'  --no_editable
+);
+INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item, objeto_ei_formulario_fila, objeto_ei_formulario, no_visible, no_editable) VALUES (
+	'designa', --proyecto
+	'71', --restriccion_funcional
+	'3854', --item
+	'9892', --objeto_ei_formulario_fila
+	'4517', --objeto_ei_formulario
+	'0', --no_visible
+	'1'  --no_editable
+);
+INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item, objeto_ei_formulario_fila, objeto_ei_formulario, no_visible, no_editable) VALUES (
+	'designa', --proyecto
+	'71', --restriccion_funcional
+	'3854', --item
 	'9893', --objeto_ei_formulario_fila
 	'4517', --objeto_ei_formulario
 	'0', --no_visible
@@ -1277,6 +1340,15 @@ INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item
 	'3854', --item
 	'9895', --objeto_ei_formulario_fila
 	'4518', --objeto_ei_formulario
+	'0', --no_visible
+	'1'  --no_editable
+);
+INSERT INTO apex_restriccion_funcional_ef (proyecto, restriccion_funcional, item, objeto_ei_formulario_fila, objeto_ei_formulario, no_visible, no_editable) VALUES (
+	'designa', --proyecto
+	'71', --restriccion_funcional
+	'3854', --item
+	'9898', --objeto_ei_formulario_fila
+	'4517', --objeto_ei_formulario
 	'0', --no_visible
 	'1'  --no_editable
 );
