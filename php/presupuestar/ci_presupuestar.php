@@ -137,7 +137,7 @@ class ci_presupuestar extends toba_ci
                     if($item['check_seha']==1){
                         $cate=$this->dep('datos')->tabla('macheo_categ')->get_cat_equivalente($item['cat_seha']);
                         $datos[$i]=array('col1' => $cate,'col2' => $item['cat_seha'],'col3' => date("d/m/Y",strtotime($item['desde_seha'])),'col4' => date("d/m/Y",strtotime($item['hasta_seha'])),'col5' => $item['dias_seha'],'col6' => $item['cant_seha'],'col7' => number_format($item['costo_dia_seha'],2,',','.'),'col8' => number_format($item['total_seha'],2,',','.'));  
-                        $sumh=$sumh+$item['total_seac'];
+                        $sumh=$sumh+$item['total_seha'];
                     }
                     break;
                 default:

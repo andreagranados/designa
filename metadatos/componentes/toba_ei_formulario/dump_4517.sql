@@ -186,10 +186,10 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'Enviar a SEAC', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
-	NULL, --confirmacion
+	'Esta seguro que desea enviar a Sec Académica?', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
-	'instanciar.png', --imagen
+	'volver.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'5', --orden
@@ -203,7 +203,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --accion_vinculo_carpeta
 	NULL, --accion_vinculo_item
 	NULL, --accion_vinculo_objeto
-	NULL, --accion_vinculo_popup
+	'0', --accion_vinculo_popup
 	NULL, --accion_vinculo_popup_param
 	NULL, --accion_vinculo_target
 	NULL, --accion_vinculo_celda
@@ -219,7 +219,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'Enviar a SEHA', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
-	NULL, --confirmacion
+	'Esta seguro que desea enviar a Sec Hacienda?', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
 	'instanciar.png', --imagen
@@ -236,7 +236,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --accion_vinculo_carpeta
 	NULL, --accion_vinculo_item
 	NULL, --accion_vinculo_objeto
-	NULL, --accion_vinculo_popup
+	'0', --accion_vinculo_popup
 	NULL, --accion_vinculo_popup_param
 	NULL, --accion_vinculo_target
 	NULL, --accion_vinculo_celda
@@ -252,7 +252,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'Enviar a Presupuesto', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
-	NULL, --confirmacion
+	'Esta seguro que desea enviar a Presupuesto?', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
 	'instanciar.png', --imagen
@@ -269,7 +269,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --accion_vinculo_carpeta
 	NULL, --accion_vinculo_item
 	NULL, --accion_vinculo_objeto
-	NULL, --accion_vinculo_popup
+	'0', --accion_vinculo_popup
 	NULL, --accion_vinculo_popup_param
 	NULL, --accion_vinculo_target
 	NULL, --accion_vinculo_celda
@@ -285,7 +285,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'Reabrir para la UA', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
-	NULL, --confirmacion
+	'Esta seguro que desea reabrir?', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
 	'deshacer.png', --imagen
@@ -302,7 +302,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --accion_vinculo_carpeta
 	NULL, --accion_vinculo_item
 	NULL, --accion_vinculo_objeto
-	NULL, --accion_vinculo_popup
+	'0', --accion_vinculo_popup
 	NULL, --accion_vinculo_popup_param
 	NULL, --accion_vinculo_target
 	NULL, --accion_vinculo_celda
@@ -318,7 +318,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'Rechazar', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
-	NULL, --confirmacion
+	'Esta seguro que desea rechazar el presupuesto?', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
 	'error.gif', --imagen
@@ -335,7 +335,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	NULL, --accion_vinculo_carpeta
 	NULL, --accion_vinculo_item
 	NULL, --accion_vinculo_objeto
-	NULL, --accion_vinculo_popup
+	'0', --accion_vinculo_popup
 	NULL, --accion_vinculo_popup_param
 	NULL, --accion_vinculo_target
 	NULL, --accion_vinculo_celda
@@ -498,7 +498,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	NULL, --estado_defecto
 	'0', --solo_lectura
 	'0', --solo_lectura_modificacion
-	'get_descripciones', --carga_metodo
+	'get_anio_actual', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
 	'3359', --carga_dt
