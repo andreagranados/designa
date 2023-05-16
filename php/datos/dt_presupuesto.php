@@ -63,5 +63,8 @@ class dt_presupuesto extends toba_datos_tabla
             return true;
         }
     }
+    function tiene_items(){
+        
+    }
 }
 ?>

@@ -32,10 +32,21 @@ class ci_detalle_presupuesto extends toba_ci
     }
     function evt__formulario__baja($datos)
     {
-        $this->controlador()->dep('datos')->tabla('presupuesto')->eliminar_todo();
-        $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
-        toba::notificacion()->agregar('Se ha eliminado correctamente', 'info');   
-        $this->controlador()->set_pantalla('pant_inicial');
+        $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
+        if($pres['id_estado']=='I'){
+            $band=$this->controlador()->dep('datos')->tabla('presupuesto')->tiene_items(pres['nro_presupuesto']);
+            if(!$band){
+                $this->controlador()->dep('datos')->tabla('presupuesto')->eliminar_todo();
+                $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
+                toba::notificacion()->agregar('Se ha eliminado correctamente', 'info');   
+                $this->controlador()->set_pantalla('pant_inicial');
+            }else{
+                toba::notificacion()->agregar('Para eliminar el presupuesto debe primero eliminar sus items desde la solapa Detalle', 'error');   
+            }
+            
+        }else{
+            toba::notificacion()->agregar('No es posible eliminar el presupuesto. Verifique el estado del mismo.', 'error');   
+        }   
     }
     //boton visible para UA, SEAC y SEHA
     function evt__formulario__modificacion($datos)
@@ -358,15 +369,17 @@ class ci_detalle_presupuesto extends toba_ci
                             $this->s__mostrar_m=0;
                             }
                     }else{
-                        toba::notificacion()->agregar('La categ 1 debe ser mayor a la categ 2', 'error'); 
+                        //toba::notificacion()->agregar('La categ 1 debe ser mayor a la categ 2', 'error'); 
+                        throw new toba_error("La categ 1 debe ser mayor a la categ 2");
                     }
                 }else{
                     //toba::notificacion()->agregar('Las fechas estan por fuera del periodo presupuestario', 'error'); 
                     throw new toba_error('Las fechas estan por fuera del periodo presupuestario');
                 }
+             }else{
+                 //toba::notificacion()->agregar('Ya no puede modificar el presupuesto.', 'error');  
+                 throw new toba_error('Ya no puede modificar el presupuesto.');
              }    
-            }else{
-                toba::notificacion()->agregar('Ya no puede modificar el presupuesto.', 'error');  
             }
     }
     //boton exclusivo para la UA
