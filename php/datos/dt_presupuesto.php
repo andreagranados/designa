@@ -51,20 +51,23 @@ class dt_presupuesto extends toba_datos_tabla
             return false;
         }
     }
-    //si tiene items no puede modificar 
-    function puede_modif($nro_pres){
+    
+    function tiene_items($nro_pres){
         $sql="select * from item_presupuesto"
                 . " where nro_presupuesto=$nro_pres";
-                
         $res= toba::db('designa')->consultar($sql);
         if(count($res)>=1){
-            return false;
-        }else{
             return true;
+        }else{
+            return false;
         }
     }
-    function tiene_items(){
-        
+    function get_estado($nro_pres){
+        $sql="select id_estado from presupuesto"
+                . " where nro_presupuesto=$nro_pres";
+                
+        $resul= toba::db('designa')->consultar($sql);
+        return $resul[0]['id_estado'];
     }
 }
 ?>

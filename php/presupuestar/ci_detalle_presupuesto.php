@@ -3,6 +3,26 @@ class ci_detalle_presupuesto extends toba_ci
 {
    protected $s__mostrar_m;
    
+   function get_estado(){
+        if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
+           $datos = $this->controlador()->dep('datos')->tabla('presupuesto')->get();
+           $resul=$this->controlador()->dep('datos')->tabla('presupuesto')->get_estado($datos['nro_presupuesto']);
+           return $resul;
+        }  
+    }
+//   function get_mostrar(){//1 si muestra 0 sino muestra
+//        if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
+//            if ($this->dep('datos')->tabla('item_presupuesto')->esta_cargada()) {
+//                $datos = $this->dep('datos')->tabla('item_presupuesto')->get();
+//                $resul=$this->dep('datos')->tabla('item_presupuesto')->get_mostrar($datos['id_item']);
+//                return $resul;
+//            }
+//           
+//        }else{
+//            print_r('hola');
+//            return 0;
+//        }  
+//    } 
    function conf__formulario(toba_ei_formulario $form)
     {
        if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
@@ -34,11 +54,11 @@ class ci_detalle_presupuesto extends toba_ci
     {
         $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
         if($pres['id_estado']=='I'){
-            $band=$this->controlador()->dep('datos')->tabla('presupuesto')->tiene_items(pres['nro_presupuesto']);
+            $band=$this->controlador()->dep('datos')->tabla('presupuesto')->tiene_items($pres['nro_presupuesto']);
             if(!$band){
                 $this->controlador()->dep('datos')->tabla('presupuesto')->eliminar_todo();
                 $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
-                toba::notificacion()->agregar('Se ha eliminado correctamente', 'info');   
+                toba::notificacion()->agregar('El presupuesto se ha eliminado correctamente', 'info');   
                 $this->controlador()->set_pantalla('pant_inicial');
             }else{
                 toba::notificacion()->agregar('Para eliminar el presupuesto debe primero eliminar sus items desde la solapa Detalle', 'error');   
@@ -85,12 +105,12 @@ class ci_detalle_presupuesto extends toba_ci
              if($pres['id_estado']=='I'){
                 //Si tiene items que no modifique
                 if($datos['id_periodo']<>$pres['id_periodo']){//esta modificando el periodo
-                    $band=$this->controlador()->dep('datos')->tabla('presupuesto')->puede_modif($pres['nro_presupuesto']);
+                    $band=$this->controlador()->dep('datos')->tabla('presupuesto')->tiene_items($pres['nro_presupuesto']);
                 }
-                if($band){
+                if(!$band){
                     $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                     $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
-                }else{
+                }else{//si tiene items no puede modificar
                     toba::notificacion()->agregar('No puede modificar el periodo presupuestario porque el presupuesto tiene items. Elimine los items e intente nuevamente.', 'error');   
                 }
             }else{
@@ -312,22 +332,24 @@ class ci_detalle_presupuesto extends toba_ci
     {
          if($this->s__mostrar_m==1){
               $perfil = toba::manejador_sesiones()->get_perfiles_funcionales();
-              $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();   
-              if(in_array('dependencias',$perfil)){//es la UA
-                   if($pres['id_estado']=='I'){
-                      $this->dep('form_detalle')->desactivar_efs(['cant_seac','cat_map1_seac','cat_map2_seac','desde_seac','hasta_seac','check_seac']);
-                      $this->dep('form_detalle')->desactivar_efs(['cant_seha','cat_map1_seha','cat_map2_seha','desde_seha','hasta_seha','check_seha']);
-                  }
-               }
-               if(in_array('presupuestar_seac',$perfil)){//es la SEAC
-                   if($pres['id_estado']=='A'){
-                      $this->dep('form_detalle')->desactivar_efs(['cant_seha','cat_map1_seha','cat_map2_seha','desde_seha','hasta_seha','check_seha']);
-                  }
-               }
+              $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
+              
+//              if(in_array('dependencias',$perfil)){//es la UA
+//                   if($pres['id_estado']=='I'){
+//                      //probar con javascript
+//                      //$this->dep('form_detalle')->desactivar_efs(['cant_seac','cat_map1_seac','cat_map2_seac','desde_seac','hasta_seac','check_seac']);
+//                      //$this->dep('form_detalle')->desactivar_efs(['cant_seha','cat_map1_seha','cat_map2_seha','desde_seha','hasta_seha','check_seha']);
+//                  }
+//               }
+//               if(in_array('presupuestar_seac',$perfil)){//es la SEAC
+//                   if($pres['id_estado']=='A'){
+//                      $this->dep('form_detalle')->desactivar_efs(['cant_seha','cat_map1_seha','cat_map2_seha','desde_seha','hasta_seha','check_seha']);
+//                  }
+//               }
                $this->dep('form_detalle')->descolapsar();
                if($this->dep('datos')->tabla('item_presupuesto')->esta_cargada()){
-                $datos=$this->dep('datos')->tabla('item_presupuesto')->get();
-                $form->set_datos($datos);
+                    $datos=$this->dep('datos')->tabla('item_presupuesto')->get();
+                    $form->set_datos($datos);
                }
          }else{
              $this->dep('form_detalle')->colapsar();
@@ -374,7 +396,7 @@ class ci_detalle_presupuesto extends toba_ci
                     }
                 }else{
                     //toba::notificacion()->agregar('Las fechas estan por fuera del periodo presupuestario', 'error'); 
-                    throw new toba_error('Las fechas estan por fuera del periodo presupuestario');
+                    throw new toba_error('Las fechas estan por fuera del periodo presupuestario. Revise las fechas');
                 }
              }else{
                  //toba::notificacion()->agregar('Ya no puede modificar el presupuesto.', 'error');  
@@ -582,7 +604,7 @@ class ci_detalle_presupuesto extends toba_ci
         {
             if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
                 $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
-                $texto=$dep.'<br>'.'Presupuesto Nro: '.$pres['nro_presupuesto'].'<br>'.' EXPEDIENTE: '.$pres['nro_expediente'];
+                $texto='Presupuesto Nro: '.$pres['nro_presupuesto'].'<br>'.' EXPEDIENTE: '.$pres['nro_expediente'].'<br>'.'Estado: '.$pres['id_estado'];
                 $form->set_titulo($texto);   
             }
         }

@@ -69,6 +69,21 @@ class dt_item_presupuesto extends toba_datos_tabla
         }
         
     }
+//    function get_mostrar($id_item){
+//        $sql="select opcion,id_estado from item_presupuesto i, presupuesto p"
+//                . " where i.nro_presupuesto=p.nro_presupuesto"
+//                . " and id_item=".$id_item;
+//        $res=toba::db('designa')->consultar($sql);
+//        if($res[0]['id_estado']=='I'){
+//            return 0;
+//        }else{
+//            if($res[0]['opcion']=='F'){
+//                return 1;
+//            }else{
+//                return 0;
+//            }
+//        }
+//    }
     
 }
 ?>
