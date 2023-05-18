@@ -40,15 +40,22 @@ class ci_detalle_presupuesto extends toba_ci
     }
     function evt__formulario__alta($datos)
     {
-        $datos['id_estado']='I';
-        $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
-        $datos['uni_acad']= $ua[0]['sigla'];
+        $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->es_periodo_actpres($datos['id_periodo']);
+        if($band){
+            $datos['id_estado']='I';
+            $ua = $this->controlador()->dep('datos')->tabla('unidad_acad')->get_ua();
+            $datos['uni_acad']= $ua[0]['sigla'];
+
+            $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
+            $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
+            $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
+            $elem['nro_presupuesto']=$pres['nro_presupuesto'];
+            $this->controlador()->dep('datos')->tabla('presupuesto')->cargar($elem);
+        }else{
+           // throw new toba_error('El periodo debe ser el actual'); da error
+           toba::notificacion()->agregar('El periodo debe ser el actual', 'error');   
+        }
         
-        $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
-        $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
-        $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
-        $elem['nro_presupuesto']=$pres['nro_presupuesto'];
-        $this->controlador()->dep('datos')->tabla('presupuesto')->cargar($elem);
     }
     function evt__formulario__baja($datos)
     {
@@ -103,16 +110,22 @@ class ci_detalle_presupuesto extends toba_ci
             }
             if(in_array('dependencias',$perfil)){
              if($pres['id_estado']=='I'){
-                //Si tiene items que no modifique
-                if($datos['id_periodo']<>$pres['id_periodo']){//esta modificando el periodo
-                    $band=$this->controlador()->dep('datos')->tabla('presupuesto')->tiene_items($pres['nro_presupuesto']);
+                $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->es_periodo_actpres($datos['id_periodo']);
+                if($band){
+                    //Si tiene items que no modifique
+                    if($datos['id_periodo']<>$pres['id_periodo']){//esta modificando el periodo
+                        $band=$this->controlador()->dep('datos')->tabla('presupuesto')->tiene_items($pres['nro_presupuesto']);
+                    }
+                    if(!$band){
+                        $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
+                        $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
+                    }else{//si tiene items no puede modificar
+                        toba::notificacion()->agregar('No puede modificar el periodo presupuestario porque el presupuesto tiene items. Elimine los items e intente nuevamente.', 'error');   
+                    }
+                }else{
+                    toba::notificacion()->agregar('El periodo debe ser el actual', 'error');   
                 }
-                if(!$band){
-                    $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
-                    $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
-                }else{//si tiene items no puede modificar
-                    toba::notificacion()->agregar('No puede modificar el periodo presupuestario porque el presupuesto tiene items. Elimine los items e intente nuevamente.', 'error');   
-                }
+          
             }else{
               toba::notificacion()->agregar('Solo en estado Inicial puede modificar el presupuesto.','error');
             }  

@@ -197,6 +197,18 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                 return false;
             }
         }
+         //es el anio actual o presupuestando?
+        function es_periodo_actpres($id_periodo){
+            $sql="select * from mocovi_periodo_presupuestario "
+                    . " where ((actual and activo_para_carga_presupuestando) or (presupuestando and activo_para_carga_presupuestando))"
+                    . "    and id_periodo=$id_periodo";
+            $res=toba::db('designa')->consultar($sql);
+            if(count($res)>0){
+                return true;
+            }else{
+                return false;
+            }
+        }
          //es el anio presupuestando?
         function es_periodo_presupuestando($anio){
             $sql="select * from mocovi_periodo_presupuestario "
