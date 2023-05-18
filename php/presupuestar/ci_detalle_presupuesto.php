@@ -80,6 +80,7 @@ class ci_detalle_presupuesto extends toba_ci
     {
         if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
             $band=true;
+            $conitems=false;
             $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
             $perfil = toba::manejador_sesiones()->get_perfiles_funcionales();
             if(in_array('presupuestar_seac',$perfil)){//es la SEAC
@@ -114,9 +115,9 @@ class ci_detalle_presupuesto extends toba_ci
                 if($band){
                     //Si tiene items que no modifique
                     if($datos['id_periodo']<>$pres['id_periodo']){//esta modificando el periodo
-                        $band=$this->controlador()->dep('datos')->tabla('presupuesto')->tiene_items($pres['nro_presupuesto']);
+                        $conitems=$this->controlador()->dep('datos')->tabla('presupuesto')->tiene_items($pres['nro_presupuesto']);
                     }
-                    if(!$band){
+                    if(!$conitems){
                         $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                         $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                     }else{//si tiene items no puede modificar

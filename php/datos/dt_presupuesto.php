@@ -51,7 +51,7 @@ class dt_presupuesto extends toba_datos_tabla
             return false;
         }
     }
-    
+    //retorna true si tiene items y false en caso contrario
     function tiene_items($nro_pres){
         $sql="select * from item_presupuesto"
                 . " where nro_presupuesto=$nro_pres";
