@@ -69,21 +69,71 @@ class dt_item_presupuesto extends toba_datos_tabla
         }
         
     }
-//    function get_mostrar($id_item){
-//        $sql="select opcion,id_estado from item_presupuesto i, presupuesto p"
-//                . " where i.nro_presupuesto=p.nro_presupuesto"
-//                . " and id_item=".$id_item;
-//        $res=toba::db('designa')->consultar($sql);
-//        if($res[0]['id_estado']=='I'){
-//            return 0;
-//        }else{
-//            if($res[0]['opcion']=='F'){
-//                return 1;
-//            }else{
-//                return 0;
-//            }
-//        }
-//    }
+    function es_menor_a($tipo,$id_periodo,$id_item,$desde2,$hasta2,$cant2,$cat2,$cat2_1){
+        
+       if($tipo=='A'){
+           $sql=" select case when i.opcion='D' then (i.hasta-i.desde+1)*i.cantidad*c.costo_diario else (i.hasta-i.desde+1)*i.cantidad*(c.costo_diario-c2.costo_diario) end as cost
+                  from item_presupuesto i
+                  inner join mocovi_costo_categoria c on (c.codigo_siu=i.cat_mapuche1)
+                  left outer join mocovi_costo_categoria c2 on (c2.codigo_siu=i.cat_mapuche2)
+                  where 
+                   i.id_item=$id_item
+                  and c.id_periodo=$id_periodo";
+            $res1= toba::db('designa')->consultar($sql);
+            $costo1=$res1[0]['cost'];
+       }else{
+           if($tipo=='H'){
+               $sql=" select case when i.opcion='D' then (i.hasta_seac-i.desde_seac+1)*i.cant_seac*c.costo_diario else (i.hasta_seac-i.desde_seac+1)*i.cant_seac*(c.costo_diario-c2.costo_diario) end as cost
+                  from item_presupuesto i
+                  inner join mocovi_costo_categoria c on (c.codigo_siu=i.cat_map1_seac)
+                  left outer join mocovi_costo_categoria c2 on (c2.codigo_siu=i.cat_map2_seac)
+                  where 
+                   i.id_item=$id_item
+                  and c.id_periodo=$id_periodo";
+               $res1= toba::db('designa')->consultar($sql);
+               $costo1=$res1[0]['cost'];
+           }else{
+               $costo1=0;
+           };
+       }                 
+//        $sql=" select case when i.opcion='D' then (i.hasta-i.desde+1)*i.cantidad*c.costo_diario else (i.hasta-i.desde+1)*i.cantidad*(c.costo_diario-c2.costo_diario) end as cost
+//                  from item_presupuesto i
+//                  inner join mocovi_costo_categoria c on (c.codigo_siu=i.cat_mapuche1)
+//                  left outer join mocovi_costo_categoria c2 on (c2.codigo_siu=i.cat_mapuche2)
+//                  where 
+//                   i.id_item=$id_item
+//                  and c.id_periodo=$id_periodo";
+//        $res1= toba::db('designa')->consultar($sql);
+       ///------------------
+       
+        $sql=" select c.costo_diario
+                  from mocovi_costo_categoria c
+                  where codigo_siu='".$cat2."'"
+                 ." and id_periodo=$id_periodo";  
+        $res2= toba::db('designa')->consultar($sql);
+        if(isset($cat2_1)){
+            $sql=" select c.costo_diario
+                  from mocovi_costo_categoria c
+                  where codigo_siu='".$cat1_1."'"
+                 ." and id_periodo=$id_periodo";
+            $res2_1= toba::db('designa')->consultar($sql);
+            $valor=$res2_1[0]['costo_diario'];
+        }else{
+            $valor=0;
+        }
+                
+        $fecha1= new DateTime($hasta2);
+        $fecha2= new DateTime($desde2);
+        $diff = $fecha1->diff($fecha2);
+        $dias2=$diff->days+1;
+        $costo2=$dias2*$cant2*($res2[0]['costo_diario']-$valor);
+        //var_dump($costo2);exit;
+        if($costo1>=$costo2){
+            return true;
+        }else{
+            return false;
+        }
+    }
     
 }
 ?>

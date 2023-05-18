@@ -485,27 +485,36 @@ class ci_detalle_presupuesto extends toba_ci
                     if($datos['desde_seac']>=$datos['hasta_seac']){
                         toba::notificacion()->agregar('La fecha desde debe ser menor que la fecha hasta','error');
                     }else{
-                        unset($datos['desde']);
-                        unset($datos['hasta']);
-                        unset($datos['cat_mapuche1']);
-                        unset($datos['cat_mapuche2']);
-                        unset($datos['cantidad']);
-                        unset($datos['detalle']);
-                        unset($datos['opcion']);
-                        unset($datos['desde_seha']);
-                        unset($datos['hasta_seha']);
-                        unset($datos['cat_map1_seha']);
-                        unset($datos['cat_map2_seha']);
-                        unset($datos['cant_seha']);
-                        unset($datos['check_seha']);
-                        //modifico en seha lo autorizado por seac
-                        $datos['cant_seha']=$datos['cant_seac'];
-                        $datos['cat_map1_seha']=$datos['cat_map1_seac'];
-                        $datos['cat_map2_seha']=$datos['cat_map2_seac'];
-                        $datos['desde_seha']=$datos['desde_seac'];
-                        $datos['hasta_seha']=$datos['hasta_seac'];
-                        $this->dep('datos')->tabla('item_presupuesto')->set($datos);
-                        $this->dep('datos')->tabla('item_presupuesto')->sincronizar();
+                        //control para que el valor de este item autorizado por seac no sea mayor a lo solicitado por la UA
+                        ////solo si check_seac = true
+                        if($datos['check_seac']==1){
+                           $band=$this->dep('datos')->tabla('item_presupuesto')->es_menor_a('A',$pres['id_periodo'],$item['id_item'],$datos['desde_seac'],$datos['hasta_seac'],$datos['cant_seac'],$datos['cat_map1_seac'],$datos['cat_map2_seac']);                            
+                        }
+                        if($band){
+                            unset($datos['desde']);
+                            unset($datos['hasta']);
+                            unset($datos['cat_mapuche1']);
+                            unset($datos['cat_mapuche2']);
+                            unset($datos['cantidad']);
+                            unset($datos['detalle']);
+                            unset($datos['opcion']);
+                            unset($datos['desde_seha']);
+                            unset($datos['hasta_seha']);
+                            unset($datos['cat_map1_seha']);
+                            unset($datos['cat_map2_seha']);
+                            unset($datos['cant_seha']);
+                            unset($datos['check_seha']);
+                            //modifico en seha lo autorizado por seac
+                            $datos['cant_seha']=$datos['cant_seac'];
+                            $datos['cat_map1_seha']=$datos['cat_map1_seac'];
+                            $datos['cat_map2_seha']=$datos['cat_map2_seac'];
+                            $datos['desde_seha']=$datos['desde_seac'];
+                            $datos['hasta_seha']=$datos['hasta_seac'];
+                            $this->dep('datos')->tabla('item_presupuesto')->set($datos);
+                            $this->dep('datos')->tabla('item_presupuesto')->sincronizar();
+                        }else{
+                            toba::notificacion()->agregar('Esta autorizando un valor mayor al solicitado por la UA', 'error'); 
+                        }   
                     }
                 }else{
                         toba::notificacion()->agregar('La categ 1 debe ser mayor a la categ 2', 'error'); 
@@ -533,21 +542,28 @@ class ci_detalle_presupuesto extends toba_ci
                     if($datos['desde_seha']>=$datos['hasta_seha']){
                         toba::notificacion()->agregar('La fecha desde debe ser menor que la fecha hasta','error');
                     }else{
-                        unset($datos['desde']);
-                        unset($datos['hasta']);
-                        unset($datos['cat_mapuche1']);
-                        unset($datos['cat_mapuche2']);
-                        unset($datos['cantidad']);
-                        unset($datos['detalle']);
-                        unset($datos['opcion']);
-                        unset($datos['desde_seac']);
-                        unset($datos['hasta_seac']);
-                        unset($datos['cat_map1_seac']);
-                        unset($datos['cat_map2_seac']);
-                        unset($datos['cant_seac']);
-                        unset($datos['check_seac']);
-                        $this->dep('datos')->tabla('item_presupuesto')->set($datos);
-                        $this->dep('datos')->tabla('item_presupuesto')->sincronizar();
+                        if($datos['check_seha']==1){
+                           $band=$this->dep('datos')->tabla('item_presupuesto')->es_menor_a('H',$pres['id_periodo'],$item['id_item'],$datos['desde_seha'],$datos['hasta_seha'],$datos['cant_seha'],$datos['cat_map1_seha'],$datos['cat_map2_seha']);                            
+                        }
+                        if($band){
+                            unset($datos['desde']);
+                            unset($datos['hasta']);
+                            unset($datos['cat_mapuche1']);
+                            unset($datos['cat_mapuche2']);
+                            unset($datos['cantidad']);
+                            unset($datos['detalle']);
+                            unset($datos['opcion']);
+                            unset($datos['desde_seac']);
+                            unset($datos['hasta_seac']);
+                            unset($datos['cat_map1_seac']);
+                            unset($datos['cat_map2_seac']);
+                            unset($datos['cant_seac']);
+                            unset($datos['check_seac']);
+                            $this->dep('datos')->tabla('item_presupuesto')->set($datos);
+                            $this->dep('datos')->tabla('item_presupuesto')->sincronizar();
+                        }else{
+                            toba::notificacion()->agregar('Esta autorizando un valor mayor al solicitado por SEAC', 'error'); 
+                        }
                     }
                 }else{
                         toba::notificacion()->agregar('La categ 1 debe ser mayor a la categ 2', 'error'); 
