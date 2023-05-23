@@ -283,8 +283,8 @@ class ci_detalle_presupuesto extends toba_ci
             $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
             $salida=$this->dep('datos')->tabla('item_presupuesto')->get_listado($pres['nro_presupuesto']);
             if($pres['id_estado']=='I'){
-                $c=array('check_seact','cat_seac','desde_seac','hasta_seac','dias_seac','cant_dias','cant_seac','costo_dia_seac','total_seac');
-                $h=array('check_sehat','cat_seha','desde_seha','hasta_seha','dias_seha','dias_seac','cant_seha','costo_dia_seha','total_seha');
+                $c=array('check_seact','cat_seac','desde_seac','hasta_seac','dias_seac','cant_seac','costo_dia_seac','total_seac');
+                $h=array('check_sehat','cat_seha','desde_seha','hasta_seha','dias_seha','cant_seha','costo_dia_seha','total_seha');
                 $this->dep('cuadro')->eliminar_columnas($c);                 
                 $this->dep('cuadro')->eliminar_columnas($h);                 
             }
@@ -345,21 +345,8 @@ class ci_detalle_presupuesto extends toba_ci
     function conf__form_detalle(toba_ei_formulario $form)
     {
          if($this->s__mostrar_m==1){
-              $perfil = toba::manejador_sesiones()->get_perfiles_funcionales();
-              $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
-              
-//              if(in_array('dependencias',$perfil)){//es la UA
-//                   if($pres['id_estado']=='I'){
-//                      //probar con javascript
-//                      //$this->dep('form_detalle')->desactivar_efs(['cant_seac','cat_map1_seac','cat_map2_seac','desde_seac','hasta_seac','check_seac']);
-//                      //$this->dep('form_detalle')->desactivar_efs(['cant_seha','cat_map1_seha','cat_map2_seha','desde_seha','hasta_seha','check_seha']);
-//                  }
-//               }
-//               if(in_array('presupuestar_seac',$perfil)){//es la SEAC
-//                   if($pres['id_estado']=='A'){
-//                      $this->dep('form_detalle')->desactivar_efs(['cant_seha','cat_map1_seha','cat_map2_seha','desde_seha','hasta_seha','check_seha']);
-//                  }
-//               }
+               $perfil = toba::manejador_sesiones()->get_perfiles_funcionales();
+               $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
                $this->dep('form_detalle')->descolapsar();
                if($this->dep('datos')->tabla('item_presupuesto')->esta_cargada()){
                     $datos=$this->dep('datos')->tabla('item_presupuesto')->get();
