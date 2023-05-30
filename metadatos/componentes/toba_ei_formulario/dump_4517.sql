@@ -219,7 +219,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'Enviar a SEHA', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
-	'Esta seguro que desea enviar a Sec Hacienda?', --confirmacion
+	'Esta seguro que desea enviar a Sec Hacienda? Recuerde agregar y guardar alguna observación previo al envío. Una vez enviado ya no podrá modificar', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
 	'instanciar.png', --imagen
@@ -252,7 +252,8 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'Enviar a Presupuesto', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
-	'Esta seguro que desea enviar a Presupuesto?', --confirmacion
+	'Esta seguro que desea enviar a Presupuesto?
+Recuerde agregar y guardar alguna observación previo al envío. Una vez enviado ya no podrá modificar', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
 	'instanciar.png', --imagen

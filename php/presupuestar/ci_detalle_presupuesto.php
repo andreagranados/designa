@@ -384,7 +384,8 @@ class ci_detalle_presupuesto extends toba_ci
                     }
                     if($band){
                          if($datos['desde']>=$datos['hasta']){
-                            toba::notificacion()->agregar('La fecha desde debe ser menor que la fecha hasta','error');
+                            //toba::notificacion()->agregar('La fecha desde debe ser menor que la fecha hasta','error');
+                             throw new toba_error('La fecha desde debe ser menor que la fecha hasta');
                         }else{
                             $this->dep('datos')->tabla('item_presupuesto')->set($datos);
                             $this->dep('datos')->tabla('item_presupuesto')->sincronizar();

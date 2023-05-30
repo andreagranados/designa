@@ -2389,6 +2389,15 @@ class dt_designacion extends toba_datos_tabla
             if (isset($filtro['legajo'])) {
                 $where2.= " and legajo = ".quote($filtro['legajo']['valor']);
             }
+            if (isset($filtro['vencidas'])) {
+                $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+                $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
+                switch ($filtro['vencidas']['valor']) {
+                    //sin las designaciones vencidas, es decir solo vigentes
+                    case 1:$where.= " and desde<='".$udia."' and  ( hasta>='".$pdia."' or hasta is null )";break;
+                    case 0:$where.= " and not(desde<='".$udia."' and  ( hasta>='".$pdia."' or hasta is null ))";break;
+                }
+            }
 //            if (isset($filtro['carrera'])) {
 //                $where2.= " and carrera= ".quote($filtro['carrera']['valor']);
 //            }
