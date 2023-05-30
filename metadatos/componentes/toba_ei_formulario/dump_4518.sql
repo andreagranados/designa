@@ -929,7 +929,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cant_seac', --identificador
 	'ef_editable_numero', --elemento_formulario
 	'cant_seac', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'9', --orden
 	'Cant SEAC', --etiqueta
@@ -1009,7 +1009,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cat_map1_seac', --identificador
 	'ef_popup', --elemento_formulario
 	'cat_map1_seac', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'10', --orden
 	'Cat Mapu1 SEAC', --etiqueta
@@ -1089,8 +1089,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cat_map2_seac', --identificador
 	'ef_popup', --elemento_formulario
 	'cat_map2_seac', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'11', --orden
 	'Cat Mapu2 SEAC', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1169,7 +1169,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'desde_seac', --identificador
 	'ef_editable_fecha', --elemento_formulario
 	'desde_seac', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'12', --orden
 	'Desde  SEAC', --etiqueta
@@ -1249,7 +1249,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'hasta_seac', --identificador
 	'ef_editable_fecha', --elemento_formulario
 	'hasta_seac', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'13', --orden
 	'Hasta SEAC', --etiqueta
@@ -1409,7 +1409,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cant_seha', --identificador
 	'ef_editable_numero', --elemento_formulario
 	'cant_seha', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'16', --orden
 	'Cant SEHA', --etiqueta
@@ -1489,7 +1489,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cat_map1_seha', --identificador
 	'ef_popup', --elemento_formulario
 	'cat_map1_seha', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'17', --orden
 	'Cat Mapu1 SEHA', --etiqueta
@@ -1569,8 +1569,8 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'cat_map2_seha', --identificador
 	'ef_popup', --elemento_formulario
 	'cat_map2_seha', --columnas
-	'0', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --obligatorio
+	'1', --oculto_relaja_obligatorio
 	'18', --orden
 	'Cat Mapu2 SEHA', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1649,7 +1649,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'desde_seha', --identificador
 	'ef_editable_fecha', --elemento_formulario
 	'desde_seha', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'19', --orden
 	'Desde SEHA', --etiqueta
@@ -1729,7 +1729,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'hasta_seha', --identificador
 	'ef_editable_fecha', --elemento_formulario
 	'hasta_seha', --columnas
-	'0', --obligatorio
+	'1', --obligatorio
 	'0', --oculto_relaja_obligatorio
 	'20', --orden
 	'Hasta SEHA', --etiqueta

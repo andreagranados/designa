@@ -478,6 +478,7 @@ class ci_detalle_presupuesto extends toba_ci
         $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
         $item=$this->dep('datos')->tabla('item_presupuesto')->get();
         if($pres['id_estado']=='A'){
+          if($datos['cant_seac']>=1){
             $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->esta_dentro_periodo($pres['id_periodo'],$datos['desde_seac'],$datos['hasta_seac']);
             if($band){
                 if($datos['opcion']=='F'){
@@ -525,6 +526,9 @@ class ci_detalle_presupuesto extends toba_ci
                 toba::notificacion()->agregar('Las fechas estan por fuera del periodo presupuestario', 'error'); 
             }
         }else{
+            toba::notificacion()->agregar('La cantidad debe ser un entero positivo', 'error');  
+        }  
+        }else{
            toba::notificacion()->agregar('Solo en estado A puede modificar.', 'error');  
         }
     }
@@ -535,10 +539,11 @@ class ci_detalle_presupuesto extends toba_ci
         $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
         $item=$this->dep('datos')->tabla('item_presupuesto')->get();
         if($pres['id_estado']=='H'){
-            $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->esta_dentro_periodo($pres['id_periodo'],$datos['desde_seac'],$datos['hasta_seac']);
+          if($datos['cant_seha']>=1){
+            $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->esta_dentro_periodo($pres['id_periodo'],$datos['desde_seha'],$datos['hasta_seha']);
             if($band){
                 if($datos['opcion']=='F'){
-                    $band=$this->dep('datos')->tabla('categ_siu')->es_mayor_a($datos['cat_map1_seac'],$datos['cat_map2_seac'],$pres['id_periodo']);    
+                    $band=$this->dep('datos')->tabla('categ_siu')->es_mayor_a($datos['cat_map1_seha'],$datos['cat_map2_seha'],$pres['id_periodo']);    
                     }
                 if($band){
                     if($datos['desde_seha']>=$datos['hasta_seha']){
@@ -573,6 +578,9 @@ class ci_detalle_presupuesto extends toba_ci
             }else{
                 toba::notificacion()->agregar('Las fechas estan por fuera del periodo presupuestario', 'info'); 
             }
+        }else{
+            toba::notificacion()->agregar('La cantidad debe ser un entero positivo', 'info');  
+        }
         }else{
            toba::notificacion()->agregar('Solo en estado H puede modificar.', 'info');  
         }
