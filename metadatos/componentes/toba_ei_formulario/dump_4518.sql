@@ -930,7 +930,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ef_editable_numero', --elemento_formulario
 	'cant_seac', --columnas
 	'1', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --oculto_relaja_obligatorio
 	'9', --orden
 	'Cant SEAC', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1010,7 +1010,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ef_popup', --elemento_formulario
 	'cat_map1_seac', --columnas
 	'1', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --oculto_relaja_obligatorio
 	'10', --orden
 	'Cat Mapu1 SEAC', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1170,7 +1170,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ef_editable_fecha', --elemento_formulario
 	'desde_seac', --columnas
 	'1', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --oculto_relaja_obligatorio
 	'12', --orden
 	'Desde  SEAC', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1250,7 +1250,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ef_editable_fecha', --elemento_formulario
 	'hasta_seac', --columnas
 	'1', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --oculto_relaja_obligatorio
 	'13', --orden
 	'Hasta SEAC', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1410,7 +1410,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ef_editable_numero', --elemento_formulario
 	'cant_seha', --columnas
 	'1', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --oculto_relaja_obligatorio
 	'16', --orden
 	'Cant SEHA', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1490,7 +1490,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ef_popup', --elemento_formulario
 	'cat_map1_seha', --columnas
 	'1', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --oculto_relaja_obligatorio
 	'17', --orden
 	'Cat Mapu1 SEHA', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1650,7 +1650,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ef_editable_fecha', --elemento_formulario
 	'desde_seha', --columnas
 	'1', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --oculto_relaja_obligatorio
 	'19', --orden
 	'Desde SEHA', --etiqueta
 	NULL, --etiqueta_estilo
@@ -1730,7 +1730,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'ef_editable_fecha', --elemento_formulario
 	'hasta_seha', --columnas
 	'1', --obligatorio
-	'0', --oculto_relaja_obligatorio
+	'1', --oculto_relaja_obligatorio
 	'20', --orden
 	'Hasta SEHA', --etiqueta
 	NULL, --etiqueta_estilo

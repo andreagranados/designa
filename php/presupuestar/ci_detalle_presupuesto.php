@@ -361,19 +361,20 @@ class ci_detalle_presupuesto extends toba_ci
          if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
             $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
             if($pres['id_estado']=='I'){
-                $datos['nro_presupuesto']=$pres['nro_presupuesto'];
-                $datos['check_seac']=false;
-                $datos['check_seha']=false;
-                $datos['cant_seac']=$datos['cantidad'];
-                $datos['cant_seha']=$datos['cantidad'];
-                $datos['cat_map1_seac']=$datos['cat_mapuche1'];
-                $datos['cat_map1_seha']=$datos['cat_mapuche1'];
-                $datos['cat_map2_seac']=$datos['cat_mapuche2'];
-                $datos['cat_map2_seha']=$datos['cat_mapuche2'];
-                $datos['desde_seac']=$datos['desde'];
-                $datos['desde_seha']=$datos['desde'];
-                $datos['hasta_seac']=$datos['hasta'];
-                $datos['hasta_seha']=$datos['hasta'];
+             $datos['nro_presupuesto']=$pres['nro_presupuesto'];
+             $datos['check_seac']=false;
+             $datos['check_seha']=false;
+             $datos['cant_seac']=$datos['cantidad'];
+             $datos['cant_seha']=$datos['cantidad'];
+             $datos['cat_map1_seac']=$datos['cat_mapuche1'];
+             $datos['cat_map1_seha']=$datos['cat_mapuche1'];
+             $datos['cat_map2_seac']=$datos['cat_mapuche2'];
+             $datos['cat_map2_seha']=$datos['cat_mapuche2'];
+             $datos['desde_seac']=$datos['desde'];
+             $datos['desde_seha']=$datos['desde'];
+             $datos['hasta_seac']=$datos['hasta'];
+             $datos['hasta_seha']=$datos['hasta'];
+             if($datos['cantidad']>=1){
                 $band=true;
                  //verifico que las fechas esten dentro del periodo
                 $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->esta_dentro_periodo($pres['id_periodo'],$datos['desde'],$datos['hasta']);
@@ -400,11 +401,14 @@ class ci_detalle_presupuesto extends toba_ci
                     //toba::notificacion()->agregar('Las fechas estan por fuera del periodo presupuestario', 'error'); 
                     throw new toba_error('Las fechas estan por fuera del periodo presupuestario. Revise las fechas');
                 }
-             }else{
-                 //toba::notificacion()->agregar('Ya no puede modificar el presupuesto.', 'error');  
-                 throw new toba_error('Ya no puede modificar el presupuesto.');
-             }    
+            }else{
+                throw new toba_error('La cantidad debe ser un entero positivo');
             }
+         }else{
+             //toba::notificacion()->agregar('Ya no puede modificar el presupuesto.', 'error');  
+             throw new toba_error('Ya no puede modificar el presupuesto.');
+         }    
+        }
     }
     //boton exclusivo para la UA
     function evt__form_detalle__modificacion($datos)
@@ -413,6 +417,7 @@ class ci_detalle_presupuesto extends toba_ci
         $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
         $item=$this->dep('datos')->tabla('item_presupuesto')->get();
         if($pres['id_estado']=='I'){
+          if($datos['cantidad']>=1){
             $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->esta_dentro_periodo($pres['id_periodo'],$datos['desde'],$datos['hasta']);
             if($band){
                 if($datos['opcion']=='F'){
@@ -446,6 +451,7 @@ class ci_detalle_presupuesto extends toba_ci
             }else{
                 toba::notificacion()->agregar('Las fechas estan por fuera del periodo presupuestario', 'error'); 
             }
+         }else{toba::notificacion()->agregar('La cantidad debe ser un entero positivo', 'error');  }
         }else{
            toba::notificacion()->agregar('Ya no puede modificar el presupuesto.', 'error');  
         }
