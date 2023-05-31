@@ -24,16 +24,17 @@ class dt_macheo_categ extends toba_datos_tabla
     }
     //recibe una categoria mapuche o dos separadas por /
     function get_cat_equivalente($cat_mapu = null){
+        //print_r($cat_mapu);exit;//JTPS/JTP1
         if(!is_null($cat_mapu)){
-           //print_r($cat_mapu);//JTPS/JTP1
+          // print_r($cat_mapu);exit;//JTPS/JTP1
             $pos=strpos($cat_mapu,'/') ;//devuelve false sino encuentra
-            
             if(!$pos){//es falso
                 $sql="select trim(catest)||id_ded as cate"
                     . " from macheo_categ where catsiu='".$cat_mapu."'"
                         . " and catest not like 'ASDEn%'";
+                
                 $resul=toba::db('designa')->consultar($sql);
-                $salida==$resul[0]['cate'];
+                $salida=$resul[0]['cate'];
             }else{
                 $cat1=substr($cat_mapu,0,4);
                 $cat2=substr($cat_mapu,$pos+1,4);
@@ -50,7 +51,6 @@ class dt_macheo_categ extends toba_datos_tabla
             }
             return $salida;
         }
-        
     }
 }
 

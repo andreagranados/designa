@@ -421,7 +421,7 @@ LEFT OUTER JOIN (select  t_m.id_materia,t_m.id_periodo,t_m.anio,count(distinct t
     }
     function get_listado_desig_cert($des,$anio){
         
-        $sql="select desc_materia,rol,periodo,moddes,carga_horaria,case when carreras_conj is not null then carreras_conj else cod_carrera end as carrera from       
+        $sql="select SUBSTRING(desc_materia,0,70)as desc_materia,rol,periodo,moddes,carga_horaria,case when carreras_conj is not null then carreras_conj else cod_carrera end as carrera from       
 (select sub2.desc_materia,sub2.cod_carrera,sub2.rol,sub2.periodo,sub2.moddes,sub2.carga_horaria,string_agg(carreras_conj,'/') as carreras_conj 
  from 
  		(SELECT distinct t_a.id_designacion,t_d.uni_acad,t_a.id_materia,t_pe.desc_carrera||'('||cod_carrera||')' as cod_carrera,t_m.desc_materia||'('||t_m.cod_siu||')' as desc_materia,substring(t_t.desc_item,0,5) as rol,t_a.id_periodo,t_p.descripcion as periodo,

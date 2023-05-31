@@ -108,16 +108,17 @@ class ci_certificacion_periodo extends toba_ci
                 }
                 $pdf->ezText("\n", 7);
                 $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig_cert($des['id_designacion'],$this->s__datos_filtro['anio']);
+                
                 $i=0;
-                $datos='';
+                $datos=array();
                 foreach ($mate as $ma) {//busco todas las materias correspondientes al año previamente seleccionado
                         $datos[$i]=array('col1' => $ma['desc_materia'], 'col2' => $ma['carrera'],'col3' => $ma['periodo'],'col4' => $ma['rol'],'col5' => $ma['carga_horaria'],'col6' => $ma['moddes']);
                         $i++;
                 }
-               
-                
-                $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => utf8_decode('Período'),'col4' => 'Rol','col5' => 'Hs','col6' => utf8_decode('Módulo')), 'ACTIVIDAD ACADEMICA', $opciones);
-                $pdf->ezText("\n", 7);
+                if(count($datos)>=1){
+                    $pdf->ezTable($datos, array('col1'=>'Asignatura', 'col2' => 'Carrera','col3' => utf8_decode('Período'),'col4' => 'Rol','col5' => 'Hs','col6' => utf8_decode('Módulo')), 'ACTIVIDAD ACADEMICA', $opciones);
+                    $pdf->ezText("\n", 7);
+                }
             }
             //busco la actividad en investigacion
             $inve=$this->dep('datos')->tabla('integrante_interno_pi')->get_proyinv_docente($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
@@ -135,11 +136,14 @@ class ci_certificacion_periodo extends toba_ci
                 $datosi[$i]=array('col1'=>'<b>Hs Semanales: </b>'.$in['carga_horaria']);
                 $i++;
               }
-            $titulo=array();
-            $titulo[0]=array('dato'=>utf8_decode('<b>INVESTIGACION</b>'));
-            $pdf->ezTable($titulo,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
-            $pdf->ezTable($datosi,array('col1'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
-            $pdf->ezText("\n", 7);
+            if(count($inve)>0){
+                $titulo=array();
+                $titulo[0]=array('dato'=>utf8_decode('<b>INVESTIGACION</b>'));
+                $pdf->ezTable($titulo,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+                $pdf->ezTable($datosi,array('col1'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+                $pdf->ezText("\n", 7);
+            }  
+            
             //busco otras actividades
             $otras=$this->dep('datos')->tabla('asignacion_tutoria')->get_otras_activ_legajo($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
             $dptos=$this->dep('datos')->tabla('director_dpto')->get_direcciones($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);

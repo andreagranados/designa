@@ -4,10 +4,10 @@
 ------------------------------------------------------------
 INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_acceso, descripcion, vencimiento, dias, hora_entrada, hora_salida, listar, permite_edicion, menu_usuario) VALUES (
 	'designa', --proyecto
-	'presupuestar_seha', --usuario_grupo_acc
-	'Presupuestar SEHA', --nombre
+	'presupuestar_consulta', --usuario_grupo_acc
+	'Presupuestar Consulta', --nombre
 	NULL, --nivel_acceso
-	'Accede a la operacion Presupuestar como SEHA', --descripcion
+	'Accede a la operacion Presupuestar a modo consulta', --descripcion
 	NULL, --vencimiento
 	NULL, --dias
 	NULL, --hora_entrada
@@ -24,37 +24,25 @@ INSERT INTO apex_usuario_grupo_acc (proyecto, usuario_grupo_acc, nombre, nivel_a
 --- INICIO Grupo de desarrollo 0
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'presupuestar_seha', --usuario_grupo_acc
+	'presupuestar_consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'1'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'presupuestar_seha', --usuario_grupo_acc
-	NULL, --item_id
-	'3652'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'presupuestar_seha', --usuario_grupo_acc
+	'presupuestar_consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'3853'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'presupuestar_seha', --usuario_grupo_acc
+	'presupuestar_consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'3854'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
 	'designa', --proyecto
-	'presupuestar_seha', --usuario_grupo_acc
-	NULL, --item_id
-	'3855'  --item
-);
-INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
-	'designa', --proyecto
-	'presupuestar_seha', --usuario_grupo_acc
+	'presupuestar_consulta', --usuario_grupo_acc
 	NULL, --item_id
 	'3859'  --item
 );
@@ -65,6 +53,6 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 ------------------------------------------------------------
 INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
 	'designa', --proyecto
-	'presupuestar_seha', --usuario_grupo_acc
-	'71'  --restriccion_funcional
+	'presupuestar_consulta', --usuario_grupo_acc
+	'74'  --restriccion_funcional
 );

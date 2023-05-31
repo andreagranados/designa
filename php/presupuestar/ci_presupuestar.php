@@ -120,6 +120,7 @@ class ci_presupuestar extends toba_ci
         $opc=array('showLines'=>2,'shaded'=>0,'rowGap' => 3,'width'=>700,'cols'=>array('col1'=>array('width'=>80),'col2'=>array('width'=>80),'col3'=>array('width'=>90),'col4'=>array('width'=>90),'col5'=>array('width'=>40),'col6'=>array('width'=>40),'col7'=>array('width'=>140,'justification'=>'right'),'col8'=>array('width'=>140,'justification'=>'right')));
         $datos=array();
        // print_r($datos_pres);exit;
+         
         foreach ($datos_pres as $item) {
             switch ($band) {
                 case 'UA':
@@ -128,7 +129,8 @@ class ci_presupuestar extends toba_ci
                     break;
                 case 'SEAC':
                     if($item['check_seac']==1){
-                       $cate=$this->dep('datos')->tabla('macheo_categ')->get_cat_equivalente($item['cat_seha']);
+                        
+                       $cate=$this->dep('datos')->tabla('macheo_categ')->get_cat_equivalente($item['cat_seac']);
                        $datos[$i]=array('col1' => $cate,'col2' => $item['cat_seac'],'col3' => date("d/m/Y",strtotime($item['desde_seac'])),'col4' => date("d/m/Y",strtotime($item['hasta_seac'])),'col5' => $item['dias_seac'],'col6' => $item['cant_seac'],'col7' => number_format($item['costo_dia_seac'],2,',','.'),'col8' => number_format($item['total_seac'],2,',','.'));  
                        $suma=$suma+$item['total_seac']; 
                     }
