@@ -147,6 +147,39 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 );
 INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
 	'designa', --proyecto
+	'3757', --evento_id
+	'4517', --objeto
+	'rechazar', --identificador
+	'Rechazar', --etiqueta
+	'1', --maneja_datos
+	NULL, --sobre_fila
+	'Esta seguro que desea rechazar el presupuesto?', --confirmacion
+	NULL, --estilo
+	'apex', --imagen_recurso_origen
+	'error.gif', --imagen
+	'1', --en_botonera
+	NULL, --ayuda
+	'4', --orden
+	NULL, --ci_predep
+	'0', --implicito
+	'0', --defecto
+	NULL, --display_datos_cargados
+	NULL, --grupo
+	NULL, --accion
+	NULL, --accion_imphtml_debug
+	NULL, --accion_vinculo_carpeta
+	NULL, --accion_vinculo_item
+	NULL, --accion_vinculo_objeto
+	'0', --accion_vinculo_popup
+	NULL, --accion_vinculo_popup_param
+	NULL, --accion_vinculo_target
+	NULL, --accion_vinculo_celda
+	NULL, --accion_vinculo_servicio
+	'0', --es_seleccion_multiple
+	'0'  --es_autovinculo
+);
+INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
+	'designa', --proyecto
 	'3737', --evento_id
 	'4517', --objeto
 	'cancelar', --identificador
@@ -157,9 +190,9 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'ei-boton-canc', --estilo
 	'apex', --imagen_recurso_origen
 	'deshacer.png', --imagen
-	'1', --en_botonera
+	'0', --en_botonera
 	NULL, --ayuda
-	'4', --orden
+	'5', --orden
 	NULL, --ci_predep
 	'0', --implicito
 	'0', --defecto
@@ -192,74 +225,7 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'volver.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
-	'5', --orden
-	NULL, --ci_predep
-	'0', --implicito
-	'0', --defecto
-	NULL, --display_datos_cargados
-	NULL, --grupo
-	NULL, --accion
-	NULL, --accion_imphtml_debug
-	NULL, --accion_vinculo_carpeta
-	NULL, --accion_vinculo_item
-	NULL, --accion_vinculo_objeto
-	'0', --accion_vinculo_popup
-	NULL, --accion_vinculo_popup_param
-	NULL, --accion_vinculo_target
-	NULL, --accion_vinculo_celda
-	NULL, --accion_vinculo_servicio
-	'0', --es_seleccion_multiple
-	'0'  --es_autovinculo
-);
-INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
-	'designa', --proyecto
-	'3754', --evento_id
-	'4517', --objeto
-	'enviar_seha', --identificador
-	'Enviar a SEHA', --etiqueta
-	'1', --maneja_datos
-	NULL, --sobre_fila
-	'Esta seguro que desea enviar a Sec Hacienda? Recuerde agregar y guardar alguna observación previo al envío. Una vez enviado ya no podrá modificar', --confirmacion
-	NULL, --estilo
-	'apex', --imagen_recurso_origen
-	'instanciar.png', --imagen
-	'1', --en_botonera
-	NULL, --ayuda
 	'6', --orden
-	NULL, --ci_predep
-	'0', --implicito
-	'0', --defecto
-	NULL, --display_datos_cargados
-	NULL, --grupo
-	NULL, --accion
-	NULL, --accion_imphtml_debug
-	NULL, --accion_vinculo_carpeta
-	NULL, --accion_vinculo_item
-	NULL, --accion_vinculo_objeto
-	'0', --accion_vinculo_popup
-	NULL, --accion_vinculo_popup_param
-	NULL, --accion_vinculo_target
-	NULL, --accion_vinculo_celda
-	NULL, --accion_vinculo_servicio
-	'0', --es_seleccion_multiple
-	'0'  --es_autovinculo
-);
-INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
-	'designa', --proyecto
-	'3755', --evento_id
-	'4517', --objeto
-	'enviar_pres', --identificador
-	'Enviar a Presupuesto', --etiqueta
-	'1', --maneja_datos
-	NULL, --sobre_fila
-	'Esta seguro que desea enviar a Presupuesto?
-Recuerde agregar y guardar alguna observación previo al envío. Una vez enviado ya no podrá modificar', --confirmacion
-	NULL, --estilo
-	'apex', --imagen_recurso_origen
-	'instanciar.png', --imagen
-	'1', --en_botonera
-	NULL, --ayuda
-	'7', --orden
 	NULL, --ci_predep
 	'0', --implicito
 	'0', --defecto
@@ -292,6 +258,39 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 	'deshacer.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
+	'7', --orden
+	NULL, --ci_predep
+	'0', --implicito
+	'0', --defecto
+	NULL, --display_datos_cargados
+	NULL, --grupo
+	NULL, --accion
+	NULL, --accion_imphtml_debug
+	NULL, --accion_vinculo_carpeta
+	NULL, --accion_vinculo_item
+	NULL, --accion_vinculo_objeto
+	'0', --accion_vinculo_popup
+	NULL, --accion_vinculo_popup_param
+	NULL, --accion_vinculo_target
+	NULL, --accion_vinculo_celda
+	NULL, --accion_vinculo_servicio
+	'0', --es_seleccion_multiple
+	'0'  --es_autovinculo
+);
+INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
+	'designa', --proyecto
+	'3754', --evento_id
+	'4517', --objeto
+	'enviar_seha', --identificador
+	'Enviar a SEHA', --etiqueta
+	'1', --maneja_datos
+	NULL, --sobre_fila
+	'Esta seguro que desea enviar a Sec Hacienda? Recuerde agregar y guardar alguna observación previo al envío. Una vez enviado ya no podrá modificar', --confirmacion
+	NULL, --estilo
+	'apex', --imagen_recurso_origen
+	'instanciar.png', --imagen
+	'1', --en_botonera
+	NULL, --ayuda
 	'8', --orden
 	NULL, --ci_predep
 	'0', --implicito
@@ -313,16 +312,17 @@ INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, eti
 );
 INSERT INTO apex_objeto_eventos (proyecto, evento_id, objeto, identificador, etiqueta, maneja_datos, sobre_fila, confirmacion, estilo, imagen_recurso_origen, imagen, en_botonera, ayuda, orden, ci_predep, implicito, defecto, display_datos_cargados, grupo, accion, accion_imphtml_debug, accion_vinculo_carpeta, accion_vinculo_item, accion_vinculo_objeto, accion_vinculo_popup, accion_vinculo_popup_param, accion_vinculo_target, accion_vinculo_celda, accion_vinculo_servicio, es_seleccion_multiple, es_autovinculo) VALUES (
 	'designa', --proyecto
-	'3757', --evento_id
+	'3755', --evento_id
 	'4517', --objeto
-	'rechazar', --identificador
-	'Rechazar', --etiqueta
+	'enviar_pres', --identificador
+	'Enviar a Presupuesto', --etiqueta
 	'1', --maneja_datos
 	NULL, --sobre_fila
-	'Esta seguro que desea rechazar el presupuesto?', --confirmacion
+	'Esta seguro que desea enviar a Presupuesto?
+Recuerde agregar y guardar alguna observación previo al envío. Una vez enviado ya no podrá modificar', --confirmacion
 	NULL, --estilo
 	'apex', --imagen_recurso_origen
-	'error.gif', --imagen
+	'instanciar.png', --imagen
 	'1', --en_botonera
 	NULL, --ayuda
 	'9', --orden

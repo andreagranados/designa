@@ -53,8 +53,15 @@ class dt_item_presupuesto extends toba_datos_tabla
             $sql="update item_presupuesto set check_seac=false,check_seha=false where nro_presupuesto=".$nro;
             toba::db('designa')->consultar($sql);
         }
-        
     }
+    function destildar_check_seha($nro=null){
+        if(!is_null($nro)){
+            $sql="update item_presupuesto set check_seha=false where nro_presupuesto=".$nro;
+            toba::db('designa')->consultar($sql);
+        }
+    }
+    //verifica si tiene al menos un check seha para enviar a Presupuesto
+    //retorna false sino tiene ningun check de seha y false en caso contrario
     function tiene_check_seha($nro_pres = null){
         if (!is_null($nro_pres)){
             $sql="select count(*) as cant from item_presupuesto "
@@ -66,8 +73,21 @@ class dt_item_presupuesto extends toba_datos_tabla
             }else{
                 return false;
             }
+        }   
+    }
+    //retorna true si tiene el check seac y false en caso contrario
+    function tiene_check_seac($id_it = null){
+        if (!is_null($id_it)){
+            $sql="select count(*) as cant from item_presupuesto "
+                    . " where id_item=$id_it"
+                    . " and check_seac";
+            $res=toba::db('designa')->consultar($sql);
+            if($res[0]['cant']>=1){
+                return true;
+            }else{
+                return false;
+            }
         }
-        
     }
     function es_menor_a($tipo,$id_periodo,$id_item,$desde2,$hasta2,$cant2,$cat2,$cat2_1){
         

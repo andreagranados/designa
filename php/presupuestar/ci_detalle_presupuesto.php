@@ -147,10 +147,12 @@ class ci_detalle_presupuesto extends toba_ci
             if($pres['id_estado']=='A'){
                 if(in_array('presupuestar_seac',$perfil)){//es la SEAC
                     $datos['id_estado']='R';
-                    //aqui falta destildar todos los items
                     $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                     $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                     toba::notificacion()->agregar('El presupuesto ha sido rechazado por SEAC','info');
+                    // destildar todos los items
+                    $this->dep('datos')->tabla('item_presupuesto')->destildar_todo($pres['nro_presupuesto']);
+                    toba::notificacion()->agregar('El rechazo destilda todos los check del presupuesto','info');
                     $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
                     $this->controlador()->set_pantalla('pant_inicial'); 
                 }
@@ -161,10 +163,12 @@ class ci_detalle_presupuesto extends toba_ci
                 if($pres['id_estado']=='H'){
                     if(in_array('presupuestar_seha',$perfil)){//es la SEHA
                         $datos['id_estado']='R';
-                        //aqui falta destildar todos los items seha
                         $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                         $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                         toba::notificacion()->agregar('El presupuesto ha sido rechazado por SEHA','info');
+                        // destildar todos los items
+                        $this->dep('datos')->tabla('item_presupuesto')->destildar_todo($pres['nro_presupuesto']);
+                        toba::notificacion()->agregar('El rechazo destilda todos los check del presupuesto','info');
                         $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
                         $this->controlador()->set_pantalla('pant_inicial'); 
                    }
@@ -186,7 +190,7 @@ class ci_detalle_presupuesto extends toba_ci
                 $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                 $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                 toba::notificacion()->agregar('El presupuesto ha sido reabierto','info');
-                $this->dep('datos')->tabla('item_presupuesto')->destildar_todo();
+                $this->dep('datos')->tabla('item_presupuesto')->destildar_todo($pres['nro_presupuesto']);
                 toba::notificacion()->agregar('La reapertura destilda todos los check del presupuesto','info');
                 $this->controlador()->dep('datos')->tabla('presupuesto')->resetear($pres['nro_presupuesto']);
                 $this->controlador()->set_pantalla('pant_inicial');   
@@ -203,18 +207,17 @@ class ci_detalle_presupuesto extends toba_ci
         if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
             $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
             if($pres['id_estado']=='H'){
+                //verifica si tiene al menos un check seha para enviar a Presupuesto
                 $band=$this->dep('datos')->tabla('item_presupuesto')->tiene_check_seha($pres['nro_presupuesto']);
                 if($band){
                     $datos['id_estado']='P';
                     $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                     $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                     toba::notificacion()->agregar('El presupuesto ha sido enviado a Presupuesto','info');
-                    $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
-                    $this->controlador()->set_pantalla('pant_inicial');   
+                    $this->set_pantalla('pant_detalle_item');
                 }else{
                     toba::notificacion()->agregar('El presupuesto debe tener al menos un check de hacienda','error');
                 }
-                
             }else{
                 toba::notificacion()->agregar('El presupuesto no esta en estado H, no es posible hacer el envio a Presupuesto','error');
             }
@@ -232,8 +235,7 @@ class ci_detalle_presupuesto extends toba_ci
                     $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                     $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                     toba::notificacion()->agregar('El presupuesto ha sido enviado a Sec Hacienda','info');
-                    $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
-                    $this->controlador()->set_pantalla('pant_inicial'); 
+                    $this->set_pantalla('pant_detalle_item');
                 }else{
                     toba::notificacion()->agregar('Debe chequear al menos un item del presupuesto. Ningun item tiene el Check de SEAC','error');
                 }
@@ -252,7 +254,9 @@ class ci_detalle_presupuesto extends toba_ci
                 $datos['id_estado']='A';
                 $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                 $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
-                toba::notificacion()->agregar('El presupuesto ha sido enviado a Sec Academica','info');
+                toba::notificacion()->agregar('El presupuesto ha sido enviado a Sec Academica.','info');
+                $this->dep('datos')->tabla('item_presupuesto')->destildar_check_seha($pres['nro_presupuesto']);
+                toba::notificacion()->agregar('Se han destildado los check de SEHA.','info');
                 $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
                 $this->controlador()->set_pantalla('pant_inicial'); 
             }else{
@@ -314,6 +318,7 @@ class ci_detalle_presupuesto extends toba_ci
     function evt__cuadro__seleccion($datos)
     {
        $band=false; 
+       $mensaje='No es posible editar el item, verifique el estado del presupuesto';
        if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
           $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();   
           $perfil = toba::manejador_sesiones()->get_perfiles_funcionales();
@@ -329,7 +334,10 @@ class ci_detalle_presupuesto extends toba_ci
                }else{
                     if(in_array('presupuestar_seha',$perfil)){//es SEAC
                         if($pres['id_estado']=='H'){
-                            $band=true;
+                            $band=$this->dep('datos')->tabla('item_presupuesto')->tiene_check_seac($datos['id_item']);
+                            if(!$band){//si retorna false
+                                $mensaje='Este item no tiene el check de SEAC, no puede editarlo';
+                            }
                         }
                     }
                }
@@ -339,7 +347,7 @@ class ci_detalle_presupuesto extends toba_ci
             $this->dep('datos')->tabla('item_presupuesto')->cargar($datos);
             $this->s__mostrar_m=1;
         }else{
-            toba::notificacion()->agregar('No es posible editar el item, verifique el estado del presupuesto', 'info'); 
+            toba::notificacion()->agregar($mensaje, 'info'); 
         }
     }
     function conf__form_detalle(toba_ei_formulario $form)
@@ -541,55 +549,59 @@ class ci_detalle_presupuesto extends toba_ci
     //boton exclusivo para la SEHA
     function evt__form_detalle__modif_seha($datos)
     {
-        //los campos para UA y para SEAC son de solo lectura para la SEHA
-        $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
-        $item=$this->dep('datos')->tabla('item_presupuesto')->get();
-        if($pres['id_estado']=='H'){
-          if($datos['cant_seha']>=1){
-            $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->esta_dentro_periodo($pres['id_periodo'],$datos['desde_seha'],$datos['hasta_seha']);
-            if($band){
-                if($datos['opcion']=='F'){
-                    $band=$this->dep('datos')->tabla('categ_siu')->es_mayor_a($datos['cat_map1_seha'],$datos['cat_map2_seha'],$pres['id_periodo']);    
-                    }
+    //los campos para UA y para SEAC son de solo lectura para la SEHA
+    $pres=$this->controlador()->dep('datos')->tabla('presupuesto')->get();
+    $item=$this->dep('datos')->tabla('item_presupuesto')->get();
+    if($pres['id_estado']=='H'){
+        if($item['check_seac']==1){//si tiene el check de seac
+              if($datos['cant_seha']>=1){
+                $band=$this->dep('datos')->tabla('mocovi_periodo_presupuestario')->esta_dentro_periodo($pres['id_periodo'],$datos['desde_seha'],$datos['hasta_seha']);
                 if($band){
-                    if($datos['desde_seha']>=$datos['hasta_seha']){
-                        toba::notificacion()->agregar('La fecha desde debe ser menor que la fecha hasta','error');
-                    }else{
-                        if($datos['check_seha']==1){
-                           $band=$this->dep('datos')->tabla('item_presupuesto')->es_menor_a('H',$pres['id_periodo'],$item['id_item'],$datos['desde_seha'],$datos['hasta_seha'],$datos['cant_seha'],$datos['cat_map1_seha'],$datos['cat_map2_seha']);                            
+                    if($datos['opcion']=='F'){
+                        $band=$this->dep('datos')->tabla('categ_siu')->es_mayor_a($datos['cat_map1_seha'],$datos['cat_map2_seha'],$pres['id_periodo']);    
                         }
-                        if($band){
-                            unset($datos['desde']);
-                            unset($datos['hasta']);
-                            unset($datos['cat_mapuche1']);
-                            unset($datos['cat_mapuche2']);
-                            unset($datos['cantidad']);
-                            unset($datos['detalle']);
-                            unset($datos['opcion']);
-                            unset($datos['desde_seac']);
-                            unset($datos['hasta_seac']);
-                            unset($datos['cat_map1_seac']);
-                            unset($datos['cat_map2_seac']);
-                            unset($datos['cant_seac']);
-                            unset($datos['check_seac']);
-                            $this->dep('datos')->tabla('item_presupuesto')->set($datos);
-                            $this->dep('datos')->tabla('item_presupuesto')->sincronizar();
+                    if($band){
+                        if($datos['desde_seha']>=$datos['hasta_seha']){
+                            toba::notificacion()->agregar('La fecha desde debe ser menor que la fecha hasta','error');
                         }else{
-                            toba::notificacion()->agregar('Esta autorizando un valor mayor al solicitado por SEAC', 'error'); 
+                            if($datos['check_seha']==1){
+                               $band=$this->dep('datos')->tabla('item_presupuesto')->es_menor_a('H',$pres['id_periodo'],$item['id_item'],$datos['desde_seha'],$datos['hasta_seha'],$datos['cant_seha'],$datos['cat_map1_seha'],$datos['cat_map2_seha']);                            
+                            }
+                            if($band){
+                                unset($datos['desde']);
+                                unset($datos['hasta']);
+                                unset($datos['cat_mapuche1']);
+                                unset($datos['cat_mapuche2']);
+                                unset($datos['cantidad']);
+                                unset($datos['detalle']);
+                                unset($datos['opcion']);
+                                unset($datos['desde_seac']);
+                                unset($datos['hasta_seac']);
+                                unset($datos['cat_map1_seac']);
+                                unset($datos['cat_map2_seac']);
+                                unset($datos['cant_seac']);
+                                unset($datos['check_seac']);
+                                $this->dep('datos')->tabla('item_presupuesto')->set($datos);
+                                $this->dep('datos')->tabla('item_presupuesto')->sincronizar();
+                            }else{
+                                toba::notificacion()->agregar('Esta autorizando un valor mayor al solicitado por SEAC', 'error'); 
+                            }
                         }
-                    }
+                    }else{
+                            toba::notificacion()->agregar('La categ 1 debe ser mayor a la categ 2', 'error'); 
+                        }
                 }else{
-                        toba::notificacion()->agregar('La categ 1 debe ser mayor a la categ 2', 'error'); 
-                    }
+                    toba::notificacion()->agregar('Las fechas estan por fuera del periodo presupuestario', 'info'); 
+                }
             }else{
-                toba::notificacion()->agregar('Las fechas estan por fuera del periodo presupuestario', 'info'); 
+                toba::notificacion()->agregar('La cantidad debe ser un entero positivo', 'info');  
             }
         }else{
-            toba::notificacion()->agregar('La cantidad debe ser un entero positivo', 'info');  
+            toba::notificacion()->agregar('No puede actorizar un item que no ha sido autorizado previamente por SEAC', 'error'); 
         }
-        }else{
-           toba::notificacion()->agregar('Solo en estado H puede modificar.', 'info');  
-        }
+    }else{
+       toba::notificacion()->agregar('Solo en estado H puede modificar.', 'info');  
+    }
     }
     ///alta de un nuevo item
     function evt__alta($datos)
@@ -621,8 +633,7 @@ class ci_detalle_presupuesto extends toba_ci
                 $this->controlador()->dep('datos')->tabla('presupuesto')->set($datos);
                 $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                 toba::notificacion()->agregar('El presupuesto ha sido enviado','info');
-                $this->controlador()->dep('datos')->tabla('presupuesto')->resetear();
-                $this->controlador()->set_pantalla('pant_inicial'); 
+                $this->set_pantalla('pant_detalle_item'); 
             }else{
                 toba::notificacion()->agregar('No es posible realizar el envio porque el presupuesto se encuentra en estado '.$pres['id_estado'],'error');
             }  
