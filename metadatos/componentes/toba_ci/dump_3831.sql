@@ -17,7 +17,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba_ci', --clase
 	'23', --punto_montaje
 	'ci_normas', --subclase
-	'normas/ci_normas.php', --subclase_archivo
+	'configuraciones/ci_normas.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Normas', --nombre

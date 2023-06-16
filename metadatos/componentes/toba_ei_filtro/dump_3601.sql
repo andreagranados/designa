@@ -716,7 +716,8 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'licencia', --nombre
 	'licencia', --expresion
 	'Licencia', --etiqueta
-	NULL, --descripcion
+	'Si: Tiene una licencia o baja durante el cuatrimestre y año en el que dicta la materia. <br>
+No: Descarta las designaciones que tienen licencia o baja durante el cuatrimestre y año en que dicta la materia.', --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'10', --orden

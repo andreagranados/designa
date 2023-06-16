@@ -17,7 +17,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba_ci', --clase
 	'23', --punto_montaje
 	'ci_materias_conf', --subclase
-	'materias/ci_materias_conf.php', --subclase_archivo
+	'configuraciones/ci_materias_conf.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Materias - CI', --nombre

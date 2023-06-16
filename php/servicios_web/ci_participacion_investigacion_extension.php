@@ -21,13 +21,12 @@ class ci_participacion_investigacion_extension extends toba_ci
                     ;
         
             $res=toba::db('designa')->consultar($sql);
-            $nuevo=array();
             foreach ($res as $key => $value) {
                 $res[$key]['denominacion']=  utf8_encode($res[$key]['denominacion']);
                 $res[$key]['funcion']=  utf8_encode($res[$key]['funcion']);
             }
-            
-            echo json_encode($res);
+            header('Content-Type: application/json');
+            echo json_encode($res,JSON_UNESCAPED_UNICODE| JSON_UNESCAPED_UNICODE);
             exit;
             
 	}

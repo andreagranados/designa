@@ -553,7 +553,6 @@ class dt_pinvestigacion extends toba_datos_tabla
                 // Por defecto el sistema se activa sobre el proyecto y usuario actual
                 $pf = toba::manejador_sesiones()->get_perfiles_funcionales_activos();
                 $pd = toba::manejador_sesiones()->get_perfil_datos();
-                //print_r($pf);
                 $where = " WHERE 1=1 ";
                 $where1 = " WHERE 1=1 ";
                 //los directores solo pueden ver sus proyectos 
@@ -568,7 +567,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                     switch (trim($resul[0]['sigla'])) {
                         case 'FAIN': $where.=" and (t_p.uni_acad = ".quote($resul[0]['sigla'])." or t_p.uni_acad ='AUZA'".")";break;
                         case 'ASMA': $where.= " and t_p.codigo like '04/S%'";break;//san martin solo ve los S
-                        default:$where .= " and t_p.uni_acad = ".quote($filtro['uni_acad']['valor']);      
+                        default:$where .= " and t_p.uni_acad = ".quote($resul[0]['sigla']);      //resul tiene dato
                     }
                 }//sino es usuario de la central no filtro a menos que haya elegido
                 
@@ -695,7 +694,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                         case 'contiene':$where2.=" WHERE desc_tipo ILIKE '%".$filtro['desc_tipo']['valor']."%'";break;
                     }
                  }  
-                 
+               
 		$sql = "SELECT * FROM ("."SELECT distinct
 			t_p.id_pinv,
 			t_p.codigo,

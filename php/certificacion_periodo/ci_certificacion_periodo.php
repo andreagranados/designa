@@ -76,11 +76,12 @@ class ci_certificacion_periodo extends toba_ci
            
             $ag=$this->dep('datos')->tabla('docente')->get_agente($this->s__agente['id_docente']);
             $leg=$this->dep('datos')->tabla('docente')->get_legajo($this->s__agente['id_docente']);
+            $doc=$this->dep('datos')->tabla('docente')->get_docum($this->s__agente['id_docente']);
             $salida->set_nombre_archivo('Certif_'.$leg.'_'.$this->s__datos_filtro['anio'].".pdf");
            //recupero las designaciones del periodo previamente seleccionado
             $desig=$this->dep('datos')->tabla('docente')->get_designaciones_periodo($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
             $pdf->ezText("\n", 7);
-            $texto="Docente: <b>".$ag."</b> Legajo ".$leg;
+            $texto="Docente: <b>".$ag."</b> Legajo: ".$leg.' '.$doc;
             $pdf->ezText($texto,12);
             $pdf->ezText("\n", 7);
             
@@ -90,6 +91,8 @@ class ci_certificacion_periodo extends toba_ci
                 }else{
                     $hasta=date_format(date_create($des['hasta']),'d/m/Y');
                 }
+                $texto='Uni Acad: '.$des['uni_acad'];
+                $pdf->ezText($texto,12);
                 $texto= utf8_decode("Categoría y Dedicación: <b>".trim($des['cat_estat'])."-".$des['dedic']."</b> Desde: <b>".date_format(date_create($des['desde']),'d/m/Y'). "</b> Hasta: <b>".$hasta."</b>");
                 $pdf->ezText($texto,12);
                 $texto='Normativa: '.$des['norma_ultima'].', '.$des['norma_ant'];

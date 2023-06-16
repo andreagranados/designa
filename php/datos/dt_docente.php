@@ -14,9 +14,18 @@ class dt_docente extends toba_datos_tabla
             return $res[0]['nombre'];
         }
         function get_legajo($id_doc){
-            $sql="select legajo from docente where id_docente=".$id_doc;
+            $sql="select trim(to_char(legajo,'999G999G999G999D')) as legajo from docente where id_docente=".$id_doc;
             $res = toba::db('designa')->consultar($sql);
             return $res[0]['legajo'];
+        }
+        function get_docum($id_doc){
+            $sql="select trim(t.desc_abrev)||': '||trim(to_char(nro_docum,'999G999G999G999D'))  as doc"
+                    . " from docente d, tipo t "
+                    . " where d.nro_tabla = t.nro_tabla"
+                    . " and  d.tipo_docum = t.desc_abrev"
+                    . " and d.id_docente = ".$id_doc;
+            $res = toba::db('designa')->consultar($sql);
+            return $res[0]['doc'];
         }
         function get_docente($filtro=array()){
             $where="";
@@ -32,10 +41,10 @@ class dt_docente extends toba_datos_tabla
             $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
 //ordena primero por la fecha desde de las designaciones (aqui tengo la norma ultima), y luego por las fechas desde de las normas historica
             $sql="select 
-                    sub.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub.desde,sub.hasta,cat,caracter,ded,norma_ant,
+                    sub.uni_acad,sub.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub.desde,sub.hasta,cat,caracter,ded,norma_ant,
                     string_agg(nov.desc_corta||' '|| nov.tipo_norma||' '||nov.tipo_emite||' '||nov.norma_legal||': '||to_char(nov.desde, 'DD/MM/YYYY')||' '|| to_char(nov.hasta, 'DD/MM/YYYY'),', ') as lic
-                from (select sub1.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub1.desde,sub1.hasta,cat,caracter,ded,norma_ant from 
-                         ( select distinct t_d.id_designacion,t_d.cat_estat,t_d.dedic,t_no.tipo_norma||': '||t_no.nro_norma||'/'||extract(year from t_no.fecha) as norma_ultima,t_dep.descripcion as depto,t_a.descripcion as area,t_or.descripcion as orient,t_u.descripcion as ua,t_d.desde,t_d.hasta,t_e.descripcion as cat, t_c.descripcion as caracter,t_de.descripcion as ded,string_agg(norm.tipo_norma||':'||norm.nro_norma||'/'||extract(year from norm.fecha),', ') as norma_ant
+                from (select sub1.uni_acad,sub1.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub1.desde,sub1.hasta,cat,caracter,ded,norma_ant from 
+                         ( select distinct t_d.uni_acad,t_d.id_designacion,t_d.cat_estat,t_d.dedic,t_no.tipo_norma||': '||t_no.nro_norma||'/'||extract(year from t_no.fecha) as norma_ultima,t_dep.descripcion as depto,t_a.descripcion as area,t_or.descripcion as orient,t_u.descripcion as ua,t_d.desde,t_d.hasta,t_e.descripcion as cat, t_c.descripcion as caracter,t_de.descripcion as ded,string_agg(norm.tipo_norma||':'||norm.nro_norma||'/'||extract(year from norm.fecha),', ') as norma_ant
                            from designacion t_d 
                            LEFT OUTER JOIN categ_estatuto t_e ON (t_e.codigo_est=t_d.cat_estat)
                            LEFT OUTER JOIN caracter t_c ON (t_c.id_car=t_d.carac)
@@ -53,7 +62,7 @@ class dt_docente extends toba_datos_tabla
                           where id_docente=".$id_doc
                                ." and t_d.desde<='".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)
                                  and not (t_d.hasta is not null and t_d.hasta<=t_d.desde)
-                          group by t_d.id_designacion,t_d.cat_estat,t_d.dedic,t_no.tipo_norma,t_no.nro_norma,t_no.fecha,t_dep.descripcion,t_a.descripcion,t_or.descripcion,t_u.descripcion,t_d.desde,t_d.hasta,t_e.descripcion, t_c.descripcion,t_de.descripcion
+                          group by t_d.uni_acad,t_d.id_designacion,t_d.cat_estat,t_d.dedic,t_no.tipo_norma,t_no.nro_norma,t_no.fecha,t_dep.descripcion,t_a.descripcion,t_or.descripcion,t_u.descripcion,t_d.desde,t_d.hasta,t_e.descripcion, t_c.descripcion,t_de.descripcion
                           order by t_d.desde
                          ) sub1 
                          
@@ -63,7 +72,7 @@ class dt_docente extends toba_datos_tabla
                                     where t_t.id_tipo=t_v.tipo_nov
                                     and t_v.desde <= '".$udia."' and (t_v.hasta >= '".$pdia."' or t_v.hasta is null)
                                     and t_v.tipo_nov in(2,4,5))nov ON (nov.id_designacion=sub.id_designacion )
-     group by sub.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub.desde,sub.hasta,cat,caracter,ded,norma_ant";
+     group by sub.uni_acad,sub.id_designacion,cat_estat,dedic,norma_ultima,depto,area,orient,ua,sub.desde,sub.hasta,cat,caracter,ded,norma_ant";
             return toba::db('designa')->consultar($sql);
         }
         function get_designaciones($id_doc){

@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---[4529]--  ci_departamentos 
+--[4529]--  ci_unidades_academicas 
 ------------------------------------------------------------
 
 ------------------------------------------------------------
@@ -16,11 +16,11 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba', --clase_proyecto
 	'toba_ci', --clase
 	'23', --punto_montaje
-	'ci_departamentos', --subclase
-	'servicios_web/ci_departamentos.php', --subclase_archivo
+	'ci_unidades_academicas', --subclase
+	'servicios_web/ci_unidades_academicas.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
-	'ci_departamentos', --nombre
+	'ci_unidades_academicas', --nombre
 	NULL, --titulo
 	'0', --colapsable
 	NULL, --descripcion

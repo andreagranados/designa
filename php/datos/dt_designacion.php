@@ -91,10 +91,10 @@ class dt_designacion extends toba_datos_tabla
    } 
     //-------------------------------------------------------------
     //solo trae las designaciones con licencia o cese de la unidad academica correspondiente
-   // que tenga  licencia dentro del periodo presupuestario correspondiente a la fecha desde de la designacion suplente
+    //que tenga  licencia dentro del periodo presupuestario correspondiente a la fecha desde de la designacion suplente
 //   function get_suplente($fec_desde = null,$fec_hasta = null){
 //       
-//       if(!is_null($fec_desde)){ 
+//       if(!is_null($fec_desde)){
 //            $fecha=strtotime($fec_desde);
 //            $anio=date('Y',$fecha);
 //            if($anio<2015){
@@ -139,7 +139,7 @@ class dt_designacion extends toba_datos_tabla
 
         return toba::db('designa')->consultar($sql);
     }
-   //retorna true si la designacion a la que suple tiene una licencia dentro del periodo de la designacion suplente 
+    //retorna true si la designacion a la que suple tiene una licencia dentro del periodo de la designacion suplente 
     //el periodo de la designacion suplente debe estar dentro del periodo de la licencia al que suple
     function control_suplente($desde,$hasta,$id_desig_suplente){
        //busco todas las licencias de la designacion que ingresa
@@ -621,11 +621,11 @@ class dt_designacion extends toba_datos_tabla
             $resul=toba::db('designa')->consultar($con);
             $pd = toba::manejador_sesiones()->get_perfil_datos();
             if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
-                  $where.=" and (m_o.uni_acad = ".quote(trim($resul[0]['sigla']));                  
+                  $where.=" and (uni_acad = ".quote(trim($resul[0]['sigla']));                  
                   $where1=" and t_d.uni_acad=".quote(trim($resul[0]['sigla']));
             }//sino es usuario de la central no filtro a menos que haya elegido
             if (isset($filtro['uni_acad']['valor'])) {//no es obligatorio este filtro
-                $where .= " and m_o.uni_acad = ".quote(trim($filtro['uni_acad']['valor']));      
+                $where .= " and uni_acad = ".quote(trim($filtro['uni_acad']['valor']));      
                 $where1=" and t_d.uni_acad=".quote(trim($filtro['uni_acad']['valor']));
             }            
             //

@@ -17,7 +17,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba_ci', --clase
 	'23', --punto_montaje
 	'ci_personas', --subclase
-	'personas/ci_personas.php', --subclase_archivo
+	'configuraciones/personas/ci_personas.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Personas - CI', --nombre

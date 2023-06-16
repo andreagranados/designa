@@ -43,14 +43,13 @@ class cargo_solapas extends toba_ci
             return($result);
         }
         
-       
         //este metodo permite mostrar en el popup el nombre de la materia seleccionada
         //recibe como argumento el id 
         function get_materia($id){
             $mat=$this->controlador()->get_materia($id);
             return $mat;
         }
-      
+
         //-----------------------------------------------------------------------------------
 	//---- form_cargo -------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------
@@ -83,13 +82,6 @@ class cargo_solapas extends toba_ci
 		}
                 
         } 
-        //evento implicito que no se muestra en un boton
-//        //sirve para ocultar el ef suplente
-//        function evt__form_cargo__modif($datos)
-//        {
-//            $this->s__datos = $datos;
-//        }
-         
        
         function get_descripcion_categoria($id){
             $cat=$this->controlador()->get_descripcion_categoria($id);
