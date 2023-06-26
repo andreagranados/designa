@@ -17,7 +17,7 @@ INSERT INTO apex_objeto (proyecto, objeto, anterior, identificador, reflexivo, c
 	'toba_ei_formulario', --clase
 	'23', --punto_montaje
 	'form_ocultar_mostrar', --subclase
-	'personas/form_ocultar_mostrar.php', --subclase_archivo
+	'configuraciones/personas/form_ocultar_mostrar.php', --subclase_archivo
 	NULL, --objeto_categoria_proyecto
 	NULL, --objeto_categoria
 	'Personas - Form', --nombre
