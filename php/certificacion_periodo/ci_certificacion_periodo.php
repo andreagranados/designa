@@ -146,7 +146,31 @@ class ci_certificacion_periodo extends toba_ci
                 $pdf->ezTable($datosi,array('col1'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
                 $pdf->ezText("\n", 7);
             }  
-            
+            //busco la actividad en extension
+            $ext=$this->dep('datos')->tabla('integrante_interno_pe')->get_proyext_docente($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
+            $i=0;
+            $datosi=array();
+            foreach ($ext as $in) {
+                $datosi[$i]=array('col1'=>'<b>Proyecto: </b>'.$in['denominacion']);
+                $i++;
+                $datosi[$i]=array('col1'=>'<b>'.utf8_decode('Código: ').'</b>'.$in['codigo']);
+                $i++;
+                $datosi[$i]=array('col1'=>'<b>'.utf8_decode('Resol: ').'</b>'.$in['rescd']);
+                $i++;
+                $datosi[$i]=array('col1'=>'<b>'.utf8_decode('Función: ').'</b>'.$in['funcion_p'].'<b>'.utf8_decode('Categoría: ').'</b> '.$in['categ']);
+                $i++;
+                $datosi[$i]=array('col1'=>'<b>Desde: </b>'.date_format(date_create($in['desde']),'d/m/Y').'<b> Hasta: </b>'.date_format(date_create($in['hasta']),'d/m/Y'));
+                $i++;
+                $datosi[$i]=array('col1'=>'<b>Hs Semanales: </b>'.$in['carga_horaria']);
+                $i++;
+              }
+            if(count($ext)>0){
+                $titulo=array();
+                $titulo[0]=array('dato'=>utf8_decode('<b>EXTENSION</b>'));
+                $pdf->ezTable($titulo,array('dato'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+                $pdf->ezTable($datosi,array('col1'=>''),'',array('showHeadings'=>0,'shaded'=>0,'width'=>500,'cols'=>array('dato'=>array('justification'=>'center'))));
+                $pdf->ezText("\n", 7);
+            }  
             //busco otras actividades
             $otras=$this->dep('datos')->tabla('asignacion_tutoria')->get_otras_activ_legajo($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);
             $dptos=$this->dep('datos')->tabla('director_dpto')->get_direcciones($this->s__agente['id_docente'],$this->s__datos_filtro['anio']);

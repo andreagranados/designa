@@ -89,6 +89,7 @@ class dt_designacion extends toba_datos_tabla
                . " order by agente";
        return toba::db('designa')->consultar($sql);
    } 
+   
     //-------------------------------------------------------------
     //solo trae las designaciones con licencia o cese de la unidad academica correspondiente
     //que tenga  licencia dentro del periodo presupuestario correspondiente a la fecha desde de la designacion suplente
@@ -2031,13 +2032,16 @@ class dt_designacion extends toba_datos_tabla
                  //que sea una designacion vigente, dentro del periodo actual y que no haya sido anulada
 		$where=" WHERE desde <= '".$udia."' and (hasta >= '".$pdia."' or hasta is null)"
                         . " AND not (hasta is not null and hasta<=desde)"
-                        . " AND carac='I'";
+                        . " AND (carac='I' or carac='S')";
                 
 		if (isset($filtro['uni_acad'])) {
 			$where.= " AND uni_acad = ".quote($filtro['uni_acad']);
 		}
                 if (isset($filtro['id_departamento'])) {
 			$where.= " AND id_departamento = ".quote($filtro['id_departamento']);
+		}
+                if (isset($filtro['car'])) {
+			$where.= " AND carac = ".quote($filtro['car']);
 		}
               //designaciones sin licencia UNION designaciones c licencia 
 		$sql = "select * from (

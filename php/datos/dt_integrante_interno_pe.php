@@ -3,6 +3,20 @@ require_once 'dt_mocovi_periodo_presupuestario.php';
 require_once 'consultas_mapuche.php';
 class dt_integrante_interno_pe extends toba_datos_tabla
 {
+  //usado por la certificacion
+    //trae todos los proyectos de extension en los que esta el docente dentro del año correspondiente
+    function get_proyext_docente($id_docente,$anio){
+        $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
+        $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
+        $sql="select i.funcion_p,i.desde,i.hasta,carga_horaria,d.cat_estat||d.dedic as categ,p.codigo,p.denominacion,i.rescd
+                from integrante_interno_pe i, designacion d, pextension p
+                where i.id_designacion=d.id_designacion
+                and d.id_docente=".$id_docente
+                ." and p.id_pext=i.id_pext"
+                ." and i.desde<='".$udia."' and (i.hasta>='".$pdia."' or i.hasta is null)
+            order by i.desde";
+        return toba::db('designa')->consultar($sql);
+    }
     //recibe el id_docente
     function sus_proyectos_ext($id_doc){
         

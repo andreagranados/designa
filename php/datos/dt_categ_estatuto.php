@@ -30,8 +30,7 @@ class dt_categ_estatuto extends toba_datos_tabla
                 $res= toba::db('designa')->consultar($sql);
                 return $res;
                 
-            }
-                
+            }     
         }
 
 }

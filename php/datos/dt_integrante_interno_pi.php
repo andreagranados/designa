@@ -415,7 +415,7 @@ class dt_integrante_interno_pi extends toba_datos_tabla
                 where id_docente=".$id_docente ." order by desde";  
        return toba::db('designa')->consultar($sql);
     }
-    //ussado por la certificacion
+    //usado por la certificacion
     //trae todos los proyectos de investigacion en los que esta el docente dentro del año correspondiente
     function get_proyinv_docente($id_docente,$anio){
         $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);

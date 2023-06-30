@@ -4,8 +4,38 @@ class ci_renovacion_interinos extends toba_ci
 	protected $s__datos_filtro;
         protected $s__listado;
         
-       
-
+       //trae todas las designaciones que tienen licencia en el periodo presupuestando
+        //y cuya categ sea menor o igual a la categ del suplente
+        function get_suplente_renovacion(){
+            
+            if ($this->dep('datos')->tabla('designacion')->esta_cargada()) {
+                $datos=$this->dep('datos')->tabla('designacion')->get();
+                if($datos['carac']=='S'){
+                   //recupero el costo de la categ del suplente en el periodo presupuestando
+                    $sql="select * from mocovi_costo_categoria c, mocovi_periodo_presupuestario p
+                                        where c.id_periodo=p.id_periodo 
+                                         and p.anio=".$this->s__datos_filtro['anio_presup']
+                                         ." and c.codigo_siu='".$datos['cat_mapuche']."'";
+                    $res= toba::db('designa')->consultar($sql);
+                    $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($this->s__datos_filtro['anio_presup']);//primer dia del anio actual
+                    $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($this->s__datos_filtro['anio_presup']);//ultimo dia del anio presupuestando
+                    $sql="select * from (select a.id_designacion,a.descripcion, a.costo_basico from "
+                            . "(select distinct t_d.id_designacion,t_d.uni_acad,t_do.apellido||', '||t_do.nombre||'('||t_d.cat_estat||t_d.dedic||'-'||t_d.carac||'-'||t_d.id_designacion||')' as descripcion,sub.costo_basico"
+                            . " from designacion t_d "
+                            . " INNER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente) "
+                            . " INNER JOIN novedad t_n ON (t_d.id_designacion=t_n.id_designacion and t_n.tipo_nov in (2,3,5) and t_n.desde<='".$hasta."' and t_n.hasta>='".$desde."') "//licencia sin goce ,con goce o cese
+                            . " INNER JOIN (select * from mocovi_costo_categoria c, mocovi_periodo_presupuestario p
+                                            where c.id_periodo=p.id_periodo and
+                                            p.anio=".$this->s__datos_filtro['anio_presup'].")sub ON (sub.codigo_siu=t_d.cat_mapuche )"
+                            . " where t_d.tipo_desig=1)a, unidad_acad b "
+                            . " where a.uni_acad=b.sigla "
+                            . " order by descripcion )sub2"
+                            . " where costo_basico<=".$res[0]['costo_basico']; 
+                    //var_dump($sql);exit;
+                    return toba::db('designa')->consultar($sql); 
+                }
+            }
+           }
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtro(toba_ei_formulario $filtro)
@@ -179,6 +209,15 @@ class ci_renovacion_interinos extends toba_ci
                             $dat_vin['vinc']=$desig_origen['id_designacion'];
                             $this->dep('datos')->tabla('vinculo')->set($dat_vin);
                             $this->dep('datos')->tabla('vinculo')->sincronizar();
+                           
+                            //guarda el suplente en caso de que sea suplente
+                            if($datos['carac']=='S' && isset($datos['suplente'])){
+                                //la categoria del suplente debe ser menor o igual a la categoria del que suple
+                                $datos_sup['id_desig_suplente']=$des_nueva['id_designacion'];//la designacion suplente que se acaba de agregar
+                                $datos_sup['id_desig']=$datos['suplente'];//la designacion del docente al que van a suplir
+                                $this->dep('datos')->tabla('suplente')->set($datos_sup);
+                                $this->dep('datos')->tabla('suplente')->sincronizar();  
+                             }
                             if($datos['pasaje_mat']==1){//tildado pasaje de materias
                                 $res=$this->dep('datos')->tabla('asignacion_materia')->get_materias($this->s__datos_filtro['anio_acad'],$desig_origen['id_designacion']);
                                 foreach ($res as $key => $value) {
