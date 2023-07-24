@@ -65,7 +65,12 @@ class ci_datos_principales extends toba_ci
                     $componente->ef('fec_hasta')->set_solo_lectura(true)  ;
                     $pi['programa']=$pertenece;
                 }else{$pi['programa']=0;}
+                ///$pi['id_ods']);// string(7) "{14,17}" 
+                $cadena=substr($pi['id_ods'],1,strlen($pi['id_ods'])-2); //le saco los {}
+                $multi_ods=explode(",", $cadena);//convierte string en arreglo
               
+                $pi['id_ods']=$multi_ods;
+               ///
                //$form->set_datos($pi);
                  $componente->set_datos($pi);
 		}
@@ -123,69 +128,91 @@ class ci_datos_principales extends toba_ci
             if($pi['estado']<>'I'){
                   toba::notificacion()->agregar('Los datos principales del proyecto ya no pueden ser modificados porque el proyecto no esta en estado I(Inicial)', 'error');  
             }else{//solo modifica datos principales si el proyecto esta en I
-                    switch ($datos['es_programa']) {
-                        case 'SI':$datos['es_programa']=1;
-                             $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
-                        case 'NO':$datos['es_programa']=0;break;
-                     }
-                    switch ($datos['tipo']) {
-                        case 0:$datos['tipo']='PROIN';break;
-                        case 1:$datos['tipo']='PIN1 ';break;
-                        case 2:$datos['tipo']='PIN2 ';break;
-                        case 3:$datos['tipo']='RECO ';break;
-                    }  
+                    $cant=count($datos['id_ods']);
+                    if(!($cant>=1 and $cant<=3)){//como minimo 1 y como maximo 3
+                        if($cant>3){
+                            toba::notificacion()->agregar('No puede seleccionar mas de 3 ODS', 'info');  
+                        }else{
+                            toba::notificacion()->agregar('Debe seleccionar al menos 1 ODS', 'info');  
+                        }
+                        toba::notificacion()->agregar('Debe seleccionar al menos un ODS y no mas de 3', 'info');  
+                    }else{  
+                         //ods 
+                            $ods = $datos['id_ods'];
+                            $array_ods = '{' . $ods[0];
+                            unset($ods[0]);
+                            foreach ($ods as $o) {
+                                $array_ods = $array_ods . ',' . $o;
+                            }
+                            $array_ods = $array_ods . '}';
+                            if (isset($datos['id_ods'])) {
+                                $datos['id_ods'] = $array_ods;
+                            } else {
+                                $datos['id_ods'] = null;
+                            }    
+                            //fin ods
+                            switch ($datos['es_programa']) {
+                                case 'SI':$datos['es_programa']=1;
+                                     $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);break;
+                                case 'NO':$datos['es_programa']=0;break;
+                             }
+                            switch ($datos['tipo']) {
+                                case 0:$datos['tipo']='PROIN';break;
+                                case 1:$datos['tipo']='PIN1 ';break;
+                                case 2:$datos['tipo']='PIN2 ';break;
+                                case 3:$datos['tipo']='RECO ';break;
+                            }  
+                          if($datos['programa']!=0){
+                                $band=$this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->esta($datos['programa'],$pi['id_pinv']);
+                                if(!$band){
+                                    $datos2['id_programa']=$datos['programa'];
+                                    $datos2['id_proyecto']=$pi['id_pinv'];
+                                    $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
+                                    $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
+                                    $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->resetear();
+                                }
 
-               //print_r($datos);exit();
-                  if($datos['programa']!=0){
-                        $band=$this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->esta($datos['programa'],$pi['id_pinv']);
-                        if(!$band){
-                            $datos2['id_programa']=$datos['programa'];
-                            $datos2['id_proyecto']=$pi['id_pinv'];
-                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
-                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
-                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->resetear();
-                        }
+                            }else{//no pertenece a ningun programa
+                                $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
+                            }
 
-                    }else{//no pertenece a ningun programa
-                        $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->eliminar_subproyecto($pi['id_pinv']);
-                    }
-
-                    if($datos['fec_desde']<>$pi['fec_desde']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                          $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                          $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
-                          $mensaje.=" Se ha modificado la Fecha de Inicio de los integrantes";
-                     }
-                    if($datos['fec_hasta']<>$pi['fec_hasta']){//si modifica la fecha desde entonces modifica lo de los integrantes.
-                          $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
-                          $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
-                          $mensaje.=" Se ha modificado la Fecha de Finalización de los integrantes";
-                     }
-                    //ver
-                    if($pi['es_programa']==1){
-                        $band=false;
-                        //solo si cambia la fecha desde/ hasta del programa entonces tanbien cambia el de los subproyectos
-                        if($datos['fec_hasta']<>$pi['fec_hasta']){
-                            $datos2['fec_hasta']=$datos['fec_hasta'];  
-                            $band=true;
-                        }
-                        if($datos['fec_desde']<>$pi['fec_desde']){
-                            $datos2['fec_desde']=$datos['fec_desde'];    
-                            $band=true;
-                        }
-                        //cambia la fecha desde y hasta de los subproyectos del programa y de los integrantes de los subproyectos
-                        if($band){
-                            $datos2['estado']=$pi['estado'];//va siempre
-                            $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
-                        }
-                    }
-                                    //--------
-                    //elimino lo que viene en codigo dado que no corresponde al perfil del director
-                    unset($datos['codigo']);
-                    $datos['denominacion']=mb_strtoupper($datos['denominacion'],'LATIN1');//convierte a mayusculas//strtoupper($datos['denominacion']);
-                    $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
-                    $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-                    if($mensaje!=''){
-                        toba::notificacion()->agregar($mensaje, 'info');  
+                            if($datos['fec_desde']<>$pi['fec_desde']){//si modifica la fecha desde entonces modifica lo de los integrantes.
+                                  $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
+                                  $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechadesde($pi['id_pinv'],$datos['fec_desde']);
+                                  $mensaje.=" Se ha modificado la Fecha de Inicio de los integrantes";
+                             }
+                            if($datos['fec_hasta']<>$pi['fec_hasta']){//si modifica la fecha desde entonces modifica lo de los integrantes.
+                                  $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_interno_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
+                                  $this->controlador()->dep('ci_integrantes_pi')->dep('datos')->tabla('integrante_externo_pi')->modificar_fechahasta($pi['id_pinv'],$datos['fec_hasta']);
+                                  $mensaje.=" Se ha modificado la Fecha de Finalización de los integrantes";
+                             }
+                            //ver
+                            if($pi['es_programa']==1){
+                                $band=false;
+                                //solo si cambia la fecha desde/ hasta del programa entonces tanbien cambia el de los subproyectos
+                                if($datos['fec_hasta']<>$pi['fec_hasta']){
+                                    $datos2['fec_hasta']=$datos['fec_hasta'];  
+                                    $band=true;
+                                }
+                                if($datos['fec_desde']<>$pi['fec_desde']){
+                                    $datos2['fec_desde']=$datos['fec_desde'];    
+                                    $band=true;
+                                }
+                                //cambia la fecha desde y hasta de los subproyectos del programa y de los integrantes de los subproyectos
+                                if($band){
+                                    $datos2['estado']=$pi['estado'];//va siempre
+                                    $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->cambia_datos($pi['id_pinv'],$datos2); 
+                                }
+                            }
+                                            //--------
+                            //elimino lo que viene en codigo dado que no corresponde al perfil del director
+                            unset($datos['codigo']);
+                            $datos['denominacion']=mb_strtoupper($datos['denominacion'],'LATIN1');//convierte a mayusculas//strtoupper($datos['denominacion']);
+                            $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datos);
+                            $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+                            if($mensaje!=''){
+                                toba::notificacion()->agregar($mensaje, 'info');  
+                            } 
                     }
                  }        
 	}
@@ -249,6 +276,21 @@ class ci_datos_principales extends toba_ci
                 case 2:$datosp['tipo']='PIN2';break;
                 case 3:$datosp['tipo']='RECO';break;
             }
+            /////////////
+            $ods = $datos['id_ods'];
+            var_dump($ods);exit;
+            $array_ods = '{' . $ods[0];
+            unset($id_ods[0]);
+            foreach ($ods as $uni) {
+                $array_ods = $array_ods . ',' . $uni;
+            }
+            $array_ods = $array_ods . '}';
+            if ($datos['id_ods'] == 0) {
+                $datos['id_ods'] = null;
+            } else {
+                $datos['id_ods'] = $array_ods;
+            }    
+            /////////////////
             $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datosp);
             $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
             $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();

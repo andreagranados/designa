@@ -1162,7 +1162,14 @@ class cargo_solapas extends toba_ci
          }else{
               toba::notificacion()->agregar(utf8_decode('No puede modificar una designación que está afectando el crédito de una reserva'),'info');
          }
-         }else{
+         }else{//si no corresponde a un periodo actual o pres entonces solo puede modif norma
+             unset($datos['tipo_nov']);
+             unset($datos['sub_tipo']);
+             unset($datos['desde']);
+             unset($datos['hasta']);
+             unset($datos['porcen']);
+             $this->controlador()->dep('datos')->tabla('novedad')->set($datos);
+             $this->controlador()->dep('datos')->tabla('novedad')->sincronizar();
              toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período al que corresponde la designación.'),'info');
          }
 	}
@@ -1359,7 +1366,16 @@ class cargo_solapas extends toba_ci
             }else{
               toba::notificacion()->agregar(utf8_decode('No puede modificar una designación que está afectando el crédito de una reserva'),'error');     
             }        
-          }else{
+          }else{//si no corresponde a un periodo actual o pres entonces solo puede modif norma
+              $regenorma = '/^[0-9]{4}\/[0-9]{4}$/';
+              if ( !preg_match($regenorma, $datos['norma_legal'], $matchFecha) ) {
+                toba::notificacion()->agregar('Norma Invalida.','error');
+              }else{
+                  unset($datos['tipo_nov']);
+                  unset($datos['desde']);
+                  $this->controlador()->dep('datos')->tabla('novedad_baja')->set($datos);
+                  $this->controlador()->dep('datos')->tabla('novedad_baja')->sincronizar();
+              }
               toba::notificacion()->agregar(utf8_decode('Verique que la designación corresponda al período actual o presupuestando, y que Presupuesto no este controlando el período la que corresponde al designación.'),'info'); 
           }    
         }
