@@ -1337,6 +1337,8 @@ class dt_designacion extends toba_datos_tabla
                     switch ($filtro['anulada']) {
                         case 'no':$where.= " AND not (hasta is not null and hasta<desde) ";break;
                         case 'si':$where.= " AND (hasta is not null and hasta<desde) ";break; 
+                        default:
+                            break;
                     }
 		}
                 
@@ -1423,8 +1425,7 @@ class dt_designacion extends toba_datos_tabla
                     
                 }
                return $datos;
-                
-                
+                 
 	}
          function get_listado_norma($filtro=array())
 	{
