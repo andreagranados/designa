@@ -1453,7 +1453,7 @@ INSERT INTO apex_objeto_ei_formulario_ef (objeto_ei_formulario_fila, objeto_ei_f
 	'15', --orden
 	'ODS', --etiqueta
 	NULL, --etiqueta_estilo
-	'Objetivo de Desarrollo Sostenible', --descripcion
+	'Seleccione entre 1 y 3 opciones. Para más información, consulte <a href=''https://www.argentina.gob.ar/sites/default/files/cncps_-_agenda_2030_objetivos_de_desarrollo_sostenible_junio_2021_v7_2.pdf'' target=''_blank''>Link</a>', --descripcion
 	'0', --colapsado
 	'0', --desactivado
 	NULL, --estilo
