@@ -131,11 +131,11 @@ class ci_datos_principales extends toba_ci
                     $cant=count($datos['id_ods']);
                     if(!($cant>=1 and $cant<=3)){//como minimo 1 y como maximo 3
                         if($cant>3){
-                            toba::notificacion()->agregar('No puede seleccionar mas de 3 ODS', 'info');  
+                            toba::notificacion()->agregar(utf8_decode('No puede seleccionar más de 3 ODS'), 'error');  
                         }else{
-                            toba::notificacion()->agregar('Debe seleccionar al menos 1 ODS', 'info');  
+                            toba::notificacion()->agregar('Debe seleccionar al menos 1 ODS', 'error');  
                         }
-                        toba::notificacion()->agregar('Debe seleccionar al menos un ODS y no mas de 3', 'info');  
+                        toba::notificacion()->agregar(utf8_decode('Debe seleccionar al menos un ODS y no más de 3'), 'info');  
                     }else{  
                          //ods 
                             $ods = $datos['id_ods'];
@@ -276,35 +276,49 @@ class ci_datos_principales extends toba_ci
                 case 2:$datosp['tipo']='PIN2';break;
                 case 3:$datosp['tipo']='RECO';break;
             }
-            /////////////
-            $ods = $datos['id_ods'];
-            var_dump($ods);exit;
-            $array_ods = '{' . $ods[0];
-            unset($id_ods[0]);
-            foreach ($ods as $uni) {
-                $array_ods = $array_ods . ',' . $uni;
-            }
-            $array_ods = $array_ods . '}';
-            if ($datos['id_ods'] == 0) {
-                $datos['id_ods'] = null;
-            } else {
-                $datos['id_ods'] = $array_ods;
-            }    
-            /////////////////
-            $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datosp);
-            $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
-            $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            $proy['id_pinv']=$pi['id_pinv'];
-            $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($proy);
+            /////////////ods
+            $cant=count($datos['id_ods']);
+            //var_dump($cant);exit;// array(1) { [0]=> string(1) "1" } 
+            if(!($cant>=1 and $cant<=3)){//como minimo 1 y como maximo 3
+                if($cant>3){
+                    throw new toba_error(utf8_decode('No puede seleccionar más de 3 ODS'));
+                    //toba::notificacion()->agregar('No puede seleccionar mas de 3 ODS', 'error');  
+                }else{
+                    throw new toba_error('Debe seleccionar al menos 1 ODS');
+                    //toba::notificacion()->agregar('Debe seleccionar al menos 1 ODS', 'error');  
+                }
+                throw new toba_error(utf8_decode('Debe seleccionar al menos un ODS y no más de 3'));
+                //toba::notificacion()->agregar('Debe seleccionar al menos un ODS y no mas de 3', 'error');  
+            }else{ 
+                $ods = $datos['id_ods'];
+                $array_ods = '{' . $ods[0];
+                unset($id_ods[0]);
+                foreach ($ods as $uni) {
+                    $array_ods = $array_ods . ',' . $uni;
+                }
+                $array_ods = $array_ods . '}';
+                if ($datos['id_ods'] == 0) {
+                    $datosp['id_ods'] = null;
+                } else {
+                    $datosp['id_ods'] = $array_ods;
+                }    
+                /////////////////
+                $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->set($datosp);
+                $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->sincronizar();
+                $pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                $proy['id_pinv']=$pi['id_pinv'];
+                $this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->cargar($proy);
 
-            //$pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
-            if($datos['programa']!=0){//si el proyecto pertenece a un programa entonces lo asocio
-                $datos2['id_programa']=$datos['programa'];
-                $datos2['id_proyecto']=$pi['id_pinv'];
-                $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
-                $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
-                $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->resetear();
-              }
+                //$pi=$this->controlador()->controlador()->dep('datos')->tabla('pinvestigacion')->get();
+                if($datos['programa']!=0){//si el proyecto pertenece a un programa entonces lo asocio
+                    $datos2['id_programa']=$datos['programa'];
+                    $datos2['id_proyecto']=$pi['id_pinv'];
+                    $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->set($datos2);
+                    $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->sincronizar();
+                    $this->controlador()->controlador()->dep('datos')->tabla('subproyecto')->resetear();
+                  }
+                }
+            
          }else{
              toba::notificacion()->agregar(utf8_decode('Fuera del período de la convocatoria'), 'error');   
              //aqui que vuelva a la pantalla de seleccion
