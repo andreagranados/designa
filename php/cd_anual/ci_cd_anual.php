@@ -48,6 +48,11 @@ class ci_cd_anual extends toba_ci
                 $texto= '<b>'.utf8_decode("CÓDIGO DE IDENTIFICACIÓN: ").'</b>'.trim($pi['codigo']);
                 $pdf->ezText($texto,12);
                 $pdf->ezText("\n", 7);
+                
+                $texto= '<b>'.utf8_decode("PERÍODO: ").'</b>'.date("d/m/Y",strtotime($pi['fec_desde'])).' - '.date("d/m/Y",strtotime($pi['fec_hasta']));
+                $pdf->ezText($texto,12);
+                $pdf->ezText("\n", 7);
+                
                 $texto='<b>'.$pi['denominacion'].'</b>';
                 $pdf->ezText($texto,12);
                 $pdf->ezText("\n", 7);

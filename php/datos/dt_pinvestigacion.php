@@ -1087,7 +1087,7 @@ class dt_pinvestigacion extends toba_datos_tabla
              return toba::db('designa')->consultar($sql);
         }
         function get_proyectos($estad){
-            $sql="select p.id_pinv,p.tipo,p.codigo,replace(p.denominacion,chr(10),'') as denominacion,p.resumen,lower(trim(replace(replace(p.palabras_clave,'* *','*'),chr(10),''))) as palabras_clave,u.descripcion as ue,d.descripcion as disc,case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(initcap(t_do2.nombre)) else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(initcap(t_d3.nombre))  else '' end end as dir"
+            $sql="select p.id_pinv,p.fec_desde,p.fec_hasta,p.tipo,p.codigo,replace(p.denominacion,chr(10),'') as denominacion,p.resumen,lower(trim(replace(replace(p.palabras_clave,'* *','*'),chr(10),''))) as palabras_clave,u.descripcion as ue,d.descripcion as disc,case when t_do2.apellido is not null then trim(t_do2.apellido)||', '||trim(initcap(t_do2.nombre)) else case when t_d3.apellido is not null then trim(t_d3.apellido)||', '||trim(initcap(t_d3.nombre))  else '' end end as dir"
                     . ", case when t_dc2.apellido is not null then trim(t_dc2.apellido)||', '||trim(initcap(t_dc2.nombre)) else case when t_c3.apellido is not null then trim(t_c3.apellido)||', '||trim(initcap(t_c3.nombre))  else '' end end as cod"
                     . ",case when t_do2.apellido is not null then t_do2.tipo_sexo else case when t_d3.apellido is not null then t_d3.tipo_sexo  else '' end end as sexod "
                     . ",case when t_dc2.apellido is not null then t_dc2.tipo_sexo else case when t_c3.apellido is not null then t_c3.tipo_sexo  else '' end end as sexoc "
