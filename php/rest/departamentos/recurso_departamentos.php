@@ -221,17 +221,17 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
 	/**
 	 * @return rest_filtro_sql
 	 */
-//	protected function get_filtro_get_list()
-//	{
-//		$filtro = new rest_filtro_sql();
-//		$filtro->agregar_campo("nombre", "pers.nombre");
-//		$filtro->agregar_campo("fecha_nacimiento", "pers.fecha_nac");
-//		$filtro->agregar_campo("id", "pers.id");
-//
-//		$filtro->agregar_campo_ordenable("nombre", "pers.nombre");
-//		$filtro->agregar_campo_ordenable("fecha_nacimiento", "pers.fecha_nac");
-//		return $filtro;
-//	}
+	protected function get_filtro_get_list()
+	{
+		$filtro = new rest_filtro_sql();
+		$filtro->agregar_campo("nombre", "pers.nombre");
+		$filtro->agregar_campo("fecha_nacimiento", "pers.fecha_nac");
+		$filtro->agregar_campo("id", "pers.id");
+
+		$filtro->agregar_campo_ordenable("nombre", "pers.nombre");
+		$filtro->agregar_campo_ordenable("fecha_nacimiento", "pers.fecha_nac");
+		return $filtro;
+	}
 
 
 	/**

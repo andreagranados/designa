@@ -332,10 +332,16 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                    case 'es_distinto_de':$where.=" and  desc_funcion <>'%".strtoupper($filtro['desc_funcion']['valor']);break;
                }
           }
+          if (isset($filtro['tdi']['valor'])) {
+               switch ($filtro['tdi']['condicion']) {
+                   case 'es_distinto_de':$where.=" and tdi<>".$filtro['tdi']['valor'];break;
+                   case 'es_igual_a':$where.=" and tdi = ".$filtro['tdi']['valor'];break;
+               }
+          }
           
         $sql=$this->get_plantilla(0);
         
-        $sql="select * from (select distinct sub.id_pinv,sub.codigo,t_p.fec_desde,t_p.fec_hasta,t_p.tipo,t_p.estado,nombre,fec_nacim,tipo_docum,nro_docum,tipo_sexo,categoria,ua,carga_horaria,funcion_p,t_f.cat_mincyt, cat_invest, cuil,titulo, titulop,cat_invest_conicet,sub.orden,desde,tit_preg,tit_grad ,edad(fec_nacim) as edad,t_p.id_disciplina, t_d.descripcion as discip,t_o.id_obj,t_o.descripcion as obj_se,cod_regional, discpersonal, grupo "
+        $sql="select * from (select distinct sub.id_pinv,sub.codigo,t_p.fec_desde,t_p.fec_hasta,t_p.tipo,t_p.estado,nombre,fec_nacim,tipo_docum,nro_docum,tipo_sexo,categoria,ua,carga_horaria,funcion_p,t_f.cat_mincyt, cat_invest, cuil,titulo, titulop,cat_invest_conicet,sub.orden,desde,tit_preg,tit_grad ,edad(fec_nacim) as edad,t_p.id_disciplina, t_d.descripcion as discip,t_o.id_obj,t_o.descripcion as obj_se,t_p.tdi,t_i.descripcion as tdi_desc,cod_regional, discpersonal, grupo "
                 . ", case when t_p.es_programa=1 then 'PROGRAMA' else case when b.id_proyecto is not null then 'PROYECTO DE PROGRAMA' else 'PROYECTO' end end as desc_tipo ,upper(t_f.descripcion) as desc_funcion "
                           . " from (".$sql.") sub 
                             INNER JOIN pinvestigacion t_p ON (t_p.id_pinv=sub.id_pinv)
@@ -343,6 +349,7 @@ class dt_integrante_externo_pi extends toba_datos_tabla
                             LEFT OUTER JOIN unidad_acad t_u ON (t_u.sigla=t_p.uni_acad)
                             LEFT OUTER JOIN disciplina t_d ON (t_d.id_disc=t_p.id_disciplina)
                             LEFT OUTER JOIN objetivo_se t_o ON (t_o.id_obj=t_p.id_obj)
+                            LEFT OUTER JOIN tipo_de_inv t_i ON (t_i.id=t_p.tdi)
                             LEFT OUTER JOIN funcion_investigador t_f ON (sub.funcion_p=t_f.id_funcion) 
                             )sub2". $where
                 //excluyo a los BC o IC que no tienen cargo docente

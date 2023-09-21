@@ -566,6 +566,7 @@ class dt_pinvestigacion extends toba_datos_tabla
                 if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
                     switch (trim($resul[0]['sigla'])) {
                         case 'FAIN': $where.=" and (t_p.uni_acad = ".quote($resul[0]['sigla'])." or t_p.uni_acad ='AUZA'".")";break;
+                        case 'FACA': $where.=" and (t_p.uni_acad = ".quote($resul[0]['sigla'])." or t_p.uni_acad ='ASMA'".")";break;
                         case 'ASMA': $where.= " and t_p.codigo like '04/S%'";break;//san martin solo ve los S
                         default:$where .= " and t_p.uni_acad = ".quote($resul[0]['sigla']);      //resul tiene dato
                     }
