@@ -567,14 +567,14 @@ class dt_pinvestigacion extends toba_datos_tabla
                     switch (trim($resul[0]['sigla'])) {
                         case 'FAIN': $where.=" and (t_p.uni_acad = ".quote($resul[0]['sigla'])." or t_p.uni_acad ='AUZA'".")";break;
                         case 'FACA': $where.=" and (t_p.uni_acad = ".quote($resul[0]['sigla'])." or t_p.uni_acad ='ASMA'".")";break;
-                        case 'ASMA': $where.= " and t_p.codigo like '04/S%'";break;//san martin solo ve los S
+                        case 'ASMA': $where.= " and (t_p.codigo like '04/S%' or (t_p.uni_acad = ".quote($resul[0]['sigla'])."))";break;
                         default:$where .= " and t_p.uni_acad = ".quote($resul[0]['sigla']);      //resul tiene dato
                     }
                 }//sino es usuario de la central no filtro a menos que haya elegido
                 
 		if (isset($filtro['uni_acad']['valor'])) {//no es obligatorio este filtro
                     if(trim($filtro['uni_acad']['valor'])=='ASMA'){
-                        $where.=" and t_p.uni_acad ='FACA'"." and t_p.codigo like '04/S%'";
+                        $where.=" and ((t_p.uni_acad ='FACA'"." and t_p.codigo like '04/S%') or t_p.uni_acad ='ASMA' ) ";
                     }else{
                         $where .= " and t_p.uni_acad = ".quote($filtro['uni_acad']['valor']);      
                     }

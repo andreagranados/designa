@@ -1,5 +1,5 @@
 <?php
-require_once("modelo/modelo_departamento.php");
+require_once("modelo/modelo_designacion.php");
 
 use SIUToba\rest\lib\rest_hidratador;
 use SIUToba\rest\lib\rest_validador;
@@ -10,7 +10,7 @@ use SIUToba\rest\lib\rest_filtro_sql;
 /**
  * @description Operaciones sobre Departamentos
  */
-class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interface es documentativa, puede no estar
+class recurso_designaciones implements SIUToba\rest\lib\modelable //esta interface es documentativa, puede no estar
 {
 
 	static function _get_modelos(){
@@ -18,28 +18,33 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
 		 * Hay diferencias entre una persona para mostrar o para crear. Por ej, el id.
 		 * Ver el codigo fuente de rest_validador para ver las distintas reglas y opciones que llevan
 		 */
-		$departamento_editar = array(
-					'iddepto' => array(	'type'     => 'integer', 
+		$designacion_editar = array(
+					'id_designacion' => array(	'type'     => 'integer', 
 										'_validar' => array(rest_validador::OBLIGATORIO,
 															rest_validador::TIPO_INT )),
-					'idunidad_academica' => array('type'   => 'string', 
-												'_validar' => array(rest_validador::TIPO_LONGITUD => array('min' => 1, 'max' => 30))),
-					'descripcion' => array(	'type' => 'string'),
-                                        'ordenanza' => array(	'type' => 'string')
+                                        'id_docente' => array(	'type'     => 'integer'),
+                                        'desde' => array(	'type'     => 'date'),
+                                        'hasta' => array(	'type'     => 'date'),
+                                        'cat_mapuche' => array(	'type'     => 'string'),
+                                        'cat_estat' => array(	'type'     => 'string'),
+                                        'dedic' => array(	'type'     => 'integer'),
+					'uni_acad' => array('type'   => 'string')
+					
+                                        
 				);
 
-		$departamento = array_merge(
-							array('iddepto' => array('type' => 'integer',
+		$designacion = array_merge(
+							array('id_designacion' => array('type' => 'integer',
 												'_validar' => array(rest_validador::TIPO_INT))),
-							$departamento_editar);
+							$designacion_editar);
 		return $models = array(
-			'Departamento' => $departamento,
-			'DepartamentoEditar' => $departamento_editar
+			'Designacion' => $designacion,
+			'DesignacionEditar' => $designacion_editar
 
 		);
 	}
 
-	protected function get_spec_departamento($con_imagen = true, $tipo= 'Departamento'){
+	protected function get_spec_designacion($con_imagen = true, $tipo= 'Designacion'){
 		/** Notar que hay que modificar la spec si se va a incluir la foto o no, ya que de otro modo
 		 * lanzar�a un error cuando falta el campo. */
 		$m = $this->_get_modelos();
@@ -56,28 +61,28 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
      * @responses 200 {"$ref": "Persona"} Persona
      * @responses 400 No existe la persona
      */
-    function get($iddepto)
+    function get($id_designacion)
     {
 		//toba::logger()->debug("Usuario: " . rest::app()->usuario->get_usuario());
 	    /**Obtengo los datos del modelo*/
         $incluir_imagen = (bool) rest::request()->get('con_imagen', 0);
-	$modelo = new modelo_departamento($iddepto);
+	$modelo = new modelo_designacion($id_designacion);
         $fila = $modelo->get_datos($incluir_imagen);
 
         if ($fila) {
                 /**Transformci�n al formato de la vista de la API -
                  * Si faltan campos se generar�n 'undefined_index'. Si sobran, no se incluyen.
                  * La fila contiene exactamente los campos de la especificaci�n */
-                $fila = rest_hidratador::hidratar_fila($this->get_spec_departamento($incluir_imagen), $fila);
+                $fila = rest_hidratador::hidratar_fila($this->get_spec_designacion($incluir_imagen), $fila);
         }
 
 	    /**Se escribe la respuesta*/
         rest::response()->get($fila);
     }
- // rest/departamentos/40/descripcion
-    function get_descripcion_list ($iddepto){
+ 
+    function get_descripcion_list ($id_designacion){
         $incluir_imagen = (bool) rest::request()->get('con_imagen', 0);
-        $modelo = new modelo_departamento($iddepto);
+        $modelo = new modelo_designacion($id_designacion);
       
         $fila = $modelo->get_datos_descripcion($incluir_imagen);
 
@@ -85,7 +90,7 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
 			/**Transformci�n al formato de la vista de la API -
 			 * Si faltan campos se generar�n 'undefined_index'. Si sobran, no se incluyen.
 			 * La fila contiene exactamente los campos de la especificaci�n */
-			$fila = rest_hidratador::hidratar_fila($this->get_spec_departamento($incluir_imagen), $fila);
+			$fila = rest_hidratador::hidratar_fila($this->get_spec_designacion($incluir_imagen), $fila);
 		}
 
 	    /**Se escribe la respuesta*/
@@ -110,43 +115,22 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
 		$filtro = $this->get_filtro_get_list();
 		$where = $filtro->get_sql_where();
 		$limit = $filtro->get_sql_limit();
+                
 		$order_by = $filtro->get_sql_order_by();
 		/** Se recuperan datos desde el modelo */
-		$departamentos = modelo_departamento::get_departamentos($where, $order_by, $limit);
+		$designaciones = modelo_designacion::get_designaciones($where, $order_by, $limit);
                 
 
 		/**Transformci�n al formato de la vista de la API
 		 * Como buen ciudadano, se agrega un header para facilitar el paginado al cliente*/
-		$departamentos = rest_hidratador::hidratar($this->get_spec_departamento(false), $departamentos);
-		$cantidad = modelo_departamento::get_cant_departamentos($where);
+		$designaciones = rest_hidratador::hidratar($this->get_spec_designacion(false), $designaciones);
+		$cantidad = modelo_designacion::get_cant_designaciones($where);
 		rest::response()->add_headers(array('Cantidad-Registros' => $cantidad));
-
 		/**Se escribe la respuesta */
-		rest::response()->get_list($departamentos);
-
+		rest::response()->get_list($designaciones);
 	}
 
-	/**
-	 * Esto es un alias. Si bien se aleja del REST puro, se puede utilizar para destacar
-	 * una operaci�n o proveer un acceso simplificado a operaciones frecuentes.
-	 * Se consume en GET /personas/confoto.
-	 * @summary Retorna aquellas personas que tienen la foto cargada
-	 * @responses 200 array {"$ref": "Persona"} Persona
-	 */
-	function get_list__confoto()
-	{
-		$filtro = $this->get_filtro_get_list();
-		$limit = $filtro->get_sql_limit();
-		$order_by = $filtro->get_sql_order_by();
-		$where = $filtro->get_sql_where() . " AND imagen <> ''";
-		$departamentos = modelo_departamento::get_departamentos($where, $order_by, $limit);
-		$cantidad = modelo_departamento::get_cant_departamentos($where);
 
-		$departamentos = rest_hidratador::hidratar($this->get_spec_departamento(true), $departamentos);
-
-		rest::response()->get($departamentos);
-		rest::response()->add_headers(array('Cantidad-Registros' => $cantidad));
-	}
 
 	/**
 	 * Se consume en POST /personas
@@ -165,7 +149,7 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
 		//$errores = modelo_persona::validar($datos_modelo);
 
 		/**Aplicaci�n de cambios al modelo*/
-		$nuevo = modelo_departamento::insert($datos_modelo);
+		$nuevo = modelo_designacion::insert($datos_modelo);
 
 		/** Se retorna el id recientemente creado, de acuerdo a las convenciones de la API*/
 		$fila = array('id' => $nuevo);
@@ -186,7 +170,7 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
 		/** Valido y traduzco los datos al formato de mi modelo*/
 		$datos_modelo = $this->procesar_input_edicion(true);
 
-		$modelo = new modelo_departamento($iddepto);
+		$modelo = new modelo_designacion($iddepto);
 		//$errores = $modelo->validar($datos);
 
 		if (isset($datos_modelo['imagen'])) { //por separado ya que es un caso especial
@@ -210,7 +194,7 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
      */
     function delete($iddepto)
     {
-		$modelo = new modelo_departamento($iddepto);
+		$modelo = new modelo_designacion($iddepto);
 		$ok = $modelo->delete();
         if(!$ok){
             rest::response()->not_found();
@@ -231,7 +215,7 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
     function get_juegos_list($iddepto)
     {
 	    //se omite hidratador por simplicidad.
-		$juegos = modelo_departamento::get_juegos($iddepto);
+		$juegos = modelo_designacion::get_juegos($iddepto);
 		rest::response()->get_list($juegos);
     }
 
@@ -241,12 +225,12 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
 	protected function get_filtro_get_list()
 	{
 		$filtro = new rest_filtro_sql();
-		$filtro->agregar_campo("unidad_academica", "departamento.idunidad_academica");
-		//$filtro->agregar_campo("fecha_nacimiento", "pers.fecha_nac");
-		//$filtro->agregar_campo("id", "pers.id");
-
-		$filtro->agregar_campo_ordenable("descripcion", "departamento.descripcion");
-		//$filtro->agregar_campo_ordenable("fecha_nacimiento", "pers.fecha_nac");
+		$filtro->agregar_campo("unidad_academica", "designacion.uni_acad");
+                $filtro->agregar_campo("id", "designacion.id_designacion");
+                $filtro->agregar_campo("id_doc", "designacion.id_docente");
+		
+                $filtro->agregar_campo_ordenable("desde", "designacion.desde");
+		//$filtro->agregar_campo_ordenable("id_designacion", "designacion.id_designacion");
 		return $filtro;
 	}
 
@@ -260,13 +244,13 @@ class recurso_departamentos implements SIUToba\rest\lib\modelable //esta interfa
 		 * La PersonaEditar tiene solo los campos editables, ej: el id no se puede setear
 		 */
 		$datos = rest::request()->get_body_json();
-		$spec_departamento = $this->get_spec_departamento(true, 'DepartamentoEditar');
-		rest_validador::validar($datos, $spec_departamento, $relajar_ocultos);
+		$spec_designacion = $this->get_spec_designacion(true, 'DesignacionEditar');
+		rest_validador::validar($datos, $spec_designacion, $relajar_ocultos);
 
 		/**Transformo el input del usuario a formato del modelo, deshaciendo la hidratacion.
 		 * Por ejemplo, cambia el nombre de fecha_nacimiento (vista) a fecha_nac (modelo)
 		 * Se pueden requerir otros pasos, en casos mas complejos */
-		$datos = rest_hidratador::deshidratar_fila($datos, $spec_departamento);
+		$datos = rest_hidratador::deshidratar_fila($datos, $spec_designacion);
 		return $datos;
 	}
        

@@ -8,32 +8,33 @@ class modelo_filtro
 	}
 }
 
-class modelo_departamento
+class modelo_area
 {
 	protected $id;
 
-	static function get_departamentos($where = "", $order_by = "", $limit = "")
+	static function get_areas($where = "", $order_by = "", $limit = "")
 	{
 		if ($order_by == "") {
 			$order_by = "ORDER BY descripcion ASC";
 		}
-		$sql = "SELECT iddepto, 
-					idunidad_academica, 
+		$sql = "SELECT idarea, 
+					iddepto, 
 					descripcion,
                                         ordenanza
 				FROM 
-					departamento
-				WHERE  $where "." and vigente "."$order_by $limit";
+					area
+				WHERE  $where $order_by $limit";
+                
 		$datos = toba::db()->consultar($sql);
 		return $datos;
 	}
 
-	static function get_cant_departamentos($where = "")
+	static function get_cant_areas($where = "")
 	{
 		$sql = "SELECT 
 					count(*) as cantidad
 				FROM 
-					departamento
+					area
 				WHERE $where";
 		$datos = toba::db()->consultar_fila($sql);
 		return $datos['cantidad'];
@@ -125,12 +126,13 @@ class modelo_departamento
         $imagen = ($incluir_imagen)? 'imagen,': '';
        
         $sql = "SELECT
-					iddepto,
-                                        idunidad_academica,
+					idarea,
+                                        iddepto,
 					descripcion,
                                         ordenanza
-				FROM departamento WHERE iddepto = ".quote($this->id);
+				FROM area WHERE idarea = ".quote($this->id);
              
+        //var_dump($sql);exit;
 	$fila = toba::db()->consultar_fila($sql);
         
         if($incluir_imagen && $fila['imagen']){
@@ -145,8 +147,9 @@ class modelo_departamento
 
             $sql = "SELECT descripcion
 
-                                    FROM departamento WHERE iddepto = ".quote($this->id);
+                                    FROM area WHERE idarea = ".quote($this->id);
 
+            //var_dump($sql);exit;
             $fila = toba::db()->consultar_fila($sql);
 
             if($incluir_imagen && $fila['imagen']){

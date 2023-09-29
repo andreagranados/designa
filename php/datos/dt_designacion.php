@@ -1903,12 +1903,18 @@ class dt_designacion extends toba_datos_tabla
                     and t_d.tipo_desig=2".$where
                     ." and t_d.uni_acad=t_u.sigla "    ;
             $sql = toba::perfil_de_datos()->filtrar($sql);
-            $sql = "select b.*,t_m.nombre as programa from (".$sql.") b "
+
+            $sql = "select b.id_designacion,b.id_reserva,b.reserva,b.desde,b.hasta,b.cat_mapuche,b.cat_estat,b.dedic,b.carac,b.uni_acad,b.concursado, b.anulada,t_m.nombre as programa,"
+                     . " STRING_AGG(doc.legajo||' '||trim(doc.apellido)||', '||trim(doc.nombre) ||' id: '||d2.id_designacion||' '||d2.cat_estat||d2.dedic ||'-'||d2.carac||' '||to_char(d2.desde,'DD/MM/YYYY')||' '||to_char(d2.hasta,'DD/MM/YYYY'),CHR(10)) as ocupada_por "
+                     . " from (".$sql.") b "
                     . "LEFT OUTER JOIN imputacion t_i ON (t_i.id_designacion=b.id_designacion)
-                       LEFT OUTER JOIN mocovi_programa t_m ON (t_i.id_programa=t_m.id_programa)"
+                       LEFT OUTER JOIN mocovi_programa t_m ON (t_i.id_programa=t_m.id_programa)
+                       LEFT OUTER JOIN reserva_ocupada_por o on (o.id_reserva=b.id_designacion)
+                       LEFT OUTER JOIN designacion d2 on (d2.id_designacion=o.id_designacion)
+                       LEFT OUTER JOIN docente doc on (doc.id_docente=d2.id_docente)"
                     .$where2    
+                    . " group by b.id_designacion,b.id_reserva,b.reserva,b.desde,b.hasta,b.cat_mapuche,b.cat_estat,b.dedic,b.carac,b.uni_acad,b.concursado, b.anulada,t_m.nombre"
                     ." order by reserva";
-            
             return toba::db('designa')->consultar($sql);
         
         }
