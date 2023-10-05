@@ -17,10 +17,12 @@ class modelo_uni_acad
 			$order_by = "ORDER BY sigla ASC";
 		}
                 //var_dump($where);exit;
-		$sql = "SELECT sigla,descripcion,cod_regional,tipo
+                //$sql = "SELECT sigla,descripcion,cod_regional,tipo
+		$sql = "select * from (SELECT sigla,translate(descripcion,'í','i') as descripcion,cod_regional,tipo
 				FROM 
 					unidad_acad ,mocovi_tipo_dependencia 
-				WHERE  unidad_acad.id_tipo_dependencia=mocovi_tipo_dependencia.id_tipo_dependencia and $where $order_by $limit";
+				WHERE  unidad_acad.id_tipo_dependencia=mocovi_tipo_dependencia.id_tipo_dependencia and $where $order_by $limit"
+                        . ")sub";
 		$datos = toba::db()->consultar($sql);
 		return $datos;
 	}
@@ -57,7 +59,7 @@ class modelo_uni_acad
 	function get_datos($incluir_imagen = false)
 	{
             $imagen = ($incluir_imagen)? 'imagen,': '';
-            $sql = "SELECT *
+            $sql = "SELECT sigla,translate(descripcion,'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') as descripcion
                                     FROM unidad_acad WHERE sigla = ".quote($this->id);
             $fila = toba::db()->consultar_fila($sql);
             return $fila;

@@ -113,7 +113,6 @@ class recurso_unidad implements SIUToba\rest\lib\modelable //esta interface es d
 		/** Se recuperan datos desde el modelo */
 		$unidades = modelo_uni_acad::get_unidades($where, $order_by, $limit);
                 
-
 		/**Transformci�n al formato de la vista de la API
 		 * Como buen ciudadano, se agrega un header para facilitar el paginado al cliente*/
 		$unidades = rest_hidratador::hidratar($this->get_spec_unidad(false), $unidades);

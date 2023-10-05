@@ -189,7 +189,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'3627', --objeto_cuadro_col
 	'anio_categ', --clave
 	'4', --orden
-	'Año Categ', --titulo
+	'Año Convocat Categ', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
 	NULL, --ancho

@@ -309,7 +309,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'numero', --tipo
 	'anio_categ', --nombre
 	'anio_categ', --expresion
-	'Año', --etiqueta
+	'Año Conv Categ', --etiqueta
 	NULL, --descripcion
 	'0', --obligatorio
 	'0', --inicial
@@ -368,7 +368,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'anio', --nombre
 	'anio', --expresion
 	'Año Designación', --etiqueta
-	NULL, --descripcion
+	'Trae los docentes que tienen designación en el año seleccionado', --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'5', --orden
