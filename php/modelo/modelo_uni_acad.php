@@ -17,8 +17,7 @@ class modelo_uni_acad
 			$order_by = "ORDER BY sigla ASC";
 		}
                 //var_dump($where);exit;
-                //$sql = "SELECT sigla,descripcion,cod_regional,tipo
-		$sql = "select * from (SELECT sigla,translate(descripcion,'í','i') as descripcion,cod_regional,tipo
+                $sql = "SELECT sigla,descripcion,cod_regional,tipo
 				FROM 
 					unidad_acad ,mocovi_tipo_dependencia 
 				WHERE  unidad_acad.id_tipo_dependencia=mocovi_tipo_dependencia.id_tipo_dependencia and $where $order_by $limit"

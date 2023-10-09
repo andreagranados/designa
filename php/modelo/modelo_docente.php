@@ -38,7 +38,7 @@ class modelo_docente
 		if ($order_by == "") {
 			$order_by = "ORDER BY apellido,nombre ASC";
 		}
-               var_dump($where);
+              
 		$sql = "SELECT 
                                 id_docente, 
                                 legajo,

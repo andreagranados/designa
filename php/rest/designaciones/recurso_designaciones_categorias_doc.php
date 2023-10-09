@@ -10,7 +10,7 @@ use SIUToba\rest\lib\rest_filtro_sql;
 /**
  * @description Operaciones sobre Departamentos
  */
-class recurso_designaciones implements SIUToba\rest\lib\modelable //esta interface es documentativa, puede no estar
+class recurso_designaciones_categorias_doc implements SIUToba\rest\lib\modelable //esta interface es documentativa, puede no estar
 {
 
 	static function _get_modelos(){
@@ -25,6 +25,7 @@ class recurso_designaciones implements SIUToba\rest\lib\modelable //esta interfa
                                         'id_docente' => array(	'type'     => 'integer'),
                                         'desde' => array(	'type'     => 'date'),
                                         'hasta' => array(	'type'     => 'date'),
+                                        'carac' => array(	'type'     => 'string'),
                                         'cat_mapuche' => array(	'type'     => 'string'),
                                         'cat_estat' => array(	'type'     => 'string'),
                                         'dedic' => array(	'type'     => 'integer'),
@@ -118,7 +119,7 @@ class recurso_designaciones implements SIUToba\rest\lib\modelable //esta interfa
                 
 		$order_by = $filtro->get_sql_order_by();
 		/** Se recuperan datos desde el modelo */
-		$designaciones = modelo_designacion::get_designaciones($where, $order_by, $limit);
+		$designaciones = modelo_designacion::get_designaciones_categorias_doc($where, $order_by, $limit);
                 
 
 		/**Transformci�n al formato de la vista de la API
@@ -229,8 +230,8 @@ class recurso_designaciones implements SIUToba\rest\lib\modelable //esta interfa
                 $filtro->agregar_campo("id", "designacion.id_designacion");
                 $filtro->agregar_campo("id_doc", "designacion.id_docente");
 		
+                $filtro->agregar_campo_ordenable("uni_acad", "designacion.uni_acad");
                 $filtro->agregar_campo_ordenable("desde", "designacion.desde");
-		//$filtro->agregar_campo_ordenable("id_designacion", "designacion.id_designacion");
 		return $filtro;
 	}
 
