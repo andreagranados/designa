@@ -21,7 +21,7 @@ class modelo_uni_acad
 				FROM 
 					unidad_acad ,mocovi_tipo_dependencia 
 				WHERE  unidad_acad.id_tipo_dependencia=mocovi_tipo_dependencia.id_tipo_dependencia and $where $order_by $limit"
-                        . ")sub";
+                        ;
 		$datos = toba::db()->consultar($sql);
 		return $datos;
 	}

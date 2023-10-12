@@ -4,6 +4,7 @@ class ci_informe_estado_actual extends toba_ci
 	protected $s__datos_filtro;
         protected $s__desig;
         protected $s__where;
+        protected $s__columnas;
 
        
         //-----------------------------------------------------------------------------------
@@ -46,21 +47,31 @@ class ci_informe_estado_actual extends toba_ci
 	{
 		unset($this->s__datos_filtro);
 	}
-       
+        //-----------------------------------------------------------------------------------
+	//---- formulario columnas-------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------
+	function conf__columnas(toba_ei_formulario $form)
+	{
+            $form->colapsar();
+            $form->set_datos($this->s__columnas);    
+
+	}
+        function evt__columnas__modificacion($datos)
+        {
+            $this->s__columnas = $datos;
+        }
 	//---- Cuadro -----------------------------------------------------------------------
 
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
             if (isset($this->s__datos_filtro)) {
+                if($this->s__columnas['ordenanza']==0){
+                        $c=array('ordenanza');
+                        $this->dep('cuadro')->eliminar_columnas($c); 
+                }
                 $datos=$this->dep('datos')->tabla('designacion')->get_listado_estactual($this->s__datos_filtro);
-                //print_r($datos);exit;
-//                foreach ($datos as $key => $value) {
-//                    if(is_null($datos[$key]['nro_norma']) or $datos[$key]['nro_norma']==''){
-//                        $datos[$key]['programa']= '<b><font color=red>'.$datos[$key]['programa'].'</font></b>';
-//                    }
-//                }
                 $cuadro->set_datos($datos);
-		} 
+            } 
 	}
 
 	

@@ -122,6 +122,12 @@ INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, i
 	'designa', --proyecto
 	'consulta_completo', --usuario_grupo_acc
 	NULL, --item_id
+	'3707'  --item
+);
+INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
+	'designa', --proyecto
+	'consulta_completo', --usuario_grupo_acc
+	NULL, --item_id
 	'3725'  --item
 );
 INSERT INTO apex_usuario_grupo_acc_item (proyecto, usuario_grupo_acc, item_id, item) VALUES (
@@ -197,4 +203,9 @@ INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, r
 	'designa', --proyecto
 	'consulta_completo', --usuario_grupo_acc
 	'23'  --restriccion_funcional
+);
+INSERT INTO apex_grupo_acc_restriccion_funcional (proyecto, usuario_grupo_acc, restriccion_funcional) VALUES (
+	'designa', --proyecto
+	'consulta_completo', --usuario_grupo_acc
+	'77'  --restriccion_funcional
 );

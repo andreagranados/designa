@@ -38,6 +38,7 @@ class modelo_designacion
 		$datos = toba::db()->consultar($sql);
 		return $datos;
 	}
+        //permite traer todas las designaciones de un determinado docente y que esten vigentes
 	static function get_designaciones_categorias_doc($where = "", $order_by = "", $limit = "")
 	{
 		if ($order_by == "") {
@@ -46,21 +47,12 @@ class modelo_designacion
                 
                 //excluyo las designaciones que estan anuladas
 		$sql = "SELECT id_designacion, 
-					id_docente, 
-					desde,
-                                        hasta,
-                                        cat_mapuche,
-                                        cat_estat,
-                                        dedic,
-                                        carac,
-                                        uni_acad,
-                                        id_departamento,
-                                        id_area,
-                                        id_orientacion
+                      (id_designacion||'-'||cat_estat||dedic||'-'||carac||'('||extract(year from desde)||'-'||case when (extract (year from case when hasta is null then '1800-01-11' else hasta end) )=1800 then '' else cast (extract (year from hasta) as text) end||')'||uni_acad )as categoria  
 				FROM 
 					designacion
 				WHERE  $where "." and not (hasta is not null and hasta<=desde)"
-                        . " and  ((t_d.hasta is null) OR (extract(year from hasta)+1)>= extract(year from current_date)  "
+                        . " and (hasta is null or (hasta is not null and hasta>=current_date))"
+                        //esto lo tenian los chicos extension .$where. " AND  ((t_d.hasta is null) OR (extract(year from hasta)+1)>= extract(year from current_date) AND t_d.uni_acad=t_u.sigla)
                         ."$order_by $limit";
               
 		$datos = toba::db()->consultar($sql);

@@ -3,7 +3,10 @@ class dt_departamento extends toba_datos_tabla
 {
 	function get_descripciones()
 	{
-		$sql = "SELECT iddepto, descripcion||' ('||coalesce(ordenanza,'')||')' as descripcion FROM departamento ORDER BY descripcion";
+		$sql = "SELECT iddepto, "
+                        . " case when descripcion like 'SIN DEP%' then descripcion||' ('||idunidad_academica||')' else descripcion||' ('||coalesce(ordenanza,'')||')' end as descripcion"
+                        . " FROM departamento "
+                        . " ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
        
@@ -144,9 +147,10 @@ class dt_departamento extends toba_datos_tabla
                     $where='';
                 }
                 //puede tener varios codirectores en el mismo periodo
-            $sql="select sub.*, trim(doc.apellido)||', '||trim(doc.nombre) as director,string_agg(trim(cdoc.apellido)||', '||trim(cdoc.nombre),'/') as codirector 
+                //ordenamiento con una columna falsa para que SIN DEPARTAMENTO lo coloque al final
+             $sql="select sub.*, trim(doc.apellido)||', '||trim(doc.nombre) as director,string_agg(trim(cdoc.apellido)||', '||trim(cdoc.nombre),'/') as codirector 
                 from 
-                     (select d.*, max(di.desde) as desde, max(ci.desde) as desdec
+                     (select d.iddepto, d.idunidad_academica, d.descripcion,case when descripcion like 'SIN DEPAR%' then 'Z'||descripcion else descripcion end as descr, d.ordenanza, d.vigente, max(di.desde) as desde, max(ci.desde) as desdec
                       from departamento d 
                       LEFT OUTER JOIN director_dpto di ON (d.iddepto=di.iddepto)
                       LEFT OUTER JOIN codirector_dpto ci ON (d.iddepto=ci.iddepto)
@@ -156,8 +160,8 @@ class dt_departamento extends toba_datos_tabla
                      LEFT OUTER JOIN docente doc ON (doc.id_docente=dr.id_docente)
                      LEFT OUTER JOIN codirector_dpto cdr ON (cdr.iddepto=sub.iddepto and sub.desdec=cdr.desde )
                      LEFT OUTER JOIN docente cdoc ON (cdoc.id_docente=cdr.id_docente)
-                     group by sub.iddepto,sub.idunidad_academica,descripcion,ordenanza,vigente,sub.desde,desdec,doc.apellido,doc.nombre
-                    order by sub.descripcion  ";   
+                     group by sub.iddepto,sub.idunidad_academica,descripcion,descr,ordenanza,vigente,sub.desde,desdec,doc.apellido,doc.nombre
+                    order by sub.descr  ";
             return toba::db('designa')->consultar($sql);
         }
         //retorna true si el departamento que ingresa como parametro tiene areas y false en caso contrario

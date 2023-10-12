@@ -10,7 +10,7 @@ use SIUToba\rest\lib\rest_filtro_sql;
 /**
  * @description Operaciones sobre Departamentos
  */
-class recurso_designaciones_categorias_doc implements SIUToba\rest\lib\modelable //esta interface es documentativa, puede no estar
+class recurso_categoriasdocentes implements SIUToba\rest\lib\modelable //esta interface es documentativa, puede no estar
 {
 
 	static function _get_modelos(){
@@ -22,16 +22,8 @@ class recurso_designaciones_categorias_doc implements SIUToba\rest\lib\modelable
 					'id_designacion' => array(	'type'     => 'integer', 
 										'_validar' => array(rest_validador::OBLIGATORIO,
 															rest_validador::TIPO_INT )),
-                                        'id_docente' => array(	'type'     => 'integer'),
-                                        'desde' => array(	'type'     => 'date'),
-                                        'hasta' => array(	'type'     => 'date'),
-                                        'carac' => array(	'type'     => 'string'),
-                                        'cat_mapuche' => array(	'type'     => 'string'),
-                                        'cat_estat' => array(	'type'     => 'string'),
-                                        'dedic' => array(	'type'     => 'integer'),
-					'uni_acad' => array('type'   => 'string')
-					
                                         
+                                        'categoria' => array(	'type'     => 'string')					
 				);
 
 		$designacion = array_merge(

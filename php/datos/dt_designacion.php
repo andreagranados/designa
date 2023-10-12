@@ -1834,15 +1834,17 @@ class dt_designacion extends toba_datos_tabla
                //designaciones sin licencia UNION designaciones c/licencia sin norma UNION designaciones c/licencia c norma UNION reservas
                 $sql=$this->armar_consulta($pdia,$udia,$filtro['anio']['valor']);
 		//si el estado de la designacion es  B entonces le pone estado B, si es <>B se fija si tiene licencia sin goce o cese
-//                $sql= "select id_designacion,docente_nombre,legajo,nro_cargo,anio_acad,desde,hasta,cat_mapuche,cat_mapuche_nombre,cat_estat,dedic,carac,check_presup,id_departamento,id_area,id_orientacion,uni_acad,emite_norma,nro_norma,tipo_norma,nro_540,observaciones,estado,porc,dias_lic,programa,costo_vale as costo,est,expediente,nro from("
-//                       . "select sub2.*,case when t_no.tipo_nov in (1,4) then 'B('||coalesce(t_no.tipo_norma,'')||':'||coalesce(t_no.norma_legal,'')||')' else case when t_no.tipo_nov in (2,5) then 'L('||t_no.tipo_norma||':'||t_no.norma_legal||')'  else sub2.estado end end as est,t_i.expediente,case when d.tipo_desig=2 then costo_reserva(d.id_designacion,costo,".$filtro['anio']['valor'].") else costo end as costo_vale "
+//                $sql= "select id_designacion,docente_nombre,legajo,nro_cargo,anio_acad,desde,hasta,cat_mapuche,cat_mapuche_nombre,cat_estat,dedic,carac,check_presup,id_departamento,id_area,id_orientacion,uni_acad,emite_norma,nro_norma,tipo_norma,nro_540,tkd,observaciones,estado,porc,dias_lic,programa,costo_vale as costo,est,expediente,nro from("
+//                       . "select sub2.*,sub2.nro_540||'/'||t_i.anio as tkd,case when t_no.tipo_nov in (1,4) then 'B('||coalesce(t_no.tipo_norma,'')||':'||coalesce(t_no.norma_legal,'')||')' else case when t_no.tipo_nov in (2,5) then 'L('||t_no.tipo_norma||':'||t_no.norma_legal||')'  else sub2.estado end end as est,t_i.expediente,case when d.tipo_desig=2 then costo_reserva(d.id_designacion,costo,".$filtro['anio']['valor'].") else costo end as costo_vale "
 //                       . " ,case when t_nor.id_norma is null then '' else case when t_nor.link is not null or t_nor.link <>'' then '<a href='||chr(39)||t_nor.link||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||t_nor.nro_norma||'</a>' else cast(t_nor.nro_norma as text) end end as nro "
 //                       . "from ("
 //                       ."select sub.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, sub.desde, sub.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,sub.emite_norma, sub.nro_norma,sub.tipo_norma,nro_540,sub.observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,costo,max(t_no.id_novedad) as id_novedad from ("
 //                        ."select distinct b.id_designacion,docente_nombre,legajo,nro_cargo,anio_acad, b.desde, b.hasta,cat_mapuche, cat_mapuche_nombre,cat_estat,dedic,carac,id_departamento, id_area,id_orientacion, uni_acad,emite_norma, b.nro_norma,b.tipo_norma,nro_540,b.observaciones,estado,programa,porc,costo_diario,check_presup,licencia,dias_des,dias_lic,case when (dias_des-dias_lic)>=0 then ((dias_des-dias_lic)*costo_diario*porc/100) else 0 end as costo"
 //                            ." from ("
-//                            ." select a.id_designacion,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,b.a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,check_presup,licencia,a.dias_des,a.dias_lic".
+//                            ." select a.id_designacion,a.por_permuta,a.docente_nombre,a.legajo,a.nro_cargo,a.anio_acad, a.desde, a.hasta,a.cat_mapuche, a.cat_mapuche_nombre,a.cat_estat,a.dedic,a.carac,t.iddepto,a.id_departamento, a.id_area,a.id_orientacion, a.uni_acad, a.emite_norma, a.nro_norma,a.tipo_norma,a.nro_540,a.observaciones,a.estado,programa,porc,a.costo_diario,a.check_presup,licencia,a.dias_des,a.dias_lic".
 //                            " from (".$sql.") a"
+//                         . " INNER JOIN designacion d ON (a.id_designacion=d.id_designacion)"
+//                         . " LEFT OUTER JOIN departamento t ON (t.iddepto=d.id_departamento)"
 //                            .$where    
 //                            .") b "
 //                       . " )sub"
@@ -1855,8 +1857,41 @@ class dt_designacion extends toba_datos_tabla
 //                       ." LEFT OUTER JOIN norma t_nor ON (d.id_norma=t_nor.id_norma)"
 //                       . ")sub3"
 //                       .$where2
-//                            . " order by docente_nombre,desde"; 
-                 $sql= "select id_designacion,docente_nombre,legajo,nro_cargo,anio_acad,desde,hasta,cat_mapuche,cat_mapuche_nombre,cat_estat,dedic,carac,check_presup,id_departamento,id_area,id_orientacion,uni_acad,emite_norma,nro_norma,tipo_norma,nro_540,tkd,observaciones,estado,porc,dias_lic,programa,costo_vale as costo,est,expediente,nro from("
+//                            . " order by docente_nombre,desde";
+           $sql= "select "
+                   . "sub3.id_designacion,"
+                   . "docente_nombre,"
+                   . "legajo,"
+                   . "nro_cargo,"
+                   . "anio_acad,"
+                   . "desde,"
+                   . "hasta,"
+                   . "cat_mapuche,"
+                   . "cat_mapuche_nombre,"
+                   . "cat_estat,"
+                   . "dedic,"
+                   . "carac,"
+                   . "check_presup,"
+                   . "id_departamento,"
+                   . "id_area,"
+                   . "id_orientacion,"
+                   . "sub3.uni_acad,"
+                   . "sub3.emite_norma,"
+                   . "sub3.nro_norma,"
+                   . "sub3.tipo_norma,"
+                   . "nro_540,"
+                   . "tkd,"
+                   . "observaciones,"
+                   . "estado,"
+                   . "porc,"
+                   . "dias_lic,"
+                   . "programa,"
+                   . "costo_vale as costo,"
+                   . "est,"
+                   . "expediente,"
+                   . "nro ,"
+                   . "string_agg('ORDE: '||subo.nro_norma||' ('||to_char(subo.fecha,'DD/MM/YYYY'),' - ')||')' as ordenanza"
+                   . " from("
                        . "select sub2.*,sub2.nro_540||'/'||t_i.anio as tkd,case when t_no.tipo_nov in (1,4) then 'B('||coalesce(t_no.tipo_norma,'')||':'||coalesce(t_no.norma_legal,'')||')' else case when t_no.tipo_nov in (2,5) then 'L('||t_no.tipo_norma||':'||t_no.norma_legal||')'  else sub2.estado end end as est,t_i.expediente,case when d.tipo_desig=2 then costo_reserva(d.id_designacion,costo,".$filtro['anio']['valor'].") else costo end as costo_vale "
                        . " ,case when t_nor.id_norma is null then '' else case when t_nor.link is not null or t_nor.link <>'' then '<a href='||chr(39)||t_nor.link||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||t_nor.nro_norma||'</a>' else cast(t_nor.nro_norma as text) end end as nro "
                        . "from ("
@@ -1877,9 +1912,17 @@ class dt_designacion extends toba_datos_tabla
                        ." LEFT JOIN impresion_540 t_i ON (nro_540=t_i.id)"//para agregar el expediente 
                        ." LEFT OUTER JOIN designacion d ON (sub2.id_designacion=d.id_designacion)"//como no tengo el id de la norma tengo que volver a hacer join
                        ." LEFT OUTER JOIN norma t_nor ON (d.id_norma=t_nor.id_norma)"
-                       . ")sub3"
-                       .$where2
-                            . " order by docente_nombre,desde"; 
+
+                   . ")sub3"
+                   . " LEFT OUTER JOIN (select * 
+                                            from norma_desig t_n,norma t_no
+                                            where t_no.id_norma=t_n.id_norma 
+                                            and t_no.tipo_norma='ORDE' )subo ON (sub3.id_designacion=subo.id_designacion)"
+                   . $where2
+                   . " group by sub3.id_designacion,sub3.docente_nombre,legajo,nro_cargo,anio_acad,desde,hasta,cat_mapuche,cat_mapuche_nombre,cat_estat,dedic,carac,check_presup,id_departamento,id_area,  
+                  id_orientacion,sub3.uni_acad,sub3.emite_norma,sub3.nro_norma,sub3.tipo_norma,nro_540,tkd,observaciones,estado,porc,dias_lic,programa,costo_vale,est,expediente,nro "
+                   . " order by docente_nombre,desde";
+                  
                 return toba::db('designa')->consultar($sql);
 	}
         function get_listado_reservas($filtro=array())

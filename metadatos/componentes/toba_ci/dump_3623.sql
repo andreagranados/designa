@@ -409,7 +409,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'4', --orden
 	'Completo', --etiqueta
 	'Listado completo con todos los departamentos que aparecen en la solapa Departamentos.
-Tenga en cuenta utilizar el filtro "vigente" en si previo a filtrar en la solapa Departamentos para que aparezca la estructura departamental actual en la solapa Completo.', --descripcion
+Tenga en cuenta utilizar el filtro "vigente" en "Sí" previo a filtrar en la solapa Departamentos, para que aparezca la estructura departamental actual en la solapa Completo.', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen
