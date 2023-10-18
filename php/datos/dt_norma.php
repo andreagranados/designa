@@ -93,7 +93,6 @@ class dt_norma extends toba_datos_tabla
            return toba::db('designa')->consultar($sql);
        }
        function get_listado_filtro($where=null){
-         
              //obtengo el perfil de datos del usuario logueado
             $con="select sigla,descripcion from unidad_acad ";
             $con = toba::perfil_de_datos()->filtrar($con);

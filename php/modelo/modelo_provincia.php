@@ -72,7 +72,7 @@ class modelo_provincia
                         codigo_pcia
                         FROM provincia WHERE codigo_pcia = ".quote($this->id);
             $fila = toba::db()->consultar_fila($sql);
-
+            
             if($incluir_imagen && $fila['imagen']){
                 $fila['imagen'] = base64_encode(stream_get_contents($fila['imagen']));
             }

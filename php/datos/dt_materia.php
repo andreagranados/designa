@@ -236,7 +236,8 @@ class dt_materia extends toba_datos_tabla
                         t_pe.uni_acad,
                         t_pe.cod_carrera,
                         t_pe.desc_carrera,
-                        t_pe.ordenanza
+                        t_pe.ordenanza,
+                        t_pe.activo
 		FROM
 			materia as t_m	
                         LEFT OUTER JOIN periodo as t_p ON (t_m.periodo_dictado = t_p.id_periodo)
@@ -254,8 +255,5 @@ class dt_materia extends toba_datos_tabla
 		return toba::db('designa')->consultar($sql);
     
         }
-
-
-	
 }
 ?>
