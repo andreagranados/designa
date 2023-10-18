@@ -26,6 +26,25 @@ class dt_plan_estudio extends toba_datos_tabla
                     . " ORDER BY cod_carrera";
 	    return toba::db('designa')->consultar($sql);
 	}
+         function get_planes2($id_ua=null,$act=null)
+	{
+            $where =" WHERE 1=1 ";
+            if(isset($id_ua)){
+                    $where.=" AND uni_acad='".$id_ua."'";
+                }
+            
+            switch ($act) {
+                case 1: $where.=" AND activo ";
+                    break;
+                default:  $where.=" AND not activo ";
+                    break;
+            }
+            $sql = "SELECT distinct id_plan, desc_carrera||'-'||cod_carrera||'('||ordenanza||')' as cod_carrera  "
+                    . " FROM plan_estudio "
+                    . $where
+                    . " ORDER BY cod_carrera";
+	    return toba::db('designa')->consultar($sql);
+	}
         function get_planes_activos($id_ua=null)
 	{
             $where =" WHERE activo ";
