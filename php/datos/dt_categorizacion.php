@@ -54,6 +54,16 @@ class dt_categorizacion extends toba_datos_tabla
         
         return toba::db('designa')->consultar($sql);
     }
-    
+    function get_anios_categorizacion()
+    {
+            $sql = "SELECT distinct anio_categ  FROM categorizacion ORDER BY anio_categ";
+            return toba::db('designa')->consultar($sql);
+    }
+    function get_descripciones()
+    {
+            $sql = "SELECT id,  FROM categorizacion ORDER BY ";
+            return toba::db('designa')->consultar($sql);
+    }
+
 }
 ?>
