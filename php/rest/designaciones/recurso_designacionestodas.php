@@ -206,18 +206,18 @@ class recurso_designacionestodas implements SIUToba\rest\lib\modelable //esta in
 
 
 
-    /**
-     * Se consume en GET /personas/{id}/juegos
-	 * @summary Retorna todos los juego que practica la persona
-     * @response_type [ {juego: integer, dia_semana: integer, hora_inicio: string, hora_fin:string}, ]
-     * @responses 404 No se pudo encontrar a la persona
-     */
-    function get_juegos_list($iddepto)
-    {
-	    //se omite hidratador por simplicidad.
-		$juegos = modelo_designacion::get_juegos($iddepto);
-		rest::response()->get_list($juegos);
-    }
+        /**
+         * Se consume en GET /designaciones/{id}/docente
+             * @summary Retorna todos los juego que practica la persona
+         * @response_type [ {juego: integer, dia_semana: integer, hora_inicio: string, hora_fin:string}, ]
+         * @responses 404 No se pudo encontrar a la persona
+         */
+        function get_docente_list($iddesig)
+        {
+                //se omite hidratador por simplicidad.
+                    $juegos = modelo_designacion::get_docente($iddesig);
+                    rest::response()->get_list($juegos);
+        }
 
 	/**
 	 * @return rest_filtro_sql

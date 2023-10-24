@@ -295,7 +295,7 @@ class docente_solapas extends toba_ci
             $form->ef('cuil')->set_obligatorio('true');
             $this->pantalla()->tab("pant_porcentajes")->desactivar();	   
             if ($this->controlador()->dep('datos')->tabla('docente')->esta_cargada()){//porque se selecciono previamente un agente
-		$datos=$this->controlador()->dep('datos')->tabla('docente')->get();
+		$datos=$this->controlador()->dep('datos')->tabla('docente')->get();       
                 //autocompleto el documento con ceros adelante hasta 8
                 $datos['cuil']=$datos['nro_cuil1'].str_pad($datos['nro_cuil'], 8, '0', STR_PAD_LEFT).$datos['nro_cuil2'];
                 if(isset($datos['registro_firma'])){

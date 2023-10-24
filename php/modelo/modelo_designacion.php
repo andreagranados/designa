@@ -121,4 +121,16 @@ class modelo_designacion
             }
             return $fila;
 	}
+        function get_docente($iddesig){
+            $sql = "SELECT
+					j.nombre,
+					j.apellido,
+					j.correo_institucional,
+                                        j.telefono
+				FROM designacion as pj
+				JOIN docente as j ON (pj.id_docente = j.id_docente)
+				WHERE pj.id_designacion = " . $iddesig ;
+                        
+            return toba::db()->consultar($sql);
+        }
 }

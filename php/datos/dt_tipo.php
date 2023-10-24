@@ -69,5 +69,14 @@ class dt_tipo extends toba_datos_tabla
             $sql = "SELECT desc_abrev, desc_item FROM tipo where nro_tabla=14 ORDER BY desc_item";
             return toba::db('designa')->consultar($sql);    
         }
+        function get_tipo_sexo()
+	{
+            $sql = "SELECT trim(desc_abrev) as desc_abrev, desc_item "
+                    . " FROM tipo "
+                    . " where nro_tabla=15 "
+                    . "ORDER BY desc_item";
+            $datos = toba::db('designa')->consultar($sql);     
+            return $datos;
+	}
 }
 ?>

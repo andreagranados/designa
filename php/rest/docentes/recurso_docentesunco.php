@@ -182,7 +182,6 @@ class recurso_docentesunco implements SIUToba\rest\lib\modelable //esta interfac
 		}
 	}
 
-
    
 	/**
 	 * @return rest_filtro_sql

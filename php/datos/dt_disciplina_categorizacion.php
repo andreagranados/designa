@@ -8,6 +8,13 @@ class dt_disciplina_categorizacion extends designa_datos_tabla
                         . " ORDER BY descripcion";
 		return toba::db('designa')->consultar($sql);
 	}
+        function get_descripciones_ext()
+	{
+		$sql = " SELECT id, ' ('||anio_desde||'-'||anio_hasta||') '||descripcion as descripcion "
+                        . " FROM disciplina_categorizacion "
+                        . " ORDER BY anio_desde,anio_hasta,descripcion";
+		return toba::db('designa')->consultar($sql);
+	}
         function get_descripciones_conv($anio_conv=null)
 	{
                 $where="";

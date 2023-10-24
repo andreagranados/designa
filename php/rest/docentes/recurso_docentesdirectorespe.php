@@ -10,7 +10,7 @@ use SIUToba\rest\lib\rest_filtro_sql;
 /**
  * @description Operaciones sobre Departamentos
  */
-class recurso_docentescondicion implements SIUToba\rest\lib\modelable //esta interface es documentativa, puede no estar
+class recurso_docentesdirectorespe implements SIUToba\rest\lib\modelable //esta interface es documentativa, puede no estar
 {
 
 	static function _get_modelos(){
@@ -34,12 +34,14 @@ class recurso_docentescondicion implements SIUToba\rest\lib\modelable //esta int
                                         'legajo' => array(	'type'     => 'integer'),
                                         'tipo_docum' => array(	'type'     => 'string'),
                                         'nro_docum' => array(	'type'     => 'integer'),
-                                        'uni_acad' => array('type' => 'string')
+                                        'uni_acad' => array('type' => 'string'),
+                                        'correo_institucional' => array('type' => 'string'),
+                                        'telefono_celular' => array('type' => 'string')
                                         
 				);
 
 		$docente = array_merge(
-							array('id_docente' => array('type' => 'integer',
+							array('id_designacion' => array('type' => 'integer',
 												'_validar' => array(rest_validador::TIPO_INT))),
 							$docente_editar);
 		return $models = array(
@@ -66,13 +68,33 @@ class recurso_docentescondicion implements SIUToba\rest\lib\modelable //esta int
      * @responses 200 {"$ref": "Persona"} Persona
      * @responses 400 No existe la persona
      */
-    function get($id_docente)
+//    function get($id_docente)
+//    {
+//		//toba::logger()->debug("Usuario: " . rest::app()->usuario->get_usuario());
+//	    /**Obtengo los datos del modelo*/
+//        $incluir_imagen = (bool) rest::request()->get('con_imagen', 0);
+//	$modelo = new modelo_docente($id_docente);
+//        $fila = $modelo->get_datos($incluir_imagen);
+//
+//        if ($fila) {
+//                /**Transformci�n al formato de la vista de la API -
+//                 * Si faltan campos se generar�n 'undefined_index'. Si sobran, no se incluyen.
+//                 * La fila contiene exactamente los campos de la especificaci�n */
+//                $fila = rest_hidratador::hidratar_fila($this->get_spec_docente($incluir_imagen), $fila);
+//        }
+//
+//	    /**Se escribe la respuesta*/
+//        rest::response()->get($fila);
+//    }
+// 
+    //http://localhost/designa/1.0/rest/docentes/docentesdirectorespe/3
+    function get($id_pext)
     {
 		//toba::logger()->debug("Usuario: " . rest::app()->usuario->get_usuario());
 	    /**Obtengo los datos del modelo*/
         $incluir_imagen = (bool) rest::request()->get('con_imagen', 0);
-	$modelo = new modelo_docente($id_docente);
-        $fila = $modelo->get_datos($incluir_imagen);
+	$modelo = new modelo_docente($id_pext);
+        $fila = $modelo->get_datos_directores_pext($incluir_imagen);
 
         if ($fila) {
                 /**Transformci�n al formato de la vista de la API -
@@ -85,22 +107,7 @@ class recurso_docentescondicion implements SIUToba\rest\lib\modelable //esta int
         rest::response()->get($fila);
     }
  
-    function get_descripcion_list ($id_docente){
-        $incluir_imagen = (bool) rest::request()->get('con_imagen', 0);
-        $modelo = new modelo_docente($id_docente);
-      
-        $fila = $modelo->get_datos_descripcion($incluir_imagen);
-
-		if ($fila) {
-			/**Transformci�n al formato de la vista de la API -
-			 * Si faltan campos se generar�n 'undefined_index'. Si sobran, no se incluyen.
-			 * La fila contiene exactamente los campos de la especificaci�n */
-			$fila = rest_hidratador::hidratar_fila($this->get_spec_docente($incluir_imagen), $fila);
-		}
-
-	    /**Se escribe la respuesta*/
-        rest::response()->get($fila);
-    }
+   
 
 	/**
 	 * Se consume en GET /personas
@@ -123,7 +130,7 @@ class recurso_docentescondicion implements SIUToba\rest\lib\modelable //esta int
                 //var_dump($where);exit;//recupero todo lo que viene como valor
 		$order_by = $filtro->get_sql_order_by();
 		/** Se recuperan datos desde el modelo */
-		$docentes = modelo_docente::get_docentes_condicion($where, $order_by, $limit);
+		$docentes = modelo_docente::get_docentes_directorespe($where, $order_by, $limit);
 
 		/**Transformci�n al formato de la vista de la API
 		 * Como buen ciudadano, se agrega un header para facilitar el paginado al cliente*/
@@ -136,71 +143,16 @@ class recurso_docentescondicion implements SIUToba\rest\lib\modelable //esta int
 
 
 
-	/**
-	 * Se consume en POST /personas
-	 * @summary Crear una persona
-	 * @notes La fecha es en formato 'Y-m-d'</br>
-	 * @param_body $persona  PersonaEditar [required] los datos iniciales de la persona
-	 * @responses 201 {"id" : "integer"} identificador de la persona agregada
-	 * @responses 500 Error en los datos de ingresados para la persona
-	 */
-	function post_list()
-	{
-		/** Valido y traduzco los datos al formato de mi modelo*/
-		$datos_modelo = $this->procesar_input_edicion();
+	
 
-		/**La validacion del input no reemplaza a las validaciones del modelo (reglas de negocio) */
-		//$errores = modelo_persona::validar($datos_modelo);
-
-		/**Aplicaci�n de cambios al modelo*/
-		$nuevo = modelo_docente::insert($datos_modelo);
-
-		/** Se retorna el id recientemente creado, de acuerdo a las convenciones de la API*/
-		$fila = array('id' => $nuevo);
-		rest::response()->post($fila);
-	}
-
-
-    /**
-	 * Se consume en PUT /personas/{id}
-     * @summary Modificar datos de la persona.
-     * @param_body $persona PersonaEditar  [required] los datos a editar de la persona
-     * @notes Si envia la componente 'imagen' de la persona se actualiza unicamente la imagen (binario base64). La fecha es en formato 'Y-m-d'
-     * @responses 404 No se pudo encontrar a la persona
-     * @responses 400 El pedido no cumple con las reglas de negocio - validacion erronea.
-     */
-	function put($iddepto)
-	{
-		/** Valido y traduzco los datos al formato de mi modelo*/
-		$datos_modelo = $this->procesar_input_edicion(true);
-
-		$modelo = new modelo_docente($iddepto);
-		//$errores = $modelo->validar($datos);
-
-		if (isset($datos_modelo['imagen'])) { //por separado ya que es un caso especial
-			$ok = $modelo->update_imagen($datos_modelo);
-		} else {
-			$ok = $modelo->update($datos_modelo);
-		}
-		if (!$ok) {
-			rest::response()->not_found();
-		} else {
-			rest::response()->put();
-		}
-	}
-
-
-   
+      
 	/**
 	 * @return rest_filtro_sql
 	 */
 	protected function get_filtro_get_list()
 	{
 		$filtro = new rest_filtro_sql();
-//                $filtro->agregar_campo("id", "docente.id_docente");
-//                $filtro->agregar_campo("legajo", "docente.legajo");
-//                $filtro->agregar_campo("apellido", "docente.apellido");
-                $filtro->agregar_campo("documento", "docente.nro_docum");
+                $filtro->agregar_campo("proyecto", "id_pext");
 		
                 $filtro->agregar_campo_ordenable("apellido", "docente.apellido");
 		$filtro->agregar_campo_ordenable("nombre", "docente.nombre");
