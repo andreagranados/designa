@@ -36,9 +36,10 @@ class dt_categorizacion extends toba_datos_tabla
         }else{
             $where='';
         }
-        $sql="select distinct apellido,nombre,legajo,anio_categ,categoria,id_disciplina, disciplina,externa,case when externa then 'SI' else 'NO' end as exter "
-                . " from (select distinct a.*,t_p.anio,t_de.uni_acad from "
-                        . "(select t_do.id_docente,t_do.apellido,t_do.nombre,t_do.legajo,t_c.anio_categ,t_c.id_cat,t_ci.descripcion as categoria,t_c.id_disciplina, t_d.descripcion as disciplina,t_c.externa"
+        
+        $sql="select distinct apellido,nombre,legajo,anio_categ,categoria,id_disciplina, disciplina,externa,case when externa then 'SI' else 'NO' end as exter,fecha_inicio_validez,fecha_fin_validez "
+                . " from (select distinct a.*,t_p.anio,t_de.uni_acad,vigente from "
+                        . "(select t_do.id_docente,t_do.apellido,t_do.nombre,t_do.legajo,t_c.anio_categ,t_c.id_cat,t_ci.descripcion as categoria,t_c.id_disciplina, t_d.descripcion as disciplina,t_c.externa, t_c.fecha_inicio_validez,t_c.fecha_fin_validez,case when fecha_fin_validez is not null then 0 else 1 end as vigente"
                         . " from categorizacion t_c"
                         . " LEFT OUTER JOIN docente t_do ON (t_c.id_docente=t_do.id_docente)"
                         . " LEFT OUTER JOIN categoria_invest t_ci ON (t_c.id_cat=t_ci.cod_cati)"
