@@ -71,6 +71,10 @@ class ci_p_investigacion extends toba_ci
                         $c=array('cuilcod');
                         $this->dep('cuadro')->eliminar_columnas($c); 
                      }
+                    if($this->s__columnas['cat_invest_descripcion']==0){
+                        $c=array('cat_invest_descripcion');
+                        $this->dep('cuadro')->eliminar_columnas($c); 
+                     }
                     $cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_listado_filtro($this->s__datos_filtro));
                     //$cuadro->set_titulo(utf8_decode('Listado  ').date('d/m/Y (H:i:s)'));
 		} 

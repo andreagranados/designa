@@ -8,15 +8,29 @@ class modelo_integrantespext
     {    
         ///aqui llama a sw de modulo extension para pedir las id_designaciones de los integrantes internos pe
         $condicion=null;
-        $valor=ull;
+        $valor=null;
         $recurso="integrantes";
-
-        $res = consultas_extension::get_datos($recurso,$condicion,$valor);
-        $where .= ' AND id_designacion in (';
-        foreach ($res as $key) {
-            $where .= $key['id_designacion'].",";
+        // str_contains($where,'id_pext') de php8
+        //si el where contiene id_pext entonces recupero el numero
+        //filtro por id_pext 
+        if(strpos($where,'id_pext')!==false){
+            $valor = intval(filter_var($where, FILTER_SANITIZE_NUMBER_INT)) ;
+            $condicion='id-pext';
+            $where2=" WHERE 1=1 ";
+            //var_dump($valor);
+        }else{
+            $where2=$where;
         }
-        $where = rtrim($where, ",").")";
+        
+//print_r($where);exit;//1=1 sino tiene condicion, si tiene condicion trae id_pext = '501'
+        $res = consultas_extension::get_datos($recurso,$condicion,$valor);
+        
+        $where2 .= ' AND id_designacion in (';
+        foreach ($res as $key => $value) {
+            $where2 .= $value['id_designacion'].",";
+        }
+
+        $where2 = rtrim($where2, ",").")";
 
         ///////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +58,7 @@ class modelo_integrantespext
                     designacion AS ds
                 LEFT OUTER JOIN
                     docente AS dc ON dc.id_docente = ds.id_docente
-                WHERE  $where $order_by $limit";
+                WHERE  $where2 $order_by $limit";
         $datos = toba::db()->consultar($sql);
         return $datos;
     }

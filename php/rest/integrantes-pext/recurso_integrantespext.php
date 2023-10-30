@@ -74,7 +74,6 @@ class recurso_integrantespext implements SIUToba\rest\lib\modelable # Esta inter
         # Se recuperan datos desde el modelo
         $integrantes = modelo_integrantespext::get_integrantes($where, $order_by, $limit);
 
-
         # Transformción al formato de la vista de la API
         # Como buen ciudadano, se agrega un header para facilitar el paginado al cliente
         $integrantes = rest_hidratador::hidratar($this->get_spec_integrante(false), $integrantes);
@@ -93,7 +92,7 @@ class recurso_integrantespext implements SIUToba\rest\lib\modelable # Esta inter
     protected function get_filtro_get_list()
     {
         $filtro = new rest_filtro_sql();
-        #$filtro->agregar_campo("nombre de filtro", "tabla.columna");
+        $filtro->agregar_campo("id-pext", "id_pext");
         $filtro->agregar_campo("id_designacion", "ds.id_designacion");
         $filtro->agregar_campo_ordenable("id_docente", "dc.id_docente");
         return $filtro;

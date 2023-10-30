@@ -36,7 +36,7 @@ class consultas_extension
             case 'integrantes': 
                 $url=getenv('SW_URL_EXT_INT');//variable de ambiente en designa
                 if(!is_null($cond)&&!is_null($valor)){
-                    //$condicion = "?proyecto=".$cond.";" . trim($valor) ;//ver aqui
+                    $condicion = "?".$cond."=es_igual_a".";" . trim($valor) ;//ver aqui
                 }
                 break;
             default:
