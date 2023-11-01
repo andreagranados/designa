@@ -68,33 +68,13 @@ class recurso_docentesdirectorespe implements SIUToba\rest\lib\modelable //esta 
      * @responses 200 {"$ref": "Persona"} Persona
      * @responses 400 No existe la persona
      */
-//    function get($id_docente)
-//    {
-//		//toba::logger()->debug("Usuario: " . rest::app()->usuario->get_usuario());
-//	    /**Obtengo los datos del modelo*/
-//        $incluir_imagen = (bool) rest::request()->get('con_imagen', 0);
-//	$modelo = new modelo_docente($id_docente);
-//        $fila = $modelo->get_datos($incluir_imagen);
-//
-//        if ($fila) {
-//                /**Transformci�n al formato de la vista de la API -
-//                 * Si faltan campos se generar�n 'undefined_index'. Si sobran, no se incluyen.
-//                 * La fila contiene exactamente los campos de la especificaci�n */
-//                $fila = rest_hidratador::hidratar_fila($this->get_spec_docente($incluir_imagen), $fila);
-//        }
-//
-//	    /**Se escribe la respuesta*/
-//        rest::response()->get($fila);
-//    }
-// 
-    //http://localhost/designa/1.0/rest/docentes/docentesdirectorespe/3
-    function get($id_pext)
+    function get($id_docente)
     {
 		//toba::logger()->debug("Usuario: " . rest::app()->usuario->get_usuario());
 	    /**Obtengo los datos del modelo*/
         $incluir_imagen = (bool) rest::request()->get('con_imagen', 0);
-	$modelo = new modelo_docente($id_pext);
-        $fila = $modelo->get_datos_directores_pext($incluir_imagen);
+	$modelo = new modelo_docente($id_docente);
+        $fila = $modelo->get_datos($incluir_imagen);
 
         if ($fila) {
                 /**Transformci�n al formato de la vista de la API -
@@ -107,7 +87,7 @@ class recurso_docentesdirectorespe implements SIUToba\rest\lib\modelable //esta 
         rest::response()->get($fila);
     }
  
-   
+     
 
 	/**
 	 * Se consume en GET /personas
@@ -135,7 +115,7 @@ class recurso_docentesdirectorespe implements SIUToba\rest\lib\modelable //esta 
 		/**Transformci�n al formato de la vista de la API
 		 * Como buen ciudadano, se agrega un header para facilitar el paginado al cliente*/
 		$docentes = rest_hidratador::hidratar($this->get_spec_docente(false), $docentes);
-		$cantidad = modelo_docente::get_cant_docentes($where);
+		$cantidad = modelo_docente::get_cant_docentes_directorespe($where);
 		rest::response()->add_headers(array('Cantidad-Registros' => $cantidad));
 		/**Se escribe la respuesta */
 		rest::response()->get_list($docentes);
@@ -152,7 +132,7 @@ class recurso_docentesdirectorespe implements SIUToba\rest\lib\modelable //esta 
 	protected function get_filtro_get_list()
 	{
 		$filtro = new rest_filtro_sql();
-                $filtro->agregar_campo("proyecto", "id_pext");
+                $filtro->agregar_campo("id-pext", "id_pext");
 		
                 $filtro->agregar_campo_ordenable("apellido", "docente.apellido");
 		$filtro->agregar_campo_ordenable("nombre", "docente.nombre");

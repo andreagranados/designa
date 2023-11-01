@@ -92,7 +92,8 @@ class recurso_integrantespext implements SIUToba\rest\lib\modelable # Esta inter
     protected function get_filtro_get_list()
     {
         $filtro = new rest_filtro_sql();
-        $filtro->agregar_campo("id-pext", "id_pext");
+        $filtro->agregar_campo("id-pext", "id_pext");//atrib o columna no definido
+        
         $filtro->agregar_campo("id_designacion", "ds.id_designacion");
         $filtro->agregar_campo_ordenable("id_docente", "dc.id_docente");
         return $filtro;

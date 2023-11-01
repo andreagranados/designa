@@ -76,19 +76,28 @@ class modelo_docente
         //llamado por recurso docentesdirectorespe
         static function get_docentes_directorespe($where = "", $order_by = "", $limit = "")
 	{
+            ///aqui llama a sw de modulo extension para pedir las id_designaciones de los directores de proyectos    
                 $condicion=null;
                 $valor=null;
-
-                ///aqui llama a sw de modulo extension para pedir las id_designaciones de los directores de proyectos
-                $recurso="/docentes/docentesdirectorespe";
-               
+                $recurso="directores";
+                //si el where contiene id_pext entonces recupero el numero
+               if(strpos($where,'id_pext')!==false){
+                    $valor = intval(filter_var($where, FILTER_SANITIZE_NUMBER_INT)) ;
+                    $condicion='id-pext';
+                    $where2=" 1=1 ";
+                    //var_dump($valor);exit;
+                }else{
+                    $where2=$where;
+                }
                 $res = consultas_extension::get_datos($recurso,$condicion,$valor);
                 //luego arma el where
-                $where .= ' AND id_designacion in (';
-                foreach ($res as $key) {
-                    $where .= $key['id_designacion'].",";
+                $where2 .= ' AND id_designacion in (';
+                foreach ($res as $key => $value) {
+                   $where2 .= $value['id_designacion'].","; 
                 }
-                $where = rtrim($where, ",").")";
+
+                $where2 = rtrim($where2, ",").")";
+                
                 ///
 		if ($order_by == "") {
                     $order_by = "ORDER BY d.id_docente ASC";
@@ -110,26 +119,35 @@ class modelo_docente
                             INNER JOIN
                                 designacion AS ds ON d.id_docente = ds.id_docente
                                 
-                            WHERE  $where $order_by $limit";
+                            WHERE  $where2 $order_by $limit";
+                
                 $datos = toba::db()->consultar($sql);
                 return $datos;
 	}
         //llamado por recurso docentescodirectorespe
         static function get_docentes_codirectorespe($where = "", $order_by = "", $limit = "")
 	{
+            ///aqui llama a sw de modulo extension para pedir las id_designaciones de los directores de proyectos    
                 $condicion=null;
                 $valor=null;
-
-                ///aqui llama a sw de modulo extension para pedir las id_designaciones de los directores de proyectos
-                //$recurso="/docentes/docentescodirectorespe";
                 $recurso="codirectores";
+                //si el where contiene id_pext entonces recupero el numero
+               if(strpos($where,'id_pext')!==false){
+                    $valor = intval(filter_var($where, FILTER_SANITIZE_NUMBER_INT)) ;
+                    $condicion='id-pext';
+                    $where2=" 1=1 ";
+                }else{
+                    $where2=$where;
+                }
                 $res = consultas_extension::get_datos($recurso,$condicion,$valor);
                 //luego arma el where
-                $where .= ' AND id_designacion in (';
-                foreach ($res as $key) {
-                    $where .= $key['id_designacion'].",";
+                $where2 .= ' AND id_designacion in (';
+                foreach ($res as $key => $value) {
+                   $where2 .= $value['id_designacion'].","; 
                 }
-                $where = rtrim($where, ",").")";
+
+                $where2 = rtrim($where2, ",").")";
+
                 ///
 		if ($order_by == "") {
                     $order_by = "ORDER BY d.id_docente ASC";
@@ -151,7 +169,7 @@ class modelo_docente
                             INNER JOIN
                                 designacion AS ds ON d.id_docente = ds.id_docente
                                 
-                            WHERE  $where $order_by $limit";
+                            WHERE  $where2 $order_by $limit";
                 $datos = toba::db()->consultar($sql);
                 return $datos;
 	}
@@ -165,7 +183,42 @@ class modelo_docente
 		$datos = toba::db()->consultar_fila($sql);
 		return $datos['cantidad'];
 	}
-
+        static function get_cant_docentes_directorespe($where = "")
+	{
+            //si filtra por id_pext entonces lo retiro del where
+             if(strpos($where,'id_pext')!==false){
+                $valor = intval(filter_var($where, FILTER_SANITIZE_NUMBER_INT)) ;
+                $condicion='id-pext';
+                $where2=" 1=1 ";
+            }else{
+                $where2=$where;
+            }
+             $sql = "SELECT 
+                                    count(*) as cantidad
+                            FROM 
+                                    docente
+                            WHERE $where2";
+            $datos = toba::db()->consultar_fila($sql);
+            return $datos['cantidad'];
+	}
+        static function get_cant_docentes_codirectorespe($where = "")
+	{
+            //si filtra por id_pext entonces lo retiro del where
+             if(strpos($where,'id_pext')!==false){
+                $valor = intval(filter_var($where, FILTER_SANITIZE_NUMBER_INT)) ;
+                $condicion='id-pext';
+                $where2=" 1=1 ";
+            }else{
+                $where2=$where;
+            }
+             $sql = "SELECT 
+                                    count(*) as cantidad
+                            FROM 
+                                    docente
+                            WHERE $where2";
+            $datos = toba::db()->consultar_fila($sql);
+            return $datos['cantidad'];
+	}
 	//-------------------------------------
 	//---		DINAMICO
 	//-------------------------------------
@@ -247,7 +300,7 @@ class modelo_docente
             }
             return $fila;
 	}
-        //llamado por recurso docentescodirectorespe/id_pext
+        //llamado por recurso docentescodirectorespe/id_docente
         //recupera los datos personales de los docentes codirectores del id_pext expecifico
         function get_datos_codirectores_pext($incluir_imagen = false)
 	{

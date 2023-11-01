@@ -1,7 +1,7 @@
 <?php
 class consultas_extension
 {
-     //metodo generico para todos los servicios web que consume el modulo extension del modulo designa 
+     //metodo generico para todos los servicios web que consume el modulo designa del modulo extension
     //variables definidas en designa
     function get_datos($recurso,$cond=null,$valor=null){
         $username = getenv('SW_USUARIO');   
@@ -10,26 +10,17 @@ class consultas_extension
        
         switch ($recurso) {
             //todos los integrantes interno de pext que son directores
-            case '/docentes/docentesdirectorespe': 
-                $url=getenv('SW_URL_EXT_DIR');
-                if(!is_null($valor)){
-                    $condicion = "/".$valor ;
-                    
-                    //http://localhost/extension/1.0/rest/directores/123
+            case 'directores': 
+                $url=getenv('SW_URL_EXT_DIR');//http://localhost/extension/1.0/rest/directores
+                if(!is_null($cond)){
+                    $condicion = "?".$cond."=es_igual_a;".$valor ;
                 }
                 break;
-//            case '/docentes/docentescodirectorespe': 
-//                $url=getenv('SW_URL_EXT_CODIR');
-//                if(!is_null($valor)){
-//                    $condicion = "/".$valor ;
-//                    //http://localhost/extension/1.0/rest/codirectores/123
-//                }
-//                break;
             case 'codirectores': 
-                $url=getenv('SW_URL_EXT_CODIR');
-                if(!is_null($valor)){
-                    $condicion = "/".$valor ;
-                    //http://localhost/extension/1.0/rest/codirectores/123
+                $url=getenv('SW_URL_EXT_CODIR');//http://localhost/extension/1.0/rest/codirectores
+                if(!is_null($cond)){
+                    $condicion = "?".$cond."=es_igual_a;".$valor ;
+                    //http://localhost/extension/1.0/rest/codirectores?id-pext=es_igual;
                 }
                 break;    
                 //todos los integrantes de los proyectos de extension que estan en integrante_interno_pe

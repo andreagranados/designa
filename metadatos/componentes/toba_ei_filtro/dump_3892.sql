@@ -1121,7 +1121,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'opciones', --tipo
 	'cod_cati', --nombre
 	'cod_cati', --expresion
-	'Cod Investig', --etiqueta
+	'Cat Investig', --etiqueta
 	NULL, --descripcion
 	'0', --obligatorio
 	'0', --inicial
