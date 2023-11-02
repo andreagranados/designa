@@ -37,20 +37,15 @@ class dt_categorizacion extends toba_datos_tabla
             $where='';
         }
         
-        $sql="select distinct apellido,nombre,legajo,anio_categ,categoria,id_disciplina, disciplina,externa,case when externa then 'SI' else 'NO' end as exter,fecha_inicio_validez,fecha_fin_validez "
-                . " from (select distinct a.*,t_p.anio,t_de.uni_acad,vigente from "
-                        . "(select t_do.id_docente,t_do.apellido,t_do.nombre,t_do.legajo,t_c.anio_categ,t_c.id_cat,t_ci.descripcion as categoria,t_c.id_disciplina, t_d.descripcion as disciplina,t_c.externa, t_c.fecha_inicio_validez,t_c.fecha_fin_validez,case when fecha_fin_validez is not null then 0 else 1 end as vigente"
+        $sql="select * from (select t_do.id_docente,t_do.apellido,t_do.nombre,t_do.legajo,t_c.anio_categ,t_c.id_cat,t_ci.descripcion as categoria,t_c.id_disciplina, t_d.descripcion as disciplina,t_c.externa, t_c.fecha_inicio_validez,t_c.fecha_fin_validez,case when fecha_fin_validez is not null then 0 else 1 end as vigente,case when externa then 'SI' else 'NO' end as exter,t_c.uni_acad"
                         . " from categorizacion t_c"
                         . " LEFT OUTER JOIN docente t_do ON (t_c.id_docente=t_do.id_docente)"
                         . " LEFT OUTER JOIN categoria_invest t_ci ON (t_c.id_cat=t_ci.cod_cati)"
                         . " LEFT OUTER JOIN disciplina_categorizacion t_d ON (t_c.id_disciplina=t_d.id)"
-                        . ")a"
-                        . " LEFT OUTER JOIN designacion t_de ON (a.id_docente=t_de.id_docente)"
-                        . " LEFT OUTER JOIN mocovi_periodo_presupuestario t_p ON (t_de.desde <= t_p.fecha_fin and (t_de.hasta >= t_p.fecha_inicio or t_de.hasta is null))"
-                .$where.")b, unidad_acad c"
-                . " where b.uni_acad=c.sigla" 
-        
-                ." order by apellido,nombre,anio_categ";
+                        . " LEFT OUTER JOIN unidad_acad t_u ON (t_u.sigla=t_c.uni_acad)"
+                . ")sub"
+                .$where 
+                ." order by apellido,nombre,anio_categ";    
         $sql = toba::perfil_de_datos()->filtrar($sql);
         return toba::db('designa')->consultar($sql);
     }
