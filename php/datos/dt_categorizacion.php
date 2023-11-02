@@ -52,7 +52,6 @@ class dt_categorizacion extends toba_datos_tabla
         
                 ." order by apellido,nombre,anio_categ";
         $sql = toba::perfil_de_datos()->filtrar($sql);
-        
         return toba::db('designa')->consultar($sql);
     }
     function get_anios_categorizacion()

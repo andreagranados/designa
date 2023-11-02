@@ -10,6 +10,7 @@ class ci_permutas_ext extends toba_ci
 	//-----------------------------------------------------------------------------------
 	function conf__columnas(toba_ei_formulario $form)
 	{
+            $form->colapsar();
             $form->set_datos($this->s__columnas);    
 
 	}

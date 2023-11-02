@@ -1961,63 +1961,72 @@ class dt_designacion extends toba_datos_tabla
             return toba::db('designa')->consultar($sql);
         
         }
-        function get_listado_docentes($filtro=array())
+        //function get_listado_docentes($filtro=array())
+        function get_listado_docentes($where=null)
         {
-            
-            $where = "";
-            if (isset($filtro['uni_acad'])) {
-			$where.= "AND t_d.uni_acad = ".quote($filtro['uni_acad']);
-		}
-                
-            if (isset($filtro['anio'])) {
-		$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
-                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
-		}    
-            $where.=" AND t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)";    
-            
-            if (isset($filtro['id_departamento'])) {
-		 $where.=" AND t_d.id_departamento=".$filtro['id_departamento'];
-		}    
-            if (isset($filtro['id_area'])) {
-                $where.=" AND t_d.id_area=".$filtro['id_area'];
-            }
-            if (isset($filtro['id_orientacion'])) {
-                $where.=" AND t_d.id_orientacion=".$filtro['id_orientacion'];
-            }
-              
-            if (isset($filtro['condicion'])) {
-                switch ($filtro['condicion']) {
-                    case 'R': $where.=" AND t_d.carac='R'";    break;
-                    case 'I': $where.=" AND t_d.carac='I' AND t_d.cat_estat<>'ADSEnc'";    break;
-                    case 'O': $where.=" AND t_d.carac='O'";    break;
-                    case 'ASD': $where.=" AND t_d.cat_estat='ASDEnc' ".
-                            " and exists(select * from designacion b
-                                         where t_d.uni_acad=b.uni_acad".
-                                         " AND  b.cat_estat='ASD'".
-                                         " AND  b.carac='R'".
-                                         " AND b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null)".
-                                         " AND t_d.id_docente=b.id_docente ".
-                                    ")"
-                            . " AND not exists (select * from novedad t_no where t_d.id_designacion=t_no.id_designacion"
-                            . " AND t_no.tipo_nov=1 )";
-                        break;//ASD regulares encargados de catedra sin baja
-                    case 'EI': $where.=" AND t_d.cat_estat='ASDEnc' "
-                            ." and not exists(select * from designacion b
-                                         where t_d.uni_acad=b.uni_acad".
-                                         " AND  b.cat_estat='ASD'".
-                                         " AND  b.carac='R'".
-                                         " AND b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null)".
-                                         " AND t_d.id_docente=b.id_docente ".
-                                    ")"
-                             . " AND not exists (select * from novedad t_no where t_d.id_designacion=t_no.id_designacion"
-                            . " AND t_no.tipo_nov=1 )";
-                        break;//Encargados de Catedra Interinos que no son ASD, sin baja
-                    
+             if(!is_null($where)){
+                    $where=' WHERE '.$where;
+                }else{
+                    $where='';
                 }
-            }    
+//            $where = "";
+//            if (isset($filtro['uni_acad'])) {
+//			$where.= "AND t_d.uni_acad = ".quote($filtro['uni_acad']);
+//		}
+//                
+//            if (isset($filtro['anio'])) {
+//		$udia=dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']);
+//                $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']);
+//		}    
+//            $where.=" AND t_d.desde <= '".$udia."' and (t_d.hasta >= '".$pdia."' or t_d.hasta is null)";    
+//            
+//            if (isset($filtro['id_departamento'])) {
+//		 $where.=" AND t_d.id_departamento=".$filtro['id_departamento'];
+//		}    
+//            if (isset($filtro['id_area'])) {
+//                $where.=" AND t_d.id_area=".$filtro['id_area'];
+//            }
+//            if (isset($filtro['id_orientacion'])) {
+//                $where.=" AND t_d.id_orientacion=".$filtro['id_orientacion'];
+//            }
+//              
+//            if (isset($filtro['condicion'])) {
+//                switch ($filtro['condicion']) {
+//                    case 'R': $where.=" AND t_d.carac='R'";    break;
+//                    case 'I': $where.=" AND t_d.carac='I' AND t_d.cat_estat<>'ADSEnc'";    break;
+//                    case 'O': $where.=" AND t_d.carac='O'";    break;
+//                    case 'ASD': $where.=" AND t_d.cat_estat='ASDEnc' ".
+//                            " and exists(select * from designacion b
+//                                         where t_d.uni_acad=b.uni_acad".
+//                                         " AND  b.cat_estat='ASD'".
+//                                         " AND  b.carac='R'".
+//                                         " AND b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null)".
+//                                         " AND t_d.id_docente=b.id_docente ".
+//                                    ")"
+//                            . " AND not exists (select * from novedad t_no where t_d.id_designacion=t_no.id_designacion"
+//                            . " AND t_no.tipo_nov=1 )";
+//                        break;//ASD regulares encargados de catedra sin baja
+//                    case 'EI': $where.=" AND t_d.cat_estat='ASDEnc' "
+//                            ." and not exists(select * from designacion b
+//                                         where t_d.uni_acad=b.uni_acad".
+//                                         " AND  b.cat_estat='ASD'".
+//                                         " AND  b.carac='R'".
+//                                         " AND b.desde <= '".$udia."' and (b.hasta >= '".$pdia."' or b.hasta is null)".
+//                                         " AND t_d.id_docente=b.id_docente ".
+//                                    ")"
+//                             . " AND not exists (select * from novedad t_no where t_d.id_designacion=t_no.id_designacion"
+//                            . " AND t_no.tipo_nov=1 )";
+//                        break;//Encargados de Catedra Interinos que no son ASD, sin baja
+//                    
+//                }
+//            }    
            
-            $sql = "SELECT distinct t_d.id_designacion,
-                        t_d1.apellido||', '||t_d1.nombre as docente_nombre,
+            $sql = "SELECT * FROM 
+                (SELECT distinct t_d.id_designacion,
+                        trim(t_d1.apellido)||', '||trim(t_d1.nombre) as docente_nombre,
+                        t_d1.tipo_sexo,
+                        t_d1.fec_ingreso,
+                        t_d1.fec_nacim,
                         t_d1.legajo, 
                         t_d1.nro_docum,
                         t_d.nro_cargo,
@@ -2028,7 +2037,8 @@ class dt_designacion extends toba_datos_tabla
                         t_cs.descripcion as cat_mapuche_nombre,  
                         t_d.cat_estat,
                         t_d.dedic, 
-                        t_c.descripcion as carac,
+                        t_d.carac,
+                        t_c.descripcion as desccarac,
                         t_d.id_departamento,
                         t_d.id_area,
                         t_d.id_orientacion,
@@ -2041,6 +2051,7 @@ class dt_designacion extends toba_datos_tabla
                         t_n.nro_norma, 
                         t_x.nombre_tipo as tipo_norma,
                         t_d.observaciones,
+                        t_pe.anio,
                         case when t_nov.id_novedad is not null then 'SI' else '' end as lsgh
                         
                         
@@ -2058,7 +2069,8 @@ class dt_designacion extends toba_datos_tabla
                         LEFT OUTER JOIN departamento as t_d3 ON (t_d.id_departamento = t_d3.iddepto) 
                         LEFT OUTER JOIN area as t_a ON (t_d.id_area = t_a.idarea) 
                         LEFT OUTER JOIN orientacion as t_o ON (t_d.id_orientacion = t_o.idorient and t_o.idarea=t_a.idarea)
-                        LEFT OUTER JOIN novedad as t_nov ON (t_d.id_designacion=t_nov.id_designacion and t_nov.tipo_nov=2),
+                        LEFT OUTER JOIN novedad as t_nov ON (t_d.id_designacion=t_nov.id_designacion and t_nov.tipo_nov=2)
+                        INNER JOIN mocovi_periodo_presupuestario t_pe ON (t_d.desde <= t_pe.fecha_fin and (t_d.hasta >= t_pe.fecha_inicio or t_d.hasta is null)),
                         docente as t_d1,
                         caracter as t_c,
                         unidad_acad as t_ua
@@ -2066,9 +2078,11 @@ class dt_designacion extends toba_datos_tabla
                         AND t_d.carac = t_c.id_car 
                         AND t_d.uni_acad = t_ua.sigla 
                         AND t_d.tipo_desig=1 
-                    ";
-            //En este listado no muestra las designaciones que han sido dadas de baja
-            $sql.=$where. " and not exists (select * from novedad t_no where t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov=1)";
+                        AND not (t_d.hasta is not null and t_d.hasta<=t_d.desde)
+                        )sub
+                        $where";
+
+            //$sql.=$where. " and not exists (select * from novedad t_no where t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov=1)";
             
             return toba::db('designa')->consultar($sql);
         }
@@ -2620,13 +2634,38 @@ class dt_designacion extends toba_datos_tabla
             }else{
                 $where='';
             }
+            
             $sql2="select * from unidad_acad "; 
             $sql2 = toba::perfil_de_datos()->filtrar($sql2);//WHERE /*-------- PERFIL DE DATOS --------*/ ( unidad_acad.sigla IN ('FAIF ') ) /*------------------------*/
             
-            $sql="select * from(
-                     select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
-                    t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_p.descripcion as periodo,t_l.desc_item as rol,t_a.carga_horaria
-                    from designacion t_d 
+            $sql="SELECT * from(
+                     SELECT t_d.id_designacion,
+                     t_a.anio,
+                     trim(t_do.apellido)||', '||trim(t_do.nombre) as docente_nombre,
+                     t_do.legajo,
+                     t_do.nro_docum,
+                     coalesce(t_do.correo_institucional,'')||' '|| coalesce(t_do.correo_personal,'') as correo,
+                     t_d.cat_mapuche,
+                     t_d.cat_estat||'-'||t_d.dedic as cat_estat,
+                     t_d.carac,
+                     t_d.desde,
+                     t_d.hasta,
+                     t_de.descripcion as departamento,
+                     t_ar.descripcion as area,
+                     t_o.descripcion as orientacion,
+                     t_e.uni_acad as uni_acad,
+                     t_d.uni_acad as ua,
+                     t_m.id_materia,
+                     t_m.desc_materia,
+                     t_m.cod_siu,
+                     t_e.id_plan,
+                     t_e.cod_carrera,
+                     t_e.ordenanza,
+                     t_p.descripcion as periodo,
+                     t_l.desc_item as rol,
+                     t_a.carga_horaria,
+                     STRING_AGG(to_char(t_no.desde,'DD/MM/YYYY')||'-'||to_char(t_no.hasta,'DD/MM/YYYY'),' Y ') as lic
+                    FROM designacion t_d 
                     LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
                     LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
                     LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
@@ -2636,11 +2675,39 @@ class dt_designacion extends toba_datos_tabla
                     INNER JOIN docente t_do ON (t_d.id_docente=t_do.id_docente)
                     INNER JOIN periodo t_p ON (t_a.id_periodo=t_p.id_periodo)
                     INNER JOIN tipo t_l ON (t_l.desc_abrev=t_a.rol)
-                    where t_e.uni_acad<>t_d.uni_acad"
+                    INNER JOIN mocovi_periodo_presupuestario t_pe ON (t_pe.anio=t_a.anio)
+                    LEFT OUTER JOIN (select * from novedad order by desde,hasta) t_no 
+                                            ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<=t_pe.fecha_fin and (t_no.hasta>t_pe.fecha_inicio or t_no.hasta is null))
+                    where t_e.uni_acad<>t_d.uni_acad
+                    GROUP BY t_d.id_designacion,t_a.anio,t_do.apellido,t_do.nombre,t_do.legajo,t_do.nro_docum,t_do.correo_institucional,t_do.correo_personal,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion,t_ar.descripcion,t_o.descripcion, t_e.uni_acad,t_d.uni_acad, t_m.id_materia,t_m.desc_materia,t_m.cod_siu,t_e.id_plan,t_e.cod_carrera,t_e.ordenanza,t_p.descripcion,t_l.desc_item,t_a.carga_horaria"
                     ." UNION
-                    select t_d.id_designacion,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
-                    t_p.uni_acad as uni_acad,t_d.uni_acad as ua,t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera ,t_p.ordenanza, t_pe.descripcion as periodo,t_l.desc_item as rol,t_a.carga_horaria
-                    from designacion t_d
+                    SELECT t_d.id_designacion,
+                    t_a.anio,
+                    trim(t_do.apellido)||', '||trim(t_do.nombre) as docente_nombre,
+                    t_do.legajo,
+                    t_do.nro_docum,
+                     coalesce(t_do.correo_institucional,'')||' '|| coalesce(t_do.correo_personal,'') as correo,
+                    t_d.cat_mapuche,
+                    t_d.cat_estat||'-'||t_d.dedic as cat_estat,
+                    t_d.carac,
+                    t_d.desde,
+                    t_d.hasta,
+                    t_de.descripcion as departamento,
+                    t_ar.descripcion as area,
+                    t_o.descripcion as orientacion,
+                    t_p.uni_acad as uni_acad,
+                    t_d.uni_acad as ua,
+                    t_m.id_materia,
+                    t_m.desc_materia,
+                    t_m.cod_siu,
+                    t_p.id_plan,
+                    t_p.cod_carrera ,
+                    t_p.ordenanza, 
+                    t_pe.descripcion as periodo,
+                    t_l.desc_item as rol,
+                    t_a.carga_horaria,
+                    STRING_AGG(to_char(t_no.desde,'DD/MM/YYYY')||'-'||to_char(t_no.hasta,'DD/MM/YYYY'),' Y ') as lic
+                    FROM designacion t_d
                     LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
                     LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
                     LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
@@ -2654,14 +2721,124 @@ class dt_designacion extends toba_datos_tabla
                     INNER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
 		    INNER JOIN periodo t_pe ON (t_a.id_periodo=t_pe.id_periodo)
                     INNER JOIN tipo t_l ON (t_l.desc_abrev=t_a.rol)
-                    where t_p.uni_acad<>t_d.uni_acad 
+                    LEFT OUTER JOIN (select * from novedad order by desde,hasta) t_no 
+                                            ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<=t_pp.fecha_fin and (t_no.hasta>t_pp.fecha_inicio or t_no.hasta is null))
+                    WHERE t_p.uni_acad<>t_d.uni_acad 
+                    GROUP BY t_d.id_designacion,t_a.anio,t_do.apellido,t_do.nombre,t_do.legajo,t_do.nro_docum,t_do.correo_institucional,t_do.correo_personal,                   t_d.cat_mapuche,t_d.cat_estat,t_d.dedic, t_d.carac,t_d.desde,t_d.hasta,t_de.descripcion ,t_ar.descripcion ,t_o.descripcion ,t_p.uni_acad,t_d.uni_acad , t_m.id_materia,t_m.desc_materia,t_m.cod_siu,t_p.id_plan,t_p.cod_carrera,t_p.ordenanza, t_pe.descripcion ,t_l.desc_item ,t_a.carga_horaria
             )sub
-          inner join (".$sql2.") t_u on t_u.sigla=sub.ua
+          INNER JOIN (".$sql2.") t_u ON t_u.sigla=sub.ua
             $where
            ";
         
             return toba::db('designa')->consultar($sql);
         }
+//        function get_permutas_externas($where=null){
+//            if(!is_null($where)){
+//                $where=' where '.$where;
+//            }else{
+//                $where='';
+//            }
+//           
+//            $x=toba::usuario()->get_id();           
+//            $z=toba::usuario()->get_perfil_datos($x);
+//            //si el usuario esta asociado a un perfil de datos
+//            if(isset($z)){//si una variable está definida y no es NULL
+//                $sql="select sigla,descripcion from unidad_acad ";
+//                $sql = toba::perfil_de_datos()->filtrar($sql);
+//                $resul=toba::db('designa')->consultar($sql);
+//                $sql =  "select * from(" 
+//               ."select t_d.id_designacion,t_doc.nro_docum,coalesce(t_doc.correo_institucional,'')||' '|| coalesce(t_doc.correo_personal,'') as correo,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+//                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_p.descripcion as periodo
+//                        from designacion t_d 
+//                        INNER JOIN docente t_doc ON t_d.id_docente = t_doc.id_docente 
+//                        LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
+//                        LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+//                        LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+//                        LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
+//                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo, tipo t_t, periodo t_p
+//                        where t_a.id_designacion=t_d.id_designacion
+//                        and t_a.id_materia=t_m.id_materia
+//                        and t_m.id_plan=t_e.id_plan
+//                        and t_d.id_docente=t_do.id_docente
+//                        and t_a.modulo=t_mo.id_modulo
+//                        and t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla
+//                        and t_a.id_periodo=t_p.id_periodo
+//                        and t_e.uni_acad<>t_d.uni_acad
+//                        and t_d.uni_acad<>'".$resul[0]['sigla']."'"
+//                        . " and t_e.uni_acad='".$resul[0]['sigla']."'"
+//                        ." UNION "//para incorporar las materias en conjunto
+//                        . "  select t_d.id_designacion,t_do.nro_docum,coalesce(t_do.correo_institucional,'')||' '|| coalesce(t_do.correo_personal,'') as correo,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+//                        t_p.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_per.descripcion as periodo
+//                    from designacion t_d
+//                    LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
+//                    LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+//                    LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+//                    LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
+//                    INNER JOIN asignacion_materia t_a ON t_d.id_designacion=t_a.id_designacion
+//                    INNER JOIN modulo t_mo ON (t_a.modulo=t_mo.id_modulo)
+//                    INNER JOIN tipo t_t ON ( t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla)
+//                    INNER JOIN periodo t_per ON  (t_a.id_periodo=t_per.id_periodo)
+//                    INNER JOIN docente t_do ON t_d.id_docente=t_do.id_docente
+//                    INNER JOIN mocovi_periodo_presupuestario t_pp ON (t_pp.anio=t_a.anio)
+//                    INNER JOIN en_conjunto t_e ON (t_a.id_materia=t_e.id_materia )
+//                    INNER JOIN conjunto t_c ON (t_c.id_conjunto=t_e.id_conjunto and t_c.id_periodo=t_a.id_periodo and t_c.id_periodo_pres=t_pp.id_periodo and t_d.uni_acad=t_c.ua)
+//                    INNER JOIN en_conjunto t_ee ON t_ee.id_conjunto=t_c.id_conjunto --obtengo las materias del conjunto 
+//                    INNER JOIN materia t_m ON (t_ee.id_materia=t_m.id_materia)
+//                    INNER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
+//		    INNER JOIN periodo t_pe ON (t_a.id_periodo=t_pe.id_periodo)
+//                    INNER JOIN tipo t_l ON (t_l.desc_abrev=t_a.rol)
+//                    where t_p.uni_acad<>t_d.uni_acad"    
+//                        ." and t_d.uni_acad<>'".$resul[0]['sigla']."'"
+//                        . " and t_p.uni_acad='".$resul[0]['sigla']."'"
+//                        .")b $where"
+//                   . " order by desc_materia,anio, periodo,modulo,rol,docente_nombre";
+//                  
+//              }else{//el usuario no esta asociado a ningun perfil de datos
+//                 $sql =  "select * from(" 
+//                          ." select t_d.id_designacion,t_doc.nro_docum,coalesce(t_doc.correo_institucional,'')||' '|| coalesce(t_doc.correo_personal,'') as correo,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+//                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_p.descripcion as periodo
+//                        from designacion t_d 
+//                        INNER JOIN docente t_doc ON t_d.id_docente = t_doc.id_docente 
+//                        LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
+//                        LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+//                        LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+//                        LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
+//                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo, tipo t_t, periodo t_p
+//                        where t_a.id_designacion=t_d.id_designacion
+//                        and t_a.id_materia=t_m.id_materia
+//                        and t_m.id_plan=t_e.id_plan
+//                        and t_d.id_docente=t_do.id_docente
+//                        and t_a.modulo=t_mo.id_modulo
+//                        and t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla
+//                        and t_a.id_periodo=t_p.id_periodo
+//                        and t_e.uni_acad<>t_d.uni_acad "
+//                        ." UNION "//para incorporar las materias en conjunto
+//                        . "  select t_d.id_designacion,t_do.nro_docum,coalesce(t_do.correo_institucional,'')||' '|| coalesce(t_do.correo_personal,'') as correo,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
+//                        t_p.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_per.descripcion as periodo
+//                    from designacion t_d
+//                    LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
+//                    LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+//                    LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+//                    LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
+//                    INNER JOIN asignacion_materia t_a ON t_d.id_designacion=t_a.id_designacion
+//                    INNER JOIN modulo t_mo ON (t_a.modulo=t_mo.id_modulo)
+//                    INNER JOIN tipo t_t ON ( t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla)
+//                    INNER JOIN periodo t_per ON  (t_a.id_periodo=t_per.id_periodo)
+//                    INNER JOIN docente t_do ON t_d.id_docente=t_do.id_docente
+//                    INNER JOIN mocovi_periodo_presupuestario t_pp ON (t_pp.anio=t_a.anio)
+//                    INNER JOIN en_conjunto t_e ON (t_a.id_materia=t_e.id_materia )
+//                    INNER JOIN conjunto t_c ON (t_c.id_conjunto=t_e.id_conjunto and t_c.id_periodo=t_a.id_periodo and t_c.id_periodo_pres=t_pp.id_periodo and t_d.uni_acad=t_c.ua)
+//                    INNER JOIN en_conjunto t_ee ON t_ee.id_conjunto=t_c.id_conjunto --obtengo las materias del conjunto 
+//                    INNER JOIN materia t_m ON (t_ee.id_materia=t_m.id_materia)
+//                    INNER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
+//		    INNER JOIN periodo t_pe ON (t_a.id_periodo=t_pe.id_periodo)
+//                    INNER JOIN tipo t_l ON (t_l.desc_abrev=t_a.rol)
+//                    where t_p.uni_acad<>t_d.uni_acad   
+//                        )b $where";
+//                        
+//              }
+//            return toba::db('designa')->consultar($sql);
+//        }
         function get_permutas_externas($where=null){
             if(!is_null($where)){
                 $where=' where '.$where;
@@ -2677,98 +2854,212 @@ class dt_designacion extends toba_datos_tabla
                 $sql = toba::perfil_de_datos()->filtrar($sql);
                 $resul=toba::db('designa')->consultar($sql);
                 $sql =  "select * from(" 
-               ."select t_d.id_designacion,t_doc.nro_docum,coalesce(t_doc.correo_institucional,'')||' '|| coalesce(t_doc.correo_personal,'') as correo,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
-                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_p.descripcion as periodo
-                        from designacion t_d 
-                        INNER JOIN docente t_doc ON t_d.id_docente = t_doc.id_docente 
-                        LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
-                        LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
-                        LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
-                        LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
-                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo, tipo t_t, periodo t_p
-                        where t_a.id_designacion=t_d.id_designacion
-                        and t_a.id_materia=t_m.id_materia
-                        and t_m.id_plan=t_e.id_plan
-                        and t_d.id_docente=t_do.id_docente
-                        and t_a.modulo=t_mo.id_modulo
-                        and t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla
-                        and t_a.id_periodo=t_p.id_periodo
-                        and t_e.uni_acad<>t_d.uni_acad
-                        and t_d.uni_acad<>'".$resul[0]['sigla']."'"
-                        . " and t_e.uni_acad='".$resul[0]['sigla']."'"
+                            ."select t_d.id_designacion,
+                                t_doc.nro_docum,
+                                coalesce(t_doc.correo_institucional,'')||' '|| coalesce(t_doc.correo_personal,'') as correo,
+                                t_a.anio,
+                                t_doc.apellido||', '||t_doc.nombre as docente_nombre,
+                                t_doc.legajo,
+                                t_d.cat_mapuche,
+                                t_d.cat_estat||'-'||t_d.dedic as cat_estat,
+                                t_d.carac,
+                                t_d.desde,
+                                t_d.hasta,
+                                t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,
+                                t_de.descripcion as departamento,
+                                t_ar.descripcion as area,
+                                t_o.descripcion as orientacion,
+                                t_e.uni_acad as uni_acad,
+                                t_d.uni_acad as ua,
+                                t_m.id_materia,
+                                t_m.desc_materia,
+                                t_m.cod_siu,
+                                t_e.id_plan,
+                                t_e.cod_carrera,
+                                t_e.ordenanza,
+                                t_mo.descripcion as modulo,
+                                t_t.desc_item as rol,
+                                t_p.descripcion as periodo,
+                                STRING_AGG(to_char(t_no.desde,'DD/MM/YYYY')||'-'||to_char(t_no.hasta,'DD/MM/YYYY'),' Y ') as lic
+                            FROM designacion t_d 
+                            INNER JOIN docente t_doc ON t_d.id_docente = t_doc.id_docente 
+                            LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
+                            LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+                            LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+                            LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
+                            INNER JOIN asignacion_materia t_a ON t_a.id_designacion=t_d.id_designacion
+                            INNER JOIN  materia t_m ON t_a.id_materia=t_m.id_materia
+                            INNER JOIN plan_estudio t_e ON t_m.id_plan=t_e.id_plan
+                            INNER JOIN modulo t_mo ON t_a.modulo=t_mo.id_modulo
+                            INNER JOIN tipo t_t ON (t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla)
+                            INNER JOIN periodo t_p ON t_a.id_periodo=t_p.id_periodo
+                            INNER JOIN mocovi_periodo_presupuestario t_pe ON (t_pe.anio=t_a.anio)
+                            LEFT OUTER JOIN (select * from novedad order by desde,hasta) t_no 
+                                            ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<=t_pe.fecha_fin and (t_no.hasta>t_pe.fecha_inicio or t_no.hasta is null))
+                            WHERE 
+                            t_e.uni_acad<>t_d.uni_acad
+                            AND t_d.uni_acad<>'".$resul[0]['sigla']."'"
+                            . " AND t_e.uni_acad='".$resul[0]['sigla']."'"
+                            . " GROUP BY t_d.id_designacion,t_doc.nro_docum,t_doc.correo_institucional,t_doc.correo_personal,t_a.anio,t_doc.apellido,t_doc.nombre,t_doc.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma,t_n.nro_norma,t_n.fecha,t_de.descripcion ,t_ar.descripcion ,t_o.descripcion ,
+                            t_e.uni_acad,t_d.uni_acad, t_m.id_materia,t_m.desc_materia,t_m.cod_siu,t_e.id_plan,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion,t_t.desc_item ,t_p.descripcion "
                         ." UNION "//para incorporar las materias en conjunto
-                        . "  select t_d.id_designacion,t_do.nro_docum,coalesce(t_do.correo_institucional,'')||' '|| coalesce(t_do.correo_personal,'') as correo,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
-                        t_p.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_per.descripcion as periodo
-                    from designacion t_d
-                    LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
-                    LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
-                    LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
-                    LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
-                    INNER JOIN asignacion_materia t_a ON t_d.id_designacion=t_a.id_designacion
-                    INNER JOIN modulo t_mo ON (t_a.modulo=t_mo.id_modulo)
-                    INNER JOIN tipo t_t ON ( t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla)
-                    INNER JOIN periodo t_per ON  (t_a.id_periodo=t_per.id_periodo)
-                    INNER JOIN docente t_do ON t_d.id_docente=t_do.id_docente
-                    INNER JOIN mocovi_periodo_presupuestario t_pp ON (t_pp.anio=t_a.anio)
-                    INNER JOIN en_conjunto t_e ON (t_a.id_materia=t_e.id_materia )
-                    INNER JOIN conjunto t_c ON (t_c.id_conjunto=t_e.id_conjunto and t_c.id_periodo=t_a.id_periodo and t_c.id_periodo_pres=t_pp.id_periodo and t_d.uni_acad=t_c.ua)
-                    INNER JOIN en_conjunto t_ee ON t_ee.id_conjunto=t_c.id_conjunto --obtengo las materias del conjunto 
-                    INNER JOIN materia t_m ON (t_ee.id_materia=t_m.id_materia)
-                    INNER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
-		    INNER JOIN periodo t_pe ON (t_a.id_periodo=t_pe.id_periodo)
-                    INNER JOIN tipo t_l ON (t_l.desc_abrev=t_a.rol)
-                    where t_p.uni_acad<>t_d.uni_acad"    
-                        ." and t_d.uni_acad<>'".$resul[0]['sigla']."'"
-                        . " and t_p.uni_acad='".$resul[0]['sigla']."'"
+                        . "  select t_d.id_designacion,
+                            t_do.nro_docum,
+                            coalesce(t_do.correo_institucional,'')||' '|| coalesce(t_do.correo_personal,'') as correo,
+                            t_a.anio,
+                            t_do.apellido||', '||t_do.nombre as docente_nombre,
+                            t_do.legajo,
+                            t_d.cat_mapuche,
+                            t_d.cat_estat||'-'||t_d.dedic as cat_estat,
+                            t_d.carac,
+                            t_d.desde,
+                            t_d.hasta,
+                            t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,
+                            t_de.descripcion as departamento,
+                            t_ar.descripcion as area,
+                            t_o.descripcion as orientacion,
+                            t_p.uni_acad as uni_acad,
+                            t_d.uni_acad as ua, 
+                            t_m.id_materia,
+                            t_m.desc_materia,
+                            t_m.cod_siu,
+                            t_p.id_plan,
+                            t_p.cod_carrera,
+                            t_p.ordenanza,
+                            t_mo.descripcion as modulo,
+                            t_t.desc_item as rol,
+                            t_per.descripcion as periodo,
+                            STRING_AGG(to_char(t_no.desde,'DD/MM/YYYY')||'-'||to_char(t_no.hasta,'DD/MM/YYYY'),' Y ') as lic
+                            FROM designacion t_d
+                            LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
+                            LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+                            LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+                            LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
+                            INNER JOIN asignacion_materia t_a ON t_d.id_designacion=t_a.id_designacion
+                            INNER JOIN modulo t_mo ON (t_a.modulo=t_mo.id_modulo)
+                            INNER JOIN tipo t_t ON ( t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla)
+                            INNER JOIN periodo t_per ON  (t_a.id_periodo=t_per.id_periodo)
+                            INNER JOIN docente t_do ON t_d.id_docente=t_do.id_docente
+                            INNER JOIN mocovi_periodo_presupuestario t_pp ON (t_pp.anio=t_a.anio)
+                            LEFT OUTER JOIN (select * from novedad order by desde,hasta) t_no 
+                                            ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<=t_pp.fecha_fin and (t_no.hasta>t_pp.fecha_inicio or t_no.hasta is null))
+                            INNER JOIN en_conjunto t_e ON (t_a.id_materia=t_e.id_materia )
+                            INNER JOIN conjunto t_c ON (t_c.id_conjunto=t_e.id_conjunto and t_c.id_periodo=t_a.id_periodo and t_c.id_periodo_pres=t_pp.id_periodo and t_d.uni_acad=t_c.ua)
+                            INNER JOIN en_conjunto t_ee ON t_ee.id_conjunto=t_c.id_conjunto --obtengo las materias del conjunto 
+                            INNER JOIN materia t_m ON (t_ee.id_materia=t_m.id_materia)
+                            INNER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
+                            INNER JOIN periodo t_pe ON (t_a.id_periodo=t_pe.id_periodo)
+                            INNER JOIN tipo t_l ON (t_l.desc_abrev=t_a.rol)
+                        WHERE t_p.uni_acad<>t_d.uni_acad"    
+                        ." AND t_d.uni_acad<>'".$resul[0]['sigla']."'"
+                        . " AND t_p.uni_acad='".$resul[0]['sigla']."'"
+                        . " GROUP BY t_d.id_designacion,t_do.nro_docum,t_do.correo_institucional,t_do.correo_personal,t_a.anio,t_do.apellido,t_do.nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma,t_n.nro_norma,t_n.fecha,t_de.descripcion,t_ar.descripcion ,t_o.descripcion,t_p.uni_acad ,t_d.uni_acad,t_m.id_materia,t_m.desc_materia,t_m.cod_siu,t_p.id_plan,t_p.cod_carrera,t_p.ordenanza,t_mo.descripcion,t_t.desc_item,t_per.descripcion"
                         .")b $where"
-                        . " order by desc_materia,anio, periodo,modulo,rol,docente_nombre";
+                   . " ORDER BY desc_materia,anio, periodo,modulo,rol,docente_nombre";
                   
               }else{//el usuario no esta asociado a ningun perfil de datos
-                 $sql =  "select * from(" 
-                          ." select t_d.id_designacion,t_doc.nro_docum,coalesce(t_doc.correo_institucional,'')||' '|| coalesce(t_doc.correo_personal,'') as correo,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
-                        t_e.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_p.descripcion as periodo
-                        from designacion t_d 
+                 $sql =  "SELECT * from(" 
+                          ." SELECT t_d.id_designacion,
+                              t_doc.nro_docum,
+                              coalesce(t_doc.correo_institucional,'')||' '|| coalesce(t_doc.correo_personal,'') as correo,
+                              t_a.anio,
+                              t_do.apellido||', '||t_do.nombre as docente_nombre,
+                              t_do.legajo,
+                              t_d.cat_mapuche,
+                              t_d.cat_estat||'-'||t_d.dedic as cat_estat,
+                              t_d.carac,
+                              t_d.desde,
+                              t_d.hasta,
+                              t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,
+                              t_de.descripcion as departamento,
+                              t_ar.descripcion as area,
+                              t_o.descripcion as orientacion,
+                            t_e.uni_acad as uni_acad,
+                            t_d.uni_acad as ua, 
+                            t_m.id_materia,
+                            t_m.desc_materia,
+                            t_m.cod_siu,
+                            t_e.id_plan,
+                            t_e.cod_carrera,
+                            t_e.ordenanza,
+                            t_mo.descripcion as modulo,
+                            t_t.desc_item as rol,
+                            t_p.descripcion as periodo,
+                            STRING_AGG(to_char(t_no.desde,'DD/MM/YYYY')||'-'||to_char(t_no.hasta,'DD/MM/YYYY'),' Y ') as lic
+                        FROM designacion t_d 
                         INNER JOIN docente t_doc ON t_d.id_docente = t_doc.id_docente 
                         LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
                         LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
                         LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
-                        LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea),
-                        asignacion_materia t_a,  materia t_m, plan_estudio t_e, docente t_do, modulo t_mo, tipo t_t, periodo t_p
-                        where t_a.id_designacion=t_d.id_designacion
-                        and t_a.id_materia=t_m.id_materia
-                        and t_m.id_plan=t_e.id_plan
-                        and t_d.id_docente=t_do.id_docente
-                        and t_a.modulo=t_mo.id_modulo
-                        and t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla
-                        and t_a.id_periodo=t_p.id_periodo
-                        and t_e.uni_acad<>t_d.uni_acad "
+                        LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
+                        INNER JOIN asignacion_materia t_a ON t_a.id_designacion=t_d.id_designacion
+                        INNER JOIN materia t_m ON t_a.id_materia=t_m.id_materia
+                        INNER JOIN plan_estudio t_e ON t_m.id_plan=t_e.id_plan
+                        INNER JOIN docente t_do ON t_d.id_docente=t_do.id_docente
+                        INNER JOIN modulo t_mo ON t_a.modulo=t_mo.id_modulo
+                        INNER JOIN tipo t_t ON (t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla)
+                        INNER JOIN periodo t_p ON t_a.id_periodo=t_p.id_periodo
+                        INNER JOIN mocovi_periodo_presupuestario t_pe ON (t_pe.anio=t_a.anio)
+                        LEFT OUTER JOIN (select * from novedad order by desde,hasta) t_no 
+					ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<=t_pe.fecha_fin and (t_no.hasta>t_pe.fecha_inicio or t_no.hasta is null))
+                        
+                        WHERE 
+                         t_e.uni_acad<>t_d.uni_acad 
+                         GROUP BY t_d.id_designacion,t_doc.nro_docum,t_doc.correo_institucional,t_doc.correo_personal,t_a.anio,t_do.apellido,t_do.nombre ,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma,t_n.nro_norma,t_n.fecha,t_de.descripcion,t_ar.descripcion,t_o.descripcion,t_e.uni_acad,t_d.uni_acad,t_m.id_materia,t_m.desc_materia,t_m.cod_siu,t_e.id_plan,t_e.cod_carrera,t_e.ordenanza,t_mo.descripcion,t_t.desc_item,t_p.descripcion "
                         ." UNION "//para incorporar las materias en conjunto
-                        . "  select t_d.id_designacion,t_do.nro_docum,coalesce(t_do.correo_institucional,'')||' '|| coalesce(t_do.correo_personal,'') as correo,t_a.anio,t_do.apellido||', '||t_do.nombre as docente_nombre,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat||'-'||t_d.dedic as cat_estat,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,t_de.descripcion as departamento,t_ar.descripcion as area,t_o.descripcion as orientacion,
-                        t_p.uni_acad as uni_acad,t_d.uni_acad as ua, t_m.desc_materia,t_m.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_mo.descripcion as modulo,t_t.desc_item as rol,t_per.descripcion as periodo
-                    from designacion t_d
-                    LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
-                    LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
-                    LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
-                    LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
-                    INNER JOIN asignacion_materia t_a ON t_d.id_designacion=t_a.id_designacion
-                    INNER JOIN modulo t_mo ON (t_a.modulo=t_mo.id_modulo)
-                    INNER JOIN tipo t_t ON ( t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla)
-                    INNER JOIN periodo t_per ON  (t_a.id_periodo=t_per.id_periodo)
-                    INNER JOIN docente t_do ON t_d.id_docente=t_do.id_docente
-                    INNER JOIN mocovi_periodo_presupuestario t_pp ON (t_pp.anio=t_a.anio)
-                    INNER JOIN en_conjunto t_e ON (t_a.id_materia=t_e.id_materia )
-                    INNER JOIN conjunto t_c ON (t_c.id_conjunto=t_e.id_conjunto and t_c.id_periodo=t_a.id_periodo and t_c.id_periodo_pres=t_pp.id_periodo and t_d.uni_acad=t_c.ua)
-                    INNER JOIN en_conjunto t_ee ON t_ee.id_conjunto=t_c.id_conjunto --obtengo las materias del conjunto 
-                    INNER JOIN materia t_m ON (t_ee.id_materia=t_m.id_materia)
-                    INNER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
-		    INNER JOIN periodo t_pe ON (t_a.id_periodo=t_pe.id_periodo)
-                    INNER JOIN tipo t_l ON (t_l.desc_abrev=t_a.rol)
-                    where t_p.uni_acad<>t_d.uni_acad   
+                        . "  SELECT t_d.id_designacion,
+                            t_do.nro_docum,
+                            coalesce(t_do.correo_institucional,'')||' '|| coalesce(t_do.correo_personal,'') as correo,
+                            t_a.anio,
+                            t_do.apellido||', '||t_do.nombre as docente_nombre,
+                            t_do.legajo,
+                            t_d.cat_mapuche,
+                            t_d.cat_estat||'-'||t_d.dedic as cat_estat,
+                            t_d.carac,
+                            t_d.desde,
+                            t_d.hasta,
+                            t_n.tipo_norma||': '||t_n.nro_norma||'/'||extract(year from t_n.fecha) as nro_norma,
+                            t_de.descripcion as departamento,
+                            t_ar.descripcion as area,
+                            t_o.descripcion as orientacion,
+                            t_p.uni_acad as uni_acad,
+                            t_d.uni_acad as ua, 
+                            t_m.id_materia,
+                            t_m.desc_materia,
+                            t_m.cod_siu,
+                            t_p.id_plan,
+                            t_p.cod_carrera,
+                            t_p.ordenanza,
+                            t_mo.descripcion as modulo,
+                            t_t.desc_item as rol,
+                            t_per.descripcion as periodo,
+                            STRING_AGG(to_char(t_no.desde,'DD/MM/YYYY')||'-'||to_char(t_no.hasta,'DD/MM/YYYY'),' Y ') as lic
+                            FROM designacion t_d
+                            LEFT OUTER JOIN norma t_n ON (t_n.id_norma=t_d.id_norma)
+                            LEFT OUTER JOIN departamento t_de ON (t_d.id_departamento=t_de.iddepto)
+                            LEFT OUTER JOIN area t_ar ON (t_d.id_area=t_ar.idarea)
+                            LEFT OUTER JOIN orientacion t_o ON (t_d.id_orientacion=t_o.idorient and t_ar.idarea=t_o.idarea)
+                            INNER JOIN asignacion_materia t_a ON t_d.id_designacion=t_a.id_designacion
+                            INNER JOIN modulo t_mo ON (t_a.modulo=t_mo.id_modulo)
+                            INNER JOIN tipo t_t ON ( t_a.rol=t_t.desc_abrev and t_a.nro_tab8=t_t.nro_tabla)
+                            INNER JOIN periodo t_per ON  (t_a.id_periodo=t_per.id_periodo)
+                            INNER JOIN docente t_do ON t_d.id_docente=t_do.id_docente
+                            INNER JOIN mocovi_periodo_presupuestario t_pp ON (t_pp.anio=t_a.anio)
+                            INNER JOIN en_conjunto t_e ON (t_a.id_materia=t_e.id_materia )
+                            INNER JOIN conjunto t_c ON (t_c.id_conjunto=t_e.id_conjunto and t_c.id_periodo=t_a.id_periodo and t_c.id_periodo_pres=t_pp.id_periodo and t_d.uni_acad=t_c.ua)
+                            INNER JOIN en_conjunto t_ee ON t_ee.id_conjunto=t_c.id_conjunto --obtengo las materias del conjunto 
+                            INNER JOIN materia t_m ON (t_ee.id_materia=t_m.id_materia)
+                            INNER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
+                            INNER JOIN periodo t_pe ON (t_a.id_periodo=t_pe.id_periodo)
+                            INNER JOIN tipo t_l ON (t_l.desc_abrev=t_a.rol)
+                            LEFT OUTER JOIN (select * from novedad order by desde,hasta) t_no 
+					ON (t_d.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<=t_pp.fecha_fin and (t_no.hasta>t_pp.fecha_inicio or t_no.hasta is null))
+                            WHERE t_p.uni_acad<>t_d.uni_acad   
+                            GROUP BY t_d.id_designacion,t_do.nro_docum,t_do.correo_institucional,t_do.correo_personal,t_a.anio,t_do.apellido, t_do.nombre ,t_do.legajo,t_d.cat_mapuche,t_d.cat_estat,t_d.dedic,t_d.carac,t_d.desde,t_d.hasta,t_n.tipo_norma,t_n.nro_norma,t_n.fecha,t_de.descripcion,t_ar.descripcion,t_o.descripcion,t_p.uni_acad,t_d.uni_acad,t_m.id_materia,t_m.desc_materia,t_m.cod_siu,t_p.id_plan,t_p.cod_carrera,t_p.ordenanza,t_mo.descripcion,t_t.desc_item,t_per.descripcion
                         )b $where";
                         
               }
             return toba::db('designa')->consultar($sql);
-            
         }
         function get_designaciones_asig_materia($anio){
             $pdia=dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
