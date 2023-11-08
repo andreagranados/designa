@@ -220,6 +220,7 @@ class ci_renovacion_interinos extends toba_ci
                              }
                             if($datos['pasaje_mat']==1){//tildado pasaje de materias
                                 $res=$this->dep('datos')->tabla('asignacion_materia')->get_materias($this->s__datos_filtro['anio_acad'],$desig_origen['id_designacion']);
+                                
                                 foreach ($res as $key => $value) {
                                     $con_materias=true;
                                     $datosm=$value;
@@ -227,6 +228,7 @@ class ci_renovacion_interinos extends toba_ci
                                     $datosm['anio']=$this->s__datos_filtro['anio_presup']  ;
                                     $this->dep('datos')->tabla('asignacion_materia')->set($datosm);
                                     $this->dep('datos')->tabla('asignacion_materia')->sincronizar();
+                                    $this->dep('datos')->tabla('asignacion_materia')->resetear();
                                 }
                             }
                             if($datos['pasaje_otra_activ']==1){//tildado pasaje de otras activ
@@ -238,13 +240,14 @@ class ci_renovacion_interinos extends toba_ci
                                     $datosm['anio']=$this->s__datos_filtro['anio_presup']  ;
                                     $this->dep('datos')->tabla('asignacion_tutoria')->set($datosm);
                                     $this->dep('datos')->tabla('asignacion_tutoria')->sincronizar();
+                                    $this->dep('datos')->tabla('asignacion_tutoria')->resetear();
                                 }
                             }
                             if($con_materias){
-                                $cartel=". Con materias.";
+                                $cartel.=". Con materias";
                             }
                             if($con_oa){
-                                $cartel=". Con otras actividades.";
+                                $cartel.=". Con otras actividades.";
                             }
                             toba::notificacion()->agregar(utf8_decode('La renovación se realizó con éxito'.$cartel), "info");
                             $this->resetear();
