@@ -5,7 +5,7 @@ class ci_renovacion_interinos extends toba_ci
         protected $s__listado;
         
        //trae todas las designaciones que tienen licencia en el periodo presupuestando
-        //y cuya categ sea menor o igual a la categ del suplente
+        //y cuya categ sea mayor o igual  a la categ del suplente
         function get_suplente_renovacion(){
             
             if ($this->dep('datos')->tabla('designacion')->esta_cargada()) {
@@ -16,6 +16,7 @@ class ci_renovacion_interinos extends toba_ci
                                         where c.id_periodo=p.id_periodo 
                                          and p.anio=".$this->s__datos_filtro['anio_presup']
                                          ." and c.codigo_siu='".$datos['cat_mapuche']."'";
+                    
                     $res= toba::db('designa')->consultar($sql);
                     $desde = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($this->s__datos_filtro['anio_presup']);//primer dia del anio actual
                     $hasta = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($this->s__datos_filtro['anio_presup']);//ultimo dia del anio presupuestando
@@ -30,7 +31,7 @@ class ci_renovacion_interinos extends toba_ci
                             . " where t_d.tipo_desig=1)a, unidad_acad b "
                             . " where a.uni_acad=b.sigla "
                             . " order by descripcion )sub2"
-                            . " where costo_basico<=".$res[0]['costo_basico']; 
+                            . " where costo_basico>=".$res[0]['costo_basico']; 
                     //var_dump($sql);exit;
                     return toba::db('designa')->consultar($sql); 
                 }
