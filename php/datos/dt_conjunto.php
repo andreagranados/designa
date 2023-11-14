@@ -81,25 +81,19 @@ class dt_conjunto extends toba_datos_tabla
             $where='';
         }
         
-            //CUANDO ESTEMOS VERSION 9.1 DE POSTGRES
-    //		$sql="select c.id_conjunto,c.descripcion,o.anio,c.ua,p.descripcion as id_periodo_nombre,string_agg(m.desc_materia||'('||pp.cod_carrera||' de '||pp.uni_acad||')',' ,') as mat_conj
-    //                        from conjunto c
-    //                        left outer join en_conjunto e on (c.id_conjunto=e.id_conjunto)
-    //                        left outer join materia m on (m.id_materia=e.id_materia)
-    //                        left outer join plan_estudio pp on (m.id_plan=pp.id_plan)
-    //                        left outer join periodo p on (c.id_periodo=p.id_periodo)
-    //                        left outer join mocovi_periodo_presupuestario o on (o.id_periodo=c.id_periodo_pres)
-    //                        $where
-    //                    group by c.id_conjunto,o.anio,c.descripcion,c.ua,p.descripcion          
-    //                    order by p.descripcion,c.descripcion";
-        $sql="select sub.id_conjunto,sub.descripcion,sub.anio,sub.ua,p.descripcion as id_periodo_nombre,COUNT(distinct e.id_materia) as cant_mat"
-                . " from(select * from (select c.*,o.anio from conjunto c"
-                . " left outer join mocovi_periodo_presupuestario o on (o.id_periodo=c.id_periodo_pres) )sub2"
-                . $where.")sub "
-                . " left outer join en_conjunto e on (sub.id_conjunto=e.id_conjunto)"
-                . " left outer join periodo p on (sub.id_periodo=p.id_periodo)"
-                . " group by sub.id_conjunto,sub.anio,sub.descripcion,sub.ua,p.descripcion          "
-                ;
+        //CUANDO ESTEMOS VERSION 9.1 DE POSTGRES
+            $sql="select * from (select c.id_conjunto,c.tiene_mat_externas,c.descripcion,o.anio,c.ua,p.descripcion as id_periodo_nombre,count(distinct e.id_materia) as cant_mat,string_agg(m.desc_materia||'('||pp.cod_carrera||' de '||pp.uni_acad||')',' ,') as mat_conj
+                        from conjunto c
+                        left outer join en_conjunto e on (c.id_conjunto=e.id_conjunto)
+                        left outer join materia m on (m.id_materia=e.id_materia)
+                        left outer join plan_estudio pp on (m.id_plan=pp.id_plan)
+                        left outer join periodo p on (c.id_periodo=p.id_periodo)
+                        left outer join mocovi_periodo_presupuestario o on (o.id_periodo=c.id_periodo_pres)
+
+                    group by c.id_conjunto,o.anio,c.descripcion,c.ua,p.descripcion          
+                    order by p.descripcion,c.descripcion)sub
+                    $where";
+                    
         return toba::db('designa')->consultar($sql);
     }
 

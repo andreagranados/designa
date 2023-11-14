@@ -6,12 +6,22 @@ class ci_conjuntos extends toba_ci
         protected $s__mostrar_e;
 
         function get_materias(){
+            $conj=$this->dep('datos')->tabla('conjunto')->get();          
             //ojo aqui que no sea null la descripcion
-            $sql="select id_materia,cod_carrera||'('||ordenanza||')'||desc_materia||'('||cod_siu||')' as descripcion from materia t_m, plan_estudio t_p, unidad_acad t_u"
+            $sql="select id_materia,uni_acad||'-'||cod_carrera||'('||ordenanza||')'||desc_materia||'('||case when cod_siu is null then '' else cod_siu end||')' as descripcion "
+                    . "from materia t_m, plan_estudio t_p, unidad_acad t_u"
                     . " where t_m.id_plan=t_p.id_plan "
                     . " and t_p.uni_acad=t_u.sigla"
                     . " and t_p.activo ";
-            $sql = toba::perfil_de_datos()->filtrar($sql);
+            //lo aplica solo cuando el conjunto tien el tilde de tiene materias externas
+            if(isset($conj['tiene_mat_externas'])){
+                if(!$conj['tiene_mat_externas']){//no tiene materias externas
+                    $sql = toba::perfil_de_datos()->filtrar($sql);
+                }//tiene materias externas entonces trae de todas las UA
+            }else{
+                $sql = toba::perfil_de_datos()->filtrar($sql);
+            }
+           // $sql = toba::perfil_de_datos()->filtrar($sql);
             $sql=$sql." order by descripcion";
             return toba::db('designa')->consultar($sql);
         }
@@ -80,7 +90,7 @@ class ci_conjuntos extends toba_ci
 
 	
         function evt__formulario__guardar($datos)
-        {
+        {print_r($datos);
             $conj=$this->dep('datos')->tabla('conjunto')->get();
             $this->dep('datos')->tabla('en_conjunto')->borrar_materias($conj['id_conjunto']);
             $x=$datos['id_materia'];

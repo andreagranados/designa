@@ -337,7 +337,7 @@ class dt_docente extends toba_datos_tabla
                 }
                 $conjunto=implode(",",$doc);
                 //recupero de mapuche los datos de las personas con documento x
-                       
+                   
                 $datos_mapuche = consultas_mapuche::get_dh01($conjunto);
                 if(count($datos_mapuche)>0){ 
                     $sql=" CREATE LOCAL TEMP TABLE auxi(

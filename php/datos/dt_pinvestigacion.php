@@ -1416,6 +1416,34 @@ class dt_pinvestigacion extends toba_datos_tabla
                 ." order by uni_acad,id_pinv,agente,desde";
             return  toba::db('designa')->consultar($sql);
         }
+        function get_diferencias_categorias($filtro=null){
+             if(!is_null($filtro)){
+              $where=' WHERE '.$filtro;
+            }else{
+               $where=' WHERE 1=1 ';
+            }
+            //toma como categoria real la categoria del anio categ mayor
+             $sql="select * from 
+                (select p.id_pinv,p.codigo,p.estado,p.uni_acad,i.id_designacion,trim(doc.apellido)||', '||trim(doc.nombre) as agente,doc.legajo,nro_cuil1||'-'||lpad(cast(nro_cuil as text),8,'0')||'-'||nro_cuil2 as cuil,c.descripcion as cat_en_proy,c2.descripcion as cat_real,f.descripcion as fn,i.desde,i.hasta,max(de.uni_acad) as ua_docente,case when ca.id_cat is null then case when i.cat_investigador<>6 then 'D' else 'I' end else case when i.cat_investigador<>ca.id_cat then 'D' else 'I' end end as difer
+                from pinvestigacion p
+                inner join integrante_interno_pi i on (p.id_pinv=i.pinvest)
+                inner join funcion_investigador f on (i.funcion_p =f.id_funcion)
+                left outer join categoria_invest c on (i.cat_investigador=c.cod_cati)
+                left outer join designacion d on (i.id_designacion=d.id_designacion)
+                left outer join docente doc on (doc.id_docente=d.id_docente)
+                left outer join (select id_docente,max(anio_categ) as anio
+                                from categorizacion 
+                                where fecha_fin_validez is null
+                                group by id_docente) sub on (sub.id_docente=doc.id_docente )
+                left outer join categorizacion ca on (ca.id_docente=sub.id_docente and ca.anio_categ=sub.anio)		
+                left outer join categoria_invest c2 on (ca.id_cat=c2.cod_cati)
+                left outer join designacion de on (de.id_designacion=i.id_designacion)
+                where (p.estado ='A' or p.estado='N')	
+                group by id_pinv, codigo,p.estado,p.uni_acad,i.id_designacion,apellido,nombre,legajo,nro_cuil1,nro_cuil,nro_cuil2,c.descripcion,c2.descripcion,f.descripcion,i.desde,i.hasta,i.cat_investigador,ca.id_cat
+                order by p.uni_acad,p.id_pinv)sub
+                $where"." and difer='D'";
+            return  toba::db('designa')->consultar($sql);
+        }
 }
          
 ?>

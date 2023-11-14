@@ -32,7 +32,7 @@ class dt_tutoria extends toba_datos_tabla
 		FROM
 			tutoria as t_t, unidad_acad as t_ua
                 WHERE  t_t.uni_acad = t_ua.sigla
-		";
+		ORDER BY descripcion ";
             $sql = toba::perfil_de_datos()->filtrar($sql);
             return toba::db('designa')->consultar($sql);
 	}
