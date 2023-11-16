@@ -45,7 +45,7 @@ class dt_categorizacion extends toba_datos_tabla
         if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
             $where.=" and uni_acad='".$resul[0]['sigla']."'";
         }
-print_r($where);
+
         $anio=dt_mocovi_periodo_presupuestario::get_anio_actual()[0]['anio'];
         $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
         $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
