@@ -280,15 +280,15 @@ class ci_docente extends toba_ci
              if ($this->dep('datos')->tabla('designacion')->esta_cargada()) {
                 $designacion=$this->dep('datos')->tabla('designacion')->get();
                 
-                $desde=date_format(date_create($designacion['desde']),'d-m-Y');
+                $desde=date_format(date_create($designacion['desde']),'d/m/Y');
                 if ($designacion['hasta']==null){
                     $hasta="-";
                 }else{
-                    $hasta=date_format(date_create($designacion['hasta']),'d-m-Y');
+                    $hasta=date_format(date_create($designacion['hasta']),'d/m/Y');
                     
                 }
                 
-                $texto=utf8_decode('Categoría: ').$designacion['cat_mapuche']." Desde: ". $desde." Hasta: ".$hasta;
+                $texto=utf8_decode('Categoría: ').$designacion['cat_mapuche']." Desde: ". $desde." Hasta: ".$hasta." (ID Desig: ".$designacion['id_designacion']." )";
                 $form->set_titulo($texto);
             }
 	}

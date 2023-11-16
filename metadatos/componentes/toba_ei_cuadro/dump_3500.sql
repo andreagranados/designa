@@ -78,7 +78,7 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	NULL, --desplegable
 	NULL, --desplegable_activo
 	'1', --scroll
-	'250px', --scroll_alto
+	NULL, --scroll_alto
 	NULL, --cc_modo
 	NULL, --cc_modo_anidado_colap
 	NULL, --cc_modo_anidado_totcol
@@ -191,7 +191,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'5', --orden
 	'Crédito', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
-	'1', --estilo
+	'col-num-p3', --estilo
 	NULL, --ancho
 	'2', --formateo
 	NULL, --vinculo_indice

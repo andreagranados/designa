@@ -2,8 +2,7 @@
 class ci_credito_detallado extends toba_ci
 {
 	protected $s__datos_filtro;
-
-
+        
 	//---- Filtro -----------------------------------------------------------------------
 
 	function conf__filtro(toba_ei_formulario $filtro)

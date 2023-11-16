@@ -115,9 +115,12 @@ class dt_mocovi_credito extends toba_datos_tabla
 //	}
         function get_listado($filtro=array())
 	{
-		$where = "  where t_mc.id_escalafon='D'    ";
+                $where = "  where t_mc.id_escalafon='D'    ";        
 		if (isset($filtro['id_periodo'])) {
                         $where.= " and t_mc.id_periodo = ".$filtro['id_periodo'];
+		}
+                if (isset($filtro['id_tipo_credito'])) {
+                        $where.= " and t_mc.id_tipo_credito = ".$filtro['id_tipo_credito'];
 		}
 		if (isset($filtro['id_unidad'])) {
 			$where.= " and t_mc.id_unidad = ".quote($filtro['id_unidad']);
@@ -141,7 +144,7 @@ class dt_mocovi_credito extends toba_datos_tabla
 			t_mp.nombre as id_programa_nombre,
                         case when t_mc.documento is not null then  '<a href='||chr(39)||'creditos_dependencia/'||t_mc.documento||chr(39)|| ' target='||chr(39)||'_blank'||chr(39)||'>'||t_mc.documento||'</a>' else '' end as documento,
                         max(case when t_mc.credito<0 then 'Cede a: '||sub.id_unidad else 'Recibe de: '||sub.id_unidad end) as desc_extra
-		FROM
+                        FROM
 			mocovi_credito as t_mc	
                         LEFT OUTER JOIN mocovi_periodo_presupuestario as t_mpp ON (t_mc.id_periodo = t_mpp.id_periodo)
 			LEFT OUTER JOIN escalafon as t_e ON (t_mc.id_escalafon = t_e.id_escalafon)

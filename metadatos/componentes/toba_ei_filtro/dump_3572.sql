@@ -192,7 +192,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'designa', --objeto_ei_filtro_proyecto
 	'cadena', --tipo
 	'descripcion', --nombre
-	'descripcion', --expresion
+	'descripcion_auxi', --expresion
 	'Descripción', --etiqueta
 	NULL, --descripcion
 	'0', --obligatorio

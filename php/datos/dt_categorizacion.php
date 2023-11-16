@@ -1,4 +1,6 @@
 <?php
+require_once 'dt_mocovi_periodo_presupuestario.php';
+
 class dt_categorizacion extends toba_datos_tabla
 {
     function get_listado_desig($id_desig)
@@ -34,32 +36,29 @@ class dt_categorizacion extends toba_datos_tabla
         if(!is_null($where)){
             $where=' WHERE '.$where;
         }else{
-            $where='';
+            $where='WHERE 1=1 ';
         }
-        
-//        $sql="select * from (select t_do.id_docente,t_do.apellido,t_do.nombre,t_do.legajo,t_c.anio_categ,t_c.id_cat,t_ci.descripcion as categoria,t_c.id_disciplina, t_d.descripcion as disciplina,t_c.externa, t_c.fecha_inicio_validez,t_c.fecha_fin_validez,case when fecha_fin_validez is not null then 0 else 1 end as vigente,case when externa then 'SI' else 'NO' end as exter,t_c.uni_acad"
-//                        . " from categorizacion t_c"
-//                        . " LEFT OUTER JOIN docente t_do ON (t_c.id_docente=t_do.id_docente)"
-//                        . " LEFT OUTER JOIN categoria_invest t_ci ON (t_c.id_cat=t_ci.cod_cati)"
-//                        . " LEFT OUTER JOIN disciplina_categorizacion t_d ON (t_c.id_disciplina=t_d.id)"
-//                        . " LEFT OUTER JOIN unidad_acad t_u ON (t_u.sigla=t_c.uni_acad)"
-//                . ")sub"
-//                .$where 
-//                ." order by apellido,nombre,anio_categ";    
+        $sql_ua="select * from unidad_acad";
+        $sql_ua = toba::perfil_de_datos()->filtrar($sql_ua);
+        $resul=toba::db('designa')->consultar($sql_ua);
+        if(isset($resul)){
+            $where.=" and uni_acad='".$resul[0]['sigla']."'";
+        }
+        $anio=dt_mocovi_periodo_presupuestario::get_anio_actual()[0]['anio'];
+        $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
+        $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
         $sql="select * from (select distinct sub.*, case when t_d.id_designacion is null then 0 else 1 end as activo"
-                . " from (select t_do.id_docente,t_do.apellido,t_do.nombre,t_do.legajo,t_c.anio_categ,t_c.id_cat,t_ci.descripcion as categoria,t_c.id_disciplina, t_d.descripcion as disciplina,t_c.externa, t_c.fecha_inicio_validez,t_c.fecha_fin_validez,case when fecha_fin_validez is not null then 0 else 1 end as vigente,case when externa then 'SI' else 'NO' end as exter,t_c.uni_acad"
+                . " from (select t_do.id_docente,cast(t_do.nro_cuil1 as text)||'-'||LPAD(nro_cuil::text, 8, '0')||'-'||cast(nro_cuil2 as text) as cuil,t_do.apellido,t_do.nombre,t_do.legajo,t_c.anio_categ,t_c.id_cat,t_ci.descripcion as categoria,t_c.id_disciplina, t_d.descripcion as disciplina,t_c.externa, t_c.fecha_inicio_validez,t_c.fecha_fin_validez,case when fecha_fin_validez is not null then 0 else 1 end as vigente,case when externa then 'SI' else 'NO' end as exter,t_c.uni_acad"
                         . " from categorizacion t_c"
                         . " LEFT OUTER JOIN docente t_do ON (t_c.id_docente=t_do.id_docente)"
                         . " LEFT OUTER JOIN categoria_invest t_ci ON (t_c.id_cat=t_ci.cod_cati)"
                         . " LEFT OUTER JOIN disciplina_categorizacion t_d ON (t_c.id_disciplina=t_d.id)"
                         . " LEFT OUTER JOIN unidad_acad t_u ON (t_u.sigla=t_c.uni_acad)"
                 . ")sub"
-                . " LEFT OUTER JOIN designacion t_d ON (t_d.id_docente=sub.id_docente)
-                LEFT OUTER JOIN mocovi_periodo_presupuestario t_pe ON (t_pe.actual and t_d.desde<=t_pe.fecha_fin and (t_d.hasta is null or t_d.hasta>=t_pe.fecha_inicio))
+                . " LEFT OUTER JOIN designacion t_d ON (t_d.id_docente=sub.id_docente and t_d.desde<='".$udia."' and (t_d.hasta is null or t_d.hasta>='".$pdia."'))
                 )sub2"
                 .$where 
                ." order by apellido,nombre,anio_categ";  
-        $sql = toba::perfil_de_datos()->filtrar($sql);
         return toba::db('designa')->consultar($sql);
     }
     function get_anios_categorizacion()
