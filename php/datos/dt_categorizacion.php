@@ -38,13 +38,14 @@ class dt_categorizacion extends toba_datos_tabla
         }else{
             $where='WHERE 1=1 ';
         }
-//        $sql_ua="select * from unidad_acad";
-//        $sql_ua = toba::perfil_de_datos()->filtrar($sql_ua);
-//        
-//        $resul=toba::db('designa')->consultar($sql_ua);
-//        if(isset($resul)){
-//            $where.=" and uni_acad='".$resul[0]['sigla']."'";
-//        }
+        $con="select sigla from unidad_acad ";
+        $con = toba::perfil_de_datos()->filtrar($con);
+        $resul=toba::db('designa')->consultar($con);
+        $pd = toba::manejador_sesiones()->get_perfil_datos();//solo tiene valor si el usuario esta asociado a perfil de datos
+        if(isset($pd)){//pd solo tiene valor cuando el usuario esta asociado a un perfil de datos
+            $where.=" and uni_acad='".$resul[0]['sigla']."'";
+        }
+print_r($where);
         $anio=dt_mocovi_periodo_presupuestario::get_anio_actual()[0]['anio'];
         $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($anio);
         $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($anio);
