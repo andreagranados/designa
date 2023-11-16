@@ -194,7 +194,7 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'uni_acad', --nombre
 	'uni_acad', --expresion
 	'UA que presenta', --etiqueta
-	NULL, --descripcion
+	'UA por la que se presenta a categorizar', --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'2', --orden
@@ -426,7 +426,8 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'externa', --nombre
 	'externa', --expresion
 	'Externa', --etiqueta
-	NULL, --descripcion
+	'Si: se presentó a categorizar por otra Universidad. <br>
+No: se presentó a categorizar por la Unco.', --descripcion
 	'0', --obligatorio
 	'0', --inicial
 	'6', --orden

@@ -344,6 +344,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                 $tengo=0;      
                 }
             //print_r('tengo:'.$tengo);exit();
+            //print_r('gaste:'.$gaste);exit();
            
             if($gaste+$cuesta>$tengo){
                 return false;
