@@ -134,7 +134,7 @@ INSERT INTO apex_objeto_ci_pantalla (objeto_ci_proyecto, objeto_ci, pantalla, id
 	'pant_edicion', --identificador
 	'1', --orden
 	'Pantalla', --etiqueta
-	NULL, --descripcion
+	'Para poder ver los docentes que efectivamente están afectados a la materia,  descarte del listado las designaciones que están de licencia sin goce utilizando el Filtro "Licencia"', --descripcion
 	NULL, --tip
 	'apex', --imagen_recurso_origen
 	NULL, --imagen

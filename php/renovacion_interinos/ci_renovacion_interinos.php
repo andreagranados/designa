@@ -137,23 +137,30 @@ class ci_renovacion_interinos extends toba_ci
                 }else{
                     $datosn['cat_estat']=$datos['cat_estat'];
                 }
-                
-                
                 $datosn['dedic']=$datos['dedic'];
                 $datosn['carac']=$datos['carac'];
                 $ano=date("Y",strtotime($datos['desde']));
                 $mes=date("m",strtotime($datos['desde']));
                 $dia=date("d",strtotime($datos['desde']));
                 $ano=$ano+1;
-                $x=date("d/m/Y",strtotime($ano.'/'.$mes.'/'.$dia));
+                $x=date("Y-m-d",strtotime($ano.'/'.$mes.'/'.$dia));
                 $datosn['desde']=$x;
                 if($datos['hasta'] != null){
                     $anoh=date("Y",strtotime($datos['hasta']));
                     $mesh=date("m",strtotime($datos['hasta']));
                     $diah=date("d",strtotime($datos['hasta']));
                     $anoh=$anoh+1;
-                    $y=date("d/m/Y",strtotime($anoh.'/'.$mesh.'/'.$diah));
+                    $y=date("Y-m-d",strtotime($anoh.'/'.$mesh.'/'.$diah));
                     $datosn['hasta']=$y;
+                }
+                //para evitar que la nueva designacion quede por fuera del periodo presupuetando
+                $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($this->s__datos_filtro['anio_presup']);//primer dia del anio actual
+                $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($this->s__datos_filtro['anio_presup']);//ultimo dia del anio presupuestando
+                if($x<$pdia){
+                    $datosn['desde']=$pdia;
+                }
+                if($y>$udia){
+                    $datosn['hasta']=$udia;
                 }
                 $form->set_datos($datosn);
 		}

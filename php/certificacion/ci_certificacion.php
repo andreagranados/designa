@@ -110,11 +110,12 @@ class ci_certificacion extends toba_ci
             
             $ag=$this->dep('datos')->tabla('docente')->get_agente($this->s__agente['id_docente']);
             $leg=$this->dep('datos')->tabla('docente')->get_legajo($this->s__agente['id_docente']);
+            $dni=$this->dep('datos')->tabla('docente')->get_dni($this->s__agente['id_docente']);
             $desig=$this->dep('datos')->tabla('docente')->get_designaciones($this->s__agente['id_docente']);
             $salida->set_nombre_archivo('Certif_'.$leg.".pdf");     
             $i=0;
             
-            $texto="<b>CERTIFICO QUE: </b>".$ag." Legajo ".$leg." se ".utf8_decode('desempeña/ó')." en la Universidad Nacional del Comahue como:"."\n";
+            $texto="<b>CERTIFICO QUE: </b>".$ag." Legajo ".$leg.' '.$dni." se ".utf8_decode('desempeña/ó')." en la Universidad Nacional del Comahue como:"."\n";
             $datos[$i]=array('col1' => $texto);
             $i++;
                  

@@ -243,13 +243,14 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
           
         if(count($resul>0)){//el usuario esta asociado a un perfil de datos
             $ua=$resul[0]['sigla'];
-           
+
             //1 periodo actual
             //2 periodo presupuestando
             //obtengo inicio y fin del periodo actual o presupuestando
             $udia=$this->ultimo_dia_periodo($per);
             $pdia=$this->primer_dia_periodo($per);
             $anio=$this->annio($per);
+            
             switch ($per) {
                 case 1:     $where=" and m_e.actual";
                             $concat=" m_e.actual ";
@@ -277,6 +278,7 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             
             //----------dias trabajados dentro del periodo 1(actual) 2 (presupuestando)
             $dias=0;
+            
             if($desde>$udia || ($hasta!=null && $hasta<$pdia)){//cae fuera del periodo
                 $dias=0;
             }else{
@@ -297,7 +299,6 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
                         }
                   }
             }
-            
         //print_r('desde:'.$desde);print_r('hasta:'.$hasta);print_r($dias);exit();      
         $cuesta=$dias*$valor_categoria;
          

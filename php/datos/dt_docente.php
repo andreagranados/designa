@@ -18,6 +18,11 @@ class dt_docente extends toba_datos_tabla
             $res = toba::db('designa')->consultar($sql);
             return $res[0]['legajo'];
         }
+        function get_dni($id_doc){
+            $sql="select trim(tipo_docum)||': '||trim(to_char(nro_docum,'999G999G999G999D')) as dni from docente where id_docente=".$id_doc;
+            $res = toba::db('designa')->consultar($sql);
+            return $res[0]['dni'];
+        }
         function get_docum($id_doc){
             $sql="select trim(t.desc_abrev)||': '||trim(to_char(nro_docum,'999G999G999G999D'))  as doc"
                     . " from docente d, tipo t "
