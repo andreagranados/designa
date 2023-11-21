@@ -2553,6 +2553,12 @@ class dt_designacion extends toba_datos_tabla
                     case 0:$where.= " and not(desde<='".$udia."' and  ( hasta>='".$pdia."' or hasta is null ))";break;
                 }
             }
+            if (isset($filtro['lic'])) {
+                switch ($filtro['lic']['valor']) {
+                    case 1:$where.= " and lic is not null";break;
+                    case 0:$where.= " and lic is null";break;
+                }
+            }
 
             //si el usuario esta asociado a un perfil de datos
             $con="select sigla from unidad_acad ";
@@ -2573,15 +2579,18 @@ class dt_designacion extends toba_datos_tabla
                     case when conj='sin_conj' then cod_siu else cod_conj end as cod_siu,
                     case when conj='sin_conj' then cod_carrera else car_conj end as carrera,
                     case when conj='sin_conj' then ordenanza else ord_conj end as ordenanza,
-                    docente_nombre,legajo,cat_est,id_designacion,modulo,rol,periodo,id_conjunto,desde,hasta
+                    docente_nombre,legajo,cat_est,id_designacion,modulo,rol,periodo,id_conjunto,desde,hasta,lic
                     
                     from(
-                    select sub5.uni_acad,trim(d.apellido)||', '||trim(d.nombre) as docente_nombre,d.legajo,cat_est,sub5.id_designacion,carac,t_mo.descripcion as modulo,case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo,
-                    case when sub5.desc_materia is not null then 'en_conj' else 'sin_conj' end as conj,id_conjunto,
-                    m.desc_materia,m.cod_siu,pl.cod_carrera,pl.ordenanza,
-                    sub5.desc_materia as desc_mat_conj,sub5.cod_siu as cod_conj,sub5.cod_carrera as car_conj,sub5.ordenanza as ord_conj,sub5.desde,sub5.hasta
+                    select sub5.uni_acad,
+                    trim(d.apellido)||', '||trim(d.nombre) as docente_nombre,
+                    d.legajo,cat_est,sub5.id_designacion,
+                    carac,t_mo.descripcion as modulo,
+                    case when trim(rol)='NE' then 'Aux' else 'Resp' end as rol,p.descripcion as periodo,
+                    case when sub5.desc_materia is not null then 'en_conj' else 'sin_conj' end as conj,
+                    id_conjunto, m.desc_materia,m.cod_siu,pl.cod_carrera,pl.ordenanza,sub5.desc_materia as desc_mat_conj,sub5.cod_siu as cod_conj,sub5.cod_carrera as car_conj,sub5.ordenanza as ord_conj,sub5.desde,sub5.hasta,sub5.lic
                      from(
-                       select sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,sub2.uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion,sub4.desc_materia ,sub4.cod_carrera,sub4.ordenanza,sub4.cod_siu,sub3.id_conjunto
+                       select sub2.id_designacion,sub2.id_materia,sub2.id_docente,sub2.id_periodo,sub2.modulo,sub2.carga_horaria,sub2.rol,sub2.observacion,cat_est,dedic,carac,desde,hasta,lic,sub2.uni_acad,sub2.id_departamento,sub2.id_area,sub2.id_orientacion,sub4.desc_materia ,sub4.cod_carrera,sub4.ordenanza,sub4.cod_siu,sub3.id_conjunto
                           from (select distinct * from (
                                             select distinct a.anio,
                                             b.id_designacion,
@@ -2592,11 +2601,15 @@ class dt_designacion extends toba_datos_tabla
                                             a.rol,
                                             a.observacion,
                                             a.id_materia,
-                                            b.uni_acad,cat_estat||dedic as cat_est,
-                                            dedic,carac,desde,hasta,b.id_departamento,b.id_area,b.id_orientacion
-                                            from asignacion_materia a, designacion b
-                                            where a.id_designacion=b.id_designacion
-                                                and not (b.hasta is not null and b.hasta<=b.desde)
+                                            b.uni_acad,
+                                            cat_estat||dedic as cat_est,
+                                            dedic,carac,b.desde,b.hasta,b.id_departamento,b.id_area,b.id_orientacion,
+                                            STRING_AGG(to_char(t_no.desde,'DD/MM/YYYY')||'-'||to_char(t_no.hasta,'DD/MM/YYYY'),' Y ') as lic
+                                            from asignacion_materia a
+                                            inner join designacion b on (a.id_designacion=b.id_designacion)
+                                            left outer join (select * from novedad order by desde,hasta) t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<=b.hasta and (t_no.hasta>b.desde or t_no.hasta is null))                         
+                                            where not (b.hasta is not null and b.hasta<=b.desde)
+                                            group by a.anio, b.id_designacion,b.id_docente, a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat,carac,b.desde,b.hasta,b.id_departamento,b.id_area,b.id_orientacion
                                             )sub1
                                              --where uni_acad='CRUB' and anio=2020 
                                             ".$where ."

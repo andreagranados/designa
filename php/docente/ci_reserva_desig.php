@@ -184,7 +184,7 @@ class ci_reserva_desig extends designa_ci
 	{
             $des=$this->controlador()->controlador()->dep('datos')->tabla('designacion')->get();
             if($des['nro_540']==null){//solo puedo borrar si no tiene tkd
-                $tkd=$this->controlador()->controlador()->dep('datos')->tabla('designacionh')->existe_tkd($des['id_designacion']);
+                    $tkd=$this->controlador()->controlador()->dep('datos')->tabla('designacionh')->existe_tkd($des['id_designacion']);
                     if ($tkd){
                         toba::notificacion()->agregar("NO SE PUEDE ELIMINAR UNA DESIGNACION QUE HA TENIDO NUMERO DE TKD", 'error');
                     }else{//nunca se genero tkd para esta designacion
