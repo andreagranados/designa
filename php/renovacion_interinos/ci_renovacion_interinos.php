@@ -188,6 +188,15 @@ class ci_renovacion_interinos extends toba_ci
                             $datos['id_departamento']=$desig_origen['id_departamento'];
                             $datos['id_area']=$desig_origen['id_area'];
                             $datos['id_orientacion']=$desig_origen['id_orientacion'];
+                           //para evitar que modifiquen y la nueva designacion quede por fuera del periodo presupuetando
+                            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($this->s__datos_filtro['anio_presup']);//primer dia del anio actual
+                            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($this->s__datos_filtro['anio_presup']);//ultimo dia del anio presupuestando
+                            if($datos['desde']<$pdia){
+                                $datos['desde']=$pdia;
+                            }
+                            if($datos['hasta']>$udia){
+                                $datos['hasta']=$udia;
+                            }
                             $this->dep('datos')->tabla('nueva_desig')->set($datos);
                             $this->dep('datos')->tabla('nueva_desig')->sincronizar();
                             $des_nueva=$this->dep('datos')->tabla('nueva_desig')->get();
