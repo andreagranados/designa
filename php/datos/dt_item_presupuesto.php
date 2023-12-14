@@ -60,8 +60,8 @@ class dt_item_presupuesto extends toba_datos_tabla
             $sql="update item_presupuesto "
                     . " set cant_seac=cantidad,"
                     . " cat_map1_seac=cat_mapuche1,"
-                    . " cat_map2_seac=cat_mapuche2"
-                    . " desde_seac=desde"
+                    . " cat_map2_seac=cat_mapuche2,"
+                    . " desde_seac=desde,"
                     . " hasta_seac=hasta"
                     . " where nro_presupuesto=".$nro;
             toba::db('designa')->consultar($sql);
