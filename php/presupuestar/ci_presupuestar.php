@@ -85,13 +85,17 @@ class ci_presupuestar extends toba_ci
         $salida->titulo(utf8_d_seguro("PRESUPUESTO Nº ".$pres['nro_presupuesto']));
         $pdf->ezText("\n\n", 10);
         if($pres['tipo']=='R'){
-            $pdf->ezText('                <b>TIPO:</b> REFUERZO ', 10);
+           // $pdf->ezText('                <b>TIPO:</b> REFUERZO ', 10);
+            $datos2[0]=array('col1'=>'<b>TIPO: </b> REFUERZO');
         }
-        $pdf->ezText('                <b>EXPEDIENTE: </b>'.$pres['nro_expediente'], 10);
+        //$pdf->ezText('                <b>EXPEDIENTE: </b>'.$pres['nro_expediente'], 10);
+        $datos2[1]=array('col1'=>'<b>EXPEDIENTE: </b>'.$pres['nro_expediente']);
         $ua=utf8_decode('UNIDAD ACADÉMICA:');
         $per=utf8_decode('PERÍODO:');
-        $pdf->ezText('                <b>'.$ua.' </b>'.$pres['uni_acad'], 10);
-        $pdf->ezText('                <b>'.$per.' </b>'.$anio, 10);
+        //$pdf->ezText('                <b>'.$ua.' </b>'.$pres['uni_acad'], 10);
+        $datos2[2]=array('col1'=>'<b>'.$ua.' </b>'.$pres['uni_acad']);
+       // $pdf->ezText('                <b>'.$per.' </b>'.$anio, 10);
+        $datos2[3]=array('col1'=>'<b>'.$per.' </b>'.$anio);
         
         $perfil = toba::manejador_sesiones()->get_perfiles_funcionales();
         if(in_array('dependencias',$perfil)){//es la SEAC
@@ -112,8 +116,10 @@ class ci_presupuestar extends toba_ci
                 }
          }
         if($band=='SEAC'){
-            $pdf->ezText('                <b>OBSERVACION SEAC:'.' </b>'.$pres['observacion_seac'], 10);
+            $datos2[4]=array('col1'=>'<b>OBSERVACION SEAC: </b>'.$pres['observacion_seac']);            
+            //$pdf->ezText('<b>OBSERVACION SEAC:'.' </b>'.$pres['observacion_seac'], 10);
         } 
+        $pdf->ezTable($datos2,array('col1'=>''),'',array('showLines'=>0,'showHeadings'=>0,'shaded'=>0,'width'=>700,'cols'=>array('col1'=>array('justification'=>'left','width'=>700)))); 
       
         $i=0;
         $sum=0;
