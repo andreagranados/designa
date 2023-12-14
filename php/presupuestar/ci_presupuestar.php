@@ -111,6 +111,9 @@ class ci_presupuestar extends toba_ci
                     }
                 }
          }
+        if($band=='SEAC'){
+            $pdf->ezText('                <b>OBSERVACION SEAC:'.' </b>'.$pres['observacion_seac'], 10);
+        } 
       
         $i=0;
         $sum=0;

@@ -28,7 +28,12 @@ class ci_detalle_presupuesto extends toba_ci
        if ($this->controlador()->dep('datos')->tabla('presupuesto')->esta_cargada()) {
            $datos = $this->controlador()->dep('datos')->tabla('presupuesto')->get();
            if($datos['id_estado']=='I'){
-               $this->dep('formulario')->desactivar_efs(['observacion_seha','observacion_seac']);
+               if(!isset($datos['observacion_seac'])){
+                  $this->dep('formulario')->desactivar_efs(['observacion_seac']); 
+               }
+               if(!isset($datos['observacion_seha'])){
+                  $this->dep('formulario')->desactivar_efs(['observacion_seha']); 
+               }
            }
            $form->set_datos($datos);
            //para que cuando vuelve a la pantalla de datos principales del formulario no muestre mas el formulario del item
@@ -191,7 +196,9 @@ class ci_detalle_presupuesto extends toba_ci
                 $this->controlador()->dep('datos')->tabla('presupuesto')->sincronizar();
                 toba::notificacion()->agregar('El presupuesto ha sido reabierto','info');
                 $this->dep('datos')->tabla('item_presupuesto')->destildar_todo($pres['nro_presupuesto']);
-                toba::notificacion()->agregar('La reapertura destilda todos los check del presupuesto','info');
+                //vuelve los datos de seac idem los originales
+                $this->dep('datos')->tabla('item_presupuesto')->estado_inicial($pres['nro_presupuesto']);
+                toba::notificacion()->agregar('La reapertura destilda todos los check del presupuesto. Se restablecen los cambios de SEAC al estado inicial','info');
                 $this->controlador()->dep('datos')->tabla('presupuesto')->resetear($pres['nro_presupuesto']);
                 $this->controlador()->set_pantalla('pant_inicial');   
             }else{

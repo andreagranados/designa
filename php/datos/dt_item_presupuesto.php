@@ -54,6 +54,19 @@ class dt_item_presupuesto extends toba_datos_tabla
             toba::db('designa')->consultar($sql);
         }
     }
+    //vuelve todo los datos seac idem como los habia cargado el usuario
+    function estado_inicial($nro=null){
+        if(!is_null($nro)){
+            $sql="update item_presupuesto "
+                    . " set cant_seac=cantidad,"
+                    . " cat_map1_seac=cat_mapuche1,"
+                    . " cat_map2_seac=cat_mapuche2"
+                    . " desde_seac=desde"
+                    . " hasta_seac=hasta"
+                    . " where nro_presupuesto=".$nro;
+            toba::db('designa')->consultar($sql);
+        }
+    }
     function destildar_check_seha($nro=null){
         if(!is_null($nro)){
             $sql="update item_presupuesto set check_seha=false where nro_presupuesto=".$nro;

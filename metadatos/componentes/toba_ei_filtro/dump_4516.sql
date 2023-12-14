@@ -138,12 +138,12 @@ INSERT INTO apex_objeto_ei_filtro_col (objeto_ei_filtro_col, objeto_ei_filtro, o
 	'Período', --etiqueta
 	NULL, --descripcion
 	'0', --obligatorio
-	'0', --inicial
+	'1', --inicial
 	'1', --orden
 	NULL, --estado_defecto
 	'0', --opciones_es_multiple
 	'ef_combo', --opciones_ef
-	'get_anios', --carga_metodo
+	'get_anios_presupuestar', --carga_metodo
 	NULL, --carga_clase
 	NULL, --carga_include
 	'3359', --carga_dt

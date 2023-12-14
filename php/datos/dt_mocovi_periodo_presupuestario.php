@@ -66,6 +66,12 @@ class dt_mocovi_periodo_presupuestario extends toba_datos_tabla
             $sql = "SELECT distinct anio,id_periodo  FROM mocovi_periodo_presupuestario ORDER BY anio";
             return toba::db('designa')->consultar($sql);
 	}
+        function get_anios_presupuestar()
+	{
+            $sql = "SELECT distinct anio,id_periodo  FROM mocovi_periodo_presupuestario "
+                    . " WHERE anio>=2023 ORDER BY anio desc";
+            return toba::db('designa')->consultar($sql);
+	}
         //trae el anio actual y el presupuestando (a lo sumo pueden ser 2)
         function get_anio_ayp(){
             $sql="select anio,id_periodo  from mocovi_periodo_presupuestario where actual or presupuestando";
