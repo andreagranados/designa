@@ -935,6 +935,17 @@ class dt_designacion extends toba_datos_tabla
             $sql="update designacion set id_norma=".$id_norma." where id_designacion=".$id_des;
             toba::db('designa')->consultar($sql);
         }
+        //actualiza el numero de la norma legal al momento de informar la norma legal
+        function modifica_norma_licencias($id_designaciones,$numero,$tipo,$emite,$anio_norma,$anio){         
+              //si tiene una LSGH o Cese actualiza en el periodo entonces actualiza la norma, si comienza con 0000
+                $sql="update novedad set norma_legal='".str_pad($numero,4,'0',STR_PAD_LEFT)."/".$anio_norma."',".
+                        "tipo_norma='".trim($tipo)."',".
+                        " tipo_emite='".trim($emite)."'".
+                        " where tipo_nov in (2,5) ".
+                        " and extract (year from desde)=".$anio.
+                        " and id_designacion in (".$id_designaciones.")";
+                toba::db('designa')->consultar($sql);
+        }
 // Primer dia del periodo actual**/ si se llama de ningun lado sacar
         function ultimo_dia_periodo() { 
 
@@ -2526,6 +2537,8 @@ class dt_designacion extends toba_datos_tabla
 //            return toba::db('designa')->consultar($sql);
 //        }
         function get_materias_equipo($filtro=array()){
+            $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
+            $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
             $where=" WHERE 1=1 ";
             $where2=" WHERE 1=1 ";
             if (isset($filtro['anio'])) {
@@ -2545,8 +2558,6 @@ class dt_designacion extends toba_datos_tabla
                 $where2.= " and legajo = ".quote($filtro['legajo']['valor']);
             }
             if (isset($filtro['vencidas'])) {
-                $pdia = dt_mocovi_periodo_presupuestario::primer_dia_periodo_anio($filtro['anio']['valor']);
-                $udia = dt_mocovi_periodo_presupuestario::ultimo_dia_periodo_anio($filtro['anio']['valor']);
                 switch ($filtro['vencidas']['valor']) {
                     //sin las designaciones vencidas, es decir solo vigentes
                     case 1:$where.= " and desde<='".$udia."' and  ( hasta>='".$pdia."' or hasta is null )";break;
@@ -2607,7 +2618,7 @@ class dt_designacion extends toba_datos_tabla
                                             STRING_AGG(to_char(t_no.desde,'DD/MM/YYYY')||'-'||to_char(t_no.hasta,'DD/MM/YYYY'),' Y ') as lic
                                             from asignacion_materia a
                                             inner join designacion b on (a.id_designacion=b.id_designacion)
-                                            left outer join (select * from novedad order by desde,hasta) t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<=b.hasta and (t_no.hasta>b.desde or t_no.hasta is null))                         
+                                            left outer join (select * from novedad order by desde,hasta asc) t_no ON (b.id_designacion=t_no.id_designacion and t_no.tipo_nov in (2,5) and t_no.desde<='".$udia."' and t_no.hasta>='".$pdia."')                         
                                             where not (b.hasta is not null and b.hasta<=b.desde)
                                             group by a.anio, b.id_designacion,b.id_docente, a.id_periodo,a.modulo,a.carga_horaria,a.rol,a.observacion,a.id_materia,b.uni_acad,cat_estat,carac,b.desde,b.hasta,b.id_departamento,b.id_area,b.id_orientacion
                                             )sub1

@@ -47,34 +47,30 @@ class ci_p_investigacion extends toba_ci
 	function conf__cuadro(toba_ei_cuadro $cuadro)
 	{
 		if (isset($this->s__datos_filtro)) {
+                    $c=array();
                     if($this->s__columnas['cod_regional']==0){
-                        $c=array('cod_regional');
-                        $this->dep('cuadro')->eliminar_columnas($c); 
+                        array_push($c, 'cod_regional');
                      }
                     if($this->s__columnas['disciplina']==0){
-                        $c=array('disciplina');
-                        $this->dep('cuadro')->eliminar_columnas($c); 
+                        array_push($c, 'disciplina');
                      }
                     if($this->s__columnas['objetivo']==0){
-                        $c=array('objetivo');
-                        $this->dep('cuadro')->eliminar_columnas($c); 
+                        array_push($c, 'objetivo');
                      }
                     if($this->s__columnas['tipo_inv']==0){
-                        $c=array('tipo_inv');
-                        $this->dep('cuadro')->eliminar_columnas($c); 
+                        array_push($c, 'tipo_inv');
                      }
                      if($this->s__columnas['cuildirector']==0){
-                        $c=array('cuildirector');
-                        $this->dep('cuadro')->eliminar_columnas($c); 
+                         array_push($c, 'cuildirector');
                      }
                      if($this->s__columnas['cuilcod']==0){
-                        $c=array('cuilcod');
-                        $this->dep('cuadro')->eliminar_columnas($c); 
+                         array_push($c, 'cuilcod');
                      }
                     if($this->s__columnas['cat_invest_descripcion']==0){
-                        $c=array('cat_invest_descripcion');
-                        $this->dep('cuadro')->eliminar_columnas($c); 
+                        array_push($c, 'cat_invest_descripcion');
                      }
+                     
+                    $this->dep('cuadro')->eliminar_columnas($c); 
                     $cuadro->set_datos($this->dep('datos')->tabla('pinvestigacion')->get_listado_filtro($this->s__datos_filtro));
                     //$cuadro->set_titulo(utf8_decode('Listado  ').date('d/m/Y (H:i:s)'));
 		} 

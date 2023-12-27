@@ -653,7 +653,7 @@ class cargo_solapas extends toba_ci
             $desig=$this->controlador()->dep('datos')->tabla('designacion')->get();
             $band=$this->controlador()->dep('datos')->tabla('conjunto')->control($datos['id_materia'],$datos['anio'],$datos['id_periodo'],$desig['id_designacion'],$datos['modulo']);
             if($band){
-                 if ($datos['carga_horaria']>20){
+                 if (trim($datos['uni_acad'])<>'FAME' and $datos['carga_horaria']>20){//en FAME si hay materias con mas de 20 horas semanales
                      throw new toba_error("La carga horaria semanal no puede ser mayor a 20");
                  }else{
                     $band=$this->controlador()->dep('datos')->tabla('asignacion_materia')->no_repite($desig['id_designacion'],$datos['id_materia'],$datos['modulo'],$datos['anio']);
@@ -679,7 +679,7 @@ class cargo_solapas extends toba_ci
         }
         function evt__form_materias__modificacion($datos)
         {
-            if ($datos['carga_horaria']>20){
+            if (trim($datos['uni_acad'])<>'FAME' and $datos['carga_horaria']>20){
                 toba::notificacion()->agregar('La carga horaria semanal no puede ser mayor a 20', 'info');
             }else{
                  $asigna=$this->controlador()->dep('datos')->tabla('asignacion_materia')->get();

@@ -75,7 +75,7 @@ class ci_informar_norma_legal extends toba_ci
 	}
 //boton Informar Norma
 	function evt__formulario__modificacion($datos)
-	{   
+	{ 
             //toma todas las designaciones que se filtraron y les agrega la norma
              if (isset($this->s__listado)){//si la variable tiene valor
                 $cont=0;
@@ -84,7 +84,19 @@ class ci_informar_norma_legal extends toba_ci
                     $this->controlador()->dep('datos')->tabla('designacion')->modifica_norma($desig['id_designacion'],$datos['norma']);
                     $cont++;
                 }
+                //actualizo las norma de las licencias sin goce o cese
+                $sele=array();
+                foreach ($this->s__listado as $key => $value) {
+                        $sele[]=$value['id_designacion']; 
+                    }
+                $comma_separated = implode(',', $sele); 
+
+                $datos_norma=$this->controlador()->dep('datos')->tabla('norma')->get_norma($datos['norma']);
+                $f=new DateTime($datos['fecha']);
+                $a=$f->format('Y');
                 
+                $this->dep('datos')->tabla('designacion')->modifica_norma_licencias($comma_separated,$datos_norma[0]['nro_norma'],$datos_norma[0]['tipo_norma'],$datos_norma[0]['emite_norma'],$a,$this->s__datos_filtro['anio']);
+                ///
                 toba::notificacion()->agregar('Se han actualizado '.$cont.' designaciones.', 'info');
                 $this->set_pantalla('pant_edicion');
              }
