@@ -109,6 +109,10 @@ class ci_certificacion_periodo extends toba_ci
                     $texto= utf8_decode("Lic:")." <b>".$des['lic']."</b>";
                     $pdf->ezText($texto,12);
                 }
+                if(isset($des['gestion'])){
+                    $texto= utf8_decode("Gestión:")." <b>".$des['gestion']."</b>";
+                    $pdf->ezText($texto,12);
+                }
                 $pdf->ezText("\n", 7);
                 $mate=$this->dep('datos')->tabla('asignacion_materia')->get_listado_desig_cert($des['id_designacion'],$this->s__datos_filtro['anio']);
                 
