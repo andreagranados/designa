@@ -288,10 +288,12 @@ class dt_asignacion_materia extends toba_datos_tabla
             $sql="select distinct t_p.uni_acad,t_i.id_materia,t_a.desc_materia,t_a.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_i.id_periodo,t_pr.descripcion as periodo, t_i.anio_acad as anio,case when sub.id_conjunto is null then 0 else sub.id_conjunto end  as conj,
 case when sub.id_conjunto is null then sub3.cant_insc_s else sub2.cant_insc_c end as cant_inscriptos,case when sub.id_conjunto is null then sub4.cant_desig_s else sub1.cant_desigc end as cant_desig
 --,sub.id_conjunto,t_i.id_comision,t_i.inscriptos,t_m.id_designacion,sub1.cant_desigc, sub4.cant_desig_s, sub2.cant_insc_c, sub3.cant_insc_s
+,t_dep.iddepto,t_dep.descripcion as departamento
 from inscriptos t_i
 INNER JOIN materia t_a ON (t_a.id_materia=t_i.id_materia)
 INNER JOIN plan_estudio t_p ON (t_p.id_plan=t_a.id_plan)
 INNER JOIN periodo t_pr ON (t_pr.id_periodo=t_i.id_periodo)
+LEFT OUTER JOIN departamento t_dep ON (t_dep.iddepto=t_a.id_departamento)
 FULL OUTER JOIN asignacion_materia t_m ON (t_i.id_periodo=t_m.id_periodo and t_i.anio_acad=t_m.anio and t_i.id_materia=t_m.id_materia)
 --con lo que sigue obtengo el conjunto si es que lo tiene
 LEFT OUTER JOIN (select t_c.ua,t_c.id_conjunto,t_r.anio,t_c.id_periodo,t_e.id_materia 

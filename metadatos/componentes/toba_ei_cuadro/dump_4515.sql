@@ -137,7 +137,7 @@ INSERT INTO apex_objeto_cuadro (objeto_cuadro_proyecto, objeto_cuadro, titulo, s
 	NULL, --eof_customizado
 	'0', --siempre_con_titulo
 	'0', --exportar_paginado
-	'0', --exportar
+	'1', --exportar
 	'0', --exportar_rtf
 	NULL, --pdf_propiedades
 	NULL, --pdf_respetar_paginacion
@@ -175,14 +175,14 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	NULL, --ancho
 	'1', --formateo
 	NULL, --vinculo_indice
-	NULL, --no_ordenar
+	'0', --no_ordenar
 	NULL, --mostrar_xls
 	NULL, --mostrar_pdf
 	NULL, --pdf_propiedades
 	NULL, --desabilitado
-	NULL, --total
+	'0', --total
 	NULL, --total_cc
-	NULL, --usar_vinculo
+	'0', --usar_vinculo
 	NULL, --vinculo_carpeta
 	NULL, --vinculo_item
 	NULL, --vinculo_popup
@@ -206,14 +206,14 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	NULL, --ancho
 	'1', --formateo
 	NULL, --vinculo_indice
-	NULL, --no_ordenar
+	'0', --no_ordenar
 	NULL, --mostrar_xls
 	NULL, --mostrar_pdf
 	NULL, --pdf_propiedades
 	NULL, --desabilitado
-	NULL, --total
+	'0', --total
 	NULL, --total_cc
-	NULL, --usar_vinculo
+	'0', --usar_vinculo
 	NULL, --vinculo_carpeta
 	NULL, --vinculo_item
 	NULL, --vinculo_popup
@@ -330,14 +330,14 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	NULL, --ancho
 	'1', --formateo
 	NULL, --vinculo_indice
-	NULL, --no_ordenar
+	'0', --no_ordenar
 	NULL, --mostrar_xls
 	NULL, --mostrar_pdf
 	NULL, --pdf_propiedades
 	NULL, --desabilitado
-	NULL, --total
+	'0', --total
 	NULL, --total_cc
-	NULL, --usar_vinculo
+	'0', --usar_vinculo
 	NULL, --vinculo_carpeta
 	NULL, --vinculo_item
 	NULL, --vinculo_popup
@@ -354,7 +354,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4919', --objeto_cuadro_col
 	'costo_diario', --clave
-	'7', --orden
+	'8', --orden
 	'Costo Dia', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'0', --estilo
@@ -385,7 +385,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4920', --objeto_cuadro_col
 	'total', --clave
-	'8', --orden
+	'9', --orden
 	'Total Solicitado', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'col-num-p2', --estilo
@@ -416,7 +416,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4925', --objeto_cuadro_col
 	'check_seact', --clave
-	'9', --orden
+	'10', --orden
 	'Check SEAC', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -447,7 +447,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4926', --objeto_cuadro_col
 	'check_sehat', --clave
-	'17', --orden
+	'18', --orden
 	'Check SEHA', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -478,7 +478,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4927', --objeto_cuadro_col
 	'cat_seac', --clave
-	'10', --orden
+	'11', --orden
 	'Categ', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -509,7 +509,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4928', --objeto_cuadro_col
 	'desde_seac', --clave
-	'11', --orden
+	'12', --orden
 	'Desde', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -540,7 +540,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4929', --objeto_cuadro_col
 	'hasta_seac', --clave
-	'12', --orden
+	'13', --orden
 	'Hasta', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -571,7 +571,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4930', --objeto_cuadro_col
 	'dias_seac', --clave
-	'13', --orden
+	'14', --orden
 	'Dias', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -602,7 +602,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4931', --objeto_cuadro_col
 	'cant_seac', --clave
-	'14', --orden
+	'15', --orden
 	'Cant', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -633,7 +633,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4932', --objeto_cuadro_col
 	'costo_dia_seac', --clave
-	'15', --orden
+	'16', --orden
 	'Costo Dia', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -664,7 +664,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4933', --objeto_cuadro_col
 	'total_seac', --clave
-	'16', --orden
+	'17', --orden
 	'Total SEAC', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'col-num-p2', --estilo
@@ -695,7 +695,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4934', --objeto_cuadro_col
 	'cat_seha', --clave
-	'18', --orden
+	'19', --orden
 	'Categ', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -726,7 +726,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4935', --objeto_cuadro_col
 	'desde_seha', --clave
-	'19', --orden
+	'20', --orden
 	'Desde', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -757,7 +757,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4936', --objeto_cuadro_col
 	'hasta_seha', --clave
-	'20', --orden
+	'21', --orden
 	'Hasta', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -788,7 +788,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4937', --objeto_cuadro_col
 	'dias_seha', --clave
-	'21', --orden
+	'22', --orden
 	'Dias', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -819,7 +819,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4938', --objeto_cuadro_col
 	'cant_seha', --clave
-	'22', --orden
+	'23', --orden
 	'Cant', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'4', --estilo
@@ -850,7 +850,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4939', --objeto_cuadro_col
 	'total_seha', --clave
-	'24', --orden
+	'25', --orden
 	'Total SEHA', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'col-num-p2', --estilo
@@ -881,7 +881,7 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	'4515', --objeto_cuadro
 	'4944', --objeto_cuadro_col
 	'costo_dia_seha', --clave
-	'23', --orden
+	'24', --orden
 	'Costo Dia', --titulo
 	'ei-cuadro-col-tit', --estilo_titulo
 	'col-cen-s4', --estilo
@@ -905,6 +905,37 @@ INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro
 	NULL, --vinculo_servicio
 	'0', --permitir_html
 	'SEHA', --grupo
+	NULL  --evento_asociado
+);
+INSERT INTO apex_objeto_ei_cuadro_columna (objeto_cuadro_proyecto, objeto_cuadro, objeto_cuadro_col, clave, orden, titulo, estilo_titulo, estilo, ancho, formateo, vinculo_indice, no_ordenar, mostrar_xls, mostrar_pdf, pdf_propiedades, desabilitado, total, total_cc, usar_vinculo, vinculo_carpeta, vinculo_item, vinculo_popup, vinculo_popup_param, vinculo_target, vinculo_celda, vinculo_servicio, permitir_html, grupo, evento_asociado) VALUES (
+	'designa', --objeto_cuadro_proyecto
+	'4515', --objeto_cuadro
+	'5069', --objeto_cuadro_col
+	'detalle', --clave
+	'7', --orden
+	'Detalle', --titulo
+	'ei-cuadro-col-tit', --estilo_titulo
+	'4', --estilo
+	NULL, --ancho
+	'1', --formateo
+	NULL, --vinculo_indice
+	NULL, --no_ordenar
+	NULL, --mostrar_xls
+	NULL, --mostrar_pdf
+	NULL, --pdf_propiedades
+	NULL, --desabilitado
+	NULL, --total
+	NULL, --total_cc
+	NULL, --usar_vinculo
+	NULL, --vinculo_carpeta
+	NULL, --vinculo_item
+	NULL, --vinculo_popup
+	NULL, --vinculo_popup_param
+	NULL, --vinculo_target
+	NULL, --vinculo_celda
+	NULL, --vinculo_servicio
+	'0', --permitir_html
+	NULL, --grupo
 	NULL  --evento_asociado
 );
 --- FIN Grupo de desarrollo 0

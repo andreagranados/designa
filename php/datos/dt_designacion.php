@@ -137,7 +137,6 @@ class dt_designacion extends toba_datos_tabla
                 . " order by descripcion ";
 
         $sql = toba::perfil_de_datos()->filtrar($sql);
-
         return toba::db('designa')->consultar($sql);
     }
     //retorna true si la designacion a la que suple tiene una licencia dentro del periodo de la designacion suplente 

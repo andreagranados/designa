@@ -8,6 +8,7 @@ class dt_item_presupuesto extends toba_datos_tabla
                 desde,
                 hasta,
                 cantidad,
+                i.detalle,
                 case when opcion='D' then c.costo_diario else (c.costo_diario-c2.costo_diario) end as costo_diario,
                 hasta-desde+1 as dias,
                 case when opcion='D' then cantidad*(hasta-desde+1)*c.costo_diario else cantidad*(hasta-desde+1)*(c.costo_diario-c2.costo_diario) end as total,
