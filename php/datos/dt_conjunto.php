@@ -80,9 +80,17 @@ class dt_conjunto extends toba_datos_tabla
         }else{
             $where='';
         }
-        
         //CUANDO ESTEMOS VERSION 9.1 DE POSTGRES
-            $sql="select * from (select c.id_conjunto,c.tiene_mat_externas,c.descripcion,o.anio,c.ua,p.descripcion as id_periodo_nombre,count(distinct e.id_materia) as cant_mat,string_agg(m.desc_materia||'('||pp.cod_carrera||' de '||pp.uni_acad||')',' ,') as mat_conj
+            $sql="select * from 
+                       (select c.id_conjunto,
+                        c.tiene_mat_externas,
+                        c.descripcion,
+                        o.anio,
+                        c.ua,
+                        p.id_periodo,
+                        p.descripcion as id_periodo_nombre,
+                        count(distinct e.id_materia) as cant_mat,
+                        string_agg(m.desc_materia||'('||pp.cod_carrera||' de '||pp.uni_acad||')',' ,') as mat_conj
                         from conjunto c
                         left outer join en_conjunto e on (c.id_conjunto=e.id_conjunto)
                         left outer join materia m on (m.id_materia=e.id_materia)
@@ -90,7 +98,7 @@ class dt_conjunto extends toba_datos_tabla
                         left outer join periodo p on (c.id_periodo=p.id_periodo)
                         left outer join mocovi_periodo_presupuestario o on (o.id_periodo=c.id_periodo_pres)
 
-                    group by c.id_conjunto,o.anio,c.descripcion,c.ua,p.descripcion          
+                    group by c.id_conjunto,o.anio,c.descripcion,c.ua,p.id_periodo,p.descripcion          
                     order by p.descripcion,c.descripcion)sub
                     $where";
                     

@@ -82,6 +82,28 @@ class dt_departamento extends toba_datos_tabla
 	    $resul = toba::db('designa')->consultar($sql);
             return $resul;
         }
+        function get_departamentos_ua()
+	{//devuelve los departamentos de la ua que esta logueada
+            $where ="";
+            if(isset($id_ua)){
+              $where=" and idunidad_academica='".$id_ua."'";        
+             }
+            $sql = "SELECT distinct t_d.iddepto, t_d.descripcion ||'('||case when ordenanza is null then '' else ordenanza end ||')'||' de '||t_u.sigla as descripcion "
+                        . " FROM departamento t_d,"
+                        . " unidad_acad t_u "
+                        . " WHERE t_u.sigla=t_d.idunidad_academica"
+                        . "  $where"
+                        . " order by descripcion";
+                //obtengo el perfil de datos del usuario logueado
+            $con="select sigla,descripcion from unidad_acad ";
+            $con = toba::perfil_de_datos()->filtrar($con);
+            $resul=toba::db('designa')->consultar($con);
+            $sql = toba::perfil_de_datos()->filtrar($sql);
+               
+             //print_r($sql);               
+	    $resul = toba::db('designa')->consultar($sql);
+            return $resul;
+        }
         function get_departamentos_vigentes($vig=null)
 	{//si recibe parametro entonces filtra por la ua que recibe
             //print_r($vig);
@@ -117,6 +139,7 @@ class dt_departamento extends toba_datos_tabla
 	    $resul = toba::db('designa')->consultar($sql);
             return $resul;
         }
+        
 	function get_listado($filtro=array())
 	{
 		$where = array();
@@ -148,7 +171,7 @@ class dt_departamento extends toba_datos_tabla
                 }
                 //puede tener varios codirectores en el mismo periodo
                 //ordenamiento con una columna falsa para que SIN DEPARTAMENTO lo coloque al final
-             $sql="select sub.*, trim(doc.apellido)||', '||trim(doc.nombre) as director,string_agg(trim(cdoc.apellido)||', '||trim(cdoc.nombre),'/') as codirector 
+             $sql="select sub.*, trim(doc.apellido)||', '||trim(doc.nombre)||' (Vto:'||to_char(dr.hasta,'DD/MM/YYYY')||')' as director,string_agg(trim(cdoc.apellido)||', '||trim(cdoc.nombre),'/') as codirector 
                 from 
                      (select d.iddepto, d.idunidad_academica, d.descripcion,case when descripcion like 'SIN DEPAR%' then 'Z'||descripcion else descripcion end as descr, d.ordenanza, d.vigente, max(di.desde) as desde, max(ci.desde) as desdec
                       from departamento d 
@@ -160,7 +183,7 @@ class dt_departamento extends toba_datos_tabla
                      LEFT OUTER JOIN docente doc ON (doc.id_docente=dr.id_docente)
                      LEFT OUTER JOIN codirector_dpto cdr ON (cdr.iddepto=sub.iddepto and sub.desdec=cdr.desde )
                      LEFT OUTER JOIN docente cdoc ON (cdoc.id_docente=cdr.id_docente)
-                     group by sub.iddepto,sub.idunidad_academica,descripcion,descr,ordenanza,vigente,sub.desde,desdec,doc.apellido,doc.nombre
+                     group by sub.iddepto,sub.idunidad_academica,descripcion,descr,ordenanza,vigente,sub.desde,desdec,doc.apellido,doc.nombre,dr.hasta
                     order by sub.descr  ";
             return toba::db('designa')->consultar($sql);
         }

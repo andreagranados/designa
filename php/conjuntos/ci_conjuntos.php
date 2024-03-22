@@ -90,7 +90,7 @@ class ci_conjuntos extends toba_ci
 
 	
         function evt__formulario__guardar($datos)
-        {print_r($datos);
+        {//print_r($datos);
             $conj=$this->dep('datos')->tabla('conjunto')->get();
             $this->dep('datos')->tabla('en_conjunto')->borrar_materias($conj['id_conjunto']);
             $x=$datos['id_materia'];

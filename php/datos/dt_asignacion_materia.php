@@ -217,7 +217,7 @@ class dt_asignacion_materia extends toba_datos_tabla
                     t_a.id_materia=$materia
                     and t_a.anio=$anio
             and t_a.id_periodo=$periodo"
-                    . " order by t_ti.desc_item";
+                    . " order by modulo,t_ti.desc_item desc";
             
           }else{//tengo un conjunto ENTONCES BUSCO TODOS LOS DOCENTES ASOCIADOS A LAS MATERIAS DEL CONJUNTO PARA ESE PERIODO Y ANO
 //             $sql="select t_a.anio,t_doc.apellido||', '||t_doc.nombre as docente,t_doc.legajo, t_pe.descripcion as periodo,t_d.cat_estat||t_d.dedic||'('||t_d.carac||')' as designacion,t_ti.desc_item as rol,t_a.carga_horaria,t_mod.descripcion as modulo
@@ -246,18 +246,32 @@ class dt_asignacion_materia extends toba_datos_tabla
                 INNER JOIN modulo t_mod ON (t_mod.id_modulo=t_a.modulo)
                 INNER JOIN tipo t_ti ON(t_a.nro_tab8=t_ti.nro_tabla and t_a.rol=t_ti.desc_abrev)
                 where t_con.id_conjunto= $conj    "
-                      . " order by t_ti.desc_item ";
+                      . " order by modulo,t_ti.desc_item desc ";
               
           }
             
             return toba::db('designa')->consultar($sql);
         }
         function get_comparacion ($filtro=array()){
+            //print_r($filtro);
             $where="WHERE 1=1 ";
-            if (isset($filtro['uni_acad'])) {
-                $where.= " and  uni_acad = ".quote($filtro['uni_acad']);
+            switch ($filtro['opcion']) {
+                case 1:
+                    if (isset($filtro['uni_acad'])) {
+                        $where.= " and  uni_acad = ".quote($filtro['uni_acad']);
+                    }
+
+                    break;
+                case 2:
+                    if (isset($filtro['id_departamento'])) {
+                        $where.= " and  iddepto= ".$filtro['id_departamento'];
+                    }
+                    break;
+                default:
+                    break;
             }
-             if (isset($filtro['anio'])) {
+
+            if (isset($filtro['anio'])) {
                  $where.= " and  t_i.anio_acad = ".$filtro['anio'];
             }
            //agrupa por materia, anio y periodo
@@ -285,10 +299,21 @@ class dt_asignacion_materia extends toba_datos_tabla
 //                    LEFT OUTER JOIN plan_estudio t_p ON (t_m.id_plan=t_p.id_plan)
 //                    LEFT OUTER JOIN periodo t_e ON (t_e.id_periodo=c.id_periodo)
 //                    $where";  
-            $sql="select distinct t_p.uni_acad,t_i.id_materia,t_a.desc_materia,t_a.cod_siu,t_p.cod_carrera,t_p.ordenanza,t_i.id_periodo,t_pr.descripcion as periodo, t_i.anio_acad as anio,case when sub.id_conjunto is null then 0 else sub.id_conjunto end  as conj,
-case when sub.id_conjunto is null then sub3.cant_insc_s else sub2.cant_insc_c end as cant_inscriptos,case when sub.id_conjunto is null then sub4.cant_desig_s else sub1.cant_desigc end as cant_desig
---,sub.id_conjunto,t_i.id_comision,t_i.inscriptos,t_m.id_designacion,sub1.cant_desigc, sub4.cant_desig_s, sub2.cant_insc_c, sub3.cant_insc_s
-,t_dep.iddepto,t_dep.descripcion as departamento
+$sql="select distinct t_p.uni_acad,
+                t_i.id_materia,
+                t_a.desc_materia,
+                t_a.cod_siu,
+                t_p.cod_carrera,
+                t_p.ordenanza,
+                t_i.id_periodo,
+                t_pr.descripcion as periodo,
+                t_i.anio_acad as anio,
+                case when sub.id_conjunto is null then 0 else sub.id_conjunto end  as conj,
+                case when sub.id_conjunto is null then sub3.cant_insc_s else sub2.cant_insc_c end as cant_inscriptos
+                ,case when sub.id_conjunto is null then sub4.cant_desig_s else sub1.cant_desigc end as cant_desig
+            --,sub.id_conjunto,t_i.id_comision,t_i.inscriptos,t_m.id_designacion,sub1.cant_desigc, sub4.cant_desig_s, sub2.cant_insc_c, sub3.cant_insc_s
+                ,t_dep.iddepto,
+                t_dep.descripcion as departamento
 from inscriptos t_i
 INNER JOIN materia t_a ON (t_a.id_materia=t_i.id_materia)
 INNER JOIN plan_estudio t_p ON (t_p.id_plan=t_a.id_plan)
