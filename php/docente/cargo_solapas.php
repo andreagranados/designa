@@ -546,16 +546,17 @@ class cargo_solapas extends toba_ci
 
 	function conf__filtro_materias(toba_ei_filtro $filtro)
 	{
-		if (isset($this->s__datos_filtro)) {
-			$filtro->set_datos($this->s__datos_filtro);
-		}
+            if (isset($this->s__datos_filtro)) {
+                    $filtro->set_datos($this->s__datos_filtro);
+            }
+            $filtro->columna('anio')->set_condicion_fija('es_igual_a',true)  ;
 	}
 
 	function evt__filtro_materias__filtrar($datos)
 	{
-		$this->s__datos_filtro = $datos;
-                $this->s__where = $this->dep('filtro_materias')->get_sql_where();  
-                $this->s__alta_mate=0;
+            $this->s__datos_filtro = $datos;
+            $this->s__where = $this->dep('filtro_materias')->get_sql_where();  
+            $this->s__alta_mate=0;
 	}
 
 	function evt__filtro_materias__cancelar()
